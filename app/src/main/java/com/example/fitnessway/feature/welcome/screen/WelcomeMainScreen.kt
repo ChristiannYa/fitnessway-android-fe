@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -49,7 +50,7 @@ fun WelcomeMainScreen(
          Text(
             text = "Fitnessway",
             fontFamily = FontFamily.Serif,
-            style = MaterialTheme.typography.displaySmall,
+            fontSize = MaterialTheme.typography.displaySmall.fontSize,
             color = titleColor
          )
 
@@ -58,22 +59,27 @@ fun WelcomeMainScreen(
                // IntrinsicSize.Max makes the Column's width equal to the width of its widest child
                .width(IntrinsicSize.Max),
             verticalArrangement = Arrangement.spacedBy(
-               space = 1.dp,
+               space = 4.dp,
                Alignment.CenterVertically
             ),
          ) {
-            Button(
+            TextButton(
                onClick = onLoginClick,
                modifier = Modifier
                   .fillMaxWidth(),
+               contentPadding = (PaddingValues(
+                  top = 12.dp,
+                  bottom = 12.dp
+               )),
                colors = ButtonDefaults.buttonColors(
                   containerColor = MaterialTheme.colorScheme.primary,
                ),
                content = {
                   Text(
                      text = "Login",
+                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                      fontFamily = robotoSerifFamily,
-                     fontWeight = FontWeight.Normal
+                     fontWeight = FontWeight.Normal,
                   )
                }
             )
@@ -84,13 +90,23 @@ fun WelcomeMainScreen(
                   .fillMaxWidth()
                   .height(32.dp),
                contentPadding = (PaddingValues(
-                  bottom = 0.dp
+                  top = 0.dp,
+                  bottom = 0.dp,
+                  start = 16.dp,
+                  end = 16.dp
                )),
                colors = ButtonDefaults.textButtonColors(
                   containerColor = Color.Transparent,
                   contentColor = MaterialTheme.colorScheme.primary,
                ),
-               content = { Text("Register") }
+               content = {
+                  Text(
+                     text = "Register",
+                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                     fontFamily = robotoSerifFamily,
+                     fontWeight = FontWeight.Normal,
+                  )
+               }
             )
          }
       }

@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -41,19 +39,23 @@ fun WelcomeMainScreen(
       modifier = Modifier.fillMaxSize()
    ) {
       Column(
+         modifier = Modifier.fillMaxSize(),
          horizontalAlignment = Alignment.CenterHorizontally,
          verticalArrangement = Arrangement.spacedBy(
-            space = 12.dp,
+            space = 16.dp,
             Alignment.CenterVertically
-         )
+         ),
       ) {
+         // Title
          Text(
             text = "Fitnessway",
+            color = titleColor,
             fontFamily = FontFamily.Serif,
             fontSize = MaterialTheme.typography.displaySmall.fontSize,
-            color = titleColor
+            fontWeight = FontWeight.Medium
          )
 
+         // (Buttons) Login - Register: Wrapper
          Column(
             modifier = Modifier
                // IntrinsicSize.Max makes the Column's width equal to the width of its widest child
@@ -63,6 +65,7 @@ fun WelcomeMainScreen(
                Alignment.CenterVertically
             ),
          ) {
+            // Login: Button
             TextButton(
                onClick = onLoginClick,
                modifier = Modifier
@@ -75,15 +78,17 @@ fun WelcomeMainScreen(
                   containerColor = MaterialTheme.colorScheme.primary,
                ),
                content = {
+                  // Login: Text
                   Text(
                      text = "Login",
                      fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                      fontFamily = robotoSerifFamily,
-                     fontWeight = FontWeight.Normal,
+                     fontWeight = FontWeight.Medium,
                   )
                }
             )
 
+            // Register: Button
             TextButton(
                onClick = onRegisterClick,
                modifier = Modifier
@@ -100,11 +105,12 @@ fun WelcomeMainScreen(
                   contentColor = MaterialTheme.colorScheme.primary,
                ),
                content = {
+                  // Register: Text
                   Text(
                      text = "Register",
                      fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                      fontFamily = robotoSerifFamily,
-                     fontWeight = FontWeight.Normal,
+                     fontWeight = FontWeight.Medium,
                   )
                }
             )

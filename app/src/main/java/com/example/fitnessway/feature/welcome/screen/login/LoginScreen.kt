@@ -20,6 +20,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -33,10 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.data.model.welcome.LoginField
 import com.example.fitnessway.feature.welcome.screen.login.viewmodel.LoginViewModel
-import com.example.fitnessway.ui.shared.ScreenHeader
+import com.example.fitnessway.ui.shared.ScreenWithHeader
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
+import com.example.fitnessway.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun LoginScreen(
@@ -44,6 +50,7 @@ fun LoginScreen(
    onBackClick: () -> Unit,
 ) {
    val loginViewModel: LoginViewModel = viewModel<LoginViewModel>()
+   var passwordVisible by remember { mutableStateOf(false) }
 
    val fields = listOf(
       LoginField(
@@ -70,7 +77,7 @@ fun LoginScreen(
       )
    )
 
-   ScreenHeader(
+   ScreenWithHeader(
       header = {
          Row(modifier = Modifier.fillMaxWidth()) {
             IconButton(
@@ -85,6 +92,7 @@ fun LoginScreen(
             )
          }
       },
+
       content = {
          Column(
             verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -102,20 +110,42 @@ fun LoginScreen(
                            fontFamily = FontFamily.Serif
                         )
                      },
+                     trailingIcon = {
+                        if (field.isSecureTextEntry) {
+                           IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                              Icon(
+                                 painter = painterResource(
+                                    if (passwordVisible)
+                                       R.drawable.eye_on
+                                    else
+                                       R.drawable.eye_off
+                                 ),
+                                 contentDescription = if (passwordVisible)
+                                    "Hide password"
+                                 else
+                                    "Show password",
+                                 tint = MaterialTheme.colorScheme.onBackground,
+                                 modifier = Modifier
+                                    .size(21.dp)
+                              )
+                           }
+                        }
+                     },
                      isError = field.errorMessage != null,
                      supportingText = {
                         field.errorMessage?.let { Text(text = it) }
                      },
-                     visualTransformation = if (field.isSecureTextEntry)
+                     visualTransformation = if (field.isSecureTextEntry && !passwordVisible)
                         PasswordVisualTransformation()
                      else
-                        VisualTransformation.None,
+                        VisualTransformation.None
+                     ,
                      keyboardOptions = KeyboardOptions(
                         keyboardType = field.keyboardType,
                         capitalization = field.autoCapitalize
                      ),
                      modifier = Modifier.fillMaxWidth(),
-                     shape = RoundedCornerShape(10.dp)
+                     shape = RoundedCornerShape(8.dp)
                   )
                }
             }

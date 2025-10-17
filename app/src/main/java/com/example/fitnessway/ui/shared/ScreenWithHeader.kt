@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ScreenHeader(
+fun ScreenWithHeader(
    header: (@Composable () -> Unit)? = null,
    content: @Composable () -> Unit,
 ) {

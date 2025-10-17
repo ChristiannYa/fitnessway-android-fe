@@ -43,6 +43,7 @@ import com.example.fitnessway.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
+import com.example.fitnessway.data.model.welcome.FormFieldName
 
 @Composable
 fun LoginScreen(
@@ -52,11 +53,16 @@ fun LoginScreen(
    val loginViewModel: LoginViewModel = viewModel<LoginViewModel>()
    var passwordVisible by remember { mutableStateOf(false) }
 
-   val fields = listOf(
+   val fields: List<LoginField> = listOf(
       LoginField(
+         name = FormFieldName.Login.EMAIL,
          label = "Email Address",
          value = loginViewModel.email,
-         updateState = { loginViewModel.updateEmail(it) },
+         updateState = {
+            loginViewModel.updateField(
+               FormFieldName.Login.EMAIL, it
+            )
+         },
          keyboardType = KeyboardType.Email,
          autoCapitalize = KeyboardCapitalization.None,
          errorMessage = if (loginViewModel.emailHasErrors)
@@ -65,10 +71,15 @@ fun LoginScreen(
             null
       ),
       LoginField(
+         name =  FormFieldName.Login.PASSWORD,
          label = "Password",
          value = loginViewModel.password,
+         updateState = {
+            loginViewModel.updateField(
+               FormFieldName.Login.PASSWORD, it
+            )
+         },
          keyboardType = KeyboardType.Password,
-         updateState = { loginViewModel.updatePassword(it) },
          isSecureTextEntry = true,
          errorMessage = if (loginViewModel.passwordHasErrors)
             "Password must have at least 8 characters"
@@ -138,8 +149,7 @@ fun LoginScreen(
                      visualTransformation = if (field.isSecureTextEntry && !passwordVisible)
                         PasswordVisualTransformation()
                      else
-                        VisualTransformation.None
-                     ,
+                        VisualTransformation.None,
                      keyboardOptions = KeyboardOptions(
                         keyboardType = field.keyboardType,
                         capitalization = field.autoCapitalize

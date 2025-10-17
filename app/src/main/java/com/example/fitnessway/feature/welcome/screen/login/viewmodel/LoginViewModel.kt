@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.fitnessway.data.model.welcome.FormFieldName
 
 class LoginViewModel : ViewModel() {
    // - `private set` is mainly for `mutableStateOf`
@@ -17,12 +18,11 @@ class LoginViewModel : ViewModel() {
    var password by mutableStateOf("")
       private set
 
-   fun updateEmail(input: String) {
-      email = input
-   }
-
-   fun updatePassword(input: String) {
-      password = input
+   fun updateField(fieldName:  FormFieldName.Login, input: String) {
+      when (fieldName) {
+         FormFieldName.Login.EMAIL -> email = input
+         FormFieldName.Login.PASSWORD -> password = input
+      }
    }
 
    val emailHasErrors by derivedStateOf {

@@ -3,7 +3,8 @@ package com.example.fitnessway.data.model.welcome
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 
-data class LoginField(
+data class FormField<T: FormFieldName> (
+   val name: T,
    val label: String,
    val value: String,
    val updateState: (String) -> Unit,
@@ -12,3 +13,8 @@ data class LoginField(
    val isSecureTextEntry: Boolean = false,
    val errorMessage: String? = null,
 )
+
+typealias LoginField = FormField<FormFieldName.Login>
+typealias RegisterField = FormField<FormFieldName.Register>
+
+

@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.welcome.screen
+package com.example.fitnessway.feature.welcome.screen.register
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

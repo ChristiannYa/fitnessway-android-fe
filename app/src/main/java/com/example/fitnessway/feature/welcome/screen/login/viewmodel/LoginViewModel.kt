@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.fitnessway.data.model.welcome.FormFieldName
+import com.example.fitnessway.data.model.welcome.Password
+import com.example.fitnessway.data.model.welcome.passwordRules
 
 class LoginViewModel : ViewModel() {
    // - `private set` is mainly for `mutableStateOf`
@@ -25,22 +27,34 @@ class LoginViewModel : ViewModel() {
       }
    }
 
-   val emailHasError by derivedStateOf {
-      // Email is considered erroneous until it completely matches EMAIL_ADDRESS.
-      // Only triggers once the email has content
-      email.isNotEmpty() &&
-         !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+   // Email validation - returns error message or null
+   val emailError by derivedStateOf {
+      if (email.isEmpty()) return@derivedStateOf null
+
+      if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+         "Invalid email format"
+      } else {
+         null
+      }
    }
 
-   val passwordHasErrors by derivedStateOf {
-      // Error when shorter than 8
-      password.isNotEmpty() && password.length < 8
+   // Password validation - returns error message or null
+   val passwordError by derivedStateOf {
+      if (password.isEmpty()) return@derivedStateOf null
+
+      val result = Password(password) checkWith passwordRules
+
+      if (result.isFailure) {
+         result.exceptionOrNull()?.message
+      } else {
+         null
+      }
    }
 
    val isFormValid by derivedStateOf {
       email.isNotEmpty() &&
          password.isNotEmpty() &&
-         !emailHasError &&
-         !passwordHasErrors
+         emailError == null &&
+         passwordError == null
    }
 }

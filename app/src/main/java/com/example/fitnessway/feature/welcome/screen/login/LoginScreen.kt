@@ -20,30 +20,29 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fitnessway.R
+import com.example.fitnessway.data.model.welcome.FormFieldName
 import com.example.fitnessway.data.model.welcome.LoginField
 import com.example.fitnessway.feature.welcome.screen.login.viewmodel.LoginViewModel
 import com.example.fitnessway.ui.shared.ScreenWithHeader
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
-import com.example.fitnessway.R
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
-import com.example.fitnessway.data.model.welcome.FormFieldName
 
 @Composable
 fun LoginScreen(
@@ -64,10 +63,7 @@ fun LoginScreen(
             )
          },
          keyboardType = KeyboardType.Email,
-         errorMessage = if (loginViewModel.emailHasError)
-            "Invalid email format"
-         else
-            null
+         errorMessage = loginViewModel.emailError
       ),
       LoginField(
          name = FormFieldName.Login.PASSWORD,
@@ -78,10 +74,7 @@ fun LoginScreen(
                FormFieldName.Login.PASSWORD, it
             )
          },
-         errorMessage = if (loginViewModel.passwordHasErrors)
-            "Password must have at least 8 characters"
-         else
-            null,
+         errorMessage = loginViewModel.passwordError,
          keyboardType = KeyboardType.Password,
       )
    )

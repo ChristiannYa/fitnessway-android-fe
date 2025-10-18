@@ -2,7 +2,7 @@ package com.example.fitnessway.data.model.welcome
 
 object PasswordConfig {
    const val MIN_LENGTH = 8
-   const val MAX_LENGTH = 128
+   const val MAX_LENGTH = 64
    const val MIN_DIGITS = 1
    const val MIN_UPPERCASE = 1
    const val MIN_SPECIAL = 1

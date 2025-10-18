@@ -10,7 +10,6 @@ data class FormField<T: FormFieldName> (
    val updateState: (String) -> Unit,
    val keyboardType: KeyboardType = KeyboardType.Text,
    val autoCapitalize: KeyboardCapitalization = KeyboardCapitalization.None,
-   val isSecureTextEntry: Boolean = false,
    val errorMessage: String? = null,
 )
 

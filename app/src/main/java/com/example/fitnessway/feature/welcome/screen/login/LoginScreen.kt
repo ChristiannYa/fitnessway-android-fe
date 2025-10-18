@@ -64,14 +64,13 @@ fun LoginScreen(
             )
          },
          keyboardType = KeyboardType.Email,
-         autoCapitalize = KeyboardCapitalization.None,
-         errorMessage = if (loginViewModel.emailHasErrors)
+         errorMessage = if (loginViewModel.emailHasError)
             "Invalid email format"
          else
             null
       ),
       LoginField(
-         name =  FormFieldName.Login.PASSWORD,
+         name = FormFieldName.Login.PASSWORD,
          label = "Password",
          value = loginViewModel.password,
          updateState = {
@@ -79,12 +78,11 @@ fun LoginScreen(
                FormFieldName.Login.PASSWORD, it
             )
          },
-         keyboardType = KeyboardType.Password,
-         isSecureTextEntry = true,
          errorMessage = if (loginViewModel.passwordHasErrors)
             "Password must have at least 8 characters"
          else
-            null
+            null,
+         keyboardType = KeyboardType.Password,
       )
    )
 
@@ -122,7 +120,7 @@ fun LoginScreen(
                         )
                      },
                      trailingIcon = {
-                        if (field.isSecureTextEntry) {
+                        if (field.keyboardType == KeyboardType.Password) {
                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
                               Icon(
                                  painter = painterResource(
@@ -146,7 +144,9 @@ fun LoginScreen(
                      supportingText = {
                         field.errorMessage?.let { Text(text = it) }
                      },
-                     visualTransformation = if (field.isSecureTextEntry && !passwordVisible)
+                     visualTransformation = if (field.keyboardType == KeyboardType.Password
+                        && !passwordVisible
+                     )
                         PasswordVisualTransformation()
                      else
                         VisualTransformation.None,

@@ -1,45 +1,100 @@
 package com.example.fitnessway.feature.welcome.screen.register
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fitnessway.R
+import com.example.fitnessway.data.model.welcome.FormFieldName
+import com.example.fitnessway.data.model.welcome.RegisterField
+import com.example.fitnessway.feature.welcome.screen.register.viewmodel.RegisterViewModel
+import com.example.fitnessway.ui.shared.ScreenWithHeader
 import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 @Composable
 fun RegisterScreen(
    onRegisterClick: () -> Unit,
    onBackClick: () -> Unit,
 ) {
-   val nameState = rememberTextFieldState("Christian")
+   val registerViewModel: RegisterViewModel = viewModel<RegisterViewModel>()
+   var passwordVisible by remember { mutableStateOf(false) }
+   var confirmPasswordVisible by remember { mutableStateOf(false) }
 
-   Surface(modifier = Modifier.fillMaxSize()) {
-      Column {
+   val fields: List<RegisterField> = listOf(
+      RegisterField(
+         name = FormFieldName.Register.NAME,
+         label = "Name",
+         value = registerViewModel.name,
+         updateState = {
+            registerViewModel.updateField(
+               FormFieldName.Register.NAME, it
+            )
+         },
+         errorMessage = registerViewModel.nameError
+      ),
+      RegisterField(
+         name = FormFieldName.Register.EMAIL,
+         label = "Email Address",
+         value = registerViewModel.email,
+         updateState = {
+            registerViewModel.updateField(
+               FormFieldName.Register.EMAIL, it
+            )
+         },
+         errorMessage = registerViewModel.emailError,
+         keyboardType = KeyboardType.Email,
+      ),
+      RegisterField(
+         name = FormFieldName.Register.PASSWORD,
+         label = "Password",
+         value = registerViewModel.password,
+         updateState = {
+            registerViewModel.updateField(
+               FormFieldName.Register.PASSWORD, it
+            )
+         },
+         errorMessage = registerViewModel.passwordError,
+         keyboardType = KeyboardType.Password,
+      ),
+      RegisterField(
+         name = FormFieldName.Register.CONFIRM_PASSWORD,
+         label = "Confirm Password",
+         value = registerViewModel.confirmPassword,
+         updateState = {
+            registerViewModel.updateField(
+               FormFieldName.Register.CONFIRM_PASSWORD, it
+            )
+         },
+         errorMessage = registerViewModel.confirmPasswordError,
+         keyboardType = KeyboardType.Password,
+      ),
+   )
+
+   ScreenWithHeader(
+      header = {
          Row(modifier = Modifier.fillMaxWidth()) {
             IconButton(
                onClick = onBackClick,
@@ -52,61 +107,86 @@ fun RegisterScreen(
                }
             )
          }
+      },
 
-         Spacer(modifier = Modifier.height(12.dp))
-
-         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            // Labels: Wrapper
-            Column(
-               modifier = Modifier.fillMaxSize(),
-               horizontalAlignment = Alignment.CenterHorizontally,
-               verticalArrangement = Arrangement.spacedBy(space = 16.dp)
-            ) {
-               // Name: Field
-               Column(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalAlignment = Alignment.Start
-               ) {
-                  // Name: Label
+      content = {
+         fields.forEach { field ->
+            OutlinedTextField(
+               value = field.value,
+               onValueChange = { field.updateState(it) },
+               label = {
                   Text(
-                     text = "Your Name",
-                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                     fontWeight = FontWeight.Medium,
-                     fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                     fontFamily = robotoSerifFamily
+                     text = field.label,
+                     fontFamily = FontFamily.Serif
                   )
-
-                  Spacer(modifier = Modifier.height(6.dp))
-
-                  // Name: Input
-                  BasicTextField(
-                     state = nameState,
-                     lineLimits = TextFieldLineLimits.SingleLine,
-                     textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                        fontFamily = FontFamily.Serif,
-                        fontWeight = FontWeight.SemiBold
-                     ),
-                     decorator = { innerTextField ->
-                        Row(
-                           Modifier
-                              .background(
-                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                 shape = RoundedCornerShape(percent = 18)
-                              )
-                              .padding(16.dp)
-                              .fillMaxWidth()
-                        ) {
-                           innerTextField()
-                        }
+               },
+               trailingIcon = {
+                  if (field.keyboardType == KeyboardType.Password) {
+                     val isVisible = when (field.name) {
+                        FormFieldName.Register.PASSWORD -> passwordVisible
+                        FormFieldName.Register.CONFIRM_PASSWORD -> confirmPasswordVisible
+                        else -> false
                      }
-                  )
-               }
-            }
+
+                     IconButton(
+                        onClick = {
+                           when (field.name) {
+                              FormFieldName.Register.PASSWORD ->
+                                 passwordVisible = !passwordVisible
+
+                              FormFieldName.Register.CONFIRM_PASSWORD ->
+                                 confirmPasswordVisible = !confirmPasswordVisible
+
+                              else -> {} // Do nothing for other fields
+                           }
+                        }
+                     ) {
+                        Icon(
+                           painter = painterResource(
+                              if (isVisible)
+                                 R.drawable.eye_on
+                              else
+                                 R.drawable.eye_off
+                           ),
+                           contentDescription = if (isVisible)
+                              "Hide password"
+                           else
+                              "Show password",
+                           tint = MaterialTheme.colorScheme.onBackground,
+                           modifier = Modifier.size(21.dp)
+                        )
+                     }
+                  }
+               },
+               isError = field.errorMessage != null,
+               supportingText = {
+                  field.errorMessage?.let { Text(text = it) }
+               },
+               visualTransformation = when (field.name) {
+                  FormFieldName.Register.PASSWORD ->
+                     if (passwordVisible)
+                        VisualTransformation.None
+                     else
+                        PasswordVisualTransformation()
+
+                  FormFieldName.Register.CONFIRM_PASSWORD ->
+                     if (confirmPasswordVisible)
+                        VisualTransformation.None
+                     else
+                        PasswordVisualTransformation()
+                  else ->
+                     VisualTransformation.None
+               },
+               keyboardOptions = KeyboardOptions(
+                  keyboardType = field.keyboardType,
+                  capitalization = field.autoCapitalize
+               ),
+               modifier = Modifier.fillMaxWidth(),
+               shape = RoundedCornerShape(8.dp)
+            )
          }
       }
-   }
+   )
 }
 
 @Preview()

@@ -25,7 +25,7 @@ class LoginViewModel : ViewModel() {
       }
    }
 
-   val emailHasErrors by derivedStateOf {
+   val emailHasError by derivedStateOf {
       // Email is considered erroneous until it completely matches EMAIL_ADDRESS.
       // Only triggers once the email has content
       email.isNotEmpty() &&
@@ -40,7 +40,7 @@ class LoginViewModel : ViewModel() {
    val isFormValid by derivedStateOf {
       email.isNotEmpty() &&
          password.isNotEmpty() &&
-         !emailHasErrors &&
+         !emailHasError &&
          !passwordHasErrors
    }
 }

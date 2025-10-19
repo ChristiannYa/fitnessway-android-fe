@@ -1,16 +1,27 @@
 package com.example.fitnessway.feature.welcome.screen.register.viewmodel
 
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import com.example.fitnessway.data.model.welcome.FormFieldName
 import com.example.fitnessway.data.model.welcome.Name
 import com.example.fitnessway.data.model.welcome.Password
 import com.example.fitnessway.data.model.welcome.passwordRules
 
+private val nameRules = listOf(
+   Name::notEmptyRule,
+   Name::lengthRule,
+   Name::validCharactersRule,
+   Name::validFormatRule
+)
+
 class RegisterViewModel : ViewModel() {
+   var currentStep by mutableIntStateOf(1)
+      private set
+
    var name by mutableStateOf("")
       private set
 
@@ -23,13 +34,6 @@ class RegisterViewModel : ViewModel() {
    var confirmPassword by mutableStateOf("")
       private set
 
-   private val nameRules = listOf(
-      Name::notEmptyRule,
-      Name::lengthRule,
-      Name::validCharactersRule,
-      Name::validFormatRule
-   )
-
    fun updateField(fieldName: FormFieldName.Register, input: String) {
       when (fieldName) {
          FormFieldName.Register.NAME -> name = input
@@ -37,6 +41,15 @@ class RegisterViewModel : ViewModel() {
          FormFieldName.Register.PASSWORD -> password = input
          FormFieldName.Register.CONFIRM_PASSWORD -> confirmPassword = input
       }
+   }
+
+   fun updateCurrentStep(
+      fieldError: String?,
+      goNext: Boolean?,
+      goBack: Boolean?
+   ) {
+      if (fieldError == null && goNext == true) currentStep++
+      if (goBack == true && currentStep != 1) currentStep--
    }
 
    // Name validation - returns error message or null

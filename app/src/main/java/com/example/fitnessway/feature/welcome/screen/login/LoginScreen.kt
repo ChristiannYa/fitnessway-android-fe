@@ -50,34 +50,9 @@ fun LoginScreen(
    onBackClick: () -> Unit,
 ) {
    val loginViewModel: LoginViewModel = viewModel<LoginViewModel>()
+   val fields = getLoginFields(loginViewModel)
    var passwordVisible by remember { mutableStateOf(false) }
 
-   val fields: List<LoginField> = listOf(
-      LoginField(
-         name = FormFieldName.Login.EMAIL,
-         label = "Email Address",
-         value = loginViewModel.email,
-         updateState = {
-            loginViewModel.updateField(
-               FormFieldName.Login.EMAIL, it
-            )
-         },
-         keyboardType = KeyboardType.Email,
-         errorMessage = loginViewModel.emailError
-      ),
-      LoginField(
-         name = FormFieldName.Login.PASSWORD,
-         label = "Password",
-         value = loginViewModel.password,
-         updateState = {
-            loginViewModel.updateField(
-               FormFieldName.Login.PASSWORD, it
-            )
-         },
-         errorMessage = loginViewModel.passwordError,
-         keyboardType = KeyboardType.Password,
-      )
-   )
 
    ScreenWithHeader(
       header = {
@@ -190,6 +165,38 @@ fun LoginScreen(
             )
          }
       }
+   )
+}
+
+@Composable
+private fun getLoginFields(
+   viewModel: LoginViewModel
+): List<LoginField> {
+   return listOf(
+      LoginField(
+         name = FormFieldName.Login.EMAIL,
+         label = "Email Address",
+         value = viewModel.email,
+         updateState = {
+            viewModel.updateField(
+               FormFieldName.Login.EMAIL, it
+            )
+         },
+         keyboardType = KeyboardType.Email,
+         errorMessage = viewModel.emailError
+      ),
+      LoginField(
+         name = FormFieldName.Login.PASSWORD,
+         label = "Password",
+         value = viewModel.password,
+         updateState = {
+            viewModel.updateField(
+               FormFieldName.Login.PASSWORD, it
+            )
+         },
+         errorMessage = viewModel.passwordError,
+         keyboardType = KeyboardType.Password,
+      )
    )
 }
 

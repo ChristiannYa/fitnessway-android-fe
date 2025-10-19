@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -41,7 +40,7 @@ fun RegisterScreen(
 ) {
    val registerViewModel: RegisterViewModel = viewModel<RegisterViewModel>()
    var passwordVisible by remember { mutableStateOf(false) }
-   var confirmPasswordVisible by remember { mutableStateOf(false) }
+   var passwordConfirmVisible by remember { mutableStateOf(false) }
 
    val fields: List<RegisterField> = listOf(
       RegisterField(
@@ -111,6 +110,12 @@ fun RegisterScreen(
 
       content = {
          fields.forEach { field ->
+            val isPasswordVisible = when (field.name) {
+               FormFieldName.Register.PASSWORD -> passwordVisible
+               FormFieldName.Register.CONFIRM_PASSWORD -> passwordConfirmVisible
+               else -> false // False for the rest of the fields
+            }
+
             OutlinedTextField(
                value = field.value,
                onValueChange = { field.updateState(it) },
@@ -122,12 +127,6 @@ fun RegisterScreen(
                },
                trailingIcon = {
                   if (field.keyboardType == KeyboardType.Password) {
-                     val isVisible = when (field.name) {
-                        FormFieldName.Register.PASSWORD -> passwordVisible
-                        FormFieldName.Register.CONFIRM_PASSWORD -> confirmPasswordVisible
-                        else -> false
-                     }
-
                      IconButton(
                         onClick = {
                            when (field.name) {
@@ -135,48 +134,38 @@ fun RegisterScreen(
                                  passwordVisible = !passwordVisible
 
                               FormFieldName.Register.CONFIRM_PASSWORD ->
-                                 confirmPasswordVisible = !confirmPasswordVisible
+                                 passwordConfirmVisible = !passwordConfirmVisible
 
-                              else -> {} // Do nothing for other fields
+                              else -> {}
                            }
-                        }
-                     ) {
-                        Icon(
-                           painter = painterResource(
-                              if (isVisible)
-                                 R.drawable.eye_on
+                        },
+                        content = {
+                           Icon(
+                              painter = painterResource(
+                                 if (isPasswordVisible)
+                                    R.drawable.eye_on
+                                 else
+                                    R.drawable.eye_off
+                              ),
+                              contentDescription = if (isPasswordVisible)
+                                 "Hide password"
                               else
-                                 R.drawable.eye_off
-                           ),
-                           contentDescription = if (isVisible)
-                              "Hide password"
-                           else
-                              "Show password",
-                           tint = MaterialTheme.colorScheme.onBackground,
-                           modifier = Modifier.size(21.dp)
-                        )
-                     }
+                                 "Show password",
+                              tint = MaterialTheme.colorScheme.onBackground,
+                              modifier = Modifier.size(21.dp)
+                           )
+                        }
+                     )
                   }
                },
                isError = field.errorMessage != null,
                supportingText = {
                   field.errorMessage?.let { Text(text = it) }
                },
-               visualTransformation = when (field.name) {
-                  FormFieldName.Register.PASSWORD ->
-                     if (passwordVisible)
-                        VisualTransformation.None
-                     else
-                        PasswordVisualTransformation()
-
-                  FormFieldName.Register.CONFIRM_PASSWORD ->
-                     if (confirmPasswordVisible)
-                        VisualTransformation.None
-                     else
-                        PasswordVisualTransformation()
-                  else ->
-                     VisualTransformation.None
-               },
+               visualTransformation = if (isPasswordVisible)
+                  VisualTransformation.None
+               else
+                  PasswordVisualTransformation(),
                keyboardOptions = KeyboardOptions(
                   keyboardType = field.keyboardType,
                   capitalization = field.autoCapitalize

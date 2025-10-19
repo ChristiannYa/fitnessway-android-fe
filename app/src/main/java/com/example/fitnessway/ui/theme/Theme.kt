@@ -19,8 +19,8 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
    primary = Emerald,
-   secondary = CoralPink,
-   tertiary = WarmOrange,
+   secondary = WarmOrange,
+   tertiary = CoralPink,
    background = BlackBackground,
    surface = BlackBackground,
    surfaceVariant = StormCloud, // Input Bgs
@@ -33,8 +33,8 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
    primary = EmeraldDarker,
-   secondary = VibrantPink,
-   tertiary = DeepOrange,
+   secondary = DeepOrange,
+   tertiary = VibrantPink,
    background = WhiteBackground,
    surface = WhiteBackground,
    surfaceVariant = SilverMist,  // Input Bgs

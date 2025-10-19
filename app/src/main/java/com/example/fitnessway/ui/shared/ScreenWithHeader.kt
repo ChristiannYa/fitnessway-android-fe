@@ -19,16 +19,17 @@ fun ScreenWithHeader(
    Surface(
       modifier = Modifier.fillMaxSize(),
    ) {
-      Box(
-         modifier = Modifier.padding(horizontal = 16.dp)
-      ) {
-         Column {
-            header?.let {
-               it()
-               Spacer(modifier = Modifier.height(10.dp))
+      Column {
+         header?.let {
+            it()
+            Spacer(modifier = Modifier.height(8.dp))
+         }
+         Box(
+            modifier = Modifier.padding(horizontal = 16.dp)
+         ) {
+            Column {
+               content()
             }
-
-            content()
          }
       }
    }

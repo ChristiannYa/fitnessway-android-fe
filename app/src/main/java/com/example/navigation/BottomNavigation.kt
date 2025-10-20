@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -42,7 +41,7 @@ fun BottomNavigationBar(
                   contentDescription = topLevelRoute.name
                )
             },
-            label = { Text(topLevelRoute.name) },
+            label = null,
             selected = currentDestination?.hierarchy?.any {
                it.hasRoute(topLevelRoute.route::class)
             } == true,

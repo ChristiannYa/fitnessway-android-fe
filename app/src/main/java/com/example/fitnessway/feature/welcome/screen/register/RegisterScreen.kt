@@ -1,7 +1,6 @@
 package com.example.fitnessway.feature.welcome.screen.register
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -39,8 +38,6 @@ fun RegisterScreen(
 ) {
    val viewModel: RegisterViewModel = viewModel<RegisterViewModel>()
    val fields = RegisterFieldsProvider(viewModel)
-
-   Log.d("RegisterScreen", "current step: ${viewModel.currentStep}")
 
    Screen {
       Column {

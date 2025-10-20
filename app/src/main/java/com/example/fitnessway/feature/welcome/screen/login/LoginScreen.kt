@@ -36,10 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.R
-import com.example.fitnessway.data.model.welcome.FormFieldName
-import com.example.fitnessway.data.model.welcome.LoginField
+import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.data.model.form.LoginField
 import com.example.fitnessway.feature.welcome.screen.login.viewmodel.LoginViewModel
-import com.example.fitnessway.ui.shared.ScreenWithHeader
+import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
@@ -54,7 +54,7 @@ fun LoginScreen(
    var passwordVisible by remember { mutableStateOf(false) }
 
 
-   ScreenWithHeader(
+   Screen(
       header = {
          Row(modifier = Modifier.fillMaxWidth()) {
             IconButton(

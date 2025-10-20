@@ -24,22 +24,25 @@ import com.example.fitnessway.data.model.form.RegisterField
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 
 @Composable
-fun StepOne(field: RegisterField) {
+fun StepTwo(
+   field: RegisterField,
+   userName: String,
+) {
    Surface {
       Column(
          verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
          Text(
             text = buildAnnotatedString {
-               append("Welcome to ")
+               append("Hi ")
                withStyle(
                   style = SpanStyle(
                      color = MaterialTheme.colorScheme.primary
                   )
                ) {
-                  append("Fitnessway")
+                  append(userName)
                }
-               append("! How should we call you?")
+               append("! Now, please provide an email")
             },
             fontFamily = FontFamily.Serif,
             fontSize = MaterialTheme.typography.titleMedium.fontSize,
@@ -68,16 +71,17 @@ fun StepOne(field: RegisterField) {
    uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-fun PreviewStepOne() {
+fun PreviewStepTwo() {
    FitnesswayTheme {
-      StepOne(
+      StepTwo(
          RegisterField(
-            name = FormFieldName.Register.NAME,
-            label = "Enter your name",
-            value = "Christian",
+            name = FormFieldName.Register.EMAIL,
+            label = "Email address",
+            value = "chris.lopez.webdev@gmail.com",
             updateState = {},
             errorMessage = null
-         )
+         ),
+         userName = "Christian"
       )
    }
 }

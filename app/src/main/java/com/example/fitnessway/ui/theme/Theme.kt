@@ -29,6 +29,8 @@ private val DarkColorScheme = darkColorScheme(
    onTertiary = Color.White,
    onBackground = WhiteFont,
    onSurface = WhiteFont,
+   inverseSurface = SilverMist,
+   inverseOnSurface = StormCloud,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -43,6 +45,8 @@ private val LightColorScheme = lightColorScheme(
    onTertiary = Color.White,
    onBackground = BlackFont,
    onSurface = BlackFont,
+   inverseSurface = StormCloud,
+   inverseOnSurface = SilverMist
 )
 
 @Composable

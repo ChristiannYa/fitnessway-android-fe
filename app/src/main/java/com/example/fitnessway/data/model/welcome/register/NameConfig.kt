@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.model.welcome
+package com.example.fitnessway.data.model.welcome.register
 
 object NameConfig {
    const val MIN_LENGTH = 2

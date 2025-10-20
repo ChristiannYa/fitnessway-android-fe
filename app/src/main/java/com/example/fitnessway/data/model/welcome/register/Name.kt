@@ -1,5 +1,6 @@
-package com.example.fitnessway.data.model.welcome
+package com.example.fitnessway.data.model.welcome.register
 
+import kotlin.collections.forEach
 import kotlin.reflect.KFunction1
 
 @JvmInline

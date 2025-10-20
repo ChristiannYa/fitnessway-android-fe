@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.model.welcome
+package com.example.fitnessway.data.model.form
 
 sealed interface FormFieldName {
    enum class Login : FormFieldName {

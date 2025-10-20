@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ScreenWithHeader(
+fun Screen(
    header: (@Composable () -> Unit)? = null,
    content: @Composable () -> Unit,
 ) {
@@ -25,7 +25,11 @@ fun ScreenWithHeader(
             Spacer(modifier = Modifier.height(8.dp))
          }
          Box(
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier
+               .padding(
+                  horizontal = 16.dp,
+                  vertical = if (header == null) 16.dp else 0.dp
+               )
          ) {
             Column {
                content()

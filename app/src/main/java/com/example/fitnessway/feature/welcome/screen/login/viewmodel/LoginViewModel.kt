@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import com.example.fitnessway.data.model.welcome.FormFieldName
+import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.welcome.Password
 import com.example.fitnessway.data.model.welcome.passwordRules
 

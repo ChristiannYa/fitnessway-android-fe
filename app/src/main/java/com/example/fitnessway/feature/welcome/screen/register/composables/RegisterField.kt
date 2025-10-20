@@ -4,7 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,7 +30,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.example.fitnessway.R
-import com.example.fitnessway.data.model.welcome.RegisterField
+import com.example.fitnessway.data.model.form.RegisterField
 
 @Composable
 fun RegisterTextField(
@@ -49,7 +48,7 @@ fun RegisterTextField(
          textStyle = TextStyle(
             fontSize = MaterialTheme.typography.bodyLarge.fontSize,
             fontWeight = FontWeight.Normal,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onBackground,
          ),
          modifier = modifier
             .border(
@@ -84,7 +83,7 @@ fun RegisterTextField(
                      color = if (field.errorMessage != null)
                         MaterialTheme.colorScheme.error
                      else
-                        MaterialTheme.colorScheme.onSurface,
+                        MaterialTheme.colorScheme.onSurface.copy(0.8f),
                      style = LocalTextStyle.current.merge(
                         TextStyle(
                            lineHeight = 1.em,

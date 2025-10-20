@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.fitnessway.data.model.welcome.FormFieldName
-import com.example.fitnessway.data.model.welcome.Name
+import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.welcome.Password
 import com.example.fitnessway.data.model.welcome.passwordRules
+import com.example.fitnessway.data.model.welcome.register.Name
 
 private val nameRules = listOf(
    Name::notEmptyRule,
@@ -41,15 +41,6 @@ class RegisterViewModel : ViewModel() {
          FormFieldName.Register.PASSWORD -> password = input
          FormFieldName.Register.CONFIRM_PASSWORD -> confirmPassword = input
       }
-   }
-
-   fun updateCurrentStep(
-      fieldError: String?,
-      goNext: Boolean?,
-      goBack: Boolean?
-   ) {
-      if (fieldError == null && goNext == true) currentStep++
-      if (goBack == true && currentStep != 1) currentStep--
    }
 
    // Name validation - returns error message or null
@@ -95,14 +86,36 @@ class RegisterViewModel : ViewModel() {
       }
    }
 
-   val isFormValid by derivedStateOf {
-      name.isNotEmpty() &&
-         email.isNotEmpty() &&
-         password.isNotEmpty() &&
-         confirmPassword.isNotEmpty() &&
-         nameError == null &&
-         emailError == null &&
-         passwordError == null &&
-         confirmPasswordError == null
+   // Step 1 validation
+   val stepOneIsValid by derivedStateOf {
+      name.isNotEmpty() && nameError == null
+   }
+
+   // Step 2 validation
+   val stepTwoIsValid by derivedStateOf {
+      email.isNotEmpty() && emailError == null
+   }
+
+   // Step 3 validation
+   val stepThreeIsValid by derivedStateOf {
+      password.isNotEmpty() && passwordError == null
+         && confirmPassword.isNotEmpty() && confirmPasswordError == null
+   }
+
+   fun updateStep(step: Int, goPrevStep: Boolean) {
+      when (step) {
+         1 -> {
+            if (stepOneIsValid) currentStep = 2
+         }
+
+         2 -> {
+            if (stepTwoIsValid) currentStep = 3
+            if (goPrevStep) currentStep = 1
+         }
+
+         3 -> {
+            if (goPrevStep) currentStep = 2
+         }
+      }
    }
 }

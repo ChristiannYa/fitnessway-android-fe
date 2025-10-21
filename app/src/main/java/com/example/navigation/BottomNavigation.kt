@@ -12,15 +12,15 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.example.fitnessway.data.model.navigation.TopLevelRoute
+import com.example.fitnessway.data.model.navigation.TopLevelRouteModel
 
 private val topLevelRoutes = listOf(
-   TopLevelRoute(
+   TopLevelRouteModel(
       name = "Home",
       route = HomeGraph,
       icon = Icons.Default.Home
    ),
-   TopLevelRoute(
+   TopLevelRouteModel(
       name = "Profile",
       route = ProfileGraph,
       icon = Icons.Default.Person

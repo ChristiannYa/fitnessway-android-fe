@@ -5,26 +5,10 @@ import kotlinx.coroutines.flow.StateFlow
 interface IAuthStateHolder {
    val authState: StateFlow<AuthState>
 
-   fun register(
-      name: String,
-      email: String,
-      password: String,
-      confirmPassword: String,
-      deviceName: String
-   )
-
-   fun login(
-      email: String,
-      password: String,
-      deviceName: String
-   )
-
-   fun logout(
+   fun setAuth(
+      accessToken: String,
       refreshToken: String
    )
 
-   fun refreshToken(
-      refreshToken: String,
-      deviceName: String
-   )
+   fun clearAuth()
 }

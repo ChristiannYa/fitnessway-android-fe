@@ -8,42 +8,16 @@ class AuthStateHolderImpl : IAuthStateHolder {
    private val _authState = MutableStateFlow(AuthState())
    override val authState: StateFlow<AuthState> = _authState
 
-   override fun register(
-      name: String,
-      email: String,
-      password: String,
-      confirmPassword: String,
-      deviceName: String
-   ) {
-      _authState.update { current ->
-         current.copy()
+   override fun setAuth(accessToken: String, refreshToken: String) {
+      _authState.update {
+         AuthState(
+            accessToken = accessToken,
+            refreshToken = refreshToken
+         )
       }
    }
 
-   override fun login(
-      email: String,
-      password: String,
-      deviceName: String
-   ) {
-      _authState.update { current ->
-         current.copy()
-      }
-   }
-
-   override fun logout(
-      refreshToken: String
-   ) {
-      _authState.update { current ->
-         current.copy()
-      }
-   }
-
-   override fun refreshToken(
-      refreshToken: String,
-      deviceName: String
-   ) {
-      _authState.update { current ->
-         current.copy()
-      }
+   override fun clearAuth() {
+      _authState.update { AuthState() }
    }
 }

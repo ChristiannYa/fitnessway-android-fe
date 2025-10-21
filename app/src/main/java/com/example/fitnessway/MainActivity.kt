@@ -19,6 +19,3 @@ class MainActivity : ComponentActivity() {
       }
    }
 }
-
-// Link to know preferable versions (libs.versions.toml)
-// https://github.com/android/nowinandroid/blob/main/gradle/libs.versions.toml

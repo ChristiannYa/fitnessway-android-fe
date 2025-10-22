@@ -1,5 +1,6 @@
 package com.example.fitnessway.data.model.auth
 
+import com.example.fitnessway.data.model.api.ApiAuthResponse
 import com.example.fitnessway.data.model.api.ApiResponseWithContent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -22,7 +23,7 @@ data class LoginApiResponse(
    val accessToken: String,
 )
 
-typealias LoginApiPostResponse = ApiResponseWithContent<LoginApiResponse>
+typealias LoginApiPostResponse = ApiAuthResponse<LoginApiResponse>
 
 /*
 @Serializable

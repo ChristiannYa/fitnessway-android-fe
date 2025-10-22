@@ -1,15 +1,28 @@
 package com.example.fitnessway.feature.welcome.screen.login.viewmodel
 
+import android.os.Build
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.welcome.Password
 import com.example.fitnessway.data.model.welcome.passwordRules
+import com.example.fitnessway.data.repository.IAuthRepository
+import com.example.fitnessway.util.UiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+   private val repo: IAuthRepository
+) : ViewModel() {
+   private val _loginState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+   val loginState: StateFlow<UiState<Unit>> = _loginState
+
+   // @NOTE
    // - `private set` is mainly for `mutableStateOf`
    // - `derivedStateOf` is read-only. It is computed from other
    //    state, so there is no need to make it private
@@ -19,13 +32,6 @@ class LoginViewModel : ViewModel() {
 
    var password by mutableStateOf("")
       private set
-
-   fun updateField(fieldName:  FormFieldName.Login, input: String) {
-      when (fieldName) {
-         FormFieldName.Login.EMAIL -> email = input
-         FormFieldName.Login.PASSWORD -> password = input
-      }
-   }
 
    // Email validation - returns error message or null
    val emailError by derivedStateOf {
@@ -56,5 +62,33 @@ class LoginViewModel : ViewModel() {
          password.isNotEmpty() &&
          emailError == null &&
          passwordError == null
+   }
+
+   fun updateField(fieldName:  FormFieldName.Login, input: String) {
+      // Clear error state when user starts typing
+      if (_loginState.value is UiState.Error) {
+         _loginState.value = UiState.Idle
+      }
+
+      when (fieldName) {
+         FormFieldName.Login.EMAIL -> email = input
+         FormFieldName.Login.PASSWORD -> password = input
+      }
+   }
+
+   fun login() {
+      if (!isFormValid) return
+
+      viewModelScope.launch {
+         val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
+
+         repo.login(email, password, deviceName).collect { state ->
+            _loginState.value = state
+         }
+      }
+   }
+
+   fun resetLoginState() {
+      _loginState.value = UiState.Idle
    }
 }

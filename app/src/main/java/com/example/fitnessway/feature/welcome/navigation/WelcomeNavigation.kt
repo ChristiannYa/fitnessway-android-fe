@@ -34,7 +34,6 @@ fun NavGraphBuilder.welcomeNavigationGraph(navController: NavController) {
 
       composable<Login>{
          LoginScreen(
-            onLoginClick = {},
             onBackClick = {
                navController.popBackStack()
             }

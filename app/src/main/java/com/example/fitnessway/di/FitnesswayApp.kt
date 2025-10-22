@@ -2,7 +2,9 @@ package com.example.fitnessway.di
 
 import android.app.Application
 import com.example.fitnessway.di.modules.networkModule
+import com.example.fitnessway.di.modules.repositoryModule
 import com.example.fitnessway.di.modules.stateModule
+import com.example.fitnessway.di.modules.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -16,7 +18,9 @@ class FitnesswayApp : Application() {
          androidLogger()
          modules(
             stateModule,
-            networkModule
+            networkModule,
+            viewModelModule,
+            repositoryModule,
          )
       }
    }

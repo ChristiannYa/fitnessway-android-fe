@@ -1,5 +1,6 @@
 package com.example.fitnessway.di.modules
 
+import com.example.fitnessway.data.network.IAuthApiService
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import org.koin.dsl.module
@@ -17,5 +18,9 @@ val networkModule = module {
          .baseUrl(BASE_URL)
          .addConverterFactory(json.asConverterFactory(contentType))
          .build()
+   }
+
+   single<IAuthApiService> {
+      get<Retrofit>().create(IAuthApiService::class.java)
    }
 }

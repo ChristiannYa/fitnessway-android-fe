@@ -16,6 +16,7 @@ class AuthRepositoryImpl(
    private val authApiService: IAuthApiService,
    private val authStateHolder: IAuthStateHolder
 ) : IAuthRepository {
+
    override suspend fun login(
       email: String,
       password: String,
@@ -31,12 +32,12 @@ class AuthRepositoryImpl(
          if (response.isSuccessful) {
             val body = response.body()
 
-            if (body?.content != null) {
+            if (body?.data != null) {
                authStateHolder.setAuth(
                   // Success is only true when the api returns both tokens, so we are
                   // use assert operators because we are sure that both tokens are present
-                  refreshToken = body.content.refreshToken,
-                  accessToken = body.content.accessToken
+                  refreshToken = body.data.refreshToken,
+                  accessToken = body.data.accessToken
                )
                emit(UiState.Success(Unit))
             } else {
@@ -79,6 +80,7 @@ private fun parseErrorBody(errorBody: String?): String {
                it.titlecase()
             }
          } else {
+            Log.d("Fitnessway-Client", "parseErrorBody: $errorResponseMsg")
             "Login failed"
          }
       }

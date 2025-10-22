@@ -21,7 +21,7 @@ abstract class ApiResponse{
 data class ApiResponseWithContent<T>(
    override val success: Boolean,
    override val message: String,
-   val content: T?, // Can be null if the api does not return content
+   val data: T?, // Can be null if the api does not return data
 ) : ApiResponse()
 
 
@@ -31,6 +31,6 @@ data class ApiResponseWithContent<T>(
 data class ApiAuthResponse<T>(
    val success: Boolean,
    val message: String? = null,
-   val content: T? = null,
+   val data: T? = null,
    val errors: Map<String, String>? = null
 )

@@ -180,11 +180,16 @@ fun LoginScreen(onBackClick: () -> Unit) {
                   }
 
                   if (message == messageString) {
-                     Text(
-                        text = messageString,
-                        fontFamily = FontFamily.Serif,
-                        fontSize = MaterialTheme.typography.bodyMedium.fontSize
-                     )
+                     Box (
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                     ) {
+                        Text(
+                           text = messageString,
+                           fontFamily = FontFamily.Serif,
+                           fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                        )
+                     }
                   }
                }
             }

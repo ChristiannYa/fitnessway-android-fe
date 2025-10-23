@@ -1,6 +1,8 @@
 package com.example.fitnessway.data.model.auth
 
 import com.example.fitnessway.data.model.api.ApiAuthResponse
+import com.example.fitnessway.data.model.api.ApiResponse
+import com.example.fitnessway.data.model.api.ApiResponseWithContent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -24,7 +26,6 @@ data class LoginApiResponse(
 
 typealias LoginApiPostResponse = ApiAuthResponse<LoginApiResponse>
 
-/*
 @Serializable
 data class LogoutRequest(
    @SerialName("refresh_token")
@@ -33,6 +34,27 @@ data class LogoutRequest(
 
 typealias LogoutApiPostResponse = ApiResponse
 
+@Serializable
+data class RefreshTokenRequest(
+   @SerialName("refresh_token")
+   val refreshToken: String,
+
+   @SerialName("device_name")
+   val deviceName: String
+)
+
+@Serializable
+data class RefreshTokenApiResponse(
+   @SerialName("refresh_token")
+   val refreshToken: String,
+
+   @SerialName("access_token")
+   val accessToken: String,
+)
+
+typealias RefreshTokenApiPostResponse = ApiResponseWithContent<RefreshTokenApiResponse>
+
+/*
 @Serializable
 data class RegisterRequest(
    val name: String,
@@ -56,24 +78,4 @@ data class RegisterApiResponse(
 )
 
 typealias RegisterApiPostResponse = ApiResponseWithContent<RegisterApiResponse>
-
-@Serializable
-data class RefreshTokenRequest(
-   @SerialName("refresh_token")
-   val refreshToken: String,
-
-   @SerialName("device_name")
-   val deviceName: String
-)
-
-@Serializable
-data class RefreshTokenApiResponse(
-   @SerialName("refresh_token")
-   val refreshToken: String,
-
-   @SerialName("access_token")
-   val accessToken: String,
-)
-
-typealias RefreshTokenApiPostResponse = ApiResponseWithContent<RefreshTokenApiResponse>
  */

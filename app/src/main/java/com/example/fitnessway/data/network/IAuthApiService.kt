@@ -10,18 +10,13 @@ interface IAuthApiService {
    @POST("auth/login")
    suspend fun login(
       @Body request: LoginRequest
-   ) : Response<LoginApiPostResponse>
+   ): Response<LoginApiPostResponse>
 
    /*
    @POST("auth/register")
    suspend fun register(
       @Body request: RegisterRequest
    ) : RegisterApiPostResponse
-
-   @POST("auth/logout")
-   suspend fun logout(
-      @Body request: LogoutRequest
-   ) : LogoutApiPostResponse
 
    @POST("auth/refresh")
    suspend fun refresh(

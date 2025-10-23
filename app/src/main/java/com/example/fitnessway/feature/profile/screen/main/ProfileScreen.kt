@@ -37,21 +37,6 @@ fun ProfileScreen(
                )
             }
          )
-
-         TextButton(
-            onClick = {},
-            colors = ButtonDefaults.buttonColors(
-               containerColor = ImperialRed,
-               contentColor = SilverMist
-            ),
-            content = {
-               Text(
-                  text = "Log out",
-                  fontFamily = robotoSerifFamily,
-                  fontWeight = FontWeight.Medium
-               )
-            }
-         )
       }
    }
 }

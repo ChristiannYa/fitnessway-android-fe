@@ -8,6 +8,7 @@ val repositoryModule = module {
    single<IAuthRepository> {
       AuthRepositoryImpl(
          authApiService = get(),
+         authApiAuthorizedService = get(),
          authStateHolder = get()
       )
    }

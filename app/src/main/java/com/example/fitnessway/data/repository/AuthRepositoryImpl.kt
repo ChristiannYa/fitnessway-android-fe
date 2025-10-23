@@ -3,6 +3,8 @@ package com.example.fitnessway.data.repository
 import android.util.Log
 import com.example.fitnessway.data.model.auth.LoginApiPostResponse
 import com.example.fitnessway.data.model.auth.LoginRequest
+import com.example.fitnessway.data.model.auth.LogoutRequest
+import com.example.fitnessway.data.network.IAuthApiAuthorizedService
 import com.example.fitnessway.data.network.IAuthApiService
 import com.example.fitnessway.data.state.IAuthStateHolder
 import com.example.fitnessway.util.UiState
@@ -14,6 +16,7 @@ import kotlinx.serialization.json.Json
 
 class AuthRepositoryImpl(
    private val authApiService: IAuthApiService,
+   private val authApiAuthorizedService: IAuthApiAuthorizedService,
    private val authStateHolder: IAuthStateHolder
 ) : IAuthRepository {
 
@@ -43,27 +46,71 @@ class AuthRepositoryImpl(
             } else {
                // Handle edge cases when there is a dependency error e.g., Retrofit bug,
                // Serialization fail
-               Log.d("Fitnessway-Client", "Unexpected response: body=$body")
                emit(UiState.Error("Login failed"))
             }
-         } else {
-            // HTTP 400/401/500 error codes
+         } else { // HTTP 400/401/500 error codes
+            val errMsg = parseLoginErrorBody(response.errorBody()?.string()) // Debug
+            Log.d("Fitnessway", "errMsg: $errMsg")
 
-            val errorMessage = parseErrorBody(response.errorBody()?.string())
-            emit(UiState.Error(errorMessage))
+            if (errMsg == "invalid email or password") {
+               emit(UiState.Error(errMsg))
+            } else {
+               emit(UiState.Error("Login failed"))
+            }
          }
       } catch (e: Exception) {
          // Network errors
-         emit(UiState.Error("Login network error: ${e.message}"))
+         Log.d("Fitnessway", "e: $e")
+         emit(UiState.Error("Login network error"))
+      }
+   }.flowOn(Dispatchers.IO)
+
+
+   override suspend fun logout(): Flow<UiState<Unit>> = flow {
+      emit(UiState.Loading)
+
+      val refreshToken = authStateHolder.authState.value.refreshToken
+
+      if (refreshToken == null) {
+         authStateHolder.clearAuth()
+         emit(UiState.Success(Unit))
+         // complete `flow {` lambda above
+         // The code below this block won't be called
+         return@flow
+      }
+
+      try {
+         val response = authApiAuthorizedService.logout(
+            LogoutRequest(refreshToken)
+         )
+
+         if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.success == true) {
+               authStateHolder.clearAuth()
+               emit(UiState.Success(Unit))
+            } else {
+               // Still clear auth even if API returns an error
+               authStateHolder.clearAuth()
+               emit(UiState.Error("Logout failed"))
+            }
+         } else {
+            // Still clear auth even on HTTP error
+            authStateHolder.clearAuth()
+            val errMsg = response.message()
+            emit(UiState.Error("Logout failed"))
+         }
+      } catch (e: Exception) {
+         // Still clear auth even on network error
+         authStateHolder.clearAuth()
+         emit(UiState.Error("Logout network error"))
       }
    }.flowOn(Dispatchers.IO)
 }
 
-private fun parseErrorBody(errorBody: String?): String {
-   if (errorBody == null) {
-      Log.d("Fitnessway-Client", "parseErrorBody: errorBody is null")
-      return "Login failed"
-   }
+private fun parseLoginErrorBody(errorBody: String?): String {
+   if (errorBody == null) return "Login failed"
 
    return try {
       val json = Json { ignoreUnknownKeys = true }
@@ -72,20 +119,9 @@ private fun parseErrorBody(errorBody: String?): String {
       if (!errorResponse.errors.isNullOrEmpty()) {
          errorResponse.errors.values.joinToString("\n• ", prefix = "• ")
       } else {
-         val errorResponseMsg = errorResponse.message as String
-         Log.d("Fitnessway-Client", "parseErrorBody: $errorResponseMsg")
-
-         if (errorResponseMsg == "invalid email or password") {
-            errorResponseMsg.replaceFirstChar {
-               it.titlecase()
-            }
-         } else {
-            Log.d("Fitnessway-Client", "parseErrorBody: $errorResponseMsg")
-            "Login failed"
-         }
+         errorResponse.message as String
       }
    } catch (e: Exception) {
-      Log.d("Fitnessway-Client", "parseErrorBody: ${e.message}")
       "Login failed"
    }
 }

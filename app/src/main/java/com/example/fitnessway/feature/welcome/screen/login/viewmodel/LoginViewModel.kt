@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 class LoginViewModel(
    private val repo: IAuthRepository
 ) : ViewModel() {
-   private val _loginState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-   val loginState: StateFlow<UiState<Unit>> = _loginState
+   private val _loginUiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+   val loginUiState: StateFlow<UiState<Unit>> = _loginUiState
 
    // @NOTE
    // - `private set` is mainly for `mutableStateOf`
@@ -66,8 +66,8 @@ class LoginViewModel(
 
    fun updateField(fieldName:  FormFieldName.Login, input: String) {
       // Clear error state when user starts typing
-      if (_loginState.value is UiState.Error) {
-         _loginState.value = UiState.Idle
+      if (_loginUiState.value is UiState.Error) {
+         _loginUiState.value = UiState.Idle
       }
 
       when (fieldName) {
@@ -83,12 +83,12 @@ class LoginViewModel(
          val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
 
          repo.login(email, password, deviceName).collect { state ->
-            _loginState.value = state
+            _loginUiState.value = state
          }
       }
    }
 
    fun resetLoginState() {
-      _loginState.value = UiState.Idle
+      _loginUiState.value = UiState.Idle
    }
 }

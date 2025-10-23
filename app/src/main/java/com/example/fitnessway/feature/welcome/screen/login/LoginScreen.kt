@@ -59,13 +59,13 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LoginScreen(onBackClick: () -> Unit) {
    val viewModel: LoginViewModel = koinViewModel()
-   val loginState by viewModel.loginState.collectAsState()
+   val loginUiState by viewModel.loginUiState.collectAsState()
    val fields = getLoginFields(viewModel)
 
    var passwordVisible by remember { mutableStateOf(false) }
 
-   LaunchedEffect(loginState) {
-      if (loginState is UiState.Success) {
+   LaunchedEffect(loginUiState) {
+      if (loginUiState is UiState.Success) {
          viewModel.resetLoginState()
       }
    }
@@ -139,7 +139,7 @@ fun LoginScreen(onBackClick: () -> Unit) {
                            keyboardType = field.keyboardType,
                            capitalization = field.autoCapitalize
                         ),
-                        enabled = loginState !is UiState.Loading,
+                        enabled = loginUiState !is UiState.Loading,
                         isError = field.errorMessage != null,
                         textStyle = TextStyle(
                            fontSize = MaterialTheme.typography.bodyLarge.fontSize
@@ -150,9 +150,11 @@ fun LoginScreen(onBackClick: () -> Unit) {
                   }
                }
 
-               if (loginState is UiState.Error) {
+               if (loginUiState is UiState.Error) {
                   val messageString = "Invalid email or password"
-                  val message = (loginState as UiState.Error).message
+                  val message = (loginUiState as UiState.Error).message.replaceFirstChar {
+                     it.uppercase()
+                  }
 
                   if (message != messageString) {
                      Box(
@@ -207,7 +209,7 @@ fun LoginScreen(onBackClick: () -> Unit) {
                   bottom = 12.dp
                )),
                content = {
-                  if (loginState is UiState.Loading) {
+                  if (loginUiState is UiState.Loading) {
                      CircularProgressIndicator(
                         modifier = Modifier
                            .size(18.dp),

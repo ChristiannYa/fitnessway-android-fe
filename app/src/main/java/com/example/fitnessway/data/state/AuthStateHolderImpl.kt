@@ -11,12 +11,7 @@ class AuthStateHolderImpl : IAuthStateHolder {
    override val authState: StateFlow<AuthState> = _authState
 
    override fun setAuth(accessToken: String, refreshToken: String) {
-      _authState.update {
-         AuthState(
-            accessToken = accessToken,
-            refreshToken = refreshToken
-         )
-      }
+      _authState.update { AuthState(accessToken, refreshToken) }
    }
 
    // Currently since no storage has been implemented, this just creates a new

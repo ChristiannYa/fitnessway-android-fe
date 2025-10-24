@@ -9,18 +9,27 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.welcome.register.RegisterFieldsProvider
@@ -32,14 +41,13 @@ import com.example.fitnessway.feature.welcome.screen.register.composables.StepTw
 import com.example.fitnessway.feature.welcome.screen.register.viewmodel.RegisterViewModel
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.ui.theme.ImperialRed
+import com.example.fitnessway.ui.theme.WhiteRed
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun RegisterScreen(
-   onRegisterClick: () -> Unit,
-   onBackClick: () -> Unit,
-) {
+fun RegisterScreen(onBackClick: () -> Unit) {
    val viewModel: RegisterViewModel = koinViewModel()
    val registerUiState by viewModel.registerUiState.collectAsState()
    val fields = RegisterFieldsProvider(viewModel)
@@ -60,37 +68,88 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween,
          ) {
-            AnimatedContent(
-               targetState = viewModel.currentStep,
-               transitionSpec = {
-                  val isForward = targetState > initialState
+            Column(
+               verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+               AnimatedContent(
+                  targetState = viewModel.currentStep,
+                  transitionSpec = {
+                     val isForward = targetState > initialState
 
-                  /*
-                  When `isForward`
+                     /*
+                     When `isForward`
 
-                  - Left side of `togetherWith` = Enter animation for NEW content
-                     - `slideInHorizontally { it }`: Slide in from the right (positive offset)
-                     - `fadeIn()`: Fade in while sliding
-                     - `scaleIn()`: Scale in while fading and sliding
+                     - Left side of `togetherWith` = Enter animation for NEW content
+                        - `slideInHorizontally { it }`: Slide in from the right (positive offset)
+                        - `fadeIn()`: Fade in while sliding
+                        - `scaleIn()`: Scale in while fading and sliding
 
-                  - Right side of `togetherWith` = Exit animation for OLD content
-                     - `slideOutHorizontally { -it }`: Slide out to the left (negative offset)
-                     - `fadeOut()`: Fade out while sliding
-                     - `scaleOut()`: Scale out while fading and sliding
-                */
+                     - Right side of `togetherWith` = Exit animation for OLD content
+                        - `slideOutHorizontally { -it }`: Slide out to the left (negative offset)
+                        - `fadeOut()`: Fade out while sliding
+                        - `scaleOut()`: Scale out while fading and sliding
+                   */
 
-                  if (isForward)
-                     slideInHorizontally { it } + fadeIn() + scaleIn(initialScale = 0.7f) togetherWith
-                        slideOutHorizontally { -it } + fadeOut() + scaleOut(targetScale = 0.7f)
-                  else
-                     slideInHorizontally { -it } + fadeIn() + scaleIn(initialScale = 0.7f) togetherWith
-                        slideOutHorizontally { it } + fadeOut() + scaleOut(targetScale = 0.7f)
+                     if (isForward)
+                        slideInHorizontally { it } + fadeIn() + scaleIn(initialScale = 0.7f) togetherWith
+                           slideOutHorizontally { -it } + fadeOut() + scaleOut(targetScale = 0.7f)
+                     else
+                        slideInHorizontally { -it } + fadeIn() + scaleIn(initialScale = 0.7f) togetherWith
+                           slideOutHorizontally { it } + fadeOut() + scaleOut(targetScale = 0.7f)
+                  }
+               ) { step ->
+                  when (step) {
+                     1 -> StepOne(fields.stepOne())
+                     2 -> StepTwo(fields.stepTwo(), viewModel.name)
+                     3 -> StepThree(fields.stepThree())
+                  }
                }
-            ) { step ->
-               when (step) {
-                  1 -> StepOne(fields.stepOne())
-                  2 -> StepTwo(fields.stepTwo(), viewModel.name)
-                  3 -> StepThree(fields.stepThree())
+
+               if (registerUiState is UiState.Error) {
+                  val viewableErr = "This email is already in use"
+                  val errMsg = (registerUiState as UiState.Error).message.replaceFirstChar {
+                     it.uppercase()
+                  }
+
+                  if (errMsg != viewableErr) {
+                     Box(
+                        modifier = Modifier
+                           .fillMaxWidth()
+                           .border(
+                              width = 1.dp,
+                              color = ImperialRed,
+                              shape = RoundedCornerShape(4.dp)
+                           )
+                           .background(
+                              color = WhiteRed,
+                              shape = RoundedCornerShape(4.dp)
+                           )
+                           .padding(12.dp),
+                        contentAlignment = Alignment.Center,
+                        content = {
+                           Text(
+                              text = errMsg,
+                              fontFamily = FontFamily.Serif,
+                              fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                              color = ImperialRed
+                           )
+                        }
+                     )
+                  }
+
+                  if (errMsg == viewableErr) {
+                     Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                        content = {
+                           Text(
+                              text = viewableErr,
+                              fontFamily = FontFamily.Serif,
+                              fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                           )
+                        }
+                     )
+                  }
                }
             }
 
@@ -117,8 +176,7 @@ fun RegisterScreen(
                   onClick = {
                      viewModel.updateStep(
                         step = viewModel.currentStep,
-                        goesBack = false,
-                        onRegisterComplete = onRegisterClick
+                        goesBack = false
                      )
                   },
                   currentStep = viewModel.currentStep,
@@ -136,9 +194,6 @@ fun RegisterScreen(
 @Composable
 fun RegisterScreenPreview() {
    FitnesswayTheme {
-      RegisterScreen(
-         onRegisterClick = {},
-         onBackClick = {}
-      )
+      RegisterScreen(onBackClick = {})
    }
 }

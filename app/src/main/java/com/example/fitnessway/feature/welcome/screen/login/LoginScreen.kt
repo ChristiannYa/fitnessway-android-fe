@@ -151,12 +151,12 @@ fun LoginScreen(onBackClick: () -> Unit) {
                }
 
                if (loginUiState is UiState.Error) {
-                  val messageString = "Invalid email or password"
+                  val viewableErr = "Invalid email or password"
                   val message = (loginUiState as UiState.Error).message.replaceFirstChar {
                      it.uppercase()
                   }
 
-                  if (message != messageString) {
+                  if (message != viewableErr) {
                      Box(
                         modifier = Modifier
                            .fillMaxWidth()
@@ -170,24 +170,25 @@ fun LoginScreen(onBackClick: () -> Unit) {
                               shape = RoundedCornerShape(4.dp)
                            )
                            .padding(12.dp),
-                        contentAlignment = Alignment.Center
-                     ) {
-                        Text(
-                           text = message,
-                           fontFamily = FontFamily.Serif,
-                           fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                           color = ImperialRed
-                        )
-                     }
+                        contentAlignment = Alignment.Center,
+                        content = {
+                           Text(
+                              text = message,
+                              fontFamily = FontFamily.Serif,
+                              fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                              color = ImperialRed
+                           )
+                        }
+                     )
                   }
 
-                  if (message == messageString) {
-                     Box (
+                  if (message == viewableErr) {
+                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                      ) {
                         Text(
-                           text = messageString,
+                           text = viewableErr,
                            fontFamily = FontFamily.Serif,
                            fontSize = MaterialTheme.typography.bodyMedium.fontSize
                         )

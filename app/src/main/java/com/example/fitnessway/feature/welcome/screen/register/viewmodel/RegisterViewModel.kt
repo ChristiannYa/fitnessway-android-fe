@@ -127,11 +127,7 @@ class RegisterViewModel(
       registerUiState.value is UiState.Loading
    }
 
-   fun updateStep(
-      step: Int,
-      goesBack: Boolean = true,
-      onRegisterComplete: (() -> Unit)? = null
-   ) {
+   fun updateStep(step: Int, goesBack: Boolean = true) {
       when (step) {
          1 -> if (stepOneIsValid) currentStep = 2
 
@@ -141,10 +137,7 @@ class RegisterViewModel(
          }
 
          3 -> {
-            if (stepThreeIsValid) {
-               register()
-               onRegisterComplete?.invoke()
-            }
+            if (stepThreeIsValid) register()
             if (goesBack) currentStep = 2
          }
       }

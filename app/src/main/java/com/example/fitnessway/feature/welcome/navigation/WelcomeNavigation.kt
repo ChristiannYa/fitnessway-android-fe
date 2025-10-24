@@ -21,32 +21,19 @@ private object Register
 
 fun NavGraphBuilder.welcomeNavigationGraph(navController: NavController) {
    navigation<WelcomeGraph>(WelcomeMain) {
-      composable<WelcomeMain>{
+      composable<WelcomeMain> {
          WelcomeMainScreen(
-            onLoginClick = {
-               navController.navigate(Login)
-            },
-            onRegisterClick = {
-               navController.navigate(Register)
-            }
+            onLoginClick = { navController.navigate(Login) },
+            onRegisterClick = { navController.navigate(Register) }
          )
       }
 
-      composable<Login>{
-         LoginScreen(
-            onBackClick = {
-               navController.popBackStack()
-            }
-         )
+      composable<Login> {
+         LoginScreen(onBackClick = { navController.popBackStack() })
       }
 
-      composable<Register>{
-         RegisterScreen(
-            onRegisterClick = {},
-            onBackClick = {
-               navController.popBackStack()
-            }
-         )
+      composable<Register> {
+         RegisterScreen(onBackClick = { navController.popBackStack() })
       }
    }
 }

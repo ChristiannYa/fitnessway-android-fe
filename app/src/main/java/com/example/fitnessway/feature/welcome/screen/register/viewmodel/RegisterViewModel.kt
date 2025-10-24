@@ -1,15 +1,22 @@
 package com.example.fitnessway.feature.welcome.screen.register.viewmodel
 
+import android.os.Build
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.welcome.Password
 import com.example.fitnessway.data.model.welcome.passwordRules
 import com.example.fitnessway.data.model.welcome.register.Name
+import com.example.fitnessway.data.repository.IAuthRepository
+import com.example.fitnessway.util.UiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 private val nameRules = listOf(
    Name::notEmptyRule,
@@ -18,7 +25,12 @@ private val nameRules = listOf(
    Name::validFormatRule
 )
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(
+   private val repo: IAuthRepository
+) : ViewModel() {
+   private val _registerUiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+   val registerUiState: StateFlow<UiState<Unit>> = _registerUiState
+
    var currentStep by mutableIntStateOf(1)
       private set
 
@@ -102,20 +114,59 @@ class RegisterViewModel : ViewModel() {
          && confirmPassword.isNotEmpty() && confirmPasswordError == null
    }
 
-   fun updateStep(step: Int, goPrevStep: Boolean) {
+   val isCurrentStepValid by derivedStateOf {
+      when (currentStep) {
+         1 -> stepOneIsValid
+         2 -> stepTwoIsValid
+         3 -> stepThreeIsValid
+         else -> false
+      }
+   }
+
+   val isRegistering by derivedStateOf {
+      registerUiState.value is UiState.Loading
+   }
+
+   fun updateStep(
+      step: Int,
+      goesBack: Boolean = true,
+      onRegisterComplete: (() -> Unit)? = null
+   ) {
       when (step) {
-         1 -> {
-            if (stepOneIsValid) currentStep = 2
-         }
+         1 -> if (stepOneIsValid) currentStep = 2
 
          2 -> {
             if (stepTwoIsValid) currentStep = 3
-            if (goPrevStep) currentStep = 1
+            if (goesBack) currentStep = 1
          }
 
          3 -> {
-            if (goPrevStep) currentStep = 2
+            if (stepThreeIsValid) {
+               register()
+               onRegisterComplete?.invoke()
+            }
+            if (goesBack) currentStep = 2
          }
       }
+   }
+
+   fun register() {
+      viewModelScope.launch {
+         val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
+
+         repo.register(
+            name,
+            email,
+            password,
+            confirmPassword,
+            deviceName
+         ).collect { state ->
+            _registerUiState.value = state
+         }
+      }
+   }
+
+   fun resetRegisterState() {
+      _registerUiState.value = UiState.Idle
    }
 }

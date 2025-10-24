@@ -54,7 +54,6 @@ data class RefreshTokenApiResponse(
 
 typealias RefreshTokenApiPostResponse = ApiResponseWithContent<RefreshTokenApiResponse>
 
-/*
 @Serializable
 data class RegisterRequest(
    val name: String,
@@ -78,4 +77,3 @@ data class RegisterApiResponse(
 )
 
 typealias RegisterApiPostResponse = ApiResponseWithContent<RegisterApiResponse>
- */

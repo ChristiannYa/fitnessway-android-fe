@@ -14,8 +14,11 @@ class RegisterFieldsProvider(private val viewModel: RegisterViewModel) {
          label = "Enter your name",
          value = viewModel.name,
          updateState = {
-            viewModel.updateField(FormFieldName.Register.NAME, it)
-         }
+            viewModel.updateField(
+               FormFieldName.Register.NAME,
+               it
+            )
+         },
       )
    }
 
@@ -26,10 +29,12 @@ class RegisterFieldsProvider(private val viewModel: RegisterViewModel) {
          label = "Enter your email address",
          value = viewModel.email,
          updateState = {
-            viewModel.updateField(FormFieldName.Register.EMAIL, it)
+            viewModel.updateField(
+               FormFieldName.Register.EMAIL,
+               it
+            )
          },
-         keyboardType = KeyboardType.Email,
-         errorMessage = viewModel.emailError
+         keyboardType = KeyboardType.Email
       )
    }
 
@@ -41,7 +46,10 @@ class RegisterFieldsProvider(private val viewModel: RegisterViewModel) {
             label = "Password",
             value = viewModel.password,
             updateState = {
-               viewModel.updateField(FormFieldName.Register.PASSWORD, it)
+               viewModel.updateField(
+                  FormFieldName.Register.PASSWORD,
+                  it
+               )
             },
             errorMessage = viewModel.passwordError,
             keyboardType = KeyboardType.Password,
@@ -51,7 +59,10 @@ class RegisterFieldsProvider(private val viewModel: RegisterViewModel) {
             label = "Confirm Password",
             value = viewModel.confirmPassword,
             updateState = {
-               viewModel.updateField(FormFieldName.Register.CONFIRM_PASSWORD, it)
+               viewModel.updateField(
+                  FormFieldName.Register.CONFIRM_PASSWORD,
+                  it
+               )
             },
             errorMessage = viewModel.confirmPasswordError,
             keyboardType = KeyboardType.Password,

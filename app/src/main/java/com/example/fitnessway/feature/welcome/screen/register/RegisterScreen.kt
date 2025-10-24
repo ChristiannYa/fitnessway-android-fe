@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.data.model.welcome.register.RegisterFieldsProvider
 import com.example.fitnessway.feature.welcome.screen.register.composables.RegisterFormControlButton
 import com.example.fitnessway.feature.welcome.screen.register.composables.RegisterProgressIndicator
@@ -30,14 +32,23 @@ import com.example.fitnessway.feature.welcome.screen.register.composables.StepTw
 import com.example.fitnessway.feature.welcome.screen.register.viewmodel.RegisterViewModel
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.util.UiState
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RegisterScreen(
    onRegisterClick: () -> Unit,
    onBackClick: () -> Unit,
 ) {
-   val viewModel: RegisterViewModel = viewModel<RegisterViewModel>()
+   val viewModel: RegisterViewModel = koinViewModel()
+   val registerUiState by viewModel.registerUiState.collectAsState()
    val fields = RegisterFieldsProvider(viewModel)
+
+   LaunchedEffect(registerUiState) {
+      if (registerUiState is UiState.Success) {
+         viewModel.resetRegisterState()
+      }
+   }
 
    Screen {
       Column {
@@ -87,16 +98,33 @@ fun RegisterScreen(
                modifier = Modifier.fillMaxWidth(),
                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+               // Go back button
                RegisterFormControlButton(
-                  viewModel = viewModel,
-                  onBackClick = onBackClick,
-                  goPrevStep = true
+                  onClick = {
+                     if (viewModel.currentStep == 1) {
+                        onBackClick()
+                     } else {
+                        viewModel.updateStep(
+                           step = viewModel.currentStep
+                        )
+                     }
+                  },
+                  currentStep = viewModel.currentStep,
                )
 
+               // Go forward button
                RegisterFormControlButton(
-                  viewModel = viewModel,
-                  onBackClick = onBackClick,
-                  goPrevStep = false
+                  onClick = {
+                     viewModel.updateStep(
+                        step = viewModel.currentStep,
+                        goesBack = false,
+                        onRegisterComplete = onRegisterClick
+                     )
+                  },
+                  currentStep = viewModel.currentStep,
+                  goPrevStep = false,
+                  enabled = viewModel.isCurrentStepValid,
+                  isRegistering = viewModel.isRegistering
                )
             }
          }

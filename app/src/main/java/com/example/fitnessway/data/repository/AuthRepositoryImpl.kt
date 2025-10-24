@@ -1,9 +1,9 @@
 package com.example.fitnessway.data.repository
 
-import android.util.Log
 import com.example.fitnessway.data.model.auth.LoginApiPostResponse
 import com.example.fitnessway.data.model.auth.LoginRequest
 import com.example.fitnessway.data.model.auth.LogoutRequest
+import com.example.fitnessway.data.model.auth.RegisterRequest
 import com.example.fitnessway.data.network.IAuthApiAuthorizedService
 import com.example.fitnessway.data.network.IAuthApiService
 import com.example.fitnessway.data.state.IAuthStateHolder
@@ -50,7 +50,6 @@ class AuthRepositoryImpl(
             }
          } else { // HTTP 400/401/500 error codes
             val errMsg = parseLoginErrorBody(response.errorBody()?.string()) // Debug
-            Log.d("Fitnessway", "errMsg: $errMsg")
 
             if (errMsg == "invalid email or password") {
                emit(UiState.Error(errMsg))
@@ -60,7 +59,6 @@ class AuthRepositoryImpl(
          }
       } catch (e: Exception) {
          // Network errors
-         Log.d("Fitnessway", "e: $e")
          emit(UiState.Error("Login network error"))
       }
    }.flowOn(Dispatchers.IO)
@@ -98,13 +96,62 @@ class AuthRepositoryImpl(
          } else {
             // Still clear auth even on HTTP error
             authStateHolder.clearAuth()
-            val errMsg = response.message()
+            // val errMsg = response.message()
             emit(UiState.Error("Logout failed"))
          }
       } catch (e: Exception) {
          // Still clear auth even on network error
          authStateHolder.clearAuth()
          emit(UiState.Error("Logout network error"))
+      }
+   }.flowOn(Dispatchers.IO)
+
+   override suspend fun register(
+      name: String,
+      email: String,
+      password: String,
+      confirmPassword: String,
+      deviceName: String
+   ): Flow<UiState<Unit>> = flow {
+      emit(UiState.Loading)
+
+      try {
+         val response = authApiService.register(
+            RegisterRequest(
+               name,
+               email,
+               password,
+               confirmPassword,
+               deviceName
+            )
+         )
+
+         when {
+            response.code() == 409 -> {
+               emit(UiState.Error("This email is already in use"))
+            }
+
+            response.isSuccessful -> {
+               val body = response.body()
+
+               if (body?.data != null) {
+                  authStateHolder.setAuth(
+                     refreshToken = body.data.refreshToken,
+                     accessToken = body.data.accessToken
+                  )
+                  emit(UiState.Success(Unit))
+               } else {
+                  emit(UiState.Error("Registration failed"))
+               }
+            }
+
+            else -> {
+               // val errMsg = response.errorBody()?.string()
+               emit(UiState.Error("Registration failed"))
+            }
+         }
+      } catch (e: Exception) {
+         emit(UiState.Error("Registration network error"))
       }
    }.flowOn(Dispatchers.IO)
 }

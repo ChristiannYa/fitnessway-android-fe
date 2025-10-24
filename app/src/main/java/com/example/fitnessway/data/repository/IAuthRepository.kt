@@ -15,7 +15,6 @@ interface IAuthRepository {
    // be repetitive
    suspend fun logout(): Flow<UiState<Unit>>
 
-   /*
    suspend fun register(
       name: String,
       email: String,
@@ -23,5 +22,4 @@ interface IAuthRepository {
       confirmPassword: String,
       deviceName: String
    ): Flow<UiState<Unit>>
-    */
 }

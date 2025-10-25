@@ -33,6 +33,7 @@ fun ProfileScreen(
                 content = {
                     Text(
                         text = "Settings",
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontFamily = robotoSerifFamily,
                         fontWeight = FontWeight.Medium
                     )
@@ -48,6 +49,7 @@ fun ProfileScreen(
                 content = {
                     Text(
                         text = "Goals",
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontFamily = robotoSerifFamily,
                         fontWeight = FontWeight.Medium
                     )

@@ -51,6 +51,7 @@ fun ProfileGoalsScreen(
                     content = {
                         Text(
                             text = "Update Goals",
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontFamily = robotoSerifFamily,
                             fontWeight = FontWeight.Medium
                         )

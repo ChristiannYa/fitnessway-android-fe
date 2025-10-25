@@ -15,4 +15,16 @@ val dataStoreModule = module {
             produceFile = { androidContext().dataStoreFile("auth_tokens.pb") }
         )
     }
+
+    // Example when creating another DataStore
+    // `named("settings")` is included because there will be more than one DataStore
+    /*
+    // User settings
+    single<DataStore<UserSettings>>(named("settings")) {
+        DataStoreFactory.create(
+            serializer = UserSettingsSerializer,
+            produceFile = { androidContext().dataStoreFile("user_settings.pb") }
+        )
+    }
+     */
 }

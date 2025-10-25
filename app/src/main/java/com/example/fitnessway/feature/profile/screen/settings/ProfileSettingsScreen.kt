@@ -1,8 +1,10 @@
 package com.example.fitnessway.feature.profile.screen.settings
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -54,10 +56,14 @@ fun ProfileSettingsScreen(
       },
 
       content = {
-         Column {
+         Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+         ) {
             Text("This is the profile settings screen")
 
             TextButton(
+               modifier = Modifier.fillMaxWidth(),
                onClick = { viewModel.logout() },
                colors = ButtonDefaults.buttonColors(
                   containerColor = ImperialRed,

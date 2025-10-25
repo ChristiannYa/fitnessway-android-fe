@@ -33,7 +33,8 @@ class AuthStateHolderImpl(
                 .collect { tokens ->
                     _authState.value = AuthState(
                         accessToken = tokens.accessToken.takeIf { it.isNotEmpty() },
-                        refreshToken = tokens.refreshToken.takeIf { it.isNotEmpty() }
+                        refreshToken = tokens.refreshToken.takeIf { it.isNotEmpty() },
+                        isLoading = false
                     )
                 }
         }
@@ -41,7 +42,7 @@ class AuthStateHolderImpl(
 
     override fun setAuth(accessToken: String, refreshToken: String) {
         // Update in-memory state immediately
-        _authState.value = AuthState(accessToken, refreshToken)
+        _authState.value = AuthState(accessToken, refreshToken, false)
 
         // Persist it to DataStore
         scope.launch {
@@ -56,7 +57,7 @@ class AuthStateHolderImpl(
 
     override fun clearAuth() {
         // Clear in-memory state immediately
-        _authState.value = AuthState()
+        _authState.value = AuthState(isLoading = false)
 
         // Clear DataStore
         scope.launch {

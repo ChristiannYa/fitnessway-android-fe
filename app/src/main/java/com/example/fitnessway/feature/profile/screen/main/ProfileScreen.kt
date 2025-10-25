@@ -17,34 +17,53 @@ import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 @Composable
 fun ProfileScreen(
-   onSettings: () -> Unit,
+    onSettings: () -> Unit,
+    onGoals: () -> Unit,
 ) {
-   Screen {
-      Column {
-         Text("This is the profile screen")
+    Screen {
+        Column {
+            Text("This is the profile screen")
 
-         TextButton(
-            onClick = onSettings,
-            colors = ButtonDefaults.buttonColors(
-               containerColor = MaterialTheme.colorScheme.surfaceVariant,
-               contentColor = SilverMist
-            ),
-            content = {
-               Text(
-                  text = "Settings",
-                  fontFamily = robotoSerifFamily,
-                  fontWeight = FontWeight.Medium
-               )
-            }
-         )
-      }
-   }
+            TextButton(
+                onClick = onSettings,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = SilverMist
+                ),
+                content = {
+                    Text(
+                        text = "Settings",
+                        fontFamily = robotoSerifFamily,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            )
+
+            TextButton(
+                onClick = onGoals,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = SilverMist
+                ),
+                content = {
+                    Text(
+                        text = "Goals",
+                        fontFamily = robotoSerifFamily,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            )
+        }
+    }
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ProfileScreenPreview() {
-   FitnesswayTheme {
-      ProfileScreen(onSettings = {})
-   }
+    FitnesswayTheme {
+        ProfileScreen(
+            onSettings = {},
+            onGoals = {}
+        )
+    }
 }

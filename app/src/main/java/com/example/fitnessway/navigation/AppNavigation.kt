@@ -1,4 +1,4 @@
-package com.example.navigation
+package com.example.fitnessway.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -13,19 +13,28 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fitnessway.di.IApplicationStateStore
 import com.example.fitnessway.feature.home.navigation.HomeMain
 import com.example.fitnessway.feature.home.navigation.homeNavigationGraph
+import com.example.fitnessway.feature.lists.navigation.ListsMain
+import com.example.fitnessway.feature.lists.navigation.listsNavigationGraph
 import com.example.fitnessway.feature.profile.navigation.ProfileMain
 import com.example.fitnessway.feature.profile.navigation.profileNavigationGraph
 import com.example.fitnessway.feature.welcome.navigation.welcomeNavigationGraph
+import com.example.fitnessway.util.SplashScreen
 import org.koin.compose.koinInject
 
 private val screenWithBottomNavBar = listOf(
    HomeMain::class,
+   ListsMain::class,
    ProfileMain::class,
 )
 
 @Composable
 fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
    val authState by appStateStore.authStateHolder.authState.collectAsState()
+
+   if (authState.isLoading) {
+      SplashScreen()
+      return
+   }
 
    val navController = rememberNavController()
    val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -52,6 +61,7 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
       ) {
          welcomeNavigationGraph(navController)
          homeNavigationGraph(navController)
+         listsNavigationGraph(navController)
          profileNavigationGraph(navController)
       }
    }

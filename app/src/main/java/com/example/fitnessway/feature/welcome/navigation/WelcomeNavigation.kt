@@ -7,7 +7,7 @@ import androidx.navigation.compose.navigation
 import com.example.fitnessway.feature.welcome.screen.WelcomeMainScreen
 import com.example.fitnessway.feature.welcome.screen.login.LoginScreen
 import com.example.fitnessway.feature.welcome.screen.register.RegisterScreen
-import com.example.navigation.WelcomeGraph
+import com.example.fitnessway.navigation.WelcomeGraph
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.navigation.AppNavigation
+import com.example.fitnessway.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
    override fun onCreate(savedInstanceState: Bundle?) {

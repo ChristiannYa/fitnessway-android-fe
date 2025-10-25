@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 val stateModule = module {
    // Individual state holders
-   single<IAuthStateHolder> { AuthStateHolderImpl() }
+   single<IAuthStateHolder> { AuthStateHolderImpl(get()) }
 
    // Aggregator
    single<IApplicationStateStore> {

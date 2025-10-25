@@ -50,7 +50,6 @@ class AuthRepositoryImpl(
             }
          } else { // HTTP 400/401/500 error codes
             val errMsg = parseLoginErrorBody(response.errorBody()?.string()) // Debug
-
             if (errMsg == "invalid email or password") {
                emit(UiState.Error(errMsg))
             } else {

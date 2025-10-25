@@ -1,6 +1,7 @@
 package com.example.fitnessway.di
 
 import android.app.Application
+import com.example.fitnessway.di.modules.dataStoreModule
 import com.example.fitnessway.di.modules.networkModule
 import com.example.fitnessway.di.modules.repositoryModule
 import com.example.fitnessway.di.modules.stateModule
@@ -21,6 +22,7 @@ class FitnesswayApp : Application() {
             networkModule,
             viewModelModule,
             repositoryModule,
+            dataStoreModule,
          )
       }
    }

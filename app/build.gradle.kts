@@ -2,8 +2,8 @@ plugins {
    alias(libs.plugins.android.application)
    alias(libs.plugins.kotlin.android)
    alias(libs.plugins.kotlin.compose)
-
    alias(libs.plugins.kotlin.serialization)
+   alias(libs.plugins.protobuf)
 }
 
 android {
@@ -67,6 +67,10 @@ dependencies {
    implementation(libs.retrofit)
    implementation(libs.retrofit.converter.kotlinx.serialization)
 
+   // Datastore
+   implementation(libs.androidx.datastore)
+   implementation(libs.protobuf.javalite)
+
    testImplementation(libs.junit)
    androidTestImplementation(libs.androidx.junit)
    androidTestImplementation(libs.androidx.espresso.core)
@@ -74,4 +78,20 @@ dependencies {
    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
    debugImplementation(libs.androidx.compose.ui.tooling)
    debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+protobuf {
+   protoc {
+      artifact = libs.protobuf.protoc.get().toString()
+   }
+
+   generateProtoTasks {
+      all().forEach { task ->
+         task.builtins {
+            create("java") {
+               option("lite")
+            }
+         }
+      }
+   }
 }

@@ -12,7 +12,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
-private const val BASE_URL = "http://10.0.2.2:8080/api/"
+private const val BASE_URL = "http://10.0.0.4:8080/api/"
 private const val AUTH_YES = "authYes"
 private const val AUTH_NO = "authNo"
 

@@ -47,6 +47,10 @@ class RegisterViewModel(
       private set
 
    fun updateField(fieldName: FormFieldName.Register, input: String) {
+      if (_registerUiState.value is UiState.Error) {
+         _registerUiState.value = UiState.Idle
+      }
+
       when (fieldName) {
          FormFieldName.Register.NAME -> name = input
          FormFieldName.Register.EMAIL -> email = input
@@ -128,6 +132,10 @@ class RegisterViewModel(
    }
 
    fun updateStep(step: Int, goesBack: Boolean = true) {
+      if (_registerUiState.value is UiState.Error) {
+         _registerUiState.value = UiState.Idle
+      }
+
       when (step) {
          1 -> if (stepOneIsValid) currentStep = 2
 
@@ -137,7 +145,7 @@ class RegisterViewModel(
          }
 
          3 -> {
-            if (stepThreeIsValid) register()
+            if (stepThreeIsValid && !goesBack) register()
             if (goesBack) currentStep = 2
          }
       }

@@ -1,15 +1,12 @@
 package com.example.fitnessway.feature.welcome.screen.login
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,242 +43,219 @@ import com.example.fitnessway.R
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.form.LoginField
 import com.example.fitnessway.feature.welcome.screen.login.viewmodel.LoginViewModel
+import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.ui.theme.ImperialRed
 import com.example.fitnessway.ui.theme.SilverMist
 import com.example.fitnessway.ui.theme.WhiteFont
-import com.example.fitnessway.ui.theme.WhiteRed
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(onBackClick: () -> Unit) {
-   val viewModel: LoginViewModel = koinViewModel()
-   val loginUiState by viewModel.loginUiState.collectAsState()
-   val fields = getLoginFields(viewModel)
+    val viewModel: LoginViewModel = koinViewModel()
+    val loginUiState by viewModel.loginUiState.collectAsState()
+    val fields = getLoginFields(viewModel)
 
-   var passwordVisible by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
 
-   LaunchedEffect(loginUiState) {
-      if (loginUiState is UiState.Success) {
-         viewModel.resetLoginState()
-      }
-   }
+    LaunchedEffect(loginUiState) {
+        if (loginUiState is UiState.Success) {
+            viewModel.resetLoginState()
+        }
+    }
 
-   Screen(
-      header = {
-         Row(modifier = Modifier.fillMaxWidth()) {
-            IconButton(
-               onClick = onBackClick,
-               content = {
-                  Icon(
-                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                     contentDescription = "Go Back",
-                     tint = MaterialTheme.colorScheme.onBackground
-                  )
-               }
-            )
-         }
-      },
-
-      content = {
-         Column(
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-         ) {
-            // Fields + Error message
-            Column {
-               // Fields
-               Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                  fields.forEach { field ->
-                     OutlinedTextField(
-                        value = field.value,
-                        onValueChange = { field.updateState(it) },
-                        label = {
-                           Text(
-                              text = field.label,
-                              fontFamily = FontFamily.Serif,
-                              fontSize = MaterialTheme.typography.labelLarge.fontSize
-                           )
-                        },
-                        supportingText = {
-                           field.errorMessage?.let { Text(text = it) }
-                        },
-                        trailingIcon = {
-                           if (field.keyboardType == KeyboardType.Password) {
-                              IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                 Icon(
-                                    painter = painterResource(
-                                       if (passwordVisible)
-                                          R.drawable.eye_on
-                                       else
-                                          R.drawable.eye_off
-                                    ),
-                                    contentDescription = if (passwordVisible)
-                                       "Hide password"
-                                    else
-                                       "Show password",
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    modifier = Modifier
-                                       .size(21.dp)
-                                 )
-                              }
-                           }
-                        },
-                        visualTransformation = if (field.keyboardType == KeyboardType.Password
-                           && !passwordVisible
-                        )
-                           PasswordVisualTransformation()
-                        else
-                           VisualTransformation.None,
-                        keyboardOptions = KeyboardOptions(
-                           keyboardType = field.keyboardType,
-                           capitalization = field.autoCapitalize
-                        ),
-                        enabled = loginUiState !is UiState.Loading,
-                        isError = field.errorMessage != null,
-                        textStyle = TextStyle(
-                           fontSize = MaterialTheme.typography.bodyLarge.fontSize
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp)
-                     )
-                  }
-               }
-
-               if (loginUiState is UiState.Error) {
-                  val viewableErr = "Invalid email or password"
-                  val message = (loginUiState as UiState.Error).message.replaceFirstChar {
-                     it.uppercase()
-                  }
-
-                  if (message != viewableErr) {
-                     Box(
-                        modifier = Modifier
-                           .fillMaxWidth()
-                           .border(
-                              width = 1.dp,
-                              color = ImperialRed,
-                              shape = RoundedCornerShape(4.dp)
-                           )
-                           .background(
-                              color = WhiteRed,
-                              shape = RoundedCornerShape(4.dp)
-                           )
-                           .padding(12.dp),
-                        contentAlignment = Alignment.Center,
-                        content = {
-                           Text(
-                              text = message,
-                              fontFamily = FontFamily.Serif,
-                              fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                              color = ImperialRed
-                           )
-                        }
-                     )
-                  }
-
-                  if (message == viewableErr) {
-                     Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                     ) {
-                        Text(
-                           text = viewableErr,
-                           fontFamily = FontFamily.Serif,
-                           fontSize = MaterialTheme.typography.bodyMedium.fontSize
-                        )
-                     }
-                  }
-               }
-            }
-
-            TextButton(
-               onClick = { viewModel.login() },
-               enabled = viewModel.isFormValid,
-               modifier = Modifier
-                  .fillMaxWidth(),
-               colors = ButtonDefaults.buttonColors(
-                  containerColor = MaterialTheme.colorScheme.primary
-               ),
-               contentPadding = (PaddingValues(
-                  top = 12.dp,
-                  bottom = 12.dp
-               )),
-               content = {
-                  if (loginUiState is UiState.Loading) {
-                     CircularProgressIndicator(
-                        modifier = Modifier
-                           .size(18.dp),
-                        color = SilverMist,
-                        strokeWidth = 1.dp
-                     )
-                  } else {
-                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                     ) {
+    Screen(
+        header = {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                IconButton(
+                    onClick = onBackClick,
+                    content = {
                         Icon(
-                           imageVector = Icons.AutoMirrored.Filled.Login,
-                           contentDescription = "Login",
-                           modifier = Modifier.size(21.dp),
-                           tint = if (viewModel.isFormValid)
-                              WhiteFont
-                           else
-                              MaterialTheme.colorScheme.onBackground.copy(0.3f)
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Go Back",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
-                        Text(
-                           text = "Login",
-                           fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                           fontWeight = FontWeight.Medium,
-                           fontFamily = robotoSerifFamily
-                        )
-                     }
-                  }
-               }
-            )
-         }
-      }
-   )
+                    }
+                )
+            }
+        },
+
+        content = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                // Fields + Error message
+                Column {
+                    // Fields
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        fields.forEach { field ->
+                            OutlinedTextField(
+                                value = field.value,
+                                onValueChange = { field.updateState(it) },
+                                label = {
+                                    Text(
+                                        text = field.label,
+                                        fontFamily = FontFamily.Serif,
+                                        fontSize = MaterialTheme.typography.labelLarge.fontSize
+                                    )
+                                },
+                                supportingText = {
+                                    field.errorMessage?.let { Text(text = it) }
+                                },
+                                trailingIcon = {
+                                    if (field.keyboardType == KeyboardType.Password) {
+                                        IconButton(onClick = {
+                                            passwordVisible = !passwordVisible
+                                        }) {
+                                            Icon(
+                                                painter = painterResource(
+                                                    if (passwordVisible)
+                                                        R.drawable.eye_on
+                                                    else
+                                                        R.drawable.eye_off
+                                                ),
+                                                contentDescription = if (passwordVisible)
+                                                    "Hide password"
+                                                else
+                                                    "Show password",
+                                                tint = MaterialTheme.colorScheme.onBackground,
+                                                modifier = Modifier
+                                                    .size(21.dp)
+                                            )
+                                        }
+                                    }
+                                },
+                                visualTransformation = if (field.keyboardType == KeyboardType.Password
+                                    && !passwordVisible
+                                )
+                                    PasswordVisualTransformation()
+                                else
+                                    VisualTransformation.None,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = field.keyboardType,
+                                    capitalization = field.autoCapitalize
+                                ),
+                                enabled = loginUiState !is UiState.Loading,
+                                isError = field.errorMessage != null,
+                                textStyle = TextStyle(
+                                    fontSize = MaterialTheme.typography.bodyLarge.fontSize
+                                ),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                        }
+                    }
+
+                    if (loginUiState is UiState.Error) {
+                        val viewableErr = "Invalid email or password"
+                        val errMsg = (loginUiState as UiState.Error).message.replaceFirstChar {
+                            it.uppercase()
+                        }
+
+                        if (errMsg != viewableErr) ApiErrorMessage(errMsg)
+
+                        if (errMsg == viewableErr) {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = viewableErr,
+                                    fontFamily = FontFamily.Serif,
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                                )
+                            }
+                        }
+                    }
+                }
+
+                TextButton(
+                    onClick = { viewModel.login() },
+                    enabled = viewModel.isFormValid,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    contentPadding = (PaddingValues(
+                        top = 12.dp,
+                        bottom = 12.dp
+                    )),
+                    content = {
+                        if (loginUiState is UiState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(18.dp),
+                                color = SilverMist,
+                                strokeWidth = 1.dp
+                            )
+                        } else {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Login,
+                                    contentDescription = "Login",
+                                    modifier = Modifier.size(21.dp),
+                                    tint = if (viewModel.isFormValid)
+                                        WhiteFont
+                                    else
+                                        MaterialTheme.colorScheme.onBackground.copy(0.3f)
+                                )
+                                Text(
+                                    text = "Login",
+                                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = robotoSerifFamily
+                                )
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    )
 }
 
 @Composable
 private fun getLoginFields(
-   viewModel: LoginViewModel
+    viewModel: LoginViewModel
 ): List<LoginField> {
-   return listOf(
-      LoginField(
-         name = FormFieldName.Login.EMAIL,
-         label = "Email Address",
-         value = viewModel.email,
-         updateState = {
-            viewModel.updateField(
-               FormFieldName.Login.EMAIL, it
-            )
-         },
-         keyboardType = KeyboardType.Email,
-         errorMessage = viewModel.emailError
-      ),
-      LoginField(
-         name = FormFieldName.Login.PASSWORD,
-         label = "Password",
-         value = viewModel.password,
-         updateState = {
-            viewModel.updateField(
-               FormFieldName.Login.PASSWORD, it
-            )
-         },
-         errorMessage = viewModel.passwordError,
-         keyboardType = KeyboardType.Password,
-      )
-   )
+    return listOf(
+        LoginField(
+            name = FormFieldName.Login.EMAIL,
+            label = "Email Address",
+            value = viewModel.email,
+            updateState = {
+                viewModel.updateField(
+                    FormFieldName.Login.EMAIL, it
+                )
+            },
+            keyboardType = KeyboardType.Email,
+            errorMessage = viewModel.emailError
+        ),
+        LoginField(
+            name = FormFieldName.Login.PASSWORD,
+            label = "Password",
+            value = viewModel.password,
+            updateState = {
+                viewModel.updateField(
+                    FormFieldName.Login.PASSWORD, it
+                )
+            },
+            errorMessage = viewModel.passwordError,
+            keyboardType = KeyboardType.Password,
+        )
+    )
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LoginScreenPreview() {
-   FitnesswayTheme {
-      LoginScreen(onBackClick = {})
-   }
+    FitnesswayTheme {
+        LoginScreen(onBackClick = {})
+    }
 }

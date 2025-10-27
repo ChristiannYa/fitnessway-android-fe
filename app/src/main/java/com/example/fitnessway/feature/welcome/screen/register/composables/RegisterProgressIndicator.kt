@@ -22,63 +22,63 @@ import com.example.fitnessway.feature.welcome.screen.register.viewmodel.Register
 
 @Composable
 fun RegisterProgressIndicator(
-   viewModel: RegisterViewModel
+    viewModel: RegisterViewModel
 ) {
-   Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(
-         12.dp, Alignment.CenterHorizontally
-      ),
-   ) {
-      ProgressIndicator(
-         viewModel.currentStep == 1,
-         isValid = viewModel.stepOneIsValid,
-         MaterialTheme.colorScheme.tertiary
-      )
-      ProgressIndicator(
-         viewModel.currentStep == 2,
-         isValid = viewModel.stepTwoIsValid,
-         MaterialTheme.colorScheme.secondary
-      )
-      ProgressIndicator(
-         viewModel.currentStep == 3,
-         isValid = viewModel.stepThreeIsValid,
-         MaterialTheme.colorScheme.primary
-      )
-   }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(
+            10.dp, Alignment.CenterHorizontally
+        ),
+    ) {
+        ProgressIndicator(
+            isCurrentStep = viewModel.currentStep == 1,
+            isValid = viewModel.stepOneIsValid,
+            activeColor = MaterialTheme.colorScheme.tertiary
+        )
+        ProgressIndicator(
+            isCurrentStep = viewModel.currentStep == 2,
+            isValid = viewModel.stepTwoIsValid,
+            activeColor = MaterialTheme.colorScheme.secondary
+        )
+        ProgressIndicator(
+            isCurrentStep = viewModel.currentStep == 3,
+            isValid = viewModel.stepThreeIsValid,
+            activeColor = MaterialTheme.colorScheme.primary
+        )
+    }
 }
 
 @Composable
 fun ProgressIndicator(
-   isCurrentStep: Boolean,
-   isValid: Boolean,
-   activeColor: Color
+    isCurrentStep: Boolean,
+    isValid: Boolean,
+    activeColor: Color
 ) {
-   val scale by animateFloatAsState(
-      targetValue = if (isCurrentStep)
-         1f
-      else
-         0.6f,
-      animationSpec = tween(durationMillis = 300),
-      label = "register_form_SCALE_ANIMATION"
-   )
+    val scale by animateFloatAsState(
+        targetValue = if (isCurrentStep)
+            1f
+        else
+            0.6f,
+        animationSpec = tween(durationMillis = 300),
+        label = "register_form_SCALE_ANIMATION"
+    )
 
-   val color by animateColorAsState(
-      targetValue = if (isValid)
-         activeColor
-      else
-         MaterialTheme.colorScheme.surfaceVariant,
-      animationSpec = tween(durationMillis = 300),
-      label = "register_form_COLOR_ANIMATION"
-   )
+    val color by animateColorAsState(
+        targetValue = if (isValid)
+            activeColor
+        else
+            MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(durationMillis = 300),
+        label = "register_form_COLOR_ANIMATION"
+    )
 
-   Box(
-      modifier = Modifier
-         .size(16.dp)
-         .scale(scale)
-         .background(
-            color = color,
-            shape = CircleShape
-         )
-   )
+    Box(
+        modifier = Modifier
+            .size(16.dp)
+            .scale(scale)
+            .background(
+                color = color,
+                shape = CircleShape
+            )
+    )
 }

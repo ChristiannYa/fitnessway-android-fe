@@ -20,7 +20,7 @@ private const val AUTH_NO = "authNo"
 val networkModule = module {
     // Provide AuthInterceptor
     single<AuthInterceptor> {
-        AuthInterceptor(authStateHolder = get())
+        AuthInterceptor(tokensStateHolder = get())
     }
 
     // Provide TokenAuthenticator

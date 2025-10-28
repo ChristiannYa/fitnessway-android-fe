@@ -1,8 +1,7 @@
-package com.example.fitnessway.data.state.auth
+package com.example.fitnessway.data.state.token
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
-import com.example.fitnessway.data.state.auth.IAuthStateHolder
 import com.fitnessway.data.AuthTokens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,11 +11,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class AuthStateHolderImpl(
+class TokenStateHolderImpl(
     private val dataStore: DataStore<AuthTokens>
-) : IAuthStateHolder {
-    private val _authState = MutableStateFlow(AuthState())
-    override val authState: StateFlow<AuthState> = _authState
+) : ITokensStateHolder {
+    private val _tokensState = MutableStateFlow(TokensState())
+    override val tokensState: StateFlow<TokensState> = _tokensState
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -32,7 +31,7 @@ class AuthStateHolderImpl(
                     }
                 }
                 .collect { tokens ->
-                    _authState.value = AuthState(
+                    _tokensState.value = TokensState(
                         accessToken = tokens.accessToken.takeIf { it.isNotEmpty() },
                         refreshToken = tokens.refreshToken.takeIf { it.isNotEmpty() },
                         isLoading = false
@@ -41,9 +40,13 @@ class AuthStateHolderImpl(
         }
     }
 
-    override fun setAuth(accessToken: String, refreshToken: String) {
+    override fun setTokens(accessToken: String, refreshToken: String) {
         // Update in-memory state immediately
-        _authState.value = AuthState(accessToken, refreshToken, false)
+        _tokensState.value = TokensState(
+            accessToken,
+            refreshToken,
+            isLoading = false
+        )
 
         // Persist it to DataStore
         scope.launch {
@@ -56,9 +59,9 @@ class AuthStateHolderImpl(
         }
     }
 
-    override fun clearAuth() {
+    override fun clearTokens() {
         // Clear in-memory state immediately
-        _authState.value = AuthState(isLoading = false)
+        _tokensState.value = TokensState(isLoading = false)
 
         // Clear DataStore
         scope.launch {

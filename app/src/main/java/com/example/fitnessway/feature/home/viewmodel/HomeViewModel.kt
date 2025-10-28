@@ -16,7 +16,7 @@ import java.util.Date
 import java.util.Locale
 
 class HomeViewModel(
-    private val repo: INutrientRepository
+    private val nutrientRepo: INutrientRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
@@ -65,7 +65,7 @@ class HomeViewModel(
         val date = apiDateFormat.format(_selectedDate.value)
 
         viewModelScope.launch {
-            repo.getNutrientIntakes(date).collect { state ->
+            nutrientRepo.getNutrientIntakes(date).collect { state ->
                 _uiState.update {
                     it.copy(nutrientIntakesState = state)
                 }

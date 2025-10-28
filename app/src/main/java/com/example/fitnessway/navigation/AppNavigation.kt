@@ -22,47 +22,47 @@ import com.example.fitnessway.util.SplashScreen
 import org.koin.compose.koinInject
 
 private val screenWithBottomNavBar = listOf(
-   HomeMain::class,
-   ListsMain::class,
-   ProfileMain::class,
+    HomeMain::class,
+    ListsMain::class,
+    ProfileMain::class,
 )
 
 @Composable
 fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
-   val authState by appStateStore.authStateHolder.authState.collectAsState()
+    val tokensState by appStateStore.authStateHolder.tokensState.collectAsState()
 
-   if (authState.isLoading) {
-      SplashScreen()
-      return
-   }
+    if (tokensState.isLoading) {
+        SplashScreen()
+        return
+    }
 
-   val navController = rememberNavController()
-   val navBackStackEntry by navController.currentBackStackEntryAsState()
-   val currentDestination = navBackStackEntry?.destination
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
-   val shouldShowBottomBar = screenWithBottomNavBar.any { route ->
-      currentDestination?.hasRoute(route) == true
-   }
+    val shouldShowBottomBar = screenWithBottomNavBar.any { route ->
+        currentDestination?.hasRoute(route) == true
+    }
 
-   Scaffold(
-      bottomBar = {
-         if (shouldShowBottomBar) {
-            BottomNavigationBar(
-               navController,
-               currentDestination
-            )
-         }
-      }
-   ) { innerPadding ->
-      NavHost(
-         navController = navController,
-         startDestination = if (authState.isAuthenticated) HomeGraph else WelcomeGraph,
-         modifier = Modifier.padding(innerPadding)
-      ) {
-         welcomeNavigationGraph(navController)
-         homeNavigationGraph(navController)
-         listsNavigationGraph(navController)
-         profileNavigationGraph(navController)
-      }
-   }
+    Scaffold(
+        bottomBar = {
+            if (shouldShowBottomBar) {
+                BottomNavigationBar(
+                    navController,
+                    currentDestination
+                )
+            }
+        }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = if (tokensState.isAuthenticated) HomeGraph else WelcomeGraph,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            welcomeNavigationGraph(navController)
+            homeNavigationGraph(navController)
+            listsNavigationGraph(navController)
+            profileNavigationGraph(navController)
+        }
+    }
 }

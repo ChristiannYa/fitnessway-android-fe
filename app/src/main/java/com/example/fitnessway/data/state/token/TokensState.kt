@@ -1,6 +1,6 @@
-package com.example.fitnessway.data.state.auth
+package com.example.fitnessway.data.state.token
 
-data class AuthState (
+data class TokensState (
    val accessToken: String? = null,
    val refreshToken: String? = null,
    val isLoading: Boolean = true,

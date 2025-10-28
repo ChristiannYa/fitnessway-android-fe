@@ -1,7 +1,7 @@
 package com.example.fitnessway.di
 
-import com.example.fitnessway.data.state.auth.IAuthStateHolder
+import com.example.fitnessway.data.state.token.ITokensStateHolder
 
 interface IApplicationStateStore {
-   val authStateHolder: IAuthStateHolder
+   val authStateHolder: ITokensStateHolder
 }

@@ -11,7 +11,7 @@ val repositoryModule = module {
         AuthRepositoryImpl(
             authApiService = get(),
             authApiAuthorizedService = get(),
-            authStateHolder = get()
+            tokensStateHolder = get()
         )
     }
 

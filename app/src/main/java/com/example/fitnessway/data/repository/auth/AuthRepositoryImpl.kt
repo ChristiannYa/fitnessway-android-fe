@@ -6,7 +6,7 @@ import com.example.fitnessway.data.model.auth.LogoutRequest
 import com.example.fitnessway.data.model.auth.RegisterRequest
 import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
 import com.example.fitnessway.data.network.auth.IAuthApiService
-import com.example.fitnessway.data.state.auth.IAuthStateHolder
+import com.example.fitnessway.data.state.token.ITokensStateHolder
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +17,7 @@ import kotlinx.serialization.json.Json
 class AuthRepositoryImpl(
    private val authApiService: IAuthApiService,
    private val authApiAuthorizedService: IAuthApiAuthorizedService,
-   private val authStateHolder: IAuthStateHolder
+   private val tokensStateHolder: ITokensStateHolder
 ) : IAuthRepository {
 
    override suspend fun login(
@@ -36,7 +36,7 @@ class AuthRepositoryImpl(
             val body = response.body()
 
             if (body?.data != null) {
-               authStateHolder.setAuth(
+               tokensStateHolder.setTokens(
                   // Success is only true when the api returns both tokens, so we are
                   // use assert operators because we are sure that both tokens are present
                   refreshToken = body.data.refreshToken,
@@ -65,10 +65,10 @@ class AuthRepositoryImpl(
    override suspend fun logout(): Flow<UiState<Unit>> = flow {
       emit(UiState.Loading)
 
-      val refreshToken = authStateHolder.authState.value.refreshToken
+      val refreshToken = tokensStateHolder.tokensState.value.refreshToken
 
       if (refreshToken == null) {
-         authStateHolder.clearAuth()
+         tokensStateHolder.clearTokens()
          emit(UiState.Success(Unit))
          // complete `flow {` lambda above
          // The code below this block won't be called
@@ -84,22 +84,22 @@ class AuthRepositoryImpl(
             val body = response.body()
 
             if (body?.success == true) {
-               authStateHolder.clearAuth()
+               tokensStateHolder.clearTokens()
                emit(UiState.Success(Unit))
             } else {
                // Still clear auth even if API returns an error
-               authStateHolder.clearAuth()
+               tokensStateHolder.clearTokens()
                emit(UiState.Error("Logout failed"))
             }
          } else {
             // Still clear auth even on HTTP error
-            authStateHolder.clearAuth()
+            tokensStateHolder.clearTokens()
             // val errMsg = response.message()
             emit(UiState.Error("Logout failed"))
          }
       } catch (e: Exception) {
          // Still clear auth even on network error
-         authStateHolder.clearAuth()
+         tokensStateHolder.clearTokens()
          emit(UiState.Error("Logout network error"))
       }
    }.flowOn(Dispatchers.IO)
@@ -133,7 +133,7 @@ class AuthRepositoryImpl(
                val body = response.body()
 
                if (body?.data != null) {
-                  authStateHolder.setAuth(
+                  tokensStateHolder.setTokens(
                      refreshToken = body.data.refreshToken,
                      accessToken = body.data.accessToken
                   )

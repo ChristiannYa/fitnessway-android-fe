@@ -2,7 +2,7 @@ package com.example.fitnessway.data.network
 
 import com.example.fitnessway.data.model.auth.RefreshTokenApiPostResponse
 import com.example.fitnessway.data.model.auth.RefreshTokenRequest
-import com.example.fitnessway.data.state.auth.IAuthStateHolder
+import com.example.fitnessway.data.state.token.ITokensStateHolder
 import kotlinx.serialization.json.Json
 import okhttp3.Authenticator
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,7 +13,7 @@ import okhttp3.Response
 import okhttp3.Route
 
 class TokenAuthenticator(
-   private val authStateHolder: IAuthStateHolder,
+   private val authStateHolder: ITokensStateHolder,
    private val baseUrl: String,
 ) : Authenticator {
 
@@ -22,7 +22,7 @@ class TokenAuthenticator(
       response: Response
    ): Request? {
       synchronized(this) {
-         val currentToken = authStateHolder.authState.value.accessToken
+         val currentToken = authStateHolder.tokensState.value.accessToken
          val requestToken = response.request.header(
             "Authorization"
          )?.removePrefix("Bearer ")
@@ -41,10 +41,10 @@ class TokenAuthenticator(
          }
 
          // Get current refresh token or clear authentication if missing
-         val refreshToken = authStateHolder.authState.value.refreshToken
+         val refreshToken = authStateHolder.tokensState.value.refreshToken
 
          if (refreshToken == null) {
-            authStateHolder.clearAuth()
+            authStateHolder.clearTokens()
             return null
          }
 
@@ -61,7 +61,7 @@ class TokenAuthenticator(
                .build()
          } else {
             // Clear authentication if the token refresh failed
-            authStateHolder.clearAuth()
+            authStateHolder.clearTokens()
             null
          }
       }
@@ -92,7 +92,7 @@ class TokenAuthenticator(
 
             // Store new tokens if the response was a success
             if (newAccessToken != null && newRefreshToken != null) {
-               authStateHolder.setAuth(newAccessToken, newRefreshToken)
+               authStateHolder.setTokens(newAccessToken, newRefreshToken)
                newAccessToken
             } else null
          } else null

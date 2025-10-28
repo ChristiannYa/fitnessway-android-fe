@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.repository
+package com.example.fitnessway.data.repository.auth
 
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow

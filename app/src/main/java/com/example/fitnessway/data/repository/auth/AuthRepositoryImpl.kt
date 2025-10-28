@@ -1,11 +1,11 @@
-package com.example.fitnessway.data.repository
+package com.example.fitnessway.data.repository.auth
 
 import com.example.fitnessway.data.model.auth.LoginApiPostResponse
 import com.example.fitnessway.data.model.auth.LoginRequest
 import com.example.fitnessway.data.model.auth.LogoutRequest
 import com.example.fitnessway.data.model.auth.RegisterRequest
-import com.example.fitnessway.data.network.IAuthApiAuthorizedService
-import com.example.fitnessway.data.network.IAuthApiService
+import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
+import com.example.fitnessway.data.network.auth.IAuthApiService
 import com.example.fitnessway.data.state.IAuthStateHolder
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.Dispatchers
@@ -61,7 +61,6 @@ class AuthRepositoryImpl(
          emit(UiState.Error("Login network error"))
       }
    }.flowOn(Dispatchers.IO)
-
 
    override suspend fun logout(): Flow<UiState<Unit>> = flow {
       emit(UiState.Loading)

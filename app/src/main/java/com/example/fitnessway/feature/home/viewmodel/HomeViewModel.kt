@@ -1,18 +1,31 @@
 package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.repository.nutrient.INutrientRepository
+import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val repo: INutrientRepository
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(HomeScreenUiState())
+    val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
+
     private val _selectedDate = MutableStateFlow(Date())
     val selectedDate: StateFlow<Date> = _selectedDate
 
     val dateFormat: DateFormat = SimpleDateFormat.getDateInstance()
+    private val apiDateFormat = SimpleDateFormat("MM-dd-yyyy", Locale.US)
 
     fun getFormattedDay(date: Date): String {
         val selectedCal = Calendar.getInstance().apply {
@@ -44,5 +57,19 @@ class HomeViewModel : ViewModel() {
         set(Calendar.MINUTE, 0)
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
+    }
+
+    fun getNutrientIntakes() {
+        if (_uiState.value.nutrientIntakesState !is UiState.Loading) return
+
+        val date = apiDateFormat.format(_selectedDate.value)
+
+        viewModelScope.launch {
+            repo.getNutrientIntakes(date).collect { state ->
+                _uiState.update {
+                    it.copy(nutrientIntakesState = state)
+                }
+            }
+        }
     }
 }

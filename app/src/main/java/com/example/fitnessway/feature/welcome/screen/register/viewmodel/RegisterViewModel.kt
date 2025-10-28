@@ -12,7 +12,7 @@ import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.welcome.Password
 import com.example.fitnessway.data.model.welcome.passwordRules
 import com.example.fitnessway.data.model.welcome.register.Name
-import com.example.fitnessway.data.repository.IAuthRepository
+import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

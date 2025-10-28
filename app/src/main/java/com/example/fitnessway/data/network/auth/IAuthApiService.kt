@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.network
+package com.example.fitnessway.data.network.auth
 
 import com.example.fitnessway.data.model.auth.LoginApiPostResponse
 import com.example.fitnessway.data.model.auth.LoginRequest

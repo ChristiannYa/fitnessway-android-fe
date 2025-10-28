@@ -1,7 +1,8 @@
-package com.example.fitnessway.data.state
+package com.example.fitnessway.data.state.auth
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
+import com.example.fitnessway.data.state.auth.IAuthStateHolder
 import com.fitnessway.data.AuthTokens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

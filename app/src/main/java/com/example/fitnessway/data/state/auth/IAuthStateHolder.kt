@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.state
+package com.example.fitnessway.data.state.auth
 
 import kotlinx.coroutines.flow.StateFlow
 

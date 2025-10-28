@@ -6,7 +6,7 @@ import com.example.fitnessway.data.model.auth.LogoutRequest
 import com.example.fitnessway.data.model.auth.RegisterRequest
 import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
 import com.example.fitnessway.data.network.auth.IAuthApiService
-import com.example.fitnessway.data.state.IAuthStateHolder
+import com.example.fitnessway.data.state.auth.IAuthStateHolder
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

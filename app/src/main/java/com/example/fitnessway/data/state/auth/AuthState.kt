@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.state
+package com.example.fitnessway.data.state.auth
 
 data class AuthState (
    val accessToken: String? = null,

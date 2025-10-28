@@ -1,6 +1,6 @@
 package com.example.fitnessway.data.network
 
-import com.example.fitnessway.data.state.IAuthStateHolder
+import com.example.fitnessway.data.state.auth.IAuthStateHolder
 import okhttp3.Interceptor
 import okhttp3.Response
 

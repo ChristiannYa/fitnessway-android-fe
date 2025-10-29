@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -27,55 +28,62 @@ import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.calcNutrientData
+import com.example.fitnessway.util.filterDisplayedNutrients
 import com.example.fitnessway.util.intakeNumStyle
 import com.example.fitnessway.util.intakeTextStyle
 
 @Composable
-fun BasicNutrientIntakes(state: UiState<NutrientsByType>) {
+fun BasicNutrientIntakes(state: UiState<NutrientsByType>, user: User) {
     when (state) {
         is UiState.Loading -> Text("Loading basic nutrient intakes")
-        is UiState.Success -> Nutrients(state.data)
+        is UiState.Success -> BasicNutrients(state.data, user)
         is UiState.Error -> ApiErrorMessage(state.message)
         UiState.Idle -> {}
     }
 }
 
 @Composable
-fun Nutrients(nutrients: NutrientsByType) {
+fun BasicNutrients(nutrients: NutrientsByType, user: User) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.inverseSurface.copy(
-                    0.01f
-                ),
-                shape = RoundedCornerShape(24.dp)
-            )
-            .padding(12.dp),
+        modifier = Modifier.areaContainer(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         content = {
-            nutrients.basic.forEach { nutrient ->
-                Nutrient(nutrient)
+            val displayedNutrients = filterDisplayedNutrients(
+                nutrients.basic,
+                user
+            )
+
+            if (displayedNutrients.isEmpty()) {
+                Text(
+                    text = "Set basic nutrient goals in order to see your intake progress",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            } else {
+                displayedNutrients.forEach { nutrient ->
+                    BasicNutrient(nutrient)
+                }
             }
         }
     )
 }
 
 @Composable
-fun Nutrient(intake: NutrientIntake) {
-    val nutrientData = remember(intake) {
-        calcNutrientData(intake)
-    }
+fun BasicNutrient(intake: NutrientIntake) {
+    val nutrientData = remember(intake) { calcNutrientData(intake) }
     val barRadius: Dp = 16.dp
 
     Column(
         modifier = Modifier
-            .width(80.dp),
+            .width(76.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         content = {
@@ -87,7 +95,7 @@ fun Nutrient(intake: NutrientIntake) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .height(180.dp)
+                    .height(162.dp)
                     .background(
                         color = MaterialTheme.colorScheme.inverseSurface.copy(
                             0.05f
@@ -139,7 +147,7 @@ fun NutrientsPreview() {
     )
 
     FitnesswayTheme {
-        Nutrients(sampleNutrientsByType)
+        BasicNutrients(sampleNutrientsByType, sampleUser)
     }
 }
 
@@ -147,9 +155,18 @@ fun NutrientsPreview() {
 @Composable
 fun NutrientPreview() {
     FitnesswayTheme {
-        Nutrient(sampleProtein)
+        BasicNutrient(sampleProtein)
     }
 }
+
+val sampleUser = User(
+    id = "117",
+    name = "Christian",
+    email = "chris.lopez.webdev@gmail.com",
+    isPremium = false,
+    createdAt = "04-24-2002",
+    updatedAt = "10-28-2025"
+)
 
 val calories = Nutrient(
     id = 1,

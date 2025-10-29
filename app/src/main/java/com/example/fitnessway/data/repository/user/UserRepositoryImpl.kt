@@ -1,6 +1,5 @@
 package com.example.fitnessway.data.repository.user
 
-import android.util.Log
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.data.network.user.IUserApiService
 import com.example.fitnessway.util.UiState
@@ -33,7 +32,6 @@ class UserRepositoryImpl(
             }
 
         } catch (e: Exception) {
-            Log.d("fitnessway", "UserRepositoryImpl e: $e")
             emit(UiState.Error(userFetchErrMsg))
         }
     }.flowOn(Dispatchers.IO)

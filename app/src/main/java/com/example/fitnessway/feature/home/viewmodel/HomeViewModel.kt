@@ -3,6 +3,7 @@ package com.example.fitnessway.feature.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
+import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +17,13 @@ import java.util.Date
 import java.util.Locale
 
 class HomeViewModel(
-    private val nutrientRepo: INutrientRepository
+    private val nutrientRepo: INutrientRepository,
+    private val userStateHolder: IUserStateHolder
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
+
+    val user = userStateHolder.userState.value.user
 
     private val _selectedDate = MutableStateFlow(Date())
     val selectedDate: StateFlow<Date> = _selectedDate

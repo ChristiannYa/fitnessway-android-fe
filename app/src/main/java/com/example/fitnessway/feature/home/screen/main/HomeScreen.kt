@@ -51,8 +51,14 @@ fun HomeScreen(
                     )
                 }
 
-                item {
-                    BasicNutrientIntakes(uiState.nutrientIntakesState)
+                if (viewModel.user == null) {
+                    item { Text("No user found") }
+                } else {
+                    item {
+                        BasicNutrientIntakes(
+                            uiState.nutrientIntakesState, viewModel.user
+                        )
+                    }
                 }
 
                 item {

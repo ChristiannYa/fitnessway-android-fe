@@ -1,6 +1,5 @@
 package com.example.fitnessway.di.init
 
-import android.util.Log
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.fitnessway.data.repository.user.IUserRepository
@@ -24,22 +23,15 @@ class AppInitializer(
                     userState.user == null &&
                     !userState.isLoading
                 ) {
-
                     userRepo.getUser().collect { uiState ->
                         when (uiState) {
                             is UiState.Idle -> {}
                             is UiState.Loading -> {}
                             is UiState.Success -> userStateHolder.setUser(uiState.data)
                             is UiState.Error -> {
-                                Log.d(
-                                    "fitnessway",
-                                    "AppInitializer got an error when collecting user ui state"
-                                )
-                                Log.d("fitnessway", "clearing tokens")
                                 tokensStetHolder.clearTokens()
                                 userStateHolder.clearUser()
                             }
-
                         }
                     }
                 }

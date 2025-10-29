@@ -1,7 +1,7 @@
 package com.example.fitnessway.di.modules
 
-import com.example.fitnessway.data.network.AuthInterceptor
-import com.example.fitnessway.data.network.CacheInterceptor
+import com.example.fitnessway.data.network.interceptors.AuthInterceptor
+import com.example.fitnessway.data.network.interceptors.CacheInterceptor
 import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
 import com.example.fitnessway.data.network.auth.IAuthApiService
 import com.example.fitnessway.data.network.TokenAuthenticator

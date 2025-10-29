@@ -22,22 +22,16 @@ import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.WhiteBackground
-import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(
-    onFoodSelection: () -> Unit,
-) {
+fun HomeScreen(onFoodSelection: () -> Unit) {
     val viewModel: HomeViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
 
-    // TODO: fetch nutrients when the user changes the day.
-    //  `selectedDate` can be passed as the key so that when it changes `getNutrientIntakes`
-    //  is allowed to be called
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = selectedDate) {
         viewModel.getNutrientIntakes()
     }
 

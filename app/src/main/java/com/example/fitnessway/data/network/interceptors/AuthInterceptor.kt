@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.network
+package com.example.fitnessway.data.network.interceptors
 
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import okhttp3.Interceptor

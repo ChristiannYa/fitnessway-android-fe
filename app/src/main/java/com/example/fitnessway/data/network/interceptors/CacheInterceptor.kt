@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.network
+package com.example.fitnessway.data.network.interceptors
 
 import okhttp3.CacheControl
 import okhttp3.Interceptor
@@ -13,7 +13,7 @@ class CacheInterceptor : Interceptor {
 
         // Try to use cache first
         val cacheRequest = request.newBuilder()
-            .cacheControl(CacheControl.FORCE_CACHE)
+            .cacheControl(CacheControl.Companion.FORCE_CACHE)
             .build()
 
         val cacheResponse = chain.proceed(cacheRequest)

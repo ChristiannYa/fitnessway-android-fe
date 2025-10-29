@@ -17,6 +17,13 @@ enum class NutrientType {
 }
 
 @Serializable
+data class NutrientsByType<T>(
+    val basic: List<T>,
+    val vitamin: List<T>,
+    val mineral: List<T>
+)
+
+@Serializable
 data class Nutrient(
     val id: Int,
     val name: String,
@@ -35,17 +42,12 @@ data class NutrientIntake(
     val goal: Double?
 )
 
-@Serializable
-data class NutrientsByType(
-    val basic: List<NutrientIntake>,
-    val vitamin: List<NutrientIntake>,
-    val mineral: List<NutrientIntake>
-)
+typealias NutrientIntakesByType = NutrientsByType<NutrientIntake>
 
 @Serializable
 data class NutrientsByTypeApiResponse(
     @SerialName("nutrient_intakes")
-    val nutrientIntakes: NutrientsByType
+    val nutrientIntakes: NutrientIntakesByType
 )
 
 typealias NutrientsByTypeFetchResponse = ApiResponseWithContent<NutrientsByTypeApiResponse>

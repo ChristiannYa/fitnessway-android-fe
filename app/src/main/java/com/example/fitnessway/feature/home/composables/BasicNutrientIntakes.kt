@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
+import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
@@ -36,7 +37,7 @@ import com.example.fitnessway.util.calcNutrientData
 import com.example.fitnessway.util.filterDisplayedNutrients
 
 @Composable
-fun BasicNutrientIntakes(state: UiState<NutrientsByType>, user: User) {
+fun BasicNutrientIntakes(state: UiState<NutrientIntakesByType>, user: User) {
     when (state) {
         is UiState.Loading -> Text("Loading basic nutrient intakes")
         is UiState.Success -> BasicNutrients(state.data, user)
@@ -46,7 +47,7 @@ fun BasicNutrientIntakes(state: UiState<NutrientsByType>, user: User) {
 }
 
 @Composable
-fun BasicNutrients(nutrients: NutrientsByType, user: User) {
+fun BasicNutrients(nutrients: NutrientIntakesByType, user: User) {
     Row(
         modifier = Modifier.areaContainer(),
         horizontalArrangement = Arrangement.SpaceAround,

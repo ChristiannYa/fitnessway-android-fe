@@ -1,6 +1,6 @@
 package com.example.fitnessway.data.repository.nutrient
 
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.network.nutrient.INutrientApiService
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 class NutrientRepositoryImpl(
     private val apiService: INutrientApiService
 ) : INutrientRepository {
-    override suspend fun getNutrientIntakes(date: String): Flow<UiState<NutrientsByType>> = flow {
+    override suspend fun getNutrientIntakes(date: String): Flow<UiState<NutrientIntakesByType>> = flow {
         emit(UiState.Loading)
         val nutrientIntakesErrMsg = "Failed to get nutrient intakes"
 

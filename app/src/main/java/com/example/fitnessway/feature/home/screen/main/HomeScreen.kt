@@ -21,7 +21,8 @@ import com.example.fitnessway.feature.home.composables.DatePicker
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.ui.theme.SilverMist
+import com.example.fitnessway.ui.theme.WhiteBackground
+import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -33,6 +34,7 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
 
+    // TODO: fetch nutrients when the user changes the day
     LaunchedEffect(key1 = Unit) {
         viewModel.getNutrientIntakes()
     }
@@ -66,7 +68,7 @@ fun HomeScreen(
                         onClick = onFoodSelection,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = SilverMist
+                            contentColor = WhiteBackground
                         ),
                         content = {
                             Text(

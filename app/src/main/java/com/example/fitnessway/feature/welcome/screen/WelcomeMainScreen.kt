@@ -55,7 +55,6 @@ fun WelcomeMainScreen(
             fontWeight = FontWeight.Medium
          )
 
-         // (Buttons) Login - Register: Wrapper
          Column(
             modifier = Modifier
                // IntrinsicSize.Max makes the Column's width equal to the width of its widest child
@@ -65,7 +64,6 @@ fun WelcomeMainScreen(
                Alignment.CenterVertically
             ),
          ) {
-            // Login: Button
             TextButton(
                onClick = onLoginClick,
                modifier = Modifier

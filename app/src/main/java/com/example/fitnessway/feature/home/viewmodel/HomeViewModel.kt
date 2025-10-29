@@ -63,6 +63,7 @@ class HomeViewModel(
         set(Calendar.MILLISECOND, 0)
     }
 
+    // TODO: allow function call when `apiDateFormat` changes
     fun getNutrientIntakes() {
         if (_uiState.value.nutrientIntakesState !is UiState.Loading) return
 

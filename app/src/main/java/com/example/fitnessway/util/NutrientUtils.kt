@@ -16,11 +16,7 @@ fun calcNutrientData(n: NutrientIntake): NutrientData {
     val intake = n.intake
     val goal = n.goal ?: 0.0
 
-    val progress = if (goal > 0) {
-        ((intake / goal) * 100).coerceIn(0.0, 100.0)
-    } else {
-        0.0
-    }
+    val progress = if (goal > 0) ((intake / goal) * 100).coerceIn(0.0, 100.0) else 0.0
 
     val remaining = goal - intake
     val over = intake - goal

@@ -61,13 +61,13 @@ fun BottomNavigationBar(
                     )
                 },
                 colors = NavigationBarItemColors(
-                    selectedIconColor = MaterialTheme.colorScheme.onBackground,
-                    selectedTextColor = MaterialTheme.colorScheme.onSurface,
-                    selectedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant,
-                    unselectedIconColor = MaterialTheme.colorScheme.onBackground.copy(0.6f),
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f),
-                    disabledIconColor = MaterialTheme.colorScheme.onBackground.copy(0.6f),
-                    disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f)
+                    selectedIconColor = MaterialTheme.colorScheme.background,
+                    selectedTextColor = MaterialTheme.colorScheme.inverseSurface,
+                    selectedIndicatorColor = MaterialTheme.colorScheme.inverseSurface,
+                    unselectedIconColor = MaterialTheme.colorScheme.inverseSurface,
+                    unselectedTextColor = MaterialTheme.colorScheme.inverseSurface,
+                    disabledIconColor = MaterialTheme.colorScheme.inverseSurface.copy(0.5f),
+                    disabledTextColor = MaterialTheme.colorScheme.inverseSurface.copy(0.5f)
                 ),
                 selected = currentDestination?.hierarchy?.any {
                     it.hasRoute(topLevelRoute.route::class)

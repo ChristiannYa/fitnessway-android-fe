@@ -86,7 +86,6 @@ fun BasicNutrient(intake: NutrientIntake) {
     val goalDisplay = if (intake.goal != null) doubleFormatter(intake.goal) else "0"
     val intakeDisplay = doubleFormatter(intake.intake)
 
-
     Column(
         modifier = Modifier
             .width(76.dp),
@@ -104,7 +103,7 @@ fun BasicNutrient(intake: NutrientIntake) {
                     .height(156.dp)
                     .background(
                         color = MaterialTheme.colorScheme.inverseSurface.copy(
-                            0.05f
+                            0.03f
                         ),
                         shape = RoundedCornerShape(barRadius),
                     )

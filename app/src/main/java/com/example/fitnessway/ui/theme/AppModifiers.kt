@@ -14,7 +14,7 @@ object AppModifiers {
     fun Modifier.areaContainer() = this
         .fillMaxWidth()
         .background(
-            color = MaterialTheme.colorScheme.inverseSurface.copy(0.01f),
+            color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
             shape = RoundedCornerShape(21.dp)
         )
         .padding(24.dp)

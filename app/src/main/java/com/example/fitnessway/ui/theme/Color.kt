@@ -16,7 +16,7 @@ val DeepOrange = Color(0xFFFF8F00)
 val VibrantPink = Color(0xFFE91E63)
 val WhiteBackground = Color(0xFFF5F5F5)
 val BlackFont = Color(0xFF2B2B2B)
-val SilverMist = Color(0xFFDFE3E6)
+val SilverMist = Color(0xFFAAACB1)
 
 // Extras
 val ImperialRed = Color(0xFFED2939)

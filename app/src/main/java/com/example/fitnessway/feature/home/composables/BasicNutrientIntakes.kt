@@ -19,10 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
@@ -32,10 +30,10 @@ import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.calcNutrientData
 import com.example.fitnessway.util.filterDisplayedNutrients
-import com.example.fitnessway.util.Formatters.doubleFormatter
 
 @Composable
 fun BasicNutrientIntakes(state: UiState<NutrientsByType>, user: User) {

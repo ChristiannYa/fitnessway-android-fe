@@ -65,8 +65,6 @@ class HomeViewModel(
 
     // TODO: allow function call when `apiDateFormat` changes
     fun getNutrientIntakes() {
-        if (_uiState.value.nutrientIntakesState !is UiState.Loading) return
-
         val date = apiDateFormat.format(_selectedDate.value)
 
         viewModelScope.launch {

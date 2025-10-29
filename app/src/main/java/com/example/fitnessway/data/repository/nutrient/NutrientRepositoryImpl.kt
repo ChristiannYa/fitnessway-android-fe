@@ -30,7 +30,7 @@ class NutrientRepositoryImpl(
                 emit(UiState.Error(nutrientIntakesErrMsg))
             }
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emit(UiState.Error(nutrientIntakesErrMsg))
         }
     }.flowOn(Dispatchers.IO)

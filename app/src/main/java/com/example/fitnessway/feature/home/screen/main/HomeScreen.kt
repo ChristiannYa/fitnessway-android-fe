@@ -34,7 +34,9 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
 
-    // TODO: fetch nutrients when the user changes the day
+    // TODO: fetch nutrients when the user changes the day.
+    //  `selectedDate` can be passed as the key so that when it changes `getNutrientIntakes`
+    //  is allowed to be called
     LaunchedEffect(key1 = Unit) {
         viewModel.getNutrientIntakes()
     }

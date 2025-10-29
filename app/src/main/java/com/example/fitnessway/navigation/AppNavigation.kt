@@ -30,8 +30,11 @@ private val screenWithBottomNavBar = listOf(
 @Composable
 fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
     val tokensState by appStateStore.authStateHolder.tokensState.collectAsState()
+    val userState by appStateStore.userStateHolder.userState.collectAsState()
 
-    if (tokensState.isLoading) {
+    val isUserLoading = tokensState.isAuthenticated && userState.user == null
+
+    if (tokensState.isLoading || isUserLoading) {
         SplashScreen()
         return
     }

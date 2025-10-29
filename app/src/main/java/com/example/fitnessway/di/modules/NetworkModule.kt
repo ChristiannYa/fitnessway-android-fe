@@ -5,6 +5,7 @@ import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
 import com.example.fitnessway.data.network.auth.IAuthApiService
 import com.example.fitnessway.data.network.TokenAuthenticator
 import com.example.fitnessway.data.network.nutrient.INutrientApiService
+import com.example.fitnessway.data.network.user.IUserApiService
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -59,18 +60,28 @@ val networkModule = module {
             .build()
     }
 
+    // For users who open the app for the first time and DON'T have account
     single<IAuthApiService> {
         get<Retrofit>(
             named(AUTH_NO)
         ).create(IAuthApiService::class.java)
     }
 
+    // For users who DO have account
     single<IAuthApiAuthorizedService> {
         get<Retrofit>(
             named(AUTH_YES)
         ).create(IAuthApiAuthorizedService::class.java)
     }
 
+    // User related data
+    single<IUserApiService> {
+        get<Retrofit>(
+            named(AUTH_YES)
+        ).create(IUserApiService::class.java)
+    }
+
+    // Nutrient related data
     single<INutrientApiService> {
         get<Retrofit>(
             named(AUTH_YES)

@@ -1,6 +1,5 @@
 package com.example.fitnessway.data.repository.nutrient
 
-import android.util.Log
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.network.nutrient.INutrientApiService
 import com.example.fitnessway.util.UiState
@@ -30,8 +29,8 @@ class NutrientRepositoryImpl(
             } else {
                 emit(UiState.Error(nutrientIntakesErrMsg))
             }
+
         } catch (e: Exception) {
-            Log.d("fitnessway", "e: $e")
             emit(UiState.Error(nutrientIntakesErrMsg))
         }
     }.flowOn(Dispatchers.IO)

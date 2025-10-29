@@ -35,8 +35,7 @@ import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.calcNutrientData
 import com.example.fitnessway.util.filterDisplayedNutrients
-import com.example.fitnessway.util.intakeNumStyle
-import com.example.fitnessway.util.intakeTextStyle
+import com.example.fitnessway.util.Formatters.doubleFormatter
 
 @Composable
 fun BasicNutrientIntakes(state: UiState<NutrientsByType>, user: User) {
@@ -52,7 +51,7 @@ fun BasicNutrientIntakes(state: UiState<NutrientsByType>, user: User) {
 fun BasicNutrients(nutrients: NutrientsByType, user: User) {
     Row(
         modifier = Modifier.areaContainer(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically,
         content = {
             val displayedNutrients = filterDisplayedNutrients(
@@ -79,23 +78,30 @@ fun BasicNutrients(nutrients: NutrientsByType, user: User) {
 @Composable
 fun BasicNutrient(intake: NutrientIntake) {
     val nutrientData = remember(intake) { calcNutrientData(intake) }
-    val barRadius: Dp = 16.dp
+
+    val barRadius = 16.dp
+    val spacedBy = 12.dp
+
+    val progressHeight = doubleFormatter(nutrientData.progress / 100f).toFloat()
+    val goalDisplay = if (intake.goal != null) doubleFormatter(intake.goal) else "0"
+    val intakeDisplay = doubleFormatter(intake.intake)
+
 
     Column(
         modifier = Modifier
             .width(76.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(spacedBy),
         content = {
             Text(
-                text = "${intake.goal}",
-                style = intakeNumStyle
+                text = goalDisplay,
+                style = MaterialTheme.typography.bodyMedium
             )
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .height(162.dp)
+                    .height(156.dp)
                     .background(
                         color = MaterialTheme.colorScheme.inverseSurface.copy(
                             0.05f
@@ -107,7 +113,7 @@ fun BasicNutrient(intake: NutrientIntake) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(nutrientData.progress / 100f)
+                            .fillMaxHeight(progressHeight)
                             .background(
                                 color = MaterialTheme.colorScheme.inverseSurface,
                                 shape = RoundedCornerShape(
@@ -118,11 +124,11 @@ fun BasicNutrient(intake: NutrientIntake) {
                             .align(Alignment.BottomCenter)
                     )
                     Text(
-                        text = "${intake.intake}",
-                        style = intakeNumStyle,
+                        text = intakeDisplay,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .offset(y = (-12).dp)
+                            .offset(y = -(spacedBy * 2))
                     )
                 }
             )
@@ -130,7 +136,7 @@ fun BasicNutrient(intake: NutrientIntake) {
             Text(
                 text = intake.nutrient.name,
                 color = MaterialTheme.colorScheme.inverseSurface,
-                style = intakeTextStyle,
+                style = MaterialTheme.typography.bodySmall,
                 maxLines = 1
             )
         }
@@ -179,8 +185,8 @@ val calories = Nutrient(
 
 val sampleCalories = NutrientIntake(
     nutrient = calories,
-    goal = 2890f,
-    intake = 1854f
+    goal = 2890.0,
+    intake = 1854.9
 )
 
 val protein = Nutrient(
@@ -194,8 +200,8 @@ val protein = Nutrient(
 
 val sampleProtein = NutrientIntake(
     nutrient = protein,
-    goal = 90f,
-    intake = 42.6f,
+    goal = 90.0,
+    intake = 42.6,
 )
 
 val carbs = Nutrient(
@@ -209,6 +215,6 @@ val carbs = Nutrient(
 
 val sampleCarbs = NutrientIntake(
     nutrient = carbs,
-    goal = 300f,
-    intake = 215f
+    goal = 300.0,
+    intake = 215.5
 )

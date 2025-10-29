@@ -18,7 +18,7 @@ import java.util.Locale
 
 class HomeViewModel(
     private val nutrientRepo: INutrientRepository,
-    private val userStateHolder: IUserStateHolder
+    userStateHolder: IUserStateHolder
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()

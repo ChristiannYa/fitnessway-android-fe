@@ -31,8 +31,8 @@ data class Nutrient(
 @Serializable
 data class NutrientIntake(
     val nutrient: Nutrient,
-    val intake: Float,
-    val goal: Float?
+    val intake: Double,
+    val goal: Double?
 )
 
 @Serializable

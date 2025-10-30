@@ -14,11 +14,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Screen(
    header: (@Composable () -> Unit)? = null,
+   isMainScreen: Boolean? = false,
    content: @Composable () -> Unit,
 ) {
    Surface(
-      modifier = Modifier.fillMaxSize(),
-   ) {
+      modifier = Modifier.fillMaxSize()) {
       Column {
          header?.let {
             it()
@@ -28,7 +28,7 @@ fun Screen(
             modifier = Modifier
                .padding(
                   horizontal = 16.dp,
-                  vertical = if (header == null) 16.dp else 0.dp
+                  vertical = if (header != null && isMainScreen == false) 16.dp else 0.dp
                )
          ) {
             Column {

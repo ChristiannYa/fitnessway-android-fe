@@ -8,8 +8,14 @@ import org.koin.dsl.module
 import org.koin.core.module.dsl.*
 
 val viewModelModule = module {
-   viewModel { LoginViewModel(repo = get()) }
-   viewModel { RegisterViewModel(repo = get()) }
-   viewModel { HomeViewModel(nutrientRepo = get(), userStateHolder = get()) }
-   viewModel { ProfileSettingsScreenViewModel(repo = get()) }
+    viewModel { LoginViewModel(repo = get()) }
+    viewModel { RegisterViewModel(repo = get()) }
+    viewModel {
+        HomeViewModel(
+            nutrientRepo = get(),
+            foodRepo = get(),
+            userStateHolder = get()
+        )
+    }
+    viewModel { ProfileSettingsScreenViewModel(repo = get()) }
 }

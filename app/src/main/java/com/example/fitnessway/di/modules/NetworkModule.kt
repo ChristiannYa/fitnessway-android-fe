@@ -5,6 +5,7 @@ import com.example.fitnessway.data.network.interceptors.CacheInterceptor
 import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
 import com.example.fitnessway.data.network.auth.IAuthApiService
 import com.example.fitnessway.data.network.TokenAuthenticator
+import com.example.fitnessway.data.network.food.IFoodApiService
 import com.example.fitnessway.data.network.nutrient.INutrientApiService
 import com.example.fitnessway.data.network.user.IUserApiService
 import kotlinx.serialization.json.Json
@@ -100,17 +101,24 @@ val networkModule = module {
         ).create(IAuthApiAuthorizedService::class.java)
     }
 
-    // User related data
+    // User related
     single<IUserApiService> {
         get<Retrofit>(
             named(AUTH_YES)
         ).create(IUserApiService::class.java)
     }
 
-    // Nutrient related data
+    // Nutrient related
     single<INutrientApiService> {
         get<Retrofit>(
             named(AUTH_YES)
         ).create(INutrientApiService::class.java)
+    }
+
+    // Food related
+    single<IFoodApiService> {
+        get<Retrofit>(
+            named(AUTH_YES)
+        ).create(IFoodApiService::class.java)
     }
 }

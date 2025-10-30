@@ -11,22 +11,20 @@ import androidx.compose.ui.unit.dp
 
 object AppModifiers {
     @Composable
-    fun Modifier.areaContainer() = this
+    fun Modifier.areaContainerLarge() = this
         .fillMaxWidth()
         .background(
             color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
-            shape = RoundedCornerShape(21.dp)
+            shape = RoundedCornerShape(20.dp)
         )
-        .padding(24.dp)
+        .padding(20.dp)
 
-    /*
     @Composable
-    fun Modifier.smallCard() = this
+    fun Modifier.areaContainerMedium() = this
+        .fillMaxWidth()
         .background(
-            color = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(12.dp)
+            color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
+            shape = RoundedCornerShape(18.dp)
         )
-        .padding(12.dp)
-
-     */
+        .padding(18.dp)
 }

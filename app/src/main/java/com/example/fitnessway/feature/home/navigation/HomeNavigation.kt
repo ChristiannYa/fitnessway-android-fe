@@ -19,7 +19,7 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
    navigation<HomeGraph>(startDestination = HomeMain) {
       composable<HomeMain> {
          HomeScreen(
-            onFoodSelection = {
+            onFoodLog = {
                navController.navigate(FoodSelection)
             }
          )

@@ -20,3 +20,4 @@ val SilverMist = Color(0xFFAAACB1)
 
 // Extras
 val ImperialRed = Color(0xFFED2939)
+val OrangeWarning = Color(0xFFCE7703)

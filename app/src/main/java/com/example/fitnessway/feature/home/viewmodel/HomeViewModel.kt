@@ -2,9 +2,9 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
-import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +18,7 @@ import java.util.Locale
 
 class HomeViewModel(
     private val nutrientRepo: INutrientRepository,
+    private val foodRepo: IFoodRepository,
     userStateHolder: IUserStateHolder
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
@@ -28,8 +29,8 @@ class HomeViewModel(
     private val _selectedDate = MutableStateFlow(Date())
     val selectedDate: StateFlow<Date> = _selectedDate
 
-    val dateFormat: DateFormat = SimpleDateFormat.getDateInstance()
-    private val apiDateFormat = SimpleDateFormat("MM-dd-yyyy", Locale.US)
+    private val dateFormatter: DateFormat = SimpleDateFormat.getDateInstance()
+    private val apiDateFormatter = SimpleDateFormat("MM-dd-yyyy", Locale.US)
 
     fun getFormattedDay(date: Date): String {
         val selectedCal = Calendar.getInstance().apply {
@@ -45,7 +46,7 @@ class HomeViewModel(
             0 -> "Today"
             -1 -> "Yesterday"
             1 -> "Tomorrow"
-            else -> dateFormat.format(date)
+            else -> dateFormatter.format(date)
         }
     }
 
@@ -63,14 +64,25 @@ class HomeViewModel(
         set(Calendar.MILLISECOND, 0)
     }
 
-    // TODO: allow function call when `apiDateFormat` changes
     fun getNutrientIntakes() {
-        val date = apiDateFormat.format(_selectedDate.value)
+        val apiDate: String = apiDateFormatter.format(_selectedDate.value)
 
         viewModelScope.launch {
-            nutrientRepo.getNutrientIntakes(date).collect { state ->
+            nutrientRepo.getNutrientIntakes(apiDate).collect { state ->
                 _uiState.update {
                     it.copy(nutrientIntakesState = state)
+                }
+            }
+        }
+    }
+
+    fun getFoodLogs() {
+        val apiDate: String = apiDateFormatter.format(_selectedDate.value)
+
+        viewModelScope.launch {
+            foodRepo.getFoodLogs(apiDate).collect { state ->
+                _uiState.update {
+                    it.copy(foodLogsState = state)
                 }
             }
         }

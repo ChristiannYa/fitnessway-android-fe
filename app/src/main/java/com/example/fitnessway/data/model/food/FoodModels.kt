@@ -70,7 +70,7 @@ data class FoodLogData(
    val foodStatus: String,
 
    @SerialName("food_snapshot_id")
-   val foodSnapshotId: Int?,
+   val foodSnapshotId: Int,
 
    val food: FoodInformation
 )

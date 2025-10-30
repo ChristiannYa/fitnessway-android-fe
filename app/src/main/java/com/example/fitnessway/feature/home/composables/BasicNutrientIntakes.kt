@@ -29,7 +29,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UiState
@@ -37,19 +37,22 @@ import com.example.fitnessway.util.calcNutrientData
 import com.example.fitnessway.util.filterDisplayedNutrients
 
 @Composable
-fun BasicNutrientIntakes(state: UiState<NutrientIntakesByType>, user: User) {
+fun BasicNutrientIntakes(
+    state: UiState<NutrientIntakesByType>,
+    user: User
+) {
     when (state) {
         is UiState.Loading -> Text("Loading basic nutrient intakes")
         is UiState.Success -> BasicNutrients(state.data, user)
         is UiState.Error -> ApiErrorMessage(state.message)
-        UiState.Idle -> {}
+        is UiState.Idle -> {}
     }
 }
 
 @Composable
 fun BasicNutrients(nutrients: NutrientIntakesByType, user: User) {
     Row(
-        modifier = Modifier.areaContainer(),
+        modifier = Modifier.areaContainerLarge(),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically,
         content = {
@@ -81,13 +84,14 @@ fun BasicNutrient(intake: NutrientIntake) {
     val barRadius = 16.dp
     val spacedBy = 12.dp
 
-    val progressHeight = doubleFormatter(nutrientData.progress / 100f).toFloat()
+    val progressHeight = (nutrientData.progress / 100f).toFloat()
+
     val goalDisplay = if (intake.goal != null) doubleFormatter(intake.goal) else "0"
     val intakeDisplay = doubleFormatter(intake.intake)
 
     Column(
         modifier = Modifier
-            .width(76.dp),
+            .width(72.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacedBy),
         content = {
@@ -99,7 +103,7 @@ fun BasicNutrient(intake: NutrientIntake) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .height(156.dp)
+                    .height(150.dp)
                     .background(
                         color = MaterialTheme.colorScheme.inverseSurface.copy(
                             0.03f

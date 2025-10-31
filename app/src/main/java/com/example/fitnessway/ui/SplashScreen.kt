@@ -1,4 +1,4 @@
-package com.example.fitnessway.util
+package com.example.fitnessway.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

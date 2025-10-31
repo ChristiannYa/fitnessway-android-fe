@@ -32,9 +32,9 @@ import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Nutrient.calcNutrientData
+import com.example.fitnessway.util.Nutrient.filterDisplayedNutrients
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.calcNutrientData
-import com.example.fitnessway.util.filterDisplayedNutrients
 
 @Composable
 fun BasicNutrientIntakes(

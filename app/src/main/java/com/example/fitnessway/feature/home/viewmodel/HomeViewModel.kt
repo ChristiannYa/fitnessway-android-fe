@@ -33,7 +33,8 @@ class HomeViewModel(
 
     // Food Managers
     val foodLogCategory: StateFlow<String> = managers.foodLog.foodLogCategory
-    fun setFoodLogCategory(categories: FoodLogCategories) = managers.foodLog.setFoodLogCategory(categories)
+    fun setFoodLogCategory(categories: FoodLogCategories) =
+        managers.foodLog.setFoodLogCategory(categories)
 
     // Repository calls
     fun getNutrientIntakes() {
@@ -41,9 +42,7 @@ class HomeViewModel(
 
         viewModelScope.launch {
             nutrientRepo.getNutrientIntakes(apiDate).collect { state ->
-                _uiState.update {
-                    it.copy(nutrientIntakesState = state)
-                }
+                _uiState.update { it.copy(nutrientIntakesState = state) }
             }
         }
     }
@@ -51,9 +50,7 @@ class HomeViewModel(
     fun getFoods() {
         viewModelScope.launch {
             foodRepo.getFoods().collect { state ->
-                _uiState.update {
-                    it.copy(foodsState = state)
-                }
+                _uiState.update { it.copy(foodsState = state) }
             }
         }
     }
@@ -63,9 +60,7 @@ class HomeViewModel(
 
         viewModelScope.launch {
             foodRepo.getFoodLogs(apiDate).collect { state ->
-                _uiState.update {
-                    it.copy(foodLogsState = state)
-                }
+                _uiState.update { it.copy(foodLogsState = state) }
             }
         }
     }

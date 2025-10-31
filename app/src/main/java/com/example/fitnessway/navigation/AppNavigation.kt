@@ -18,7 +18,7 @@ import com.example.fitnessway.feature.lists.navigation.listsNavigationGraph
 import com.example.fitnessway.feature.profile.navigation.ProfileMain
 import com.example.fitnessway.feature.profile.navigation.profileNavigationGraph
 import com.example.fitnessway.feature.welcome.navigation.welcomeNavigationGraph
-import com.example.fitnessway.util.SplashScreen
+import com.example.fitnessway.ui.SplashScreen
 import org.koin.compose.koinInject
 
 private val screenWithBottomNavBar = listOf(

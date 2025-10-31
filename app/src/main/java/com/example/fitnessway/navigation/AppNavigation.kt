@@ -10,7 +10,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.fitnessway.di.IApplicationStateStore
+import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.navigation.HomeMain
 import com.example.fitnessway.feature.home.navigation.homeNavigationGraph
 import com.example.fitnessway.feature.lists.navigation.ListsMain

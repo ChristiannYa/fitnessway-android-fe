@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.composables
+package com.example.fitnessway.feature.home.screen.main.composables
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

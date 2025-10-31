@@ -93,6 +93,16 @@ class HomeViewModel(
         }
     }
 
+    fun getFoods() {
+        viewModelScope.launch {
+            foodRepo.getFoods().collect { state ->
+                _uiState.update {
+                    it.copy(foodsState = state)
+                }
+            }
+        }
+    }
+
     fun getFoodLogs() {
         val apiDate: String = apiDateFormatter.format(_selectedDate.value)
 

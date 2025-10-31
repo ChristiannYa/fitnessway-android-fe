@@ -15,16 +15,25 @@ object AppModifiers {
         .fillMaxWidth()
         .background(
             color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(16.dp)
         )
-        .padding(20.dp)
+        .padding(18.dp)
 
     @Composable
     fun Modifier.areaContainerMedium() = this
         .fillMaxWidth()
         .background(
             color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
-            shape = RoundedCornerShape(18.dp)
+            shape = RoundedCornerShape(14.dp)
         )
-        .padding(18.dp)
+        .padding(20.dp)
+
+    @Composable
+    fun Modifier.areaContainerSmall() = this
+        .fillMaxWidth()
+        .background(
+            color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
+            shape = RoundedCornerShape(12.dp)
+        )
+        .padding(14.dp)
 }

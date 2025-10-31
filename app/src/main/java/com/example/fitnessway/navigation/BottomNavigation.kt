@@ -12,13 +12,19 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.example.fitnessway.data.model.navigation.TopLevelRoute
+
+private data class TopLevelRoute<T : Any>(
+    val name: String,
+    val route: T,
+    val icon: ImageVector
+)
 
 private val topLevelRoutes = listOf(
     TopLevelRoute(

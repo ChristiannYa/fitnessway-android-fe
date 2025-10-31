@@ -6,8 +6,8 @@ import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-// TODO: change the server response to return a user's food in composition, so that
-//  `UserFood` becomes simplified like so:
+// TODO: change the server response to return a user's food (in a food log) in
+//  composition, so that `UserFood` becomes simplified like so:
 //  `data class UserFood(val userId: String, val food: Food)`
 
 enum class FoodLogCategories {
@@ -48,17 +48,18 @@ data class UserFood(
 )
 
 @Serializable
-data class FoodsApiResponse(
-    val foods: List<UserFood>
-)
-
-typealias FoodsApiFetchResponse = ApiResponseWithContent<FoodsApiResponse>
-
-@Serializable
 data class FoodNutrientAmountData(
     val nutrient: Nutrient,
     val amount: Double
 )
+
+@Serializable
+data class FoodsApiResponse(
+    @SerialName("foods")
+    val foods: List<FoodInformation>
+)
+
+typealias FoodsApiFetchResponse = ApiResponseWithContent<FoodsApiResponse>
 
 @Serializable
 data class FoodInformation(

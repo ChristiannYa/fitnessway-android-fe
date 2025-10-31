@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.fitnessway.di.init.AppInitializer
 import com.example.fitnessway.di.modules.appModule
 import com.example.fitnessway.di.modules.dataStoreModule
+import com.example.fitnessway.di.modules.managersModule
 import com.example.fitnessway.di.modules.networkModule
 import com.example.fitnessway.di.modules.repositoryModule
 import com.example.fitnessway.di.modules.stateModule
@@ -15,32 +16,33 @@ import org.koin.core.context.startKoin
 import java.io.File
 
 class FitnesswayApp : Application() {
-   private val appInitializer: AppInitializer by inject()
+    private val appInitializer: AppInitializer by inject()
 
-   override fun onCreate() {
-      super.onCreate()
-      clearOkHttpCache()
+    override fun onCreate() {
+        super.onCreate()
+        clearOkHttpCache()
 
-      startKoin {
-         androidContext(this@FitnesswayApp)
-         androidLogger()
-         modules(
-            appModule,
-            stateModule,
-            networkModule,
-            viewModelModule,
-            repositoryModule,
-            dataStoreModule,
-         )
-      }
+        startKoin {
+            androidContext(this@FitnesswayApp)
+            androidLogger()
+            modules(
+                appModule,
+                stateModule,
+                networkModule,
+                viewModelModule,
+                repositoryModule,
+                dataStoreModule,
+                managersModule,
+            )
+        }
 
-      appInitializer.initialize()
-   }
+        appInitializer.initialize()
+    }
 
-   private fun clearOkHttpCache() {
-      // @NOTE
-      // `Application.cacheDir` or just `cacheDir` returns the app's cache directory
-      val cacheDir = File(cacheDir, "okhttp_cache")
-      if (cacheDir.exists()) cacheDir.deleteRecursively()
-   }
+    private fun clearOkHttpCache() {
+        // @NOTE
+        // `Application.cacheDir` or just `cacheDir` returns the app's cache directory
+        val cacheDir = File(cacheDir, "okhttp_cache")
+        if (cacheDir.exists()) cacheDir.deleteRecursively()
+    }
 }

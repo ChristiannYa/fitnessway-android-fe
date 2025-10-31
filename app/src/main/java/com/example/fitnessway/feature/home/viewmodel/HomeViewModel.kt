@@ -6,20 +6,18 @@ import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
+import com.example.fitnessway.feature.home.manager.IHomeManagers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 class HomeViewModel(
     private val nutrientRepo: INutrientRepository,
     private val foodRepo: IFoodRepository,
+    private val managers: IHomeManagers,
     userStateHolder: IUserStateHolder
 ) : ViewModel() {
     // General
@@ -28,61 +26,18 @@ class HomeViewModel(
 
     val user = userStateHolder.userState.value.user
 
-    // Day picker related
-    private val dateFormatter: DateFormat = SimpleDateFormat.getDateInstance()
-    private val apiDateFormatter = SimpleDateFormat("MM-dd-yyyy", Locale.US)
+    // Date Managers
+    val selectedDate: StateFlow<Date> = managers.date.selectedDate
+    fun getFormattedDay(date: Date): String = managers.date.getFormattedDay(date)
+    fun changeDay(days: Int) = managers.date.changeDay(days)
 
-    private val _selectedDate = MutableStateFlow(Date())
-    val selectedDate: StateFlow<Date> = _selectedDate
-
-    fun getFormattedDay(date: Date): String {
-        val selectedCal = Calendar.getInstance().apply {
-            time = date
-            clearTime()
-        }
-        val todayCal = Calendar.getInstance().apply { clearTime() }
-
-        val daysDiff =
-            ((selectedCal.timeInMillis - todayCal.timeInMillis) / (1000 * 60 * 60 * 24)).toInt()
-
-        return when (daysDiff) {
-            0 -> "Today"
-            -1 -> "Yesterday"
-            1 -> "Tomorrow"
-            else -> dateFormatter.format(date)
-        }
-    }
-
-    fun changeDay(days: Int) {
-        val calendar = Calendar.getInstance()
-        calendar.time = _selectedDate.value
-        calendar.add(Calendar.DAY_OF_YEAR, days)
-        _selectedDate.value = calendar.time
-    }
-
-    private fun Calendar.clearTime() {
-        set(Calendar.HOUR_OF_DAY, 0)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }
-
-    // Food log related
-    private val _foodLogCategory = MutableStateFlow("")
-    val foodLogCategory: StateFlow<String> = _foodLogCategory
-
-    fun setFoodLogCategory(categories: FoodLogCategories) {
-        when (categories) {
-            FoodLogCategories.BREAKFAST -> _foodLogCategory.value = "breakfast"
-            FoodLogCategories.LUNCH -> _foodLogCategory.value = "lunch"
-            FoodLogCategories.DINNER -> _foodLogCategory.value = "dinner"
-            FoodLogCategories.SUPPLEMENT -> _foodLogCategory.value = "supplement"
-        }
-    }
+    // Food Managers
+    val foodLogCategory: StateFlow<String> = managers.foodLog.foodLogCategory
+    fun setFoodLogCategory(categories: FoodLogCategories) = managers.foodLog.setFoodLogCategory(categories)
 
     // Repository calls
     fun getNutrientIntakes() {
-        val apiDate: String = apiDateFormatter.format(_selectedDate.value)
+        val apiDate = managers.date.getApiFormattedDate()
 
         viewModelScope.launch {
             nutrientRepo.getNutrientIntakes(apiDate).collect { state ->
@@ -104,7 +59,7 @@ class HomeViewModel(
     }
 
     fun getFoodLogs() {
-        val apiDate: String = apiDateFormatter.format(_selectedDate.value)
+        val apiDate = managers.date.getApiFormattedDate()
 
         viewModelScope.launch {
             foodRepo.getFoodLogs(apiDate).collect { state ->

@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
@@ -21,16 +22,18 @@ class HomeViewModel(
     private val foodRepo: IFoodRepository,
     userStateHolder: IUserStateHolder
 ) : ViewModel() {
+    // General
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
     val user = userStateHolder.userState.value.user
 
-    private val _selectedDate = MutableStateFlow(Date())
-    val selectedDate: StateFlow<Date> = _selectedDate
-
+    // Day picker related
     private val dateFormatter: DateFormat = SimpleDateFormat.getDateInstance()
     private val apiDateFormatter = SimpleDateFormat("MM-dd-yyyy", Locale.US)
+
+    private val _selectedDate = MutableStateFlow(Date())
+    val selectedDate: StateFlow<Date> = _selectedDate
 
     fun getFormattedDay(date: Date): String {
         val selectedCal = Calendar.getInstance().apply {
@@ -64,6 +67,20 @@ class HomeViewModel(
         set(Calendar.MILLISECOND, 0)
     }
 
+    // Food log related
+    private val _foodLogCategory = MutableStateFlow("")
+    val foodLogCategory: StateFlow<String> = _foodLogCategory
+
+    fun setFoodLogCategory(categories: FoodLogCategories) {
+        when (categories) {
+            FoodLogCategories.BREAKFAST -> _foodLogCategory.value = "breakfast"
+            FoodLogCategories.LUNCH -> _foodLogCategory.value = "lunch"
+            FoodLogCategories.DINNER -> _foodLogCategory.value = "dinner"
+            FoodLogCategories.SUPPLEMENT -> _foodLogCategory.value = "supplement"
+        }
+    }
+
+    // Repository calls
     fun getNutrientIntakes() {
         val apiDate: String = apiDateFormatter.format(_selectedDate.value)
 

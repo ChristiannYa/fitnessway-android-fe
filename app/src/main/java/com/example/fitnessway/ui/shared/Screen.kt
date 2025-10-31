@@ -13,28 +13,28 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Screen(
-   header: (@Composable () -> Unit)? = null,
-   isMainScreen: Boolean? = false,
-   content: @Composable () -> Unit,
+    header: (@Composable () -> Unit)? = null,
+    isMainScreen: Boolean? = false,
+    content: @Composable () -> Unit,
 ) {
-   Surface(
-      modifier = Modifier.fillMaxSize()) {
-      Column {
-         header?.let {
-            it()
-            Spacer(modifier = Modifier.height(8.dp))
-         }
-         Box(
-            modifier = Modifier
-               .padding(
-                  horizontal = 16.dp,
-                  vertical = if (header != null && isMainScreen == false) 16.dp else 0.dp
-               )
-         ) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        content = {
             Column {
-               content()
+                header?.let { it() }
+                Box(
+                    modifier = Modifier
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = if (header != null && isMainScreen == false) 16.dp else 0.dp
+                        ),
+                    content = {
+                        Column {
+                            content()
+                        }
+                    }
+                )
             }
-         }
-      }
-   }
+        }
+    )
 }

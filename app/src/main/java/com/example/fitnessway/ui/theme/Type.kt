@@ -3,27 +3,47 @@ package com.example.fitnessway.ui.theme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+
+private val FF = FontFamily.Serif
+private val LS = 0.5.sp
 
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodySmall = TextStyle(
-        fontFamily = FontFamily.Serif,
+        fontFamily = FF,
         fontSize = 12.sp,
         lineHeight = 18.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = LS
     ),
     bodyMedium = TextStyle(
-        fontFamily = FontFamily.Serif,
+        fontFamily = FF,
         fontSize = 14.sp,
         lineHeight = 21.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = LS
     ),
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Serif,
+        fontFamily = FF,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = LS
     ),
+    titleSmall = TextStyle(
+        fontFamily = FF,
+        fontSize = 17.sp,
+        lineHeight = 25.sp,
+        letterSpacing = LS
+    ),
+    titleMedium = TextStyle(
+        fontFamily = FF,
+        fontSize = 18.sp,
+        lineHeight = 27.sp,
+        letterSpacing = LS
+    ),
+    titleLarge = TextStyle(
+        fontFamily = FF,
+        fontSize = 19.sp,
+        lineHeight = 28.sp,
+        letterSpacing = LS
+    )
 )

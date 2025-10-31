@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.Food
 import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.model.food.FoodNutrientAmountData
@@ -45,11 +46,17 @@ import com.example.fitnessway.util.UiState
 @Composable
 fun FoodLogs(
     state: UiState<FoodLogsByCategory>,
-    onFoodLog: () -> Unit
+    onFoodLog: () -> Unit,
+    setFoodLogCategory: (FoodLogCategories) -> Unit
 ) {
     when (state) {
         is UiState.Loading -> Text("Loading food logs")
-        is UiState.Success -> FoodLogsCategorized(state.data, onFoodLog)
+        is UiState.Success -> FoodLogsCategorized(
+            state.data,
+            onFoodLog,
+            setFoodLogCategory
+        )
+
         is UiState.Error -> ApiErrorMessage(state.message)
         is UiState.Idle -> {}
     }
@@ -60,6 +67,7 @@ fun FoodLogs(
 fun FoodLogsCategorized(
     foodLogs: FoodLogsByCategory,
     onFoodLog: () -> Unit,
+    setFoodLogCategory: (FoodLogCategories) -> Unit
 ) {
     Column(
         modifier = Modifier.areaContainerLarge(),
@@ -67,23 +75,27 @@ fun FoodLogsCategorized(
         content = {
             FoodLogCategory(
                 foodLogs = foodLogs.breakfast,
-                category = "breakfast",
-                onFoodLog
+                category = FoodLogCategories.BREAKFAST,
+                onFoodLog,
+                setFoodLogCategory
             )
             FoodLogCategory(
                 foodLogs = foodLogs.lunch,
-                category = "lunch",
-                onFoodLog
+                category = FoodLogCategories.LUNCH,
+                onFoodLog,
+                setFoodLogCategory,
             )
             FoodLogCategory(
                 foodLogs = foodLogs.dinner,
-                category = "dinner",
-                onFoodLog
+                category = FoodLogCategories.DINNER,
+                onFoodLog,
+                setFoodLogCategory,
             )
             FoodLogCategory(
                 foodLogs = foodLogs.supplement,
-                category = "supplement",
-                onFoodLog
+                category = FoodLogCategories.SUPPLEMENT,
+                onFoodLog,
+                setFoodLogCategory,
             )
         }
     )
@@ -92,14 +104,17 @@ fun FoodLogsCategorized(
 @Composable
 fun FoodLogCategory(
     foodLogs: List<FoodLogData>,
-    category: String,
+    category: FoodLogCategories,
     onFoodLog: () -> Unit,
+    setFoodLogCategory: (FoodLogCategories) -> Unit
 ) {
+    val categoryFormatted = category.name.lowercase().replaceFirstChar { it.uppercase() }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         content = {
             Text(
-                text = category.replaceFirstChar { it.uppercase() },
+                text = categoryFormatted,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.SemiBold,
@@ -112,7 +127,7 @@ fun FoodLogCategory(
                 content = {
                     if (foodLogs.isEmpty()) {
                         Text(
-                            text = "No $category logged yet",
+                            text = "No $categoryFormatted logged yet",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
                             textAlign = TextAlign.Center,
@@ -125,7 +140,10 @@ fun FoodLogCategory(
                     }
 
                     TextButton(
-                        onClick = onFoodLog,
+                        onClick = {
+                            setFoodLogCategory(category)
+                            onFoodLog()
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -217,7 +235,8 @@ fun FoodLogsPreview() {
     FitnesswayTheme {
         FoodLogsCategorized(
             foodLogs = sampleFoodLogsByCategory,
-            onFoodLog = {}
+            onFoodLog = {},
+            setFoodLogCategory = {}
         )
     }
 }

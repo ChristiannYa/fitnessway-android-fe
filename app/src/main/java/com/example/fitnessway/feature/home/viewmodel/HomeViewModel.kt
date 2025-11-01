@@ -29,15 +29,16 @@ class HomeViewModel(
 
     // Date Managers
     val selectedDate: StateFlow<Date> = managers.date.selectedDate
-    val currentTime = managers.date.currentTime
 
     fun getFormattedDay(date: Date): String = managers.date.getFormattedDay(date)
     fun changeDay(days: Int) = managers.date.changeDay(days)
+    fun getCurrentTime() = managers.date.getCurrentTime()
 
     // Food Managers
     val foodLogCategory: StateFlow<String> = managers.foodLog.foodLogCategory
     fun setFoodLogCategory(categories: FoodLogCategories) =
         managers.foodLog.setFoodLogCategory(categories)
+
     val selectedFood = managers.foodLog.selectedFood
     fun setSelectedFood(food: FoodInformation) = managers.foodLog.setSelectedFood(food)
 

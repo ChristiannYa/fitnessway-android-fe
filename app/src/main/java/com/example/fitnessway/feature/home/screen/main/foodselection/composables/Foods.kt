@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.Food
@@ -82,12 +83,16 @@ fun Food(
             Text(
                 text = food.information.name,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = if (missingBrand) "~" else food.information.brand,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                color = MaterialTheme.colorScheme.onBackground.copy(0.6f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

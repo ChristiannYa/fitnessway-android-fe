@@ -11,9 +11,13 @@ import java.util.Locale
 class DateManager {
     private val dateFormatter: DateFormat = SimpleDateFormat.getDateInstance()
     private val apiDateFormatter = SimpleDateFormat("MM-dd-yyyy", Locale.US)
+    private val timeFormatter = SimpleDateFormat("hh:mm a", Locale.US)
 
     private val _selectedDate = MutableStateFlow(Date())
     val selectedDate: StateFlow<Date> = _selectedDate
+
+    val currentTime: String
+        get() = timeFormatter.format(Date())
 
     fun getFormattedDay(date: Date): String {
         val selectedCal = Calendar.getInstance().apply {

@@ -1,12 +1,14 @@
 package com.example.fitnessway.ui.theme
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 object AppModifiers {
@@ -29,7 +31,16 @@ object AppModifiers {
         .padding(20.dp)
 
     @Composable
-    fun Modifier.areaContainerSmall() = this
+    fun Modifier.areaContainerSmall(
+        onClick: (() -> Unit)? = null
+    ) = this
+        .then(
+            if (onClick != null) {
+                Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = onClick)
+            } else Modifier
+        )
         .fillMaxWidth()
         .background(
             color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),

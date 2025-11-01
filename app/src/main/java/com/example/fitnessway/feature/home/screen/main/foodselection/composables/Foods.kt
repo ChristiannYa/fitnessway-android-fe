@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.foodselection.composables
+package com.example.fitnessway.feature.home.screen.main.foodselection.composables
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -27,35 +27,56 @@ import com.example.fitnessway.util.UiState
 @Composable
 fun Foods(
     state: UiState<List<FoodInformation>>,
+    setSelectedFood: (FoodInformation) -> Unit,
+    onSelectedFood: () -> Unit
 ) {
     when (state) {
         is UiState.Loading -> Text("Loading foods")
-        is UiState.Success -> Foods(state.data)
+        is UiState.Success -> Foods(state.data, setSelectedFood, onSelectedFood)
         is UiState.Error -> ApiErrorMessage(state.message)
         is UiState.Idle -> {}
     }
 }
 
 @Composable
-fun Foods(foods: List<FoodInformation>) {
+fun Foods(
+    foods: List<FoodInformation>,
+    setSelectedFood: (FoodInformation) -> Unit,
+    onSelectedFood: () -> Unit
+) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         content = {
             foods.forEach {
-                item { Food(it) }
+                item {
+                    Food(
+                        food = it,
+                        setSelectedFood,
+                        onSelectedFood
+                    )
+                }
             }
         }
     )
 }
 
 @Composable
-fun Food(food: FoodInformation) {
+fun Food(
+    food: FoodInformation,
+    setSelectedFood: (FoodInformation) -> Unit,
+    onSelectedFood: () -> Unit
+) {
     val missingBrand = food.information.brand == null || food.information.brand == ""
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .areaContainerSmall(),
+            .areaContainerSmall(
+                onClick = {
+                    setSelectedFood(food)
+                    onSelectedFood()
+                }
+            ),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         content = {
             Text(
@@ -88,20 +109,13 @@ fun Food(food: FoodInformation) {
 @Composable
 fun FoodsPreview() {
     FitnesswayTheme {
-        Foods(mockFoodInformationList)
+        Foods(
+            foods = mockFoodInformationList,
+            setSelectedFood = {},
+            onSelectedFood = {}
+        )
     }
 }
-
-/*
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun FoodPreview() {
-    FitnesswayTheme {
-        Food(mockFoodInformation)
-    }
-}
-
- */
 
 val mockFoodInformationList = listOf(
     // Whole Milk

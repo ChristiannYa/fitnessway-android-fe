@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
@@ -28,6 +29,8 @@ class HomeViewModel(
 
     // Date Managers
     val selectedDate: StateFlow<Date> = managers.date.selectedDate
+    val currentTime = managers.date.currentTime
+
     fun getFormattedDay(date: Date): String = managers.date.getFormattedDay(date)
     fun changeDay(days: Int) = managers.date.changeDay(days)
 
@@ -35,6 +38,8 @@ class HomeViewModel(
     val foodLogCategory: StateFlow<String> = managers.foodLog.foodLogCategory
     fun setFoodLogCategory(categories: FoodLogCategories) =
         managers.foodLog.setFoodLogCategory(categories)
+    val selectedFood = managers.foodLog.selectedFood
+    fun setSelectedFood(food: FoodInformation) = managers.foodLog.setSelectedFood(food)
 
     // Repository calls
     fun getNutrientIntakes() {

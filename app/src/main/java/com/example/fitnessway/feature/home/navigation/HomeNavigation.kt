@@ -1,14 +1,13 @@
 package com.example.fitnessway.feature.home.navigation
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.fitnessway.feature.home.screen.foodselection.FoodSelectionScreen
+import com.example.fitnessway.feature.home.screen.main.foodselection.FoodSelectionScreen
 import com.example.fitnessway.feature.home.screen.main.HomeScreen
+import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.FoodLogScreen
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.navigation.HomeGraph
 import kotlinx.serialization.Serializable
@@ -19,6 +18,9 @@ object HomeMain
 
 @Serializable
 private object FoodSelection
+
+@Serializable
+private object FoodLog
 
 fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
     navigation<HomeGraph>(startDestination = HomeMain) {
@@ -43,6 +45,20 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
             val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
             FoodSelectionScreen(
+                viewModel,
+                onBackClick = { navController.popBackStack() },
+                onSelectedFood = { navController.navigate(FoodLog) }
+            )
+        }
+
+        composable<FoodLog> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<HomeGraph>()
+            }
+
+            val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
+            FoodLogScreen(
                 onBackClick = { navController.popBackStack() },
                 viewModel
             )

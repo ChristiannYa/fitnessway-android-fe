@@ -17,7 +17,7 @@ class DateManager {
     val selectedDate: StateFlow<Date> = _selectedDate
 
     fun getCurrentTime(): String {
-        return SimpleDateFormat("hh:mm a", Locale.US).format(Date())
+        return timeFormatter.format(Date())
     }
 
     fun getFormattedDay(date: Date): String {

@@ -100,7 +100,7 @@ fun Food(
                     food.nutrients.basic.forEach { (_, amount) ->
                         Text(
                             text = doubleFormatter(amount),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.tertiary
                         )
                     }

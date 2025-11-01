@@ -2,7 +2,6 @@ package com.example.fitnessway.feature.home.manager
 
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogCategories
-import com.example.fitnessway.util.Food
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

@@ -83,7 +83,7 @@ fun FoodLogScreen(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         content = {
                             EditionButtons(
-                                isValid = true,
+                                isValid = viewModel.isFoodLogFormValid,
 
                                 // Just reading state, so there is no need to use the view model to
                                 // obtain the value

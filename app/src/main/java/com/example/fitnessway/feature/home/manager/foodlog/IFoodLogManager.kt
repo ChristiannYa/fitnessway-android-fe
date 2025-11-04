@@ -10,15 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 interface IFoodLogManager {
     val foodLogCategory: StateFlow<String>
     val selectedFood: StateFlow<FoodInformation?>
+    val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> // Null until the user selects a food
+    val isFoodLogFormValid: Boolean
 
-    // Starts as null until the user selects a food
-    val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?>
-
-    fun setFoodLogCategory(categories: FoodLogCategories): Unit
-    fun setSelectedFood(food: FoodInformation): Unit
-    fun initializeFoodLogForm(food: FoodInformation, time: String): Unit
-    fun updateFoodLogFormField(fieldName: FormFieldName.FoodLog, input: String): Unit
-    fun startFoodLogEdit(): Unit
-    fun cancelFoodLogEdit(): Unit
-    fun saveFoodLogEdit(): Unit
+    fun setFoodLogCategory(categories: FoodLogCategories)
+    fun setSelectedFood(food: FoodInformation)
+    fun initializeFoodLogForm(food: FoodInformation, time: String)
+    fun updateFoodLogFormField(fieldName: FormFieldName.FoodLog, input: String)
+    fun startFoodLogEdit()
+    fun cancelFoodLogEdit()
+    fun saveFoodLogEdit()
 }

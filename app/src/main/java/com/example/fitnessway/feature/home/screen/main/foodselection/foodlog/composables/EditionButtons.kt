@@ -51,6 +51,10 @@ fun EditionButtons(
     }
 
     if (isEditing) {
+        val saveTextColor = if (isValid == true) {
+            MaterialTheme.colorScheme.primary
+        } else MaterialTheme.colorScheme.primary.copy(0.3f)
+
         Row(
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxWidth(),
@@ -66,7 +70,7 @@ fun EditionButtons(
                 EditionButton(
                     text = "Save",
                     backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                    textColor = MaterialTheme.colorScheme.primary,
+                    textColor = saveTextColor,
                     onClick = { handleBtnPress(EditionButtonTypes.SAVE) },
                     modifier = Modifier
                         .weight(1f)

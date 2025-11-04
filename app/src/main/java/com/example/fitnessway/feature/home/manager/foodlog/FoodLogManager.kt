@@ -3,6 +3,7 @@ package com.example.fitnessway.feature.home.manager.foodlog
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,15 @@ class FoodLogManager : IFoodLogManager {
 
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
+
+    override val isFoodLogFormValid: Boolean
+        get() = foodLogFormState.value?.data?.let { data ->
+            val servings = data.servings.toDoubleOrNull()
+            val amountPerServing = data.amountPerServing.toDoubleOrNull()
+
+            servings != null && servings > 0 &&
+                    amountPerServing != null && amountPerServing > 0
+        } ?: false
 
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {
@@ -34,8 +44,8 @@ class FoodLogManager : IFoodLogManager {
     override fun initializeFoodLogForm(food: FoodInformation, time: String) {
         _foodLogFormState.value = FormState(
             data = FormStates.FoodLog(
-                servings = 1.0,
-                amountPerServing = food.information.amountPerServing,
+                servings = doubleFormatter(1.0),
+                amountPerServing = doubleFormatter(food.information.amountPerServing),
                 time = time
             )
         )
@@ -49,14 +59,13 @@ class FoodLogManager : IFoodLogManager {
             val updatedData = when (fieldName) {
                 FormFieldName.FoodLog.SERVINGS -> {
                     currentState.data.copy(
-                        servings = input.toDoubleOrNull() ?: currentState.data.servings
+                        servings = input
                     )
                 }
 
                 FormFieldName.FoodLog.AMOUNT_PER_SERVING -> {
                     currentState.data.copy(
-                        amountPerServing = input.toDoubleOrNull()
-                            ?: currentState.data.amountPerServing
+                        amountPerServing = input
                     )
                 }
 

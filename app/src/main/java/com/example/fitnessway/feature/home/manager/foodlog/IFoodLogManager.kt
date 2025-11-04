@@ -18,4 +18,7 @@ interface IFoodLogManager {
     fun setSelectedFood(food: FoodInformation): Unit
     fun initializeFoodLogForm(food: FoodInformation, time: String): Unit
     fun updateFoodLogFormField(fieldName: FormFieldName.FoodLog, input: String): Unit
+    fun startFoodLogEdit(): Unit
+    fun cancelFoodLogEdit(): Unit
+    fun saveFoodLogEdit(): Unit
 }

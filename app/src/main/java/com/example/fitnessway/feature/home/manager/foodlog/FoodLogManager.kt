@@ -68,4 +68,16 @@ class FoodLogManager : IFoodLogManager {
             _foodLogFormState.value = currentState.copy(data = updatedData)
         }
     }
+
+    override fun startFoodLogEdit() {
+        _foodLogFormState.value = _foodLogFormState.value?.edit()
+    }
+
+    override fun cancelFoodLogEdit() {
+        _foodLogFormState.value = _foodLogFormState.value?.cancel()
+    }
+
+    override fun saveFoodLogEdit() {
+        _foodLogFormState.value = _foodLogFormState.value?.save()
+    }
 }

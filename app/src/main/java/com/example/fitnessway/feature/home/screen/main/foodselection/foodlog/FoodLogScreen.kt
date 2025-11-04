@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables.EditionButtons
 import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables.FoodLogInformationList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
@@ -81,7 +82,21 @@ fun FoodLogScreen(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         content = {
-                            // EditionButtons()
+                            EditionButtons(
+                                isValid = true,
+
+                                // Just reading state, so there is no need to use the view model to
+                                // obtain the value
+                                isEditing = formState.isEditing,
+
+                                // Updating state...
+                                onEdit = { viewModel.startFoodLogEdit() },
+                                onSave = { viewModel.saveFoodLogEdit() },
+                                onCancel = { viewModel.cancelFoodLogEdit() },
+                                onSubmit = {}, // Send data to server
+
+                                onSubmitText = "Log"
+                            )
 
                             FoodLogInformationList(
                                 food = food,

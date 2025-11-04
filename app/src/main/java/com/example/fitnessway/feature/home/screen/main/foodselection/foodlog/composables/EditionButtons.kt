@@ -1,7 +1,7 @@
 package com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables
 
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
+import com.example.fitnessway.util.Constants
 
 private enum class EditionButtonTypes {
     EDIT,
@@ -43,6 +44,9 @@ fun EditionButtons(
     onSubmitText: String?
 ) {
     fun handleBtnPress(type: EditionButtonTypes) {
+        Log.d(Constants.DEBUG_TAG, "handleBtnPress called")
+        Log.d(Constants.DEBUG_TAG, "type: $type")
+
         when (type) {
             EditionButtonTypes.EDIT -> onEdit()
             EditionButtonTypes.SAVE -> if (isValid == true) onSave()
@@ -58,23 +62,19 @@ fun EditionButtons(
             content = {
                 EditionButton(
                     text = "Cancel",
-                    backgroundColor = Color.Transparent,
-                    textColor = MaterialTheme.colorScheme.primary,
+                    backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     onClick = { handleBtnPress(EditionButtonTypes.CANCEL) },
                     modifier = Modifier
                         .weight(1f)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(buttonRadius)
-                        )
                 )
                 EditionButton(
                     text = "Save",
-                    backgroundColor = MaterialTheme.colorScheme.primary,
-                    textColor = WhiteFont,
+                    backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                    textColor = MaterialTheme.colorScheme.primary,
                     onClick = { handleBtnPress(EditionButtonTypes.SAVE) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                 )
             }
         )
@@ -96,8 +96,8 @@ fun EditionButtons(
                 if (onSubmit != null) {
                     EditionButton(
                         text = onSubmitText ?: "Submit",
-                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                        textColor = MaterialTheme.colorScheme.primary,
+                        backgroundColor = MaterialTheme.colorScheme.primary,
+                        textColor = WhiteFont,
                         onClick = { handleBtnPress(EditionButtonTypes.SUBMIT) },
                         modifier = Modifier.weight(1f)
                     )
@@ -127,7 +127,7 @@ fun EditionButton(
                 color = backgroundColor,
                 shape = RoundedCornerShape(buttonRadius)
             )
-            .padding(vertical = 10.dp, horizontal = 8.dp),
+            .padding(vertical = 8.dp, horizontal = 6.dp),
         content = {
             Text(
                 text = text,

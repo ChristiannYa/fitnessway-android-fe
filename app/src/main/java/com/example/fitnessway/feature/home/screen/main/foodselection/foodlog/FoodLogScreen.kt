@@ -6,17 +6,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables.EditionButtons
 import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables.FoodLogInformationList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import org.koin.compose.viewmodel.koinViewModel
 
 data class Label(
@@ -32,6 +31,18 @@ fun FoodLogScreen(
     val foodCategory by viewModel.foodLogCategory.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
     val time = viewModel.getCurrentTime()
+
+    val foodLogFormState by viewModel.foodLogFormState.collectAsState()
+
+    LaunchedEffect(selectedFood) {
+        selectedFood?.let { food ->
+            viewModel.initializeFoodLogForm(food, time)
+        }
+    }
+
+    foodLogFormState?.let { formState ->
+
+    }
 
     Screen(
         header = {
@@ -64,17 +75,17 @@ fun FoodLogScreen(
                 )
             } else {
                 val category = foodCategory.replaceFirstChar { it.uppercase() }
-                val servings = doubleFormatter(food.information.amountPerServing)
 
                 Column(
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                     content = {
-                        EditionButtons()
+                        // EditionButtons()
 
                         FoodLogInformationList(
                             category = category,
                             foodName = food.information.name,
-                            servings = servings,
+                            amountPerServing = food.information.amountPerServing,
+                            servingUnit = food.information.servingUnit,
                             time = time
                         )
                     }

@@ -10,6 +10,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,14 +23,16 @@ import com.example.fitnessway.ui.theme.FitnesswayTheme
 fun FoodLogInformationList(
     category: String,
     foodName: String,
-    servings: String,
+    amountPerServing: Double,
+    servingUnit: String,
     time: String
 ) {
     val spacing = 8.dp
 
     val foodLogInformation = listOf(
         Label(category, foodName),
-        Label("Servings", servings),
+        Label("Servings", "1"),
+        Label("Amount per serving ($servingUnit)", "$amountPerServing"),
         Label("Time", time)
     )
 
@@ -56,6 +59,7 @@ fun FoodLogInformation(item: Label) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         content = {
             Text(
                 text = item.label,
@@ -66,9 +70,9 @@ fun FoodLogInformation(item: Label) {
             Text(
                 text = item.value,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
     )
@@ -81,7 +85,8 @@ fun LogInformationListPreview() {
         FoodLogInformationList(
             category = "Breakfast",
             foodName = "Grilled Chicken",
-            servings = "2.7",
+            amountPerServing = 182.0,
+            servingUnit = "g",
             time = "07:37"
         )
     }

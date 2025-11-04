@@ -76,7 +76,7 @@ fun PreviewStepOne() {
             label = "Enter your name",
             value = "Christian",
             updateState = {},
-            errorMessage = null
+            errorMessage = "Error"
          )
       )
    }

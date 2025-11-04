@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.manager
+package com.example.fitnessway.feature.home.manager.date
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -8,19 +8,19 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class DateManager {
+class DateManager : IDateManager {
     private val dateFormatter: DateFormat = SimpleDateFormat.getDateInstance()
     private val apiDateFormatter = SimpleDateFormat("MM-dd-yyyy", Locale.US)
     private val timeFormatter = SimpleDateFormat("hh:mm a", Locale.US)
 
     private val _selectedDate = MutableStateFlow(Date())
-    val selectedDate: StateFlow<Date> = _selectedDate
+    override val selectedDate: StateFlow<Date> = _selectedDate
 
-    fun getCurrentTime(): String {
+    override fun getCurrentTime(): String {
         return timeFormatter.format(Date())
     }
 
-    fun getFormattedDay(date: Date): String {
+    override fun getFormattedDay(date: Date): String {
         val selectedCal = Calendar.getInstance().apply {
             time = date
             clearTime()
@@ -38,14 +38,14 @@ class DateManager {
         }
     }
 
-    fun changeDay(days: Int) {
+    override fun changeDay(days: Int) {
         val calendar = Calendar.getInstance()
         calendar.time = _selectedDate.value
         calendar.add(Calendar.DAY_OF_YEAR, days)
         _selectedDate.value = calendar.time
     }
 
-    fun getApiFormattedDate(): String {
+    override fun getApiFormattedDate(): String {
         return apiDateFormatter.format(_selectedDate.value)
     }
 

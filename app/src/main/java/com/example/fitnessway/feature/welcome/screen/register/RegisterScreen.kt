@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.welcome.register.RegisterFieldsProvider
 import com.example.fitnessway.feature.welcome.screen.register.composables.RegisterFormControlButton
 import com.example.fitnessway.feature.welcome.screen.register.composables.RegisterProgressIndicator
 import com.example.fitnessway.feature.welcome.screen.register.composables.StepOne
@@ -40,6 +39,7 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
+import com.example.fitnessway.util.form.providers.RegisterFieldsProvider
 
 @Composable
 fun RegisterScreen(onBackClick: () -> Unit) {

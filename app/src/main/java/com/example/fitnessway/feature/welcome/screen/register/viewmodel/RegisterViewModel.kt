@@ -28,36 +28,36 @@ private val nameRules = listOf(
 class RegisterViewModel(
    private val repo: IAuthRepository
 ) : ViewModel() {
-   private val _registerUiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-   val registerUiState: StateFlow<UiState<Unit>> = _registerUiState
+    private val _registerUiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val registerUiState: StateFlow<UiState<Unit>> = _registerUiState
 
-   var currentStep by mutableIntStateOf(1)
-      private set
+    var currentStep by mutableIntStateOf(1)
+        private set
 
-   var name by mutableStateOf("")
-      private set
+    var name by mutableStateOf("")
+        private set
 
-   var email by mutableStateOf("")
-      private set
+    var email by mutableStateOf("")
+        private set
 
-   var password by mutableStateOf("")
-      private set
+    var password by mutableStateOf("")
+        private set
 
-   var confirmPassword by mutableStateOf("")
-      private set
+    var confirmPassword by mutableStateOf("")
+        private set
 
-   fun updateField(fieldName: FormFieldName.Register, input: String) {
-      if (_registerUiState.value is UiState.Error) {
-         _registerUiState.value = UiState.Idle
-      }
+    fun updateField(fieldName: FormFieldName.Register, input: String) {
+        if (_registerUiState.value is UiState.Error) {
+            _registerUiState.value = UiState.Idle
+        }
 
-      when (fieldName) {
-         FormFieldName.Register.NAME -> name = input
-         FormFieldName.Register.EMAIL -> email = input
-         FormFieldName.Register.PASSWORD -> password = input
-         FormFieldName.Register.CONFIRM_PASSWORD -> confirmPassword = input
-      }
-   }
+        when (fieldName) {
+            FormFieldName.Register.NAME -> name = input
+            FormFieldName.Register.EMAIL -> email = input
+            FormFieldName.Register.PASSWORD -> password = input
+            FormFieldName.Register.CONFIRM_PASSWORD -> confirmPassword = input
+        }
+    }
 
    // Name validation - returns error message or null
    val nameError by derivedStateOf {

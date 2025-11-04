@@ -12,4 +12,10 @@ sealed interface FormFieldName {
       PASSWORD,
       CONFIRM_PASSWORD,
    }
+
+    enum class FoodLog : FormFieldName {
+        SERVINGS,
+        AMOUNT_PER_SERVING,
+        TIME
+    }
 }

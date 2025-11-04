@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,20 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodLogField
 
 @Composable
 fun FoodLogBaseInformationField(
     field: FoodLogField,
-    modifier: Modifier = Modifier,
-    enabled: Boolean,
+    isEditing: Boolean,
 ) {
-    val borderWidth = if (enabled) 1.dp else 0.dp
-    val borderColor = if (enabled) MaterialTheme.colorScheme.primary else Color.Transparent
-    val borderShape = if (enabled) 10.dp else 0.dp
+    val borderWidth = if (isEditing) 1.dp else 0.dp
+    val borderColor = if (isEditing) MaterialTheme.colorScheme.primary else Color.Transparent
+    val borderShape = if (isEditing) 10.dp else 0.dp
 
-    val padding = if (enabled) 14.dp else 0.dp
+    val padding = if (isEditing) 14.dp else 0.dp
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -41,11 +40,13 @@ fun FoodLogBaseInformationField(
                 textStyle = TextStyle(
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                     fontFamily = FontFamily.Default,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.End
                 ),
                 singleLine = true,
-                enabled = enabled,
-                modifier = modifier
+                enabled = isEditing,
+                modifier = Modifier
+                    .fillMaxWidth()
                     .border(
                         width = borderWidth,
                         color = borderColor,

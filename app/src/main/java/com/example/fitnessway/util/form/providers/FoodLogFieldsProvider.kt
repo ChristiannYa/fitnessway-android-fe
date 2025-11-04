@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.form.FoodLogField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.Formatters.doubleFormatter
 
 class FoodLogFieldsProvider(
     private val formState: FormState<FormStates.FoodLog>,
@@ -15,7 +16,7 @@ class FoodLogFieldsProvider(
         return FoodLogField(
             name = FormFieldName.FoodLog.SERVINGS,
             label = "Servings",
-            value = formState.data.servings.toString(),
+            value = doubleFormatter(formState.data.servings),
 
             // @NOTE
             // By providing the `newValue` lambda, we satisfy the (String) -> Unit requirement
@@ -33,11 +34,11 @@ class FoodLogFieldsProvider(
     }
 
     @Composable
-    fun AmountPerServing(): FoodLogField {
+    fun AmountPerServing(servingUnit: String): FoodLogField {
         return FoodLogField(
             name = FormFieldName.FoodLog.AMOUNT_PER_SERVING,
-            label = "Amount per serving",
-            value = formState.data.amountPerServing.toString(),
+            label = "Amount Per Serving ($servingUnit)",
+            value = doubleFormatter(formState.data.amountPerServing),
             updateState = { newValue ->
                 onFieldUpdate(FormFieldName.FoodLog.AMOUNT_PER_SERVING, newValue)
             }

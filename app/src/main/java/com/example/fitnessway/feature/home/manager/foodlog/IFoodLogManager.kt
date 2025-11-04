@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 interface IFoodLogManager {
     val foodLogCategory: StateFlow<String>
     val selectedFood: StateFlow<FoodInformation?>
+
+    // Starts as null until the user selects a food
     val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?>
+
     fun setFoodLogCategory(categories: FoodLogCategories): Unit
     fun setSelectedFood(food: FoodInformation): Unit
     fun initializeFoodLogForm(food: FoodInformation, time: String): Unit

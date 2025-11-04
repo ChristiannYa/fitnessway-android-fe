@@ -16,12 +16,8 @@ import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.com
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.form.providers.FoodLogFieldsProvider
 import org.koin.compose.viewmodel.koinViewModel
-
-data class Label(
-    val label: String,
-    val value: String
-)
 
 @Composable
 fun FoodLogScreen(
@@ -38,10 +34,6 @@ fun FoodLogScreen(
         selectedFood?.let { food ->
             viewModel.initializeFoodLogForm(food, time)
         }
-    }
-
-    foodLogFormState?.let { formState ->
-
     }
 
     Screen(
@@ -74,22 +66,32 @@ fun FoodLogScreen(
                     textAlign = TextAlign.Center
                 )
             } else {
-                val category = foodCategory.replaceFirstChar { it.uppercase() }
+                // @NOTE
+                // `foodLogFormState` is set as null by default. It only gets initialized after the
+                // composable runs for the first time (inside LaunchedEffect). Once initialized it
+                // causes a recomposition, making `foodLogFormState` available
+                foodLogFormState?.let { formState ->
+                    val fieldsProvider = FoodLogFieldsProvider(
+                        formState = formState,
+                        onFieldUpdate = { fieldName, value ->
+                            viewModel.updateFoodLogFormField(fieldName, value)
+                        }
+                    )
 
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    content = {
-                        // EditionButtons()
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        content = {
+                            // EditionButtons()
 
-                        FoodLogInformationList(
-                            category = category,
-                            foodName = food.information.name,
-                            amountPerServing = food.information.amountPerServing,
-                            servingUnit = food.information.servingUnit,
-                            time = time
-                        )
-                    }
-                )
+                            FoodLogInformationList(
+                                food = food,
+                                category = foodCategory,
+                                fieldsProvider = fieldsProvider,
+                                isEditing = formState.isEditing
+                            )
+                        }
+                    )
+                }
             }
         }
     )

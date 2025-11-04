@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,72 +11,102 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.Label
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
-import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.form.FoodLogField
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
+import com.example.fitnessway.util.form.providers.FoodLogFieldsProvider
 
 @Composable
 fun FoodLogInformationList(
+    food: FoodInformation,
     category: String,
-    foodName: String,
-    amountPerServing: Double,
-    servingUnit: String,
-    time: String
+    fieldsProvider: FoodLogFieldsProvider,
+    isEditing: Boolean
 ) {
     val spacing = 8.dp
-
-    val foodLogInformation = listOf(
-        Label(category, foodName),
-        Label("Servings", "1"),
-        Label("Amount per serving ($servingUnit)", "$amountPerServing"),
-        Label("Time", time)
+    val fields = getFoodLogFormFields(
+        fieldsProvider = fieldsProvider,
+        servingUnit = food.information.servingUnit
     )
 
     Column(
-        modifier = Modifier.areaContainerSmall(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.areaContainerMedium(),
+        verticalArrangement = Arrangement.spacedBy(28.dp),
         content = {
-            foodLogInformation.forEachIndexed { index, item ->
-                FoodLogInformation(item)
-
-                if (index < foodLogInformation.lastIndex) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = spacing),
-                        color = MaterialTheme.colorScheme.onBackground.copy(0.1f)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                content = {
+                    Text(
+                        text = category.replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
+                    )
+                    if (food.information.brand != null) {
+                        Text(
+                            text = food.information.brand,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                    Text(
+                        text = food.information.name,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-            }
+            )
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                content = {
+                    fields.forEachIndexed { index, field ->
+                        FoodLogInformation(field, isEditing)
+
+                        if (index < fields.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = spacing),
+                                color = MaterialTheme.colorScheme.onBackground.copy(0.1f)
+                            )
+                        }
+                    }
+                }
+            )
         }
     )
 }
 
+
 @Composable
-fun FoodLogInformation(item: Label) {
+fun FoodLogInformation(
+    field: FoodLogField,
+    isEditing: Boolean,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         content = {
             Text(
-                text = item.label,
+                text = field.label,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(end = 16.dp)
             )
-            Text(
-                text = item.value,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+
+            FoodLogBaseInformationField(field, isEditing)
         }
     )
 }
 
+/*
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LogInformationListPreview() {
@@ -90,4 +119,18 @@ fun LogInformationListPreview() {
             time = "07:37"
         )
     }
+}
+
+ */
+
+@Composable
+private fun getFoodLogFormFields(
+    fieldsProvider: FoodLogFieldsProvider,
+    servingUnit: String,
+): List<FoodLogField> {
+    return listOf(
+        fieldsProvider.Servings(),
+        fieldsProvider.AmountPerServing(servingUnit),
+        fieldsProvider.Time()
+    )
 }

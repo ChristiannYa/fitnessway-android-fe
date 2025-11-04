@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
-import com.example.fitnessway.util.Constants
 
 private enum class EditionButtonTypes {
     EDIT,
@@ -44,9 +42,6 @@ fun EditionButtons(
     onSubmitText: String?
 ) {
     fun handleBtnPress(type: EditionButtonTypes) {
-        Log.d(Constants.DEBUG_TAG, "handleBtnPress called")
-        Log.d(Constants.DEBUG_TAG, "type: $type")
-
         when (type) {
             EditionButtonTypes.EDIT -> onEdit()
             EditionButtonTypes.SAVE -> if (isValid == true) onSave()
@@ -57,7 +52,7 @@ fun EditionButtons(
 
     if (isEditing) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxWidth(),
             content = {
                 EditionButton(
@@ -81,7 +76,7 @@ fun EditionButtons(
     } else {
         Row(
             horizontalArrangement = if (onSubmit != null) {
-                Arrangement.spacedBy(12.dp)
+                Arrangement.spacedBy(20.dp)
             } else Arrangement.spacedBy(0.dp),
             modifier = Modifier.fillMaxWidth(),
             content = {

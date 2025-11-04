@@ -70,7 +70,7 @@ fun FoodLogInformationList(
                     fields.forEachIndexed { index, field ->
                         FoodLogInformation(field, isEditing)
 
-                        if (index < fields.lastIndex) {
+                        if (index < fields.lastIndex && !isEditing) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = spacing),
                                 color = MaterialTheme.colorScheme.onBackground.copy(0.1f)

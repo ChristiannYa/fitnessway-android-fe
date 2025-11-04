@@ -1,4 +1,4 @@
-package com.example.fitnessway.util.form.providers
+package com.example.fitnessway.util.form.field.provider
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.input.KeyboardType

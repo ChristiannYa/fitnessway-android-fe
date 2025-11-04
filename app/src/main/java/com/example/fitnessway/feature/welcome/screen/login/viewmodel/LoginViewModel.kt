@@ -8,10 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.welcome.Password
-import com.example.fitnessway.data.model.welcome.passwordRules
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.form.field.Rules.passwordRules
+import com.example.fitnessway.util.form.field.rules.PasswordInlineRules
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -48,7 +48,7 @@ class LoginViewModel(
    val passwordError by derivedStateOf {
       if (password.isEmpty()) return@derivedStateOf null
 
-      val result = Password(password) checkWith passwordRules
+      val result = PasswordInlineRules(password) checkWith passwordRules
 
       if (result.isFailure) {
          result.exceptionOrNull()?.message

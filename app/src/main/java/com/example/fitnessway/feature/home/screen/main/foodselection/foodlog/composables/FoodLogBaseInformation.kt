@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.form.FoodLogField
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
-import com.example.fitnessway.util.form.providers.FoodLogFieldsProvider
+import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 
 @Composable
 fun FoodLogInformationList(
@@ -105,23 +105,6 @@ fun FoodLogInformation(
         }
     )
 }
-
-/*
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun LogInformationListPreview() {
-    FitnesswayTheme {
-        FoodLogInformationList(
-            category = "Breakfast",
-            foodName = "Grilled Chicken",
-            amountPerServing = 182.0,
-            servingUnit = "g",
-            time = "07:37"
-        )
-    }
-}
-
- */
 
 @Composable
 private fun getFoodLogFormFields(

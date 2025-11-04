@@ -9,24 +9,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.welcome.Password
-import com.example.fitnessway.data.model.welcome.passwordRules
-import com.example.fitnessway.data.model.welcome.register.Name
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.form.field.Rules.nameRules
+import com.example.fitnessway.util.form.field.Rules.passwordRules
+import com.example.fitnessway.util.form.field.rules.NameInlineRules
+import com.example.fitnessway.util.form.field.rules.PasswordInlineRules
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-private val nameRules = listOf(
-   Name::notEmptyRule,
-   Name::lengthRule,
-   Name::validCharactersRule,
-   Name::validFormatRule
-)
-
 class RegisterViewModel(
-   private val repo: IAuthRepository
+    private val repo: IAuthRepository
 ) : ViewModel() {
     private val _registerUiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val registerUiState: StateFlow<UiState<Unit>> = _registerUiState
@@ -59,115 +53,115 @@ class RegisterViewModel(
         }
     }
 
-   // Name validation - returns error message or null
-   val nameError by derivedStateOf {
-      if (name.isEmpty()) return@derivedStateOf null
+    // Name validation - returns error message or null
+    val nameError by derivedStateOf {
+        if (name.isEmpty()) return@derivedStateOf null
 
-      val result = Name(name.trim()) checkWith nameRules
-      result.exceptionOrNull()?.message
-   }
+        val result = NameInlineRules(name.trim()) checkWith nameRules
+        result.exceptionOrNull()?.message
+    }
 
-   // Email validation - returns error message or null
-   val emailError by derivedStateOf {
-      if (email.isEmpty()) return@derivedStateOf null
+    // Email validation - returns error message or null
+    val emailError by derivedStateOf {
+        if (email.isEmpty()) return@derivedStateOf null
 
-      if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-         "Invalid email format"
-      } else {
-         null
-      }
-   }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            "Invalid email format"
+        } else {
+            null
+        }
+    }
 
-   // Password validation - returns error message or null
-   val passwordError by derivedStateOf {
-      if (password.isEmpty()) return@derivedStateOf null
+    // Password validation - returns error message or null
+    val passwordError by derivedStateOf {
+        if (password.isEmpty()) return@derivedStateOf null
 
-      val result = Password(password) checkWith passwordRules
+        val result = PasswordInlineRules(password) checkWith passwordRules
 
-      if (result.isFailure) {
-         result.exceptionOrNull()?.message
-      } else {
-         null
-      }
-   }
+        if (result.isFailure) {
+            result.exceptionOrNull()?.message
+        } else {
+            null
+        }
+    }
 
-   // Confirm password validation - returns error message or null
-   val confirmPasswordError by derivedStateOf {
-      if (confirmPassword.isEmpty()) return@derivedStateOf null
+    // Confirm password validation - returns error message or null
+    val confirmPasswordError by derivedStateOf {
+        if (confirmPassword.isEmpty()) return@derivedStateOf null
 
-      if (password != confirmPassword) {
-         "Passwords don't match"
-      } else {
-         null
-      }
-   }
+        if (password != confirmPassword) {
+            "Passwords don't match"
+        } else {
+            null
+        }
+    }
 
-   // Step 1 validation
-   val stepOneIsValid by derivedStateOf {
-      name.isNotEmpty() && nameError == null
-   }
+    // Step 1 validation
+    val stepOneIsValid by derivedStateOf {
+        name.isNotEmpty() && nameError == null
+    }
 
-   // Step 2 validation
-   val stepTwoIsValid by derivedStateOf {
-      email.isNotEmpty() && emailError == null
-   }
+    // Step 2 validation
+    val stepTwoIsValid by derivedStateOf {
+        email.isNotEmpty() && emailError == null
+    }
 
-   // Step 3 validation
-   val stepThreeIsValid by derivedStateOf {
-      password.isNotEmpty() && passwordError == null
-         && confirmPassword.isNotEmpty() && confirmPasswordError == null
-   }
+    // Step 3 validation
+    val stepThreeIsValid by derivedStateOf {
+        password.isNotEmpty() && passwordError == null
+                && confirmPassword.isNotEmpty() && confirmPasswordError == null
+    }
 
-   val isCurrentStepValid by derivedStateOf {
-      when (currentStep) {
-         1 -> stepOneIsValid
-         2 -> stepTwoIsValid
-         3 -> stepThreeIsValid
-         else -> false
-      }
-   }
+    val isCurrentStepValid by derivedStateOf {
+        when (currentStep) {
+            1 -> stepOneIsValid
+            2 -> stepTwoIsValid
+            3 -> stepThreeIsValid
+            else -> false
+        }
+    }
 
-   val isRegistering by derivedStateOf {
-      registerUiState.value is UiState.Loading
-   }
+    val isRegistering by derivedStateOf {
+        registerUiState.value is UiState.Loading
+    }
 
-   fun updateStep(step: Int, goesBack: Boolean = true) {
-      if (_registerUiState.value is UiState.Error) {
-         _registerUiState.value = UiState.Idle
-      }
+    fun updateStep(step: Int, goesBack: Boolean = true) {
+        if (_registerUiState.value is UiState.Error) {
+            _registerUiState.value = UiState.Idle
+        }
 
-      when (step) {
-         1 -> if (stepOneIsValid) currentStep = 2
+        when (step) {
+            1 -> if (stepOneIsValid) currentStep = 2
 
-         2 -> {
-            if (stepTwoIsValid) currentStep = 3
-            if (goesBack) currentStep = 1
-         }
+            2 -> {
+                if (stepTwoIsValid) currentStep = 3
+                if (goesBack) currentStep = 1
+            }
 
-         3 -> {
-            if (stepThreeIsValid && !goesBack) register()
-            if (goesBack) currentStep = 2
-         }
-      }
-   }
+            3 -> {
+                if (stepThreeIsValid && !goesBack) register()
+                if (goesBack) currentStep = 2
+            }
+        }
+    }
 
-   fun register() {
-      viewModelScope.launch {
-         val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
+    fun register() {
+        viewModelScope.launch {
+            val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
 
-         repo.register(
-            name,
-            email,
-            password,
-            confirmPassword,
-            deviceName
-         ).collect { state ->
-            _registerUiState.value = state
-         }
-      }
-   }
+            repo.register(
+                name,
+                email,
+                password,
+                confirmPassword,
+                deviceName
+            ).collect { state ->
+                _registerUiState.value = state
+            }
+        }
+    }
 
-   fun resetRegisterState() {
-      _registerUiState.value = UiState.Idle
-   }
+    fun resetRegisterState() {
+        _registerUiState.value = UiState.Idle
+    }
 }

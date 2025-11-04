@@ -39,7 +39,7 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
-import com.example.fitnessway.util.form.providers.RegisterFieldsProvider
+import com.example.fitnessway.util.form.field.provider.RegisterFieldsProvider
 
 @Composable
 fun RegisterScreen(onBackClick: () -> Unit) {

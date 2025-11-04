@@ -17,7 +17,7 @@ import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.com
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.util.form.providers.FoodLogFieldsProvider
+import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

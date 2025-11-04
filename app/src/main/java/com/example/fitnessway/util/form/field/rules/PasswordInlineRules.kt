@@ -1,9 +1,10 @@
-package com.example.fitnessway.data.model.welcome
+package com.example.fitnessway.util.form.field.rules
 
 import kotlin.reflect.KFunction1
+import com.example.fitnessway.util.form.field.Configuration.Registration.Password as PasswordConfig
 
 @JvmInline
-value class Password(val pwd: String) {
+value class PasswordInlineRules(val pwd: String) {
    fun longerThanRule() = require(
       pwd.length >= PasswordConfig.MIN_LENGTH
    ) { PasswordConfig.ERR_LEN }
@@ -28,11 +29,11 @@ value class Password(val pwd: String) {
       pwd.count { it in PasswordConfig.SPECIAL_CHARACTERS } >= PasswordConfig.MIN_SPECIAL
    ) { PasswordConfig.ERR_SPECIAL }
 
-   infix fun checkWith(rules: List<KFunction1<Password, Unit>>) = runCatching {
+   infix fun checkWith(rules: List<KFunction1<PasswordInlineRules, Unit>>) = runCatching {
       rules.forEach { it(this) }
    }
 
-   infix fun validateWith(rules: List<KFunction1<Password, Unit>>) = runCatching {
+   infix fun validateWith(rules: List<KFunction1<PasswordInlineRules, Unit>>) = runCatching {
       val message = rules.mapNotNull {
          runCatching { it(this) }.exceptionOrNull()?.message
       }.joinToString(separator = "\n")

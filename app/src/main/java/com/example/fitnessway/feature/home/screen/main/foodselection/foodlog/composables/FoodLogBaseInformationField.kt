@@ -43,7 +43,7 @@ fun FoodLogBaseInformationField(
             style = textStyle
         )
 
-        // Convert pixels to dp correctly using density
+        // Convert pixels to dp using density
         with(density) {
             textLayoutResult.size.width.toDp() + 16.dp
         }

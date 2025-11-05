@@ -17,7 +17,10 @@ class FoodLogFieldsProvider(
     fun Servings(): FoodLogField {
         val value = if (isEditing) {
             formState.data.servings
-        } else doubleFormatter((formState.data.servings).toDouble())
+        } else doubleFormatter(
+            value = (formState.data.servings).toDouble(),
+            decimalPlaces = 2
+        )
 
         return FoodLogField(
             name = FormFieldName.FoodLog.SERVINGS,
@@ -43,7 +46,10 @@ class FoodLogFieldsProvider(
     fun AmountPerServing(servingUnit: String): FoodLogField {
         val value = if (isEditing) {
             formState.data.amountPerServing
-        } else doubleFormatter((formState.data.amountPerServing).toDouble())
+        } else doubleFormatter(
+            value = (formState.data.amountPerServing).toDouble(),
+            decimalPlaces = 2
+        )
 
         return FoodLogField(
             name = FormFieldName.FoodLog.AMOUNT_PER_SERVING,

@@ -23,9 +23,12 @@ class FoodLogManager : IFoodLogManager {
         get() = foodLogFormState.value?.data?.let { data ->
             val servings = data.servings.toDoubleOrNull()
             val amountPerServing = data.amountPerServing.toDoubleOrNull()
+            val time = data.time
 
             servings != null && servings > 0 &&
-                    amountPerServing != null && amountPerServing > 0
+                    amountPerServing != null &&
+                    amountPerServing > 0 &&
+                    time.isNotEmpty() && time.matches(Regex("^\\d{1,2}:\\d{2} [AP]M$"))
         } ?: false
 
     override fun setFoodLogCategory(categories: FoodLogCategories) {

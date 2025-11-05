@@ -11,7 +11,7 @@ class NutrientRepositoryImpl(
 ) : INutrientRepository {
 
     override suspend fun getNutrientIntakes(date: String): Flow<UiState<NutrientIntakesByType>> {
-        return Http.get(
+        return Http.makeRequest(
             apiCall = { apiService.getNutrientIntakes(date) },
             extractData = { it.nutrientIntakes },
             errMsg = "Failed to get nutrient intakes"

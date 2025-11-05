@@ -98,3 +98,24 @@ data class FoodLogsApiResponse(
 )
 
 typealias FoodLogsApiFetchResponse = ApiResponseWithContent<FoodLogsApiResponse>
+
+@Serializable
+data class FoodLogAddRequest(
+    @SerialName("user_id")
+    val userId: String,
+
+    @SerialName("food_id")
+    val foodId: Int,
+
+    val servings: Double,
+    val category: String,
+    val time: String
+)
+
+@Serializable
+data class FoodLogAddApiResponse(
+    @SerialName("food_log")
+    val foodLog: FoodLogData
+)
+
+typealias FoodLogAddPostResponse = ApiResponseWithContent<FoodLogAddApiResponse>

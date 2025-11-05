@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.flowOn
 import retrofit2.Response
 
 object Http {
-    fun <T, D> get(
+    fun <T, D> makeRequest(
         apiCall: suspend () -> Response<ApiResponseWithContent<T>>,
         extractData: (T) -> D,
-        errMsg: String = "Error making GET request",
+        errMsg: String = "Error making request",
     ): Flow<UiState<D>> = flow {
         emit(UiState.Loading)
 
@@ -29,11 +29,13 @@ object Http {
                     emit(UiState.Error(body?.message ?: errMsg))
                 }
             } else {
+                // val errBody = response.errorBody()?.string()
+
                 emit(UiState.Error(errMsg))
             }
 
-        } catch (e: Exception) {
-            emit(UiState.Error("$errMsg: $e"))
+        } catch (_: Exception) {
+            emit(UiState.Error(errMsg))
         }
 
     }.flowOn(Dispatchers.IO)

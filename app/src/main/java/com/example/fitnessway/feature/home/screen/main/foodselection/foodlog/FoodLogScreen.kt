@@ -15,8 +15,10 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables.EditionButtons
 import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables.FoodLogInformationList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
+import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -25,11 +27,12 @@ fun FoodLogScreen(
     onBackClick: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
+    val foodLogFormState by viewModel.foodLogFormState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+
     val foodCategory by viewModel.foodLogCategory.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
     val time = viewModel.getCurrentTime()
-
-    val foodLogFormState by viewModel.foodLogFormState.collectAsState()
 
     LaunchedEffect(selectedFood) {
         selectedFood?.let { food ->
@@ -79,6 +82,8 @@ fun FoodLogScreen(
                         }
                     )
 
+                    val foodLogAddState = uiState.foodLogAddState
+
                     Column(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         content = {
@@ -93,10 +98,14 @@ fun FoodLogScreen(
                                 onEdit = { viewModel.startFoodLogEdit() },
                                 onSave = { viewModel.saveFoodLogEdit() },
                                 onCancel = { viewModel.cancelFoodLogEdit() },
-                                onSubmit = {}, // Send data to server
+                                onSubmit = { viewModel.addFoodLog() },
 
                                 onSubmitText = "Log"
                             )
+
+                            if (foodLogAddState is UiState.Error) {
+                                ApiErrorMessage(foodLogAddState.message)
+                            }
 
                             FoodLogInformationList(
                                 food = food,

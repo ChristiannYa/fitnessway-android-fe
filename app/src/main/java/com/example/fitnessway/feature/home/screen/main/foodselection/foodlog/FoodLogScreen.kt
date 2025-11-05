@@ -9,6 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -20,6 +23,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -29,14 +33,26 @@ fun FoodLogScreen(
 ) {
     val foodLogFormState by viewModel.foodLogFormState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val foodLogAddState = uiState.foodLogAddState
 
     val foodCategory by viewModel.foodLogCategory.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
     val time = viewModel.getCurrentTime()
 
+    var showFoodLogSuccess by remember { mutableStateOf(false) }
+
     LaunchedEffect(selectedFood) {
         selectedFood?.let { food ->
             viewModel.initializeFoodLogForm(food, time)
+        }
+    }
+
+    LaunchedEffect(foodLogAddState) {
+        if (foodLogAddState is UiState.Success) {
+            showFoodLogSuccess = true
+            delay(5000)
+            showFoodLogSuccess = false
+            viewModel.resetFoodLogAddState()
         }
     }
 
@@ -82,8 +98,6 @@ fun FoodLogScreen(
                         }
                     )
 
-                    val foodLogAddState = uiState.foodLogAddState
-
                     Column(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         content = {
@@ -93,6 +107,8 @@ fun FoodLogScreen(
                                 // Just reading state, so there is no need to use the view model to
                                 // obtain the value
                                 isEditing = formState.isEditing,
+
+                                isSubmitSuccess = showFoodLogSuccess,
 
                                 // Updating state...
                                 onEdit = { viewModel.startFoodLogEdit() },

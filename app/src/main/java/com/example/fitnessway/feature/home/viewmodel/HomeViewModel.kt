@@ -9,6 +9,7 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.home.manager.IHomeManagers
 import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
+import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -81,5 +82,10 @@ class HomeViewModel(
                 _uiState.update { it.copy(foodLogAddState = state) }
             }
         }
+    }
+
+    // State can only be updated through `_uiState.update()`
+    fun resetFoodLogAddState() {
+        _uiState.update { it.copy(foodLogAddState = UiState.Idle) }
     }
 }

@@ -46,6 +46,7 @@ class FoodLogManager : IFoodLogManager {
             data = FormStates.FoodLog(
                 servings = doubleFormatter(1.0),
                 amountPerServing = doubleFormatter(food.information.amountPerServing),
+                amountPerServingDb = food.information.amountPerServing,
                 time = time
             )
         )
@@ -58,14 +59,30 @@ class FoodLogManager : IFoodLogManager {
         _foodLogFormState.value?.let { currentState ->
             val updatedData = when (fieldName) {
                 FormFieldName.FoodLog.SERVINGS -> {
+                    val newAmount = input.toDoubleOrNull()
+
+                    val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
+                        val amount = currentState.data.amountPerServingDb * newAmount
+                        doubleFormatter(amount)
+                    } else currentState.data.amountPerServing // Keep current if invalid
+
                     currentState.data.copy(
-                        servings = input
+                        servings = input,
+                        amountPerServing = dynAmountPerServing
                     )
                 }
 
                 FormFieldName.FoodLog.AMOUNT_PER_SERVING -> {
+                    val newAmount = input.toDoubleOrNull()
+
+                    val dynServings = if (newAmount != null && newAmount > 0) {
+                        val amount = newAmount / currentState.data.amountPerServingDb
+                        doubleFormatter(amount)
+                    } else currentState.data.servings // Keep current if invalid
+
                     currentState.data.copy(
-                        amountPerServing = input
+                        amountPerServing = input,
+                        servings = dynServings
                     )
                 }
 

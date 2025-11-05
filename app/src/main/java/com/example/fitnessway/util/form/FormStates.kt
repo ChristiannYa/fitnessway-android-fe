@@ -4,6 +4,10 @@ object FormStates {
     data class FoodLog(
         val servings: String,
         val amountPerServing: String,
-        val time: String
+
+        // Original value from the database
+        val amountPerServingDb: Double,
+
+        val time: String,
     )
 }

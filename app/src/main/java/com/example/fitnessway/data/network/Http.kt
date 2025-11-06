@@ -34,7 +34,7 @@ object Http {
                 emit(UiState.Error(errMsg))
             }
 
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             emit(UiState.Error(errMsg))
         }
 

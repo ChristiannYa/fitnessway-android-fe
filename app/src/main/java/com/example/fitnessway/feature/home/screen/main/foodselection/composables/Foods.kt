@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,20 +46,30 @@ fun Foods(
     setSelectedFood: (FoodInformation) -> Unit,
     onSelectedFood: () -> Unit
 ) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        content = {
-            foods.forEach {
-                item {
-                    Food(
-                        food = it,
-                        setSelectedFood,
-                        onSelectedFood
-                    )
+    if (foods.isEmpty()) {
+        Text(
+            text = "Foods that you add to your list will appear here.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(0.8f),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+    } else {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            content = {
+                foods.forEach {
+                    item {
+                        Food(
+                            food = it,
+                            setSelectedFood,
+                            onSelectedFood
+                        )
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable

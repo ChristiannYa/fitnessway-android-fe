@@ -54,18 +54,21 @@ data class FoodNutrientAmountData(
 )
 
 @Serializable
-data class FoodsApiResponse(
-    @SerialName("foods")
-    val foods: List<FoodInformation>
-)
-
-typealias FoodsApiFetchResponse = ApiResponseWithContent<FoodsApiResponse>
-
-@Serializable
 data class FoodInformation(
     val information: Food,
     val nutrients: NutrientsByType<FoodNutrientAmountData>
 )
+
+
+@Serializable
+data class FoodsApiResponse(
+    // There will be cases where the user will not have any foods created, so the
+    // list would be null
+    @SerialName("foods")
+    val foods: List<FoodInformation>?
+)
+
+typealias FoodsApiFetchResponse = ApiResponseWithContent<FoodsApiResponse>
 
 @Serializable
 data class FoodLogData(

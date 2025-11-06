@@ -15,7 +15,7 @@ class FoodRepositoryImpl(
     override suspend fun getFoods(): Flow<UiState<List<FoodInformation>>> {
         return Http.makeRequest(
             apiCall = { apiService.getFoods() },
-            extractData = { it.foods },
+            extractData = { it.foods ?: emptyList() },
             errMsg = "Failed to get foods"
         )
     }

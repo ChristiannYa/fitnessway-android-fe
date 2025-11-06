@@ -8,11 +8,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import retrofit2.Response
 
-object Http {
+class HttpClient(private val cacheManager: CacheManager) {
     fun <T, D> makeRequest(
         apiCall: suspend () -> Response<ApiResponseWithContent<T>>,
         extractData: (T) -> D,
         errMsg: String = "Error making request",
+        invalidatedUrls: List<String> = emptyList()
     ): Flow<UiState<D>> = flow {
         emit(UiState.Loading)
 
@@ -24,6 +25,12 @@ object Http {
 
                 if (body?.success == true && body.data != null) {
                     val extractedData = extractData(body.data)
+
+                    // Invalidate cached URLs if provided
+                    if (invalidatedUrls.isNotEmpty()) {
+                        invalidatedUrls.forEach { url -> cacheManager.evictUrl(url) }
+                    }
+
                     emit(UiState.Success(extractedData))
                 } else {
                     emit(UiState.Error(body?.message ?: errMsg))
@@ -34,7 +41,7 @@ object Http {
                 emit(UiState.Error(errMsg))
             }
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emit(UiState.Error(errMsg))
         }
 

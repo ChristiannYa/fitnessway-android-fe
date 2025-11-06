@@ -24,10 +24,16 @@ val repositoryModule = module {
     }
 
     single<INutrientRepository> {
-        NutrientRepositoryImpl(apiService = get())
+        NutrientRepositoryImpl(
+            httpClient = get(),
+            apiService = get()
+        )
     }
 
     single<IFoodRepository> {
-        FoodRepositoryImpl(apiService = get())
+        FoodRepositoryImpl(
+            apiService = get(),
+            httpClient = get()
+        )
     }
 }

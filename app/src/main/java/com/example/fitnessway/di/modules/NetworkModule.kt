@@ -1,5 +1,7 @@
 package com.example.fitnessway.di.modules
 
+import com.example.fitnessway.data.network.CacheManager
+import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.interceptors.AuthInterceptor
 import com.example.fitnessway.data.network.interceptors.CacheInterceptor
 import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
@@ -18,8 +20,8 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.io.File
+import com.example.fitnessway.data.network.ApiUrls.BASE_URL
 
-private const val BASE_URL = "http://10.0.0.4:8080/api/"
 private const val AUTH_YES = "authYes"
 private const val AUTH_NO = "authNo"
 
@@ -27,6 +29,11 @@ val networkModule = module {
     // Provide CacheInterceptor
     single<CacheInterceptor> {
         CacheInterceptor()
+    }
+
+    // Provide CacheManager
+    single<CacheManager> {
+        CacheManager(cache = get())
     }
 
     // Provide Cache
@@ -85,6 +92,10 @@ val networkModule = module {
             .client(authenticatedClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
+    }
+
+    single<HttpClient> {
+        HttpClient(cacheManager = get())
     }
 
     // For welcoming users to either login or register

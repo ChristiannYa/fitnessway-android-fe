@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,7 +40,15 @@ fun FoodLogScreen(
     val selectedFood by viewModel.selectedFood.collectAsState()
     val time = viewModel.getCurrentTime()
 
-    var showFoodLogSuccess by remember { mutableStateOf(false) }
+    var shouldShowFoodLogSuccess by remember { mutableStateOf(false) }
+
+    // This will run just in case the user exits the screen before the 5s after
+    // the success state
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetFoodLogAddState()
+        }
+    }
 
     LaunchedEffect(selectedFood) {
         selectedFood?.let { food ->
@@ -49,9 +58,9 @@ fun FoodLogScreen(
 
     LaunchedEffect(foodLogAddState) {
         if (foodLogAddState is UiState.Success) {
-            showFoodLogSuccess = true
+            shouldShowFoodLogSuccess = true
             delay(5000)
-            showFoodLogSuccess = false
+            shouldShowFoodLogSuccess = false
             viewModel.resetFoodLogAddState()
         }
     }
@@ -108,7 +117,7 @@ fun FoodLogScreen(
                                 // obtain the value
                                 isEditing = formState.isEditing,
 
-                                isSubmitSuccess = showFoodLogSuccess,
+                                isSubmitSuccess = shouldShowFoodLogSuccess,
 
                                 // Updating state...
                                 onEdit = { viewModel.startFoodLogEdit() },

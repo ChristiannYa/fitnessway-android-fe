@@ -19,6 +19,8 @@ class FoodLogManager : IFoodLogManager {
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
 
+    // @NOTE
+    // We are inferring a value, so there is no need to use `StateFlow`
     override val isFoodLogFormValid: Boolean
         get() = foodLogFormState.value?.data?.let { data ->
             val servings = data.servings.toDoubleOrNull()
@@ -30,6 +32,9 @@ class FoodLogManager : IFoodLogManager {
                     amountPerServing > 0 &&
                     time.isNotEmpty() && time.matches(Regex("^\\d{1,2}:\\d{2} [AP]M$"))
         } ?: false
+
+    override val shouldShowFoodLogSuccess: Boolean
+        get() = TODO("Not yet implemented")
 
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {

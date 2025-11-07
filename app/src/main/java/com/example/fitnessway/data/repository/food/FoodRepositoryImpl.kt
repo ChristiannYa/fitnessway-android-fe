@@ -14,6 +14,7 @@ class FoodRepositoryImpl(
     private val apiService: IFoodApiService,
     private val httpClient: HttpClient
 ) : IFoodRepository {
+
     override suspend fun getFoods(): Flow<UiState<List<FoodInformation>>> {
         return httpClient.makeRequest(
             apiCall = { apiService.getFoods() },
@@ -33,7 +34,7 @@ class FoodRepositoryImpl(
     override suspend fun addFoodLog(request: FoodLogAddRequest): Flow<UiState<FoodLogData>> {
         // Extract just the date part.
         // Without this we'd be attempting to invalidate the following:
-        // http://10.0.0.4:8080/api/nutrient/get-intakes?date=11-06-2025 02:24 PM
+        // http://BASE_URL/nutrient/get-intakes?date=11-06-2025 02:24 PM
         val date = request.time.substringBefore(" ")
 
         return httpClient.makeRequest(

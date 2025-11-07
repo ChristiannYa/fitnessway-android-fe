@@ -29,7 +29,7 @@ class HomeViewModel(
 
     val user = userStateHolder.userState.value.user
 
-    // Repository calls
+
     fun getNutrientIntakes() {
         val apiDate = managers.date.getApiFormattedDate()
 
@@ -84,7 +84,6 @@ class HomeViewModel(
         }
     }
 
-    // State can only be updated through `_uiState.update()`
     fun resetFoodLogAddState() {
         _uiState.update { it.copy(foodLogAddState = UiState.Idle) }
     }

@@ -12,6 +12,7 @@ interface IFoodLogManager {
     val selectedFood: StateFlow<FoodInformation?>
     val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> // Null until the user selects a food
     val isFoodLogFormValid: Boolean
+    val shouldShowFoodLogSuccess: Boolean
 
     fun setFoodLogCategory(categories: FoodLogCategories)
     fun setSelectedFood(food: FoodInformation)

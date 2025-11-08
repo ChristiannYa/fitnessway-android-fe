@@ -10,16 +10,34 @@ private val LS = 0.5.sp
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    bodySmall = TextStyle(
+    labelSmall = TextStyle(
+        fontFamily = FF,
+        fontSize = 11.sp,
+        lineHeight = 16.5.sp,
+        letterSpacing = LS
+    ),
+    labelMedium = TextStyle(
         fontFamily = FF,
         fontSize = 12.sp,
         lineHeight = 18.sp,
         letterSpacing = LS
     ),
-    bodyMedium = TextStyle(
+    labelLarge = TextStyle(
+        fontFamily = FF,
+        fontSize = 13.sp,
+        lineHeight = 19.5.sp,
+        letterSpacing = LS
+    ),
+    bodySmall = TextStyle(
         fontFamily = FF,
         fontSize = 14.sp,
         lineHeight = 21.sp,
+        letterSpacing = LS
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = FF,
+        fontSize = 15.sp,
+        lineHeight = 22.5.sp,
         letterSpacing = LS
     ),
     bodyLarge = TextStyle(
@@ -31,7 +49,7 @@ val Typography = Typography(
     titleSmall = TextStyle(
         fontFamily = FF,
         fontSize = 17.sp,
-        lineHeight = 25.sp,
+        lineHeight = 25.5.sp,
         letterSpacing = LS
     ),
     titleMedium = TextStyle(
@@ -43,7 +61,7 @@ val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = FF,
         fontSize = 19.sp,
-        lineHeight = 28.sp,
+        lineHeight = 28.5.sp,
         letterSpacing = LS
     )
 )

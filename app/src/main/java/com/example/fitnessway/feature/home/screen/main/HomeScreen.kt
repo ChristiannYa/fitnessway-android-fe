@@ -12,9 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
 import com.example.fitnessway.feature.home.screen.main.composables.DatePicker
 import com.example.fitnessway.feature.home.screen.main.composables.FoodLogs
+import com.example.fitnessway.feature.home.screen.main.composables.OtherNutrientIntakes
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
@@ -52,10 +54,26 @@ fun HomeScreen(
                     if (viewModel.user == null) {
                         item { Text("No user found") }
                     } else {
+                        val nutrientsState = uiState.nutrientIntakesState
+                        val user = viewModel.user
+
                         item {
-                            BasicNutrientIntakes(
-                                uiState.nutrientIntakesState,
-                                viewModel.user
+                            BasicNutrientIntakes(nutrientsState, user)
+                        }
+
+                        item {
+                            OtherNutrientIntakes(
+                                state = nutrientsState,
+                                nutrientType = NutrientType.VITAMIN,
+                                user
+                            )
+                        }
+
+                        item {
+                            OtherNutrientIntakes(
+                                state = nutrientsState,
+                                nutrientType = NutrientType.MINERAL,
+                                user
                             )
                         }
 

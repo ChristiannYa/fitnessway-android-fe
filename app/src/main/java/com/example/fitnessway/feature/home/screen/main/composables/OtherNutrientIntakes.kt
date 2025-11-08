@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.Nutrient
@@ -38,21 +36,37 @@ import com.example.fitnessway.util.Nutrient.filterDisplayedNutrients
 import com.example.fitnessway.util.UiState
 import kotlin.math.roundToInt
 
+
 @Composable
-fun BasicNutrientIntakes(
+fun OtherNutrientIntakes(
     state: UiState<NutrientIntakesByType>,
-    user: User
+    nutrientType: NutrientType,
+    user: User,
 ) {
+    val nutrientTypeName = nutrientType.name.replaceFirstChar { it.uppercase() }
+
     when (state) {
-        is UiState.Loading -> Text("Loading basic nutrient intakes")
-        is UiState.Success -> BasicNutrients(state.data, user)
+        is UiState.Loading -> Text("Loading basic $nutrientTypeName intakes")
+
+        is UiState.Success -> OtherNutrients(
+            nutrients = state.data,
+            nutrientType = nutrientType,
+            user = user
+        )
+
         is UiState.Error -> ApiErrorMessage(state.message)
         is UiState.Idle -> {}
     }
 }
 
 @Composable
-fun BasicNutrients(nutrients: NutrientIntakesByType, user: User) {
+fun OtherNutrients(
+    nutrients: NutrientIntakesByType,
+    nutrientType: NutrientType,
+    user: User
+) {
+    val nutrientTypeName = nutrientType.name.lowercase().replaceFirstChar { it.uppercase() }
+
     Row(
         modifier = Modifier.areaContainerLarge(),
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -60,20 +74,20 @@ fun BasicNutrients(nutrients: NutrientIntakesByType, user: User) {
         content = {
             val displayedNutrients = filterDisplayedNutrients(
                 nutrientsByType = nutrients,
-                nutrientType = NutrientType.BASIC,
+                nutrientType = nutrientType,
                 user = user
             )
 
             if (displayedNutrients.isEmpty()) {
                 Text(
-                    text = "Set your Nutrient goals in order to see their intake progress",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    text = "Set your $nutrientTypeName goals in order to see their intake progress",
+                    color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium
                 )
             } else {
                 displayedNutrients.forEach { nutrient ->
-                    BasicNutrient(nutrient)
+                    OtherNutrient(nutrient)
                 }
             }
         }
@@ -81,11 +95,10 @@ fun BasicNutrients(nutrients: NutrientIntakesByType, user: User) {
 }
 
 @Composable
-fun BasicNutrient(intakeData: NutrientIntake) {
-    val data = remember(intakeData) { calcNutrientIntakeData(intakeData) }
+fun OtherNutrient(intakeData: NutrientIntake) {
+    val data = remember(key1 = intakeData) { calcNutrientIntakeData(intakeData) }
 
-    val barRadius = 16.dp
-    val spacedBy = 12.dp
+    val itemRadius = 16.dp
 
     val progressHeight = (data.progress / 100f).toFloat()
 
@@ -96,7 +109,7 @@ fun BasicNutrient(intakeData: NutrientIntake) {
         modifier = Modifier
             .width(72.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(spacedBy),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         content = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -116,12 +129,12 @@ fun BasicNutrient(intakeData: NutrientIntake) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .height(150.dp)
+                    .aspectRatio(1f)
                     .background(
                         color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
-                        shape = RoundedCornerShape(barRadius),
+                        shape = RoundedCornerShape(itemRadius),
                     )
-                    .clip(RoundedCornerShape(barRadius)),
+                    .clip(RoundedCornerShape(itemRadius)),
                 content = {
                     Box(
                         modifier = Modifier
@@ -129,18 +142,13 @@ fun BasicNutrient(intakeData: NutrientIntake) {
                             .fillMaxHeight(progressHeight)
                             .background(
                                 color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(
-                                    bottomStart = barRadius,
-                                    bottomEnd = barRadius,
-                                )
                             )
-                            .align(Alignment.BottomCenter)
+                            .align(Alignment.BottomCenter),
                     )
                     Column(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .offset(y = -(spacedBy * 2)),
                         horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.align(Alignment.Center),
                         content = {
                             Text(
                                 text = intakeDisplay,
@@ -157,11 +165,8 @@ fun BasicNutrient(intakeData: NutrientIntake) {
             )
 
             Text(
-                text = intakeData.nutrient.name,
-                color = MaterialTheme.colorScheme.inverseSurface,
-                style = MaterialTheme.typography.bodySmall,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
+                text = intakeData.nutrient.symbol ?: intakeData.nutrient.name,
+                style = MaterialTheme.typography.labelLarge
             )
         }
     )
@@ -169,27 +174,31 @@ fun BasicNutrient(intakeData: NutrientIntake) {
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun NutrientsPreview() {
-    val sampleNutrientsByType = NutrientsByType(
-        basic = listOf(sampleCalories, sampleProtein, sampleCarbs),
-        vitamin = emptyList(),
-        mineral = emptyList(),
+fun OtherNutrientIntakesPreview() {
+    val mockNutrientsByType = NutrientsByType(
+        basic = emptyList(),
+        vitamin = listOf(mockB12Intake, mockCIntake),
+        mineral = listOf(mockMagnesiumIntake, mockIronIntake)
     )
 
     FitnesswayTheme {
-        BasicNutrients(sampleNutrientsByType, sampleUser)
+        OtherNutrients(
+            nutrients = mockNutrientsByType,
+            nutrientType = NutrientType.VITAMIN,
+            user = mockUser
+        )
     }
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun NutrientPreview() {
+fun OtherNutrientPreview() {
     FitnesswayTheme {
-        BasicNutrient(sampleProtein)
+        OtherNutrient(mockIronIntake)
     }
 }
 
-private val sampleUser = User(
+private val mockUser = User(
     id = "117",
     name = "Christian",
     email = "chris.lopez.webdev@gmail.com",
@@ -198,47 +207,62 @@ private val sampleUser = User(
     updatedAt = "10-28-2025"
 )
 
-private val calories = Nutrient(
+private val mockB12 = Nutrient(
     id = 1,
-    name = "Calories",
-    symbol = "Kcal",
-    unit = "kcal",
-    type = NutrientType.BASIC,
+    name = "B12",
+    symbol = "B12",
+    unit = "mcg",
+    type = NutrientType.VITAMIN,
     isPremium = false
 )
 
-private val sampleCalories = NutrientIntake(
-    nutrient = calories,
-    goal = 2890.0,
-    intake = 1854.9
+private val mockB12Intake = NutrientIntake(
+    nutrient = mockB12,
+    goal = 2.0,
+    intake = 1.74
 )
 
-private val protein = Nutrient(
-    id = 2,
-    name = "Protein",
-    symbol = "P",
-    unit = "g",
-    type = NutrientType.BASIC,
-    isPremium = false
-)
-
-private val sampleProtein = NutrientIntake(
-    nutrient = protein,
-    goal = 90.0,
-    intake = 42.6,
-)
-
-private val carbs = Nutrient(
-    id = 3,
-    name = "Carbs",
+private val mockC = Nutrient(
+    id = 1,
+    name = "C",
     symbol = "C",
-    unit = "g",
-    type = NutrientType.BASIC,
+    unit = "mg",
+    type = NutrientType.VITAMIN,
     isPremium = false
 )
 
-private val sampleCarbs = NutrientIntake(
-    nutrient = carbs,
+private val mockCIntake = NutrientIntake(
+    nutrient = mockC,
+    goal = 80.0,
+    intake = 46.0
+)
+
+private val mockIron = Nutrient(
+    id = 1,
+    name = "Iron",
+    symbol = "Fe",
+    unit = "mg",
+    type = NutrientType.MINERAL,
+    isPremium = false
+)
+
+private val mockIronIntake = NutrientIntake(
+    nutrient = mockIron,
+    goal = 8.0,
+    intake = 2.0
+)
+
+private val mockMagnesium = Nutrient(
+    id = 1,
+    name = "Magnesium",
+    symbol = "Mg",
+    unit = "mg",
+    type = NutrientType.MINERAL,
+    isPremium = false
+)
+
+private val mockMagnesiumIntake = NutrientIntake(
+    nutrient = mockMagnesium,
     goal = 300.0,
-    intake = 215.5
+    intake = 234.0
 )

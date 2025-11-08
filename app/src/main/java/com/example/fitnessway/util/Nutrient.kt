@@ -1,6 +1,8 @@
 package com.example.fitnessway.util
 
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
+import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
+import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.user.User
 
 object Nutrient {
@@ -13,9 +15,9 @@ object Nutrient {
         val isOverGoal: Boolean
     )
 
-    fun calcNutrientData(n: NutrientIntake): NutrientData {
-        val intake = n.intake
-        val goal = n.goal ?: 0.0
+    fun calcNutrientIntakeData(intakeData: NutrientIntake): NutrientData {
+        val intake = intakeData.intake
+        val goal = intakeData.goal ?: 0.0
 
         val progress = if (goal > 0) ((intake / goal) * 100).coerceIn(0.0, 100.0) else 0.0
 
@@ -33,11 +35,16 @@ object Nutrient {
     }
 
     fun filterDisplayedNutrients(
-        nutrients: List<NutrientIntake>,
+        nutrientsByType: NutrientIntakesByType,
+        nutrientType: NutrientType,
         user: User
     ): List<NutrientIntake> {
-        return nutrients.filter {
-            it.goal != null && (!it.nutrient.isPremium || user.isPremium)
+        val nutrients = when (nutrientType) {
+            NutrientType.BASIC -> nutrientsByType.basic
+            NutrientType.VITAMIN -> nutrientsByType.vitamin
+            NutrientType.MINERAL -> nutrientsByType.mineral
         }
+
+        return nutrients.filter { it.goal != null && (!it.nutrient.isPremium || user.isPremium) }
     }
 }

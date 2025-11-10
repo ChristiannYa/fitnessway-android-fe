@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.main.foodselection.foodlog
+package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,8 +16,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables.EditionButtons
-import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables.FoodLogInformationList
+import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.EditionButtons
+import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformationList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
@@ -37,7 +37,7 @@ fun FoodLogScreen(
     val foodLogAddState = uiState.foodLogAddState
 
     val foodCategory by viewModel.foodLogCategory.collectAsState()
-    val selectedFood by viewModel.selectedFood.collectAsState()
+    val selectedFoodToLog by viewModel.selectedFoodToLog.collectAsState()
     val time = viewModel.getCurrentTime()
 
     var shouldShowFoodLogSuccess by remember { mutableStateOf(false) }
@@ -50,8 +50,8 @@ fun FoodLogScreen(
         }
     }
 
-    LaunchedEffect(selectedFood) {
-        selectedFood?.let { food ->
+    LaunchedEffect(selectedFoodToLog) {
+        selectedFoodToLog?.let { food ->
             viewModel.initializeFoodLogForm(food, time)
         }
     }
@@ -74,22 +74,22 @@ fun FoodLogScreen(
         },
         content = {
             // @NOTE
-            // We create a local `food` variable because if `selectedFood` were to be used instead
+            // We create a local `food` variable because if `selectedFoodToLog` were to be used instead
             // we would get error, "Smart cast to 'FoodInformation' is impossible, because
-            // 'selectedFood' is a delegated property."
+            // 'selectedFoodToLog' is a delegated property."
             //
-            // This is because `selectedFood` is a delegated property that could change between
+            // This is because `selectedFoodToLog` is a delegated property that could change between
             // the null check and when we access its properties, since the underlying StateFlow
             // it delegates to can emit new values.
             //
             // By creating the local immutable variable, the compiler can safely smart cast it
             // after the null check, knowing it cannot change during the function execution
-            val food = selectedFood
+            val food = selectedFoodToLog
 
             if (food == null) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Food not found",
+                    text = "Food information not found",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center

@@ -1,6 +1,8 @@
 package com.example.fitnessway.data.network
 
+import android.util.Log
 import com.example.fitnessway.data.model.api.ApiResponseWithContent
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -33,15 +35,20 @@ class HttpClient(private val cacheManager: CacheManager) {
 
                     emit(UiState.Success(extractedData))
                 } else {
-                    emit(UiState.Error(body?.message ?: errMsg))
+                    val err = body?.message ?: errMsg
+
+                    Log.d(Constants.DEBUG_TAG, err)
+                    emit(UiState.Error(err))
                 }
             } else {
-                // val errBody = response.errorBody()?.string()
+                val errBody = response.errorBody()?.string()
+                Log.d(Constants.DEBUG_TAG, "request error body: $errBody")
 
                 emit(UiState.Error(errMsg))
             }
 
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d(Constants.DEBUG_TAG, "request exception: $e")
             emit(UiState.Error(errMsg))
         }
 

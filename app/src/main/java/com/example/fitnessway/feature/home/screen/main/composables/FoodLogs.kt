@@ -1,7 +1,10 @@
 package com.example.fitnessway.feature.home.screen.main.composables
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -47,14 +51,18 @@ import com.example.fitnessway.util.UiState
 fun FoodLogs(
     state: UiState<FoodLogsByCategory>,
     onFoodLog: () -> Unit,
-    setFoodLogCategory: (FoodLogCategories) -> Unit
+    setFoodLogCategory: (FoodLogCategories) -> Unit,
+    onViewFoodLog: () -> Unit,
+    onSetSelectedFoodLog: (FoodLogData) -> Unit
 ) {
     when (state) {
         is UiState.Loading -> Text("Loading food logs")
         is UiState.Success -> FoodLogsCategorized(
-            state.data,
+            foodLogs = state.data,
             onFoodLog,
-            setFoodLogCategory
+            setFoodLogCategory,
+            onSetSelectedFoodLog,
+            onViewFoodLog
         )
 
         is UiState.Error -> ApiErrorMessage(state.message)
@@ -67,7 +75,9 @@ fun FoodLogs(
 fun FoodLogsCategorized(
     foodLogs: FoodLogsByCategory,
     onFoodLog: () -> Unit,
-    setFoodLogCategory: (FoodLogCategories) -> Unit
+    setFoodLogCategory: (FoodLogCategories) -> Unit,
+    onSetSelectedFoodLog: (FoodLogData) -> Unit,
+    onViewFoodLog: () -> Unit
 ) {
     Column(
         modifier = Modifier.areaContainerLarge(),
@@ -77,25 +87,33 @@ fun FoodLogsCategorized(
                 foodLogs = foodLogs.breakfast,
                 category = FoodLogCategories.BREAKFAST,
                 onFoodLog,
-                setFoodLogCategory
+                setFoodLogCategory,
+                onSetSelectedFoodLog,
+                onViewFoodLog,
             )
             FoodLogCategory(
                 foodLogs = foodLogs.lunch,
                 category = FoodLogCategories.LUNCH,
                 onFoodLog,
                 setFoodLogCategory,
+                onSetSelectedFoodLog,
+                onViewFoodLog,
             )
             FoodLogCategory(
                 foodLogs = foodLogs.dinner,
                 category = FoodLogCategories.DINNER,
                 onFoodLog,
                 setFoodLogCategory,
+                onSetSelectedFoodLog,
+                onViewFoodLog,
             )
             FoodLogCategory(
                 foodLogs = foodLogs.supplement,
                 category = FoodLogCategories.SUPPLEMENT,
                 onFoodLog,
                 setFoodLogCategory,
+                onSetSelectedFoodLog,
+                onViewFoodLog,
             )
         }
     )
@@ -106,7 +124,9 @@ fun FoodLogCategory(
     foodLogs: List<FoodLogData>,
     category: FoodLogCategories,
     onFoodLog: () -> Unit,
-    setFoodLogCategory: (FoodLogCategories) -> Unit
+    setFoodLogCategory: (FoodLogCategories) -> Unit,
+    onSetSelectedFoodLog: (FoodLogData) -> Unit,
+    onViewFoodLog: () -> Unit,
 ) {
     val categoryFormatted = category.name.lowercase().replaceFirstChar { it.uppercase() }
 
@@ -135,7 +155,11 @@ fun FoodLogCategory(
                         )
                     } else {
                         foodLogs.forEach { log ->
-                            FoodLog(log)
+                            FoodLog(
+                                foodLog = log,
+                                onSetSelectedFoodLog = { onSetSelectedFoodLog(log) },
+                                onViewFoodLog = { onViewFoodLog() }
+                            )
                         }
                     }
 
@@ -167,11 +191,22 @@ fun FoodLogCategory(
 }
 
 @Composable
-fun FoodLog(foodLog: FoodLogData) {
+fun FoodLog(
+    foodLog: FoodLogData,
+    onSetSelectedFoodLog: (FoodLogData) -> Unit,
+    onViewFoodLog: () -> Unit,
+) {
     val food = foodLog.food.information
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = {
+                    onSetSelectedFoodLog(foodLog)
+                    onViewFoodLog()
+                },
+            ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom,
         content = {
@@ -236,7 +271,9 @@ fun FoodLogsPreview() {
         FoodLogsCategorized(
             foodLogs = sampleFoodLogsByCategory,
             onFoodLog = {},
-            setFoodLogCategory = {}
+            setFoodLogCategory = {},
+            onSetSelectedFoodLog = {},
+            onViewFoodLog = {}
         )
     }
 }

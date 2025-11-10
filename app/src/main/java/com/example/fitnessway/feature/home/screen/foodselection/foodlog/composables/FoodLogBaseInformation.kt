@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.composables
+package com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

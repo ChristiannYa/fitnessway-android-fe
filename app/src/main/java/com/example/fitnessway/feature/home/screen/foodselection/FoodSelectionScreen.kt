@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.main.foodselection
+package com.example.fitnessway.feature.home.screen.foodselection
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -7,7 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.fitnessway.feature.home.screen.main.foodselection.composables.Foods
+import com.example.fitnessway.feature.home.screen.foodselection.composables.Foods
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
@@ -18,7 +18,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun FoodSelectionScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onBackClick: () -> Unit,
-    onSelectedFood: () -> Unit
+    onSelectedFoodToLog: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val foodCategory by viewModel.foodLogCategory.collectAsState()
@@ -38,8 +38,8 @@ fun FoodSelectionScreen(
             Column {
                 Foods(
                     state = uiState.foodsState,
-                    setSelectedFood = viewModel::setSelectedFood,
-                    onSelectedFood
+                    setSelectedFoodToLog = viewModel::setSelectedFoodToLog,
+                    onSelectedFoodToLog
                 )
             }
         }
@@ -52,7 +52,7 @@ fun FoodSelectionPreview() {
     FitnesswayTheme {
         FoodSelectionScreen(
             onBackClick = {},
-            onSelectedFood = {}
+            onSelectedFoodToLog = {}
         )
     }
 }

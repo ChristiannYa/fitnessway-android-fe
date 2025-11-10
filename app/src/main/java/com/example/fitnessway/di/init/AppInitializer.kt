@@ -1,10 +1,12 @@
 package com.example.fitnessway.di.init
 
+import android.util.Log
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import com.example.fitnessway.data.state.user.IUserStateHolder
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.launch
 
@@ -29,6 +31,7 @@ class AppInitializer(
                             is UiState.Loading -> {}
                             is UiState.Success -> userStateHolder.setUser(uiState.data)
                             is UiState.Error -> {
+                                Log.d(Constants.DEBUG_TAG, "error collecting token states")
                                 tokensStetHolder.clearTokens()
                                 userStateHolder.clearUser()
                             }

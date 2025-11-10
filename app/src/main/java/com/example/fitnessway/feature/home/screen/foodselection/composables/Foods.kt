@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.main.foodselection.composables
+package com.example.fitnessway.feature.home.screen.foodselection.composables
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -29,12 +29,12 @@ import com.example.fitnessway.util.UiState
 @Composable
 fun Foods(
     state: UiState<List<FoodInformation>>,
-    setSelectedFood: (FoodInformation) -> Unit,
-    onSelectedFood: () -> Unit
+    setSelectedFoodToLog: (FoodInformation) -> Unit,
+    onSelectedFoodToLog: () -> Unit
 ) {
     when (state) {
         is UiState.Loading -> Text("Loading foods")
-        is UiState.Success -> Foods(state.data, setSelectedFood, onSelectedFood)
+        is UiState.Success -> Foods(state.data, setSelectedFoodToLog, onSelectedFoodToLog)
         is UiState.Error -> ApiErrorMessage(state.message)
         is UiState.Idle -> {}
     }
@@ -43,8 +43,8 @@ fun Foods(
 @Composable
 fun Foods(
     foods: List<FoodInformation>,
-    setSelectedFood: (FoodInformation) -> Unit,
-    onSelectedFood: () -> Unit
+    setSelectedFoodToLog: (FoodInformation) -> Unit,
+    onSelectedFoodToLog: () -> Unit
 ) {
     if (foods.isEmpty()) {
         Text(
@@ -62,8 +62,8 @@ fun Foods(
                     item {
                         Food(
                             food = it,
-                            setSelectedFood,
-                            onSelectedFood
+                            setSelectedFoodToLog,
+                            onSelectedFoodToLog
                         )
                     }
                 }
@@ -127,8 +127,8 @@ fun FoodsPreview() {
     FitnesswayTheme {
         Foods(
             foods = mockFoodInformationList,
-            setSelectedFood = {},
-            onSelectedFood = {}
+            setSelectedFoodToLog = {},
+            onSelectedFoodToLog = {}
         )
     }
 }

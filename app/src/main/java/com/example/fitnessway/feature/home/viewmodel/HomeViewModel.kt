@@ -8,6 +8,7 @@ import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.home.manager.IHomeManagers
 import com.example.fitnessway.feature.home.manager.date.IDateManager
+import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ class HomeViewModel(
     private val managers: IHomeManagers,
     userStateHolder: IUserStateHolder
 ) : ViewModel(),
+    IFoodManager by managers.food,
     IFoodLogManager by managers.foodLog,
     IDateManager by managers.date {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
@@ -62,7 +64,7 @@ class HomeViewModel(
         // Check for data states before allowing request
         val user = user ?: return
         val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
-        val selectedFood = managers.foodLog.selectedFood.value ?: return
+        val selectedFood = managers.foodLog.selectedFoodToLog.value ?: return
 
         val foodLogFoodId = selectedFood.information.id
         val foodLogServings = foodLogFormState.data.servings.toDouble()

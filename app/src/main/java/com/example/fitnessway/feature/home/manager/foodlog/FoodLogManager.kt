@@ -13,8 +13,8 @@ class FoodLogManager : IFoodLogManager {
     private val _foodLogCategory = MutableStateFlow("")
     override val foodLogCategory: StateFlow<String> = _foodLogCategory
 
-    private val _selectedFood = MutableStateFlow<FoodInformation?>(null)
-    override val selectedFood: StateFlow<FoodInformation?> = _selectedFood
+    private val _selectedFoodToLog = MutableStateFlow<FoodInformation?>(null)
+    override val selectedFoodToLog: StateFlow<FoodInformation?> = _selectedFoodToLog
 
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
@@ -45,8 +45,8 @@ class FoodLogManager : IFoodLogManager {
         }
     }
 
-    override fun setSelectedFood(food: FoodInformation) {
-        _selectedFood.value = food
+    override fun setSelectedFoodToLog(food: FoodInformation) {
+        _selectedFoodToLog.value = food
     }
 
     override fun initializeFoodLogForm(food: FoodInformation, time: String) {

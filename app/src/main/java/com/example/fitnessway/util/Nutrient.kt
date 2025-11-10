@@ -19,7 +19,7 @@ object Nutrient {
         val intake = intakeData.intake
         val goal = intakeData.goal ?: 0.0
 
-        val progress = if (goal > 0) ((intake / goal) * 100).coerceIn(0.0, 100.0) else 0.0
+        val progress = if (goal > 0) ((intake / goal) * 100)  else 0.0
 
         val remaining = goal - intake
         val over = intake - goal

@@ -5,9 +5,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.fitnessway.feature.home.screen.main.foodselection.FoodSelectionScreen
+import com.example.fitnessway.feature.home.screen.foodselection.FoodSelectionScreen
 import com.example.fitnessway.feature.home.screen.main.HomeScreen
-import com.example.fitnessway.feature.home.screen.main.foodselection.foodlog.FoodLogScreen
+import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoodLogScreen
+import com.example.fitnessway.feature.home.screen.logdetails.LogDetailsScreen
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.navigation.HomeGraph
 import kotlinx.serialization.Serializable
@@ -15,6 +16,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
 object HomeMain
+
+@Serializable
+private object FoodLogDetails
 
 @Serializable
 private object FoodSelection
@@ -32,8 +36,22 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
             val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
             HomeScreen(
+                viewModel = viewModel,
                 onFoodLog = { navController.navigate(FoodSelection) },
-                viewModel
+                onViewFoodLog = { navController.navigate(FoodLogDetails) }
+            )
+        }
+
+        composable<FoodLogDetails> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<HomeGraph>()
+            }
+
+            val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
+            LogDetailsScreen(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -47,7 +65,7 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
             FoodSelectionScreen(
                 viewModel,
                 onBackClick = { navController.popBackStack() },
-                onSelectedFood = { navController.navigate(FoodLog) }
+                onSelectedFoodToLog = { navController.navigate(FoodLog) }
             )
         }
 

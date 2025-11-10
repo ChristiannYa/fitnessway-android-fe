@@ -31,23 +31,6 @@ data class Food(
 )
 
 @Serializable
-data class UserFood(
-    val id: Int,
-
-    @SerialName("user_id")
-    val userId: String,
-
-    val name: String,
-    val brand: String,
-
-    @SerialName("amount_per_serving")
-    val amountPerServing: Double,
-
-    @SerialName("serving_unit")
-    val servingUnit: String,
-)
-
-@Serializable
 data class FoodNutrientAmountData(
     val nutrient: Nutrient,
     val amount: Double

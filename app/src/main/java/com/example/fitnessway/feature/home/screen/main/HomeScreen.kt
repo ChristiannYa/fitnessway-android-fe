@@ -24,8 +24,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
-    onFoodLog: () -> Unit,
-    onViewFoodLog: () -> Unit,
+    onFoodLogClick: () -> Unit,
+    onViewFoodLogDetails: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -81,9 +81,9 @@ fun HomeScreen(
                         item {
                             FoodLogs(
                                 state = uiState.foodLogsState,
-                                onFoodLog = onFoodLog,
-                                setFoodLogCategory = viewModel::setFoodLogCategory,
-                                onViewFoodLog = onViewFoodLog,
+                                onFoodLogClick = onFoodLogClick,
+                                onSetFoodLogCategory = viewModel::setFoodLogCategory,
+                                onViewFoodLogDetails = onViewFoodLogDetails,
                                 onSetSelectedFoodLog = viewModel::setSelectedFoodLog
                             )
                         }
@@ -99,8 +99,8 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     FitnesswayTheme {
         HomeScreen(
-            onFoodLog = {},
-            onViewFoodLog = {}
+            onFoodLogClick = {},
+            onViewFoodLogDetails = {}
         )
     }
 }

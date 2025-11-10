@@ -1,7 +1,6 @@
 package com.example.fitnessway.feature.home.screen.main.composables
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -50,19 +49,20 @@ import com.example.fitnessway.util.UiState
 @Composable
 fun FoodLogs(
     state: UiState<FoodLogsByCategory>,
-    onFoodLog: () -> Unit,
-    setFoodLogCategory: (FoodLogCategories) -> Unit,
-    onViewFoodLog: () -> Unit,
+    onFoodLogClick: () -> Unit,
+    onSetFoodLogCategory: (FoodLogCategories) -> Unit,
+    onViewFoodLogDetails: () -> Unit,
     onSetSelectedFoodLog: (FoodLogData) -> Unit
 ) {
     when (state) {
         is UiState.Loading -> Text("Loading food logs")
+
         is UiState.Success -> FoodLogsCategorized(
             foodLogs = state.data,
-            onFoodLog,
-            setFoodLogCategory,
-            onSetSelectedFoodLog,
-            onViewFoodLog
+            onFoodLogClick = onFoodLogClick,
+            onSetFoodLogCategory = onSetFoodLogCategory,
+            onSetSelectedFoodLog = onSetSelectedFoodLog,
+            onViewFoodLogDetails = onViewFoodLogDetails
         )
 
         is UiState.Error -> ApiErrorMessage(state.message)
@@ -74,10 +74,10 @@ fun FoodLogs(
 @Composable
 fun FoodLogsCategorized(
     foodLogs: FoodLogsByCategory,
-    onFoodLog: () -> Unit,
-    setFoodLogCategory: (FoodLogCategories) -> Unit,
+    onFoodLogClick: () -> Unit,
+    onSetFoodLogCategory: (FoodLogCategories) -> Unit,
     onSetSelectedFoodLog: (FoodLogData) -> Unit,
-    onViewFoodLog: () -> Unit
+    onViewFoodLogDetails: () -> Unit
 ) {
     Column(
         modifier = Modifier.areaContainerLarge(),
@@ -86,34 +86,34 @@ fun FoodLogsCategorized(
             FoodLogCategory(
                 foodLogs = foodLogs.breakfast,
                 category = FoodLogCategories.BREAKFAST,
-                onFoodLog,
-                setFoodLogCategory,
-                onSetSelectedFoodLog,
-                onViewFoodLog,
+                onFoodLogClick = onFoodLogClick,
+                onSetFoodLogCategory = onSetFoodLogCategory,
+                onSetSelectedFoodLog = onSetSelectedFoodLog,
+                onViewFoodLogDetails = onViewFoodLogDetails,
             )
             FoodLogCategory(
                 foodLogs = foodLogs.lunch,
                 category = FoodLogCategories.LUNCH,
-                onFoodLog,
-                setFoodLogCategory,
-                onSetSelectedFoodLog,
-                onViewFoodLog,
+                onFoodLogClick = onFoodLogClick,
+                onSetFoodLogCategory = onSetFoodLogCategory,
+                onSetSelectedFoodLog = onSetSelectedFoodLog,
+                onViewFoodLogDetails = onViewFoodLogDetails,
             )
             FoodLogCategory(
                 foodLogs = foodLogs.dinner,
                 category = FoodLogCategories.DINNER,
-                onFoodLog,
-                setFoodLogCategory,
-                onSetSelectedFoodLog,
-                onViewFoodLog,
+                onFoodLogClick = onFoodLogClick,
+                onSetFoodLogCategory = onSetFoodLogCategory,
+                onSetSelectedFoodLog = onSetSelectedFoodLog,
+                onViewFoodLogDetails = onViewFoodLogDetails,
             )
             FoodLogCategory(
                 foodLogs = foodLogs.supplement,
                 category = FoodLogCategories.SUPPLEMENT,
-                onFoodLog,
-                setFoodLogCategory,
-                onSetSelectedFoodLog,
-                onViewFoodLog,
+                onFoodLogClick = onFoodLogClick,
+                onSetFoodLogCategory = onSetFoodLogCategory,
+                onSetSelectedFoodLog = onSetSelectedFoodLog,
+                onViewFoodLogDetails = onViewFoodLogDetails,
             )
         }
     )
@@ -123,10 +123,10 @@ fun FoodLogsCategorized(
 fun FoodLogCategory(
     foodLogs: List<FoodLogData>,
     category: FoodLogCategories,
-    onFoodLog: () -> Unit,
-    setFoodLogCategory: (FoodLogCategories) -> Unit,
+    onFoodLogClick: () -> Unit,
+    onSetFoodLogCategory: (FoodLogCategories) -> Unit,
     onSetSelectedFoodLog: (FoodLogData) -> Unit,
-    onViewFoodLog: () -> Unit,
+    onViewFoodLogDetails: () -> Unit,
 ) {
     val categoryFormatted = category.name.lowercase().replaceFirstChar { it.uppercase() }
 
@@ -158,15 +158,15 @@ fun FoodLogCategory(
                             FoodLog(
                                 foodLog = log,
                                 onSetSelectedFoodLog = { onSetSelectedFoodLog(log) },
-                                onViewFoodLog = { onViewFoodLog() }
+                                onViewFoodLogDetails = { onViewFoodLogDetails() }
                             )
                         }
                     }
 
                     TextButton(
                         onClick = {
-                            setFoodLogCategory(category)
-                            onFoodLog()
+                            onSetFoodLogCategory(category)
+                            onFoodLogClick()
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
@@ -194,7 +194,7 @@ fun FoodLogCategory(
 fun FoodLog(
     foodLog: FoodLogData,
     onSetSelectedFoodLog: (FoodLogData) -> Unit,
-    onViewFoodLog: () -> Unit,
+    onViewFoodLogDetails: () -> Unit,
 ) {
     val food = foodLog.food.information
 
@@ -202,9 +202,11 @@ fun FoodLog(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
                 onClick = {
                     onSetSelectedFoodLog(foodLog)
-                    onViewFoodLog()
+                    onViewFoodLogDetails()
                 },
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -270,10 +272,10 @@ fun FoodLogsPreview() {
     FitnesswayTheme {
         FoodLogsCategorized(
             foodLogs = sampleFoodLogsByCategory,
-            onFoodLog = {},
-            setFoodLogCategory = {},
+            onFoodLogClick = {},
+            onSetFoodLogCategory = {},
             onSetSelectedFoodLog = {},
-            onViewFoodLog = {}
+            onViewFoodLogDetails = {}
         )
     }
 }

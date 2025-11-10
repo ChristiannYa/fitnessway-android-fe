@@ -37,8 +37,8 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
 
             HomeScreen(
                 viewModel = viewModel,
-                onFoodLog = { navController.navigate(FoodSelection) },
-                onViewFoodLog = { navController.navigate(FoodLogDetails) }
+                onFoodLogClick = { navController.navigate(FoodSelection) },
+                onViewFoodLogDetails = { navController.navigate(FoodLogDetails) }
             )
         }
 

@@ -1,6 +1,7 @@
 package com.example.fitnessway.navigation
 
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -58,15 +60,23 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
         bottomBar = {
             val animatedTranslation by animateFloatAsState(
                 targetValue = if (shouldShowBottomBar) 0f else bottomBarHeight,
-                animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
+                animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
                 label = "bottomBarTranslation"
+            )
+
+            val animatedAlpha by animateFloatAsState(
+                targetValue = if (shouldShowBottomBar) 1f else 0f,
+                animationSpec = tween(durationMillis = 400, easing = LinearEasing),
+                label = "bottomBarAlpha"
             )
 
             // Always render it to preserve layout space
             Box(
                 modifier = Modifier
+                    .zIndex(if (shouldShowBottomBar) 1f else -1f) // Send behind when hidden
                     .graphicsLayer {
                         translationY = animatedTranslation
+                        alpha = animatedAlpha
                     },
                 content = {
                     BottomNavigationBar(navController, currentDestination)

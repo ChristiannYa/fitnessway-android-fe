@@ -50,50 +50,51 @@ fun BottomNavigationBar(
     currentDestination: NavDestination?
 ) {
     NavigationBar(
-        containerColor = Color.Transparent
-    ) {
-        topLevelRoutes.forEach { topLevelRoute ->
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        imageVector = topLevelRoute.icon,
-                        contentDescription = topLevelRoute.name
-                    )
-                },
-                label = {
-                    Text(
-                        text = topLevelRoute.name,
-                        fontFamily = FontFamily.Serif
-                    )
-                },
-                colors = NavigationBarItemColors(
-                    selectedIconColor = MaterialTheme.colorScheme.background,
-                    selectedTextColor = MaterialTheme.colorScheme.inverseSurface,
-                    selectedIndicatorColor = MaterialTheme.colorScheme.inverseSurface,
-                    unselectedIconColor = MaterialTheme.colorScheme.inverseSurface,
-                    unselectedTextColor = MaterialTheme.colorScheme.inverseSurface,
-                    disabledIconColor = MaterialTheme.colorScheme.inverseSurface.copy(0.5f),
-                    disabledTextColor = MaterialTheme.colorScheme.inverseSurface.copy(0.5f)
-                ),
-                selected = currentDestination?.hierarchy?.any {
-                    it.hasRoute(topLevelRoute.route::class)
-                } == true,
-                onClick = {
-                    navController.navigate(topLevelRoute.route) {
-                        // Pop up to the start destination of the graph to avoid
-                        // building up a large stack of destinations on the back
-                        // stack as users select items
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+        containerColor = Color.Transparent,
+        content = {
+            topLevelRoutes.forEach { topLevelRoute ->
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            imageVector = topLevelRoute.icon,
+                            contentDescription = topLevelRoute.name
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = topLevelRoute.name,
+                            fontFamily = FontFamily.Serif
+                        )
+                    },
+                    colors = NavigationBarItemColors(
+                        selectedIconColor = MaterialTheme.colorScheme.background,
+                        selectedTextColor = MaterialTheme.colorScheme.inverseSurface,
+                        selectedIndicatorColor = MaterialTheme.colorScheme.inverseSurface,
+                        unselectedIconColor = MaterialTheme.colorScheme.inverseSurface,
+                        unselectedTextColor = MaterialTheme.colorScheme.inverseSurface,
+                        disabledIconColor = MaterialTheme.colorScheme.inverseSurface.copy(0.5f),
+                        disabledTextColor = MaterialTheme.colorScheme.inverseSurface.copy(0.5f)
+                    ),
+                    selected = currentDestination?.hierarchy?.any {
+                        it.hasRoute(topLevelRoute.route::class)
+                    } == true,
+                    onClick = {
+                        navController.navigate(topLevelRoute.route) {
+                            // Pop up to the start destination of the graph to avoid
+                            // building up a large stack of destinations on the back
+                            // stack as users select items
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            // Avoid multiple copies of the same destination when reselecting
+                            // the same item
+                            launchSingleTop = true
+                            // Restore state when reselecting a previously selected item
+                            restoreState = true
                         }
-                        // Avoid multiple copies of the same destination when reselecting
-                        // the same item
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
                     }
-                }
-            )
+                )
+            }
         }
-    }
+    )
 }

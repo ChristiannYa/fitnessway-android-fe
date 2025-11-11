@@ -1,11 +1,16 @@
 package com.example.fitnessway.navigation
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -47,25 +52,38 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
         currentDestination?.hasRoute(route) == true
     }
 
+    val bottomBarHeight = 300f
+
     Scaffold(
         bottomBar = {
-            if (shouldShowBottomBar) {
-                BottomNavigationBar(
-                    navController,
-                    currentDestination
-                )
+            val animatedTranslation by animateFloatAsState(
+                targetValue = if (shouldShowBottomBar) 0f else bottomBarHeight,
+                animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
+                label = "bottomBarTranslation"
+            )
+
+            // Always render it to preserve layout space
+            Box(
+                modifier = Modifier
+                    .graphicsLayer {
+                        translationY = animatedTranslation
+                    },
+                content = {
+                    BottomNavigationBar(navController, currentDestination)
+                }
+            )
+        },
+        content = { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = if (tokensState.isAuthenticated) HomeGraph else WelcomeGraph,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                welcomeNavigationGraph(navController)
+                homeNavigationGraph(navController)
+                listsNavigationGraph(navController)
+                profileNavigationGraph(navController)
             }
         }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = if (tokensState.isAuthenticated) HomeGraph else WelcomeGraph,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            welcomeNavigationGraph(navController)
-            homeNavigationGraph(navController)
-            listsNavigationGraph(navController)
-            profileNavigationGraph(navController)
-        }
-    }
+    )
 }

@@ -2,7 +2,7 @@ package com.example.fitnessway.feature.home.screen.main
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,9 +40,9 @@ fun HomeScreen(
         isMainScreen = true,
         content = {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .fillMaxHeight(),
                 content = {
                     item {
                         DatePicker(
@@ -66,7 +66,7 @@ fun HomeScreen(
                             OtherNutrientIntakes(
                                 state = nutrientsState,
                                 nutrientType = NutrientType.VITAMIN,
-                                user
+                                user = user
                             )
                         }
 
@@ -74,7 +74,7 @@ fun HomeScreen(
                             OtherNutrientIntakes(
                                 state = nutrientsState,
                                 nutrientType = NutrientType.MINERAL,
-                                user
+                                user = user
                             )
                         }
 

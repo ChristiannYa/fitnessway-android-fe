@@ -29,12 +29,9 @@ fun Screen(
                             end = 16.dp,
                             top = if (hasPadding) 8.dp else 0.dp,
                             bottom = if (hasPadding) 16.dp else 0.dp,
-
-                            ),
+                        ),
                     content = {
-                        Column {
-                            content()
-                        }
+                        content()
                     }
                 )
             }

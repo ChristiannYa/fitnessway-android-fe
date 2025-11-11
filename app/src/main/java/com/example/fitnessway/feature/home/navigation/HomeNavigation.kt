@@ -6,9 +6,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.fitnessway.feature.home.screen.foodselection.FoodSelectionScreen
-import com.example.fitnessway.feature.home.screen.main.HomeScreen
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoodLogScreen
 import com.example.fitnessway.feature.home.screen.logdetails.LogDetailsScreen
+import com.example.fitnessway.feature.home.screen.main.HomeScreen
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.navigation.HomeGraph
 import kotlinx.serialization.Serializable

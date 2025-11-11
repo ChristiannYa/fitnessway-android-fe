@@ -33,9 +33,6 @@ class FoodLogManager : IFoodLogManager {
                     time.isNotEmpty() && time.matches(Regex("^\\d{1,2}:\\d{2} [AP]M$"))
         } ?: false
 
-    override val shouldShowFoodLogSuccess: Boolean
-        get() = TODO("Not yet implemented")
-
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {
             FoodLogCategories.BREAKFAST -> "breakfast"

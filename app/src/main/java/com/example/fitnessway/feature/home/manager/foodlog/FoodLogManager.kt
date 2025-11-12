@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.home.manager.foodlog
 
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogCategories
+import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.form.FormState
@@ -15,6 +16,9 @@ class FoodLogManager : IFoodLogManager {
 
     private val _selectedFoodToLog = MutableStateFlow<FoodInformation?>(null)
     override val selectedFoodToLog: StateFlow<FoodInformation?> = _selectedFoodToLog
+
+    private val _selectedFoodLogToRemove = MutableStateFlow<FoodLogData?>(null)
+    override val selectedFoodLogToRemove: StateFlow<FoodLogData?> = _selectedFoodLogToRemove
 
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
@@ -44,6 +48,10 @@ class FoodLogManager : IFoodLogManager {
 
     override fun setSelectedFoodToLog(food: FoodInformation) {
         _selectedFoodToLog.value = food
+    }
+
+    override fun setSelectedFoodLogToRemove(foodLog: FoodLogData) {
+        _selectedFoodLogToRemove.value = foodLog
     }
 
     override fun initializeFoodLogForm(food: FoodInformation, time: String) {

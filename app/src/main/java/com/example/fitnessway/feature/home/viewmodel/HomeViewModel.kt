@@ -3,6 +3,7 @@ package com.example.fitnessway.feature.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
+import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
@@ -66,21 +67,21 @@ class HomeViewModel(
         val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
         val selectedFood = managers.foodLog.selectedFoodToLog.value ?: return
 
-        val foodLogFoodId = selectedFood.information.id
-        val foodLogServings = foodLogFormState.data.servings.toDouble()
-        val foodLogCategory = managers.foodLog.foodLogCategory.value
-        val foodLogTime = "${managers.date.getApiFormattedDate()} ${foodLogFormState.data.time}"
+        val formatedDate = managers.date.getApiFormattedDate()
 
         val request = FoodLogAddRequest(
             userId = user.id,
-            foodId = foodLogFoodId,
-            servings = foodLogServings,
-            category = foodLogCategory,
-            time = foodLogTime
+            foodId = selectedFood.information.id,
+            servings = foodLogFormState.data.servings.toDouble(),
+            category = managers.foodLog.foodLogCategory.value,
+            time = "$formatedDate ${foodLogFormState.data.time}"
         )
 
         viewModelScope.launch {
-            foodRepo.addFoodLog(request).collect { state ->
+            foodRepo.addFoodLog(
+                request = request,
+                date = formatedDate
+            ).collect { state ->
                 _uiState.update { it.copy(foodLogAddState = state) }
             }
         }
@@ -88,5 +89,61 @@ class HomeViewModel(
 
     fun resetFoodLogAddState() {
         _uiState.update { it.copy(foodLogAddState = UiState.Idle) }
+    }
+
+    fun deleteFoodLog() {
+        val selectedFoodLogToRemove = managers.foodLog.selectedFoodLogToRemove.value ?: return
+        val formattedDate = managers.date.getApiFormattedDate()
+
+        // Get current food logs
+        val currentFoodLogState = _uiState.value.foodLogsState
+
+        // Only proceed if we have data
+        if (currentFoodLogState !is UiState.Success) {
+            return
+        }
+
+        val currentFoodLogs = currentFoodLogState.data
+
+        // Optimistically update UI by filtering out the item
+        val optimisticFoodLogs = FoodLogsByCategory(
+            breakfast = currentFoodLogs.breakfast.filter { it.id != selectedFoodLogToRemove.id },
+            lunch = currentFoodLogs.lunch.filter { it.id != selectedFoodLogToRemove.id },
+            dinner = currentFoodLogs.dinner.filter { it.id != selectedFoodLogToRemove.id },
+            supplement = currentFoodLogs.supplement.filter { it.id != selectedFoodLogToRemove.id }
+        )
+
+        // Update UI immediately
+        _uiState.update { it.copy(foodLogsState = UiState.Success(optimisticFoodLogs)) }
+
+        viewModelScope.launch {
+            foodRepo.deleteFoodLog(
+                foodLogId = selectedFoodLogToRemove.id,
+                date = formattedDate
+            ).collect { state ->
+
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(foodLogDeleteState = state) }
+                    }
+
+                    is UiState.Error -> {
+                        // Revert back to original state on error
+                        _uiState.update {
+                            it.copy(
+                                foodLogsState = UiState.Success(currentFoodLogs),
+                                foodLogDeleteState = state
+                            )
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    fun resetFoodLogDeleteState() {
+        _uiState.update { it.copy(foodLogDeleteState = UiState.Idle) }
     }
 }

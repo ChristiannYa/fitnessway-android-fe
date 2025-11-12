@@ -9,5 +9,6 @@ object ApiUrls {
 
     object Food {
         fun getLogs(date: String) = "${BASE_URL}food/log/get-logs?date=$date"
+        fun deleteLog(userId: String, logId: String) = "${BASE_URL}food/log/delete"
     }
 }

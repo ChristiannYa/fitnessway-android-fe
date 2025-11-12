@@ -18,60 +18,64 @@ import androidx.compose.ui.platform.LocalContext
 // - onPrimary/onSecondary/onTertiary: Text/icons that appear on colored buttons/elements
 
 private val DarkColorScheme = darkColorScheme(
-   primary = Emerald,
-   secondary = WarmOrange,
-   tertiary = CoralPink,
-   background = BlackBackground,
-   surface = BlackBackground,
-   surfaceVariant = StormCloud,
-   onSurfaceVariant = SilverMist,
-   onPrimary = Color.White,
-   onSecondary = Color.White,
-   onTertiary = Color.White,
-   onBackground = WhiteFont,
-   onSurface = WhiteFont,
-   inverseSurface = SilverMist,
-   inverseOnSurface = StormCloud,
+    primary = Emerald,
+    secondary = WarmOrange,
+    tertiary = CoralPink,
+    background = BlackBackground,
+    primaryContainer = AreaContainerPrimaryDark,
+    secondaryContainer = AreaContainerSecondaryDark,
+    surface = BlackBackground,
+    surfaceVariant = StormCloud,
+    onSurfaceVariant = SilverMist,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = WhiteFont,
+    onSurface = WhiteFont,
+    inverseSurface = SilverMist,
+    inverseOnSurface = StormCloud,
 )
 
 private val LightColorScheme = lightColorScheme(
-   primary = EmeraldDarker,
-   secondary = DeepOrange,
-   tertiary = VibrantPink,
-   background = WhiteBackground,
-   surface = WhiteBackground,
-   surfaceVariant = SilverMist,
-   onSurfaceVariant = StormCloud,
-   onPrimary = Color.White,
-   onSecondary = Color.White,
-   onTertiary = Color.White,
-   onBackground = BlackFont,
-   onSurface = BlackFont,
-   inverseSurface = StormCloud,
-   inverseOnSurface = SilverMist
+    primary = EmeraldDarker,
+    secondary = DeepOrange,
+    tertiary = VibrantPink,
+    background = WhiteBackground,
+    primaryContainer = AreaContainerPrimaryLight,
+    secondaryContainer = AreaContainerSecondaryLight,
+    surface = WhiteBackground,
+    surfaceVariant = SilverMist,
+    onSurfaceVariant = StormCloud,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = BlackFont,
+    onSurface = BlackFont,
+    inverseSurface = StormCloud,
+    inverseOnSurface = SilverMist
 )
 
 @Composable
 fun FitnesswayTheme(
-   darkTheme: Boolean = isSystemInDarkTheme(),
-   // Dynamic color is available on Android 12+. If true, the app will use the system's Material
-   // colors instead of the custom theme
-   dynamicColor: Boolean = false,
-   content: @Composable () -> Unit
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    // Dynamic color is available on Android 12+. If true, the app will use the system's Material
+    // colors instead of the custom theme
+    dynamicColor: Boolean = false,
+    content: @Composable () -> Unit
 ) {
-   val colorScheme = when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-         val context = LocalContext.current
-         if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
 
-      darkTheme -> DarkColorScheme
-      else -> LightColorScheme
-   }
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
 
-   MaterialTheme(
-      colorScheme = colorScheme,
-      typography = Typography,
-      content = content
-   )
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
 }

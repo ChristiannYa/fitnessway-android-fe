@@ -4,7 +4,6 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.util.UiState
 
 data class HomeScreenUiState(
@@ -12,4 +11,5 @@ data class HomeScreenUiState(
     val foodsState: UiState<List<FoodInformation>> = UiState.Loading,
     val foodLogsState: UiState<FoodLogsByCategory> = UiState.Loading,
     val foodLogAddState: UiState<FoodLogData> = UiState.Idle,
+    val foodLogDeleteState: UiState<FoodLogData> = UiState.Idle
 )

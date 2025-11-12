@@ -100,8 +100,16 @@ data class FoodLogAddRequest(
 
 @Serializable
 data class FoodLogAddApiResponse(
-    @SerialName("food_log")
-    val foodLog: FoodLogData
+    @SerialName("food_log_added")
+    val foodLogAdded: FoodLogData
 )
 
 typealias FoodLogAddPostResponse = ApiResponseWithContent<FoodLogAddApiResponse>
+
+@Serializable
+data class FoodLogDeleteApiResponse(
+    @SerialName("food_log_deleted")
+    val foodLogDeleted: FoodLogData
+)
+
+typealias FoodLogDeleteResponse = ApiResponseWithContent<FoodLogDeleteApiResponse>

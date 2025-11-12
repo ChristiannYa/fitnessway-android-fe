@@ -48,7 +48,7 @@ class HttpClient(private val cacheManager: CacheManager) {
             }
 
         } catch (e: Exception) {
-            Log.d(Constants.DEBUG_TAG, "request exception: $e")
+            Log.d(Constants.DEBUG_TAG, "makeRequest exception: $e")
             emit(UiState.Error(errMsg))
         }
 

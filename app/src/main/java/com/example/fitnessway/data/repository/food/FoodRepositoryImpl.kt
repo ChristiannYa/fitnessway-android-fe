@@ -14,7 +14,6 @@ class FoodRepositoryImpl(
     private val apiService: IFoodApiService,
     private val httpClient: HttpClient
 ) : IFoodRepository {
-
     override suspend fun getFoods(): Flow<UiState<List<FoodInformation>>> {
         return httpClient.makeRequest(
             apiCall = { apiService.getFoods() },
@@ -31,16 +30,29 @@ class FoodRepositoryImpl(
         )
     }
 
-    override suspend fun addFoodLog(request: FoodLogAddRequest): Flow<UiState<FoodLogData>> {
-        // Extract just the date part.
-        // Without this we'd be attempting to invalidate the following:
-        // http://BASE_URL/nutrient/get-intakes?date=11-06-2025 02:24 PM
-        val date = request.time.substringBefore(" ")
-
+    override suspend fun addFoodLog(
+        request: FoodLogAddRequest,
+        date: String
+    ): Flow<UiState<FoodLogData>> {
         return httpClient.makeRequest(
             apiCall = { apiService.addFoodLog(request) },
-            extractData = { it.foodLog },
+            extractData = { it.foodLogAdded },
             errMsg = "Failed to add food log",
+            invalidatedUrls = listOf(
+                ApiUrls.Nutrient.getIntakes(date),
+                ApiUrls.Food.getLogs(date)
+            )
+        )
+    }
+
+    override suspend fun deleteFoodLog(
+        foodLogId: Int,
+        date: String
+    ): Flow<UiState<FoodLogData>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.deleteFoodLog(foodLogId) },
+            extractData = { it.foodLogDeleted },
+            errMsg = "Failed to delete food log",
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.getIntakes(date),
                 ApiUrls.Food.getLogs(date)

@@ -30,7 +30,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
-    onFoodLogClick: () -> Unit,
+    onViewFoodsList: () -> Unit,
     onViewFoodLogDetails: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
@@ -102,12 +102,16 @@ fun HomeScreen(
 
                                 item {
                                     FoodLogs(
-                                        state = uiState.foodLogsState,
+                                        foodLogsState = uiState.foodLogsState,
                                         foodLogDeleteState = uiState.foodLogDeleteState,
-                                        onFoodLogClick = onFoodLogClick,
-                                        onSetFoodLogCategory = viewModel::setFoodLogCategory,
-                                        onViewFoodLogDetails = onViewFoodLogDetails,
-                                        onSetSelectedFoodLog = viewModel::setSelectedFoodLog,
+                                        onViewFoodsList = { foodLogCategories ->
+                                            viewModel.setFoodLogCategory(foodLogCategories)
+                                            onViewFoodsList()
+                                        },
+                                        onViewFoodLogDetails = { foodLog ->
+                                            viewModel.setSelectedFoodLog(foodLog)
+                                            onViewFoodLogDetails()
+                                        },
                                         onRemoveFoodLog = { foodLog ->
                                             viewModel.resetFoodLogDeleteState()
                                             viewModel.setSelectedFoodLogToRemove(foodLog)
@@ -135,7 +139,7 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     FitnesswayTheme {
         HomeScreen(
-            onFoodLogClick = {},
+            onViewFoodsList = {},
             onViewFoodLogDetails = {}
         )
     }

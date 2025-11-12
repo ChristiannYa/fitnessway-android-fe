@@ -56,28 +56,24 @@ import com.example.fitnessway.util.UiState
 
 @Composable
 fun FoodLogs(
-    state: UiState<FoodLogsByCategory>,
+    foodLogsState: UiState<FoodLogsByCategory>,
     foodLogDeleteState: UiState<FoodLogData>,
-    onFoodLogClick: () -> Unit,
-    onSetFoodLogCategory: (FoodLogCategories) -> Unit,
-    onViewFoodLogDetails: () -> Unit,
-    onSetSelectedFoodLog: (FoodLogData) -> Unit,
+    onViewFoodsList: (FoodLogCategories) -> Unit,
+    onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit
 ) {
-    when (state) {
+    when (foodLogsState) {
         is UiState.Loading -> Text("Loading food logs")
 
         is UiState.Success -> FoodLogsCategorized(
-            foodLogs = state.data,
+            foodLogs = foodLogsState.data,
             foodLogDeleteState = foodLogDeleteState,
-            onFoodLogClick = onFoodLogClick,
-            onSetFoodLogCategory = onSetFoodLogCategory,
-            onSetSelectedFoodLog = onSetSelectedFoodLog,
+            onViewFoodsList = onViewFoodsList,
             onViewFoodLogDetails = onViewFoodLogDetails,
             onRemoveFoodLog = onRemoveFoodLog
         )
 
-        is UiState.Error -> ApiErrorMessage(state.message)
+        is UiState.Error -> ApiErrorMessage(foodLogsState.message)
         is UiState.Idle -> {}
     }
 }
@@ -87,10 +83,8 @@ fun FoodLogs(
 fun FoodLogsCategorized(
     foodLogs: FoodLogsByCategory,
     foodLogDeleteState: UiState<FoodLogData>,
-    onFoodLogClick: () -> Unit,
-    onSetFoodLogCategory: (FoodLogCategories) -> Unit,
-    onSetSelectedFoodLog: (FoodLogData) -> Unit,
-    onViewFoodLogDetails: () -> Unit,
+    onViewFoodsList: (FoodLogCategories) -> Unit,
+    onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit
 ) {
     val categoriesWithLogs = listOf(
@@ -109,9 +103,7 @@ fun FoodLogsCategorized(
                     foodLogs = logs,
                     category = category,
                     foodLogDeleteState = foodLogDeleteState,
-                    onFoodLogClick = onFoodLogClick,
-                    onSetFoodLogCategory = onSetFoodLogCategory,
-                    onSetSelectedFoodLog = onSetSelectedFoodLog,
+                    onViewFoodsList = onViewFoodsList,
                     onViewFoodLogDetails = onViewFoodLogDetails,
                     onRemoveFoodLog = onRemoveFoodLog,
                 )
@@ -125,10 +117,8 @@ fun FoodLogCategory(
     foodLogs: List<FoodLogData>,
     foodLogDeleteState: UiState<FoodLogData>,
     category: FoodLogCategories,
-    onFoodLogClick: () -> Unit,
-    onSetFoodLogCategory: (FoodLogCategories) -> Unit,
-    onSetSelectedFoodLog: (FoodLogData) -> Unit,
-    onViewFoodLogDetails: () -> Unit,
+    onViewFoodsList: (FoodLogCategories) -> Unit,
+    onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit
 ) {
     val categoryFormatted = category.name.lowercase().replaceFirstChar { it.uppercase() }
@@ -166,8 +156,7 @@ fun FoodLogCategory(
                                 FoodLog(
                                     foodLog = log,
                                     foodLogDeleteState = foodLogDeleteState,
-                                    onSetSelectedFoodLog = { onSetSelectedFoodLog(log) },
-                                    onViewFoodLogDetails = { onViewFoodLogDetails() },
+                                    onViewFoodLogDetails = { onViewFoodLogDetails(log) },
                                     onRemoveFoodLog = { onRemoveFoodLog(log) },
                                 )
                             }
@@ -175,10 +164,7 @@ fun FoodLogCategory(
                     }
 
                     TextButton(
-                        onClick = {
-                            onSetFoodLogCategory(category)
-                            onFoodLogClick()
-                        },
+                        onClick = { onViewFoodsList(category) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -206,8 +192,7 @@ fun FoodLogCategory(
 fun FoodLog(
     foodLog: FoodLogData,
     foodLogDeleteState: UiState<FoodLogData>,
-    onSetSelectedFoodLog: (FoodLogData) -> Unit,
-    onViewFoodLogDetails: () -> Unit,
+    onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit
 ) {
     val food = foodLog.food.information
@@ -230,9 +215,11 @@ fun FoodLog(
                 swipeToRemoveLogState.reset()
                 hasCalled.value = false
             }
+
             is UiState.Idle -> {
                 hasCalled.value = false
             }
+
             else -> {}
         }
     }
@@ -280,10 +267,7 @@ fun FoodLog(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = {
-                            onSetSelectedFoodLog(foodLog)
-                            onViewFoodLogDetails()
-                        },
+                        onClick = { onViewFoodLogDetails(foodLog) },
                     ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,

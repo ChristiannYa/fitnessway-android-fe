@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.home.screen.main.composables
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,22 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
-import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.calcNutrientIntakeData
 import com.example.fitnessway.util.Nutrient.filterDisplayedNutrients
 import com.example.fitnessway.util.UiState
-import kotlin.math.roundToInt
 
 
 @Composable
@@ -95,15 +88,17 @@ fun OtherNutrients(
 }
 
 @Composable
-fun OtherNutrient(intakeData: NutrientIntake) {
+fun OtherNutrient(
+    intakeData: NutrientIntake,
+    modifier: Modifier = Modifier
+) {
     val data = remember(key1 = intakeData) { calcNutrientIntakeData(intakeData) }
 
     val itemRadius = 16.dp
 
-    val progressHeight = (data.progress / 100f).toFloat()
-
-    val goalDisplay = if (intakeData.goal != null) doubleFormatter(intakeData.goal) else "0"
-    val intakeDisplay = doubleFormatter(intakeData.intake)
+    val intakeComposables = remember(intakeData) {
+        IntakesComposables(intake = intakeData)
+    }
 
     Column(
         modifier = Modifier
@@ -111,20 +106,7 @@ fun OtherNutrient(intakeData: NutrientIntake) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         content = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                content = {
-                    Text(
-                        text = goalDisplay,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                    Text(
-                        text = intakeData.nutrient.unit,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
-                    )
-                }
-            )
+            intakeComposables.intakeGoal()
 
             Box(
                 modifier = Modifier
@@ -139,130 +121,21 @@ fun OtherNutrient(intakeData: NutrientIntake) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(progressHeight)
+                            .fillMaxHeight((data.progress / 100f).toFloat())
                             .background(
                                 color = MaterialTheme.colorScheme.primary,
                             )
                             .align(Alignment.BottomCenter),
                     )
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.align(Alignment.Center),
-                        content = {
-                            Text(
-                                text = intakeDisplay,
-                                style = MaterialTheme.typography.labelLarge
-                            )
-                            Text(
-                                text = "${data.progress.roundToInt()}%",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
-                            )
-                        }
+                    intakeComposables.intakeProgress(
+                        data = data,
+                        modifier
+                            .align(Alignment.Center)
                     )
                 }
             )
 
-            Text(
-                text = intakeData.nutrient.symbol ?: intakeData.nutrient.name,
-                style = MaterialTheme.typography.labelLarge
-            )
+            intakeComposables.intakeName()
         }
     )
 }
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun OtherNutrientIntakesPreview() {
-    val mockNutrientsByType = NutrientsByType(
-        basic = emptyList(),
-        vitamin = listOf(mockB12Intake, mockCIntake),
-        mineral = listOf(mockMagnesiumIntake, mockIronIntake)
-    )
-
-    FitnesswayTheme {
-        OtherNutrients(
-            nutrients = mockNutrientsByType,
-            nutrientType = NutrientType.VITAMIN,
-            user = mockUser
-        )
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun OtherNutrientPreview() {
-    FitnesswayTheme {
-        OtherNutrient(mockIronIntake)
-    }
-}
-
-private val mockUser = User(
-    id = "117",
-    name = "Christian",
-    email = "chris.lopez.webdev@gmail.com",
-    isPremium = false,
-    createdAt = "04-24-2002",
-    updatedAt = "10-28-2025"
-)
-
-private val mockB12 = Nutrient(
-    id = 1,
-    name = "B12",
-    symbol = "B12",
-    unit = "mcg",
-    type = NutrientType.VITAMIN,
-    isPremium = false
-)
-
-private val mockB12Intake = NutrientIntake(
-    nutrient = mockB12,
-    goal = 2.0,
-    intake = 1.74
-)
-
-private val mockC = Nutrient(
-    id = 1,
-    name = "C",
-    symbol = "C",
-    unit = "mg",
-    type = NutrientType.VITAMIN,
-    isPremium = false
-)
-
-private val mockCIntake = NutrientIntake(
-    nutrient = mockC,
-    goal = 80.0,
-    intake = 46.0
-)
-
-private val mockIron = Nutrient(
-    id = 1,
-    name = "Iron",
-    symbol = "Fe",
-    unit = "mg",
-    type = NutrientType.MINERAL,
-    isPremium = false
-)
-
-private val mockIronIntake = NutrientIntake(
-    nutrient = mockIron,
-    goal = 8.0,
-    intake = 2.0
-)
-
-private val mockMagnesium = Nutrient(
-    id = 1,
-    name = "Magnesium",
-    symbol = "Mg",
-    unit = "mg",
-    type = NutrientType.MINERAL,
-    isPremium = false
-)
-
-private val mockMagnesiumIntake = NutrientIntake(
-    nutrient = mockMagnesium,
-    goal = 300.0,
-    intake = 234.0
-)

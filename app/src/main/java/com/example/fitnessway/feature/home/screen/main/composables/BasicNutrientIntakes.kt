@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.home.screen.main.composables
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,23 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
-import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.calcNutrientIntakeData
 import com.example.fitnessway.util.Nutrient.filterDisplayedNutrients
 import com.example.fitnessway.util.UiState
-import kotlin.math.roundToInt
 
 @Composable
 fun BasicNutrientIntakes(
@@ -81,37 +73,26 @@ fun BasicNutrients(nutrients: NutrientIntakesByType, user: User) {
 }
 
 @Composable
-fun BasicNutrient(intakeData: NutrientIntake) {
+fun BasicNutrient(
+    intakeData: NutrientIntake,
+    modifier: Modifier = Modifier
+) {
     val data = remember(intakeData) { calcNutrientIntakeData(intakeData) }
 
     val barRadius = 16.dp
     val spacedBy = 12.dp
 
-    val progressHeight = (data.progress / 100f).toFloat()
-
-    val goalDisplay = if (intakeData.goal != null) doubleFormatter(intakeData.goal) else "0"
-    val intakeDisplay = doubleFormatter(intakeData.intake)
+    val intakeComposables = remember(intakeData) {
+        IntakesComposables(intake = intakeData)
+    }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(72.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacedBy),
         content = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                content = {
-                    Text(
-                        text = goalDisplay,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                    Text(
-                        text = intakeData.nutrient.unit,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
-                    )
-                }
-            )
+            intakeComposables.intakeGoal()
 
             Box(
                 modifier = Modifier
@@ -126,7 +107,7 @@ fun BasicNutrient(intakeData: NutrientIntake) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(progressHeight)
+                            .fillMaxHeight((data.progress / 100f).toFloat())
                             .background(
                                 color = MaterialTheme.colorScheme.primary,
                                 shape = RoundedCornerShape(
@@ -136,33 +117,17 @@ fun BasicNutrient(intakeData: NutrientIntake) {
                             )
                             .align(Alignment.BottomCenter)
                     )
-                    Column(
-                        modifier = Modifier
+
+                    intakeComposables.intakeProgress(
+                        data = data,
+                        modifier
                             .align(Alignment.BottomCenter)
-                            .offset(y = -(spacedBy * 2)),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        content = {
-                            Text(
-                                text = intakeDisplay,
-                                style = MaterialTheme.typography.labelLarge
-                            )
-                            Text(
-                                text = "${data.progress.roundToInt()}%",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
-                            )
-                        }
+                            .offset(y = -(spacedBy * 2))
                     )
                 }
             )
 
-            Text(
-                text = intakeData.nutrient.name,
-                color = MaterialTheme.colorScheme.inverseSurface,
-                style = MaterialTheme.typography.bodySmall,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
+            intakeComposables.intakeName()
         }
     )
 }

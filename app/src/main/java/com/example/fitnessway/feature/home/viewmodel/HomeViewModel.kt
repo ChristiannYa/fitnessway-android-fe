@@ -11,7 +11,7 @@ import com.example.fitnessway.feature.home.manager.IHomeManagers
 import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
-import com.example.fitnessway.util.Food
+import com.example.fitnessway.util.Food.subtractNutrientsFromIntakes
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -116,12 +116,10 @@ class HomeViewModel(
             supplement = currentFoodLogs.supplement.filter { it.id != selectedFoodLogToRemove.id }
         )
 
-        val optimisticNutrientIntakes = currentNutrientIntakes.let {
-            Food.subtractNutrientsFromIntakes(
-                currentIntakes = it,
-                foodLog = selectedFoodLogToRemove
-            )
-        }
+        val optimisticNutrientIntakes = subtractNutrientsFromIntakes(
+            currentIntakes = currentNutrientIntakes,
+            foodLog = selectedFoodLogToRemove
+        )
 
         // Update UI immediately
         _uiState.update {

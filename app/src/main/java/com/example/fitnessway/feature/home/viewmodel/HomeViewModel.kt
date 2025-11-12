@@ -11,6 +11,7 @@ import com.example.fitnessway.feature.home.manager.IHomeManagers
 import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
+import com.example.fitnessway.util.Food
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -95,17 +96,19 @@ class HomeViewModel(
         val selectedFoodLogToRemove = managers.foodLog.selectedFoodLogToRemove.value ?: return
         val formattedDate = managers.date.getApiFormattedDate()
 
-        // Get current food logs
+        // Get current data to update optimistically
         val currentFoodLogState = _uiState.value.foodLogsState
+        val currentNutrientIntakesState = _uiState.value.nutrientIntakesState
 
         // Only proceed if we have data
-        if (currentFoodLogState !is UiState.Success) {
-            return
-        }
+        if (currentFoodLogState !is UiState.Success ||
+            currentNutrientIntakesState !is UiState.Success
+        ) return
 
         val currentFoodLogs = currentFoodLogState.data
+        val currentNutrientIntakes = currentNutrientIntakesState.data
 
-        // Optimistically update UI by filtering out the item
+        // Optimistically update food logs UI by filtering out the food log
         val optimisticFoodLogs = FoodLogsByCategory(
             breakfast = currentFoodLogs.breakfast.filter { it.id != selectedFoodLogToRemove.id },
             lunch = currentFoodLogs.lunch.filter { it.id != selectedFoodLogToRemove.id },
@@ -113,8 +116,20 @@ class HomeViewModel(
             supplement = currentFoodLogs.supplement.filter { it.id != selectedFoodLogToRemove.id }
         )
 
+        val optimisticNutrientIntakes = currentNutrientIntakes.let {
+            Food.subtractNutrientsFromIntakes(
+                currentIntakes = it,
+                foodLog = selectedFoodLogToRemove
+            )
+        }
+
         // Update UI immediately
-        _uiState.update { it.copy(foodLogsState = UiState.Success(optimisticFoodLogs)) }
+        _uiState.update {
+            it.copy(
+                foodLogsState = UiState.Success(optimisticFoodLogs),
+                nutrientIntakesState = UiState.Success(optimisticNutrientIntakes)
+            )
+        }
 
         viewModelScope.launch {
             foodRepo.deleteFoodLog(
@@ -132,7 +147,8 @@ class HomeViewModel(
                         _uiState.update {
                             it.copy(
                                 foodLogsState = UiState.Success(currentFoodLogs),
-                                foodLogDeleteState = state
+                                foodLogDeleteState = state,
+                                nutrientIntakesState = currentNutrientIntakesState
                             )
                         }
                     }

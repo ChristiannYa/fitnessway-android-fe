@@ -11,6 +11,7 @@ import com.example.fitnessway.feature.home.manager.IHomeManagers
 import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
+import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Food.subtractNutrientsFromIntakes
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,12 +28,12 @@ class HomeViewModel(
 ) : ViewModel(),
     IFoodManager by managers.food,
     IFoodLogManager by managers.foodLog,
-    IDateManager by managers.date {
+    IDateManager by managers.date,
+    IUiManager by managers.ui {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
     val user = userStateHolder.userState.value.user
-
 
     fun getNutrientIntakes() {
         val apiDate = managers.date.getApiFormattedDate()

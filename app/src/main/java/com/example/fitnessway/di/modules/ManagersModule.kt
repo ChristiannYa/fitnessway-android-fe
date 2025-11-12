@@ -5,6 +5,7 @@ import com.example.fitnessway.feature.home.manager.foodlog.FoodLogManager
 import com.example.fitnessway.feature.home.manager.HomeManagersImpl
 import com.example.fitnessway.feature.home.manager.IHomeManagers
 import com.example.fitnessway.feature.home.manager.food.FoodManager
+import com.example.fitnessway.feature.home.manager.ui.UiManager
 import org.koin.dsl.module
 
 val managersModule = module {
@@ -12,7 +13,8 @@ val managersModule = module {
         HomeManagersImpl(
             date = DateManager(),
             foodLog = FoodLogManager(),
-            food = FoodManager()
+            food = FoodManager(),
+            ui = UiManager()
         )
     }
 }

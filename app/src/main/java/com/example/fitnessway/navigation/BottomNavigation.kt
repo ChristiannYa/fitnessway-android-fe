@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontFamily
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -63,7 +62,7 @@ fun BottomNavigationBar(
                     label = {
                         Text(
                             text = topLevelRoute.name,
-                            fontFamily = FontFamily.Serif
+                            style = MaterialTheme.typography.labelMedium
                         )
                     },
                     colors = NavigationBarItemColors(

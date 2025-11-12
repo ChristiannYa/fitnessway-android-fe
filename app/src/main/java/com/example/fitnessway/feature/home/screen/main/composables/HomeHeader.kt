@@ -6,8 +6,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,54 +23,35 @@ import com.example.fitnessway.R
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 
 @Composable
-fun DatePicker(
-    date: String,
-    goNextDay: (Int) -> Unit,
-    goPrevDay: (Int) -> Unit,
+fun HomeHeader(
+    onToggleCreateMenuVisibility: () -> Unit
 ) {
-    val btnSize = 18.dp
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         content = {
-            Box(
-                modifier = Modifier
-                    .size(btnSize)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { goPrevDay(-1) }
-                    ),
-                contentAlignment = Alignment.Center,
-                content = {
-                    Icon(
-                        painter = painterResource(R.drawable.custom_arrow_left),
-                        contentDescription = "Go to previous day",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            )
             Text(
-                text = date,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyLarge,
+                text = "Fitnessway",
+                fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                color = MaterialTheme.colorScheme.onBackground
             )
+
             Box(
                 modifier = Modifier
-                    .size(btnSize)
+                    .size(18.dp)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = { goNextDay(1) }
+                        onClick = { onToggleCreateMenuVisibility() }
                     ),
                 contentAlignment = Alignment.Center,
                 content = {
                     Icon(
-                        painter = painterResource(R.drawable.custom_arrow_right),
-                        contentDescription = "Go to next day",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        painter = painterResource(R.drawable.create),
+                        contentDescription = "Create",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             )
@@ -78,17 +59,12 @@ fun DatePicker(
     )
 }
 
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showBackground = true,
-)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun DatePickerPreview() {
+fun PreviewHeader() {
     FitnesswayTheme {
-        DatePicker(
-            date = "Yesterday",
-            goNextDay = {},
-            goPrevDay = {}
+        HomeHeader(
+            onToggleCreateMenuVisibility = {}
         )
     }
 }

@@ -1,22 +1,33 @@
 package com.example.fitnessway.feature.home.screen.main
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
+import com.example.fitnessway.feature.home.screen.main.composables.BlurOverlay
 import com.example.fitnessway.feature.home.screen.main.composables.CreateOptions
 import com.example.fitnessway.feature.home.screen.main.composables.DatePicker
 import com.example.fitnessway.feature.home.screen.main.composables.FoodLogs
@@ -38,6 +49,10 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
+    val isCreateMenuVisible by viewModel.isCreateMenuVisible.collectAsState()
+
+    var headerHeight by remember { mutableStateOf(0.dp) }
+    val localDensity = LocalDensity.current
 
     LaunchedEffect(key1 = selectedDate) {
         viewModel.getNutrientIntakes()
@@ -65,20 +80,37 @@ fun HomeScreen(
                 content = {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.fillMaxHeight(),
+                        modifier = Modifier
+                            .fillMaxHeight(),
                         content = {
-                            item {
-                                HomeHeader(
-                                    onToggleCreateMenuVisibility = {
-                                        viewModel.toggleCreateMenuVisibility()
+                            stickyHeader {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .padding(bottom = if (isCreateMenuVisible) 16.dp else 0.dp)
+                                        .onGloballyPositioned { coordinates ->
+                                            headerHeight = with(localDensity) {
+                                                coordinates.size.height.toDp()
+                                            }
+                                        },
+                                    content = {
+                                        HomeHeader(
+                                            onToggleCreateMenuVisibility = {
+                                                viewModel.toggleCreateMenuVisibility()
+                                            }
+                                        )
+                                        CreateOptions(
+                                            onCreateFood = {
+                                                viewModel.toggleCreateMenuVisibility()
+                                            },
+                                            onCreateSupplement = {
+                                                viewModel.toggleCreateMenuVisibility()
+                                            },
+                                            isVisible = isCreateMenuVisible
+                                        )
                                     }
-                                )
-                            }
-
-                            item {
-                                CreateOptions(
-                                    onCreateFood = {},
-                                    onCreateSupplement = {}
                                 )
                             }
 
@@ -137,6 +169,12 @@ fun HomeScreen(
                                 }
                             }
                         }
+                    )
+
+                    BlurOverlay(
+                        isVisible = isCreateMenuVisible,
+                        onClick = { viewModel.toggleCreateMenuVisibility() },
+                        topPadding = headerHeight
                     )
 
                     ApiErrorBanner(

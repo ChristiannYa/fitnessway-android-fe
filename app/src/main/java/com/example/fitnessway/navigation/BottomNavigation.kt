@@ -18,6 +18,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 private data class TopLevelRoute<T : Any>(
     val name: String,
@@ -62,7 +63,8 @@ fun BottomNavigationBar(
                     label = {
                         Text(
                             text = topLevelRoute.name,
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelMedium,
+                            fontFamily = robotoSerifFamily
                         )
                     },
                     colors = NavigationBarItemColors(

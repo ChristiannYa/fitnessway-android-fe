@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,6 +60,12 @@ fun HomeScreen(
         viewModel.getFoodLogs()
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            if (isCreateMenuVisible) viewModel.toggleCreateMenuVisibility()
+        }
+    }
+
     val deleteFoodLogErrMsg = when (val state = uiState.foodLogDeleteState) {
         is UiState.Error -> {
             LaunchedEffect(state) {
@@ -89,7 +96,7 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(MaterialTheme.colorScheme.background)
-                                        .padding(bottom = if (isCreateMenuVisible) 16.dp else 0.dp)
+                                        .padding(bottom = if (isCreateMenuVisible) 16.dp else 2.dp)
                                         .onGloballyPositioned { coordinates ->
                                             headerHeight = with(localDensity) {
                                                 coordinates.size.height.toDp()

@@ -272,6 +272,9 @@ fun FoodLog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,
                 content = {
+                    val totalApsCalc = doubleFormatter(food.amountPerServing * foodLog.servings)
+                    val totalAmountPerServings = "$totalApsCalc ${food.servingUnit}"
+
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -307,7 +310,7 @@ fun FoodLog(
                             )
 
                             Text(
-                                text = "${doubleFormatter(food.amountPerServing)} ${food.servingUnit}",
+                                text = totalAmountPerServings,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
                             )

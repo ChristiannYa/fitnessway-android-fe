@@ -55,6 +55,8 @@ fun LogDetailsScreen(
                     textAlign = TextAlign.Center
                 )
             } else {
+                val aps = foodLog.servings * foodLog.food.information.amountPerServing
+
                 val fields = listOf(
                     Field(
                         key = "Category",
@@ -66,7 +68,7 @@ fun LogDetailsScreen(
                     ),
                     Field(
                         key = "Amount Per Serving (${foodLog.food.information.servingUnit})",
-                        value = doubleFormatter(foodLog.food.information.amountPerServing),
+                        value = doubleFormatter(aps),
                         isEditable = true
                     ),
                     Field(

@@ -1,5 +1,7 @@
 package com.example.fitnessway.util
 
+import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -46,5 +48,11 @@ object Nutrient {
         }
 
         return nutrients.filter { it.goal != null && (!it.nutrient.isPremium || user.isPremium) }
+    }
+
+    fun getNutrientColor(hexColor: String?): Color {
+        return hexColor?.let {
+            Color(it.toColorInt())
+        } ?: Color (0xFFFFFFFF)
     }
 }

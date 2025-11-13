@@ -3,7 +3,6 @@ package com.example.fitnessway.feature.home.screen.main
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
 import com.example.fitnessway.feature.home.screen.main.composables.CreateOptions

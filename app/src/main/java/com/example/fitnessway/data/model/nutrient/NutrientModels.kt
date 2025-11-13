@@ -31,6 +31,9 @@ data class Nutrient(
     val unit: String,
     val type: NutrientType,
 
+    @SerialName("hex_color")
+    val hexColor: String?,
+
     @SerialName("is_premium")
     val isPremium: Boolean
 )

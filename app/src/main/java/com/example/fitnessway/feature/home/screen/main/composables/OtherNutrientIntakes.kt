@@ -123,7 +123,7 @@ fun OtherNutrient(
                             .fillMaxWidth()
                             .fillMaxHeight((data.progress / 100f).toFloat())
                             .background(
-                                color = MaterialTheme.colorScheme.primary,
+                                intakeComposables.nutrientColor,
                             )
                             .align(Alignment.BottomCenter),
                     )
@@ -135,7 +135,7 @@ fun OtherNutrient(
                 }
             )
 
-            intakeComposables.intakeName()
+            intakeComposables.intakeName(data = data)
         }
     )
 }

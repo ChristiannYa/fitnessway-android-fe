@@ -109,7 +109,7 @@ fun BasicNutrient(
                             .fillMaxWidth()
                             .fillMaxHeight((data.progress / 100f).toFloat())
                             .background(
-                                color = MaterialTheme.colorScheme.primary,
+                                color = intakeComposables.nutrientColor,
                                 shape = RoundedCornerShape(
                                     bottomStart = barRadius,
                                     bottomEnd = barRadius,
@@ -127,7 +127,7 @@ fun BasicNutrient(
                 }
             )
 
-            intakeComposables.intakeName()
+            intakeComposables.intakeName(data = data)
         }
     )
 }

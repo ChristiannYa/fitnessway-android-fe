@@ -10,11 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.NutrientData
+import com.example.fitnessway.util.Nutrient.getNutrientColor
 import kotlin.math.roundToInt
 
 class IntakesComposables(private val intake: NutrientIntake) {
+    val nutrientColor = getNutrientColor(intake.nutrient.hexColor)
+
     @Composable
     fun intakeGoal() {
         Column(
@@ -22,12 +26,13 @@ class IntakesComposables(private val intake: NutrientIntake) {
             content = {
                 Text(
                     text = if (intake.goal != null) doubleFormatter(intake.goal) else "0",
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
+                    color = nutrientColor
                 )
                 Text(
                     text = intake.nutrient.unit,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                    color = nutrientColor.copy(0.5f)
                 )
             }
         )
@@ -35,38 +40,40 @@ class IntakesComposables(private val intake: NutrientIntake) {
 
     @Composable
     fun intakeProgress(data: NutrientData, modifier: Modifier = Modifier) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = modifier, // When using it: modifier.align(Alignment.Center),
-            content = {
-                Text(
-                    text = doubleFormatter(data.intake),
-                    style = MaterialTheme.typography.labelLarge
-                )
-                Text(
-                    text = "${data.progress.roundToInt()}%",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
-                )
-            }
+        Text(
+            text = doubleFormatter(data.intake),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = modifier,
+            color = WhiteFont
         )
     }
 
     @Composable
-    fun intakeName() {
+    fun intakeName(data: NutrientData) {
         val text = if (intake.nutrient.type == NutrientType.VITAMIN
             || intake.nutrient.type == NutrientType.MINERAL
         ) {
             intake.nutrient.symbol ?: intake.nutrient.name
         } else intake.nutrient.name
 
-        Text(
-            text = text,
-            color = MaterialTheme.colorScheme.inverseSurface,
-            style = MaterialTheme.typography.labelMedium,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            content = {
+                Text(
+                    text = "${data.progress.roundToInt()}%",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = nutrientColor.copy(0.5f)
+                )
+
+                Text(
+                    text = text,
+                    color = nutrientColor,
+                    style = MaterialTheme.typography.labelMedium,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
+            }
         )
     }
 }

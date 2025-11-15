@@ -1,9 +1,13 @@
 package com.example.fitnessway.feature.home.screen.create.food.composables
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationBaseField
 
@@ -15,7 +19,15 @@ fun SetBasicData(fields: List<FoodCreationBaseField>) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 content = {
                     fields.forEach { field ->
-                        FoodCreationFormField(field)
+                        FoodCreationFormField(
+                            field = field,
+                            modifier = Modifier
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        )
                     }
                 }
             )

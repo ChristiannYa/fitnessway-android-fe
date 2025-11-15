@@ -10,15 +10,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -32,9 +33,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     field: FormField<T>,
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
-    labelStyle: TextStyle = LocalTextStyle.current.copy(
-        color = MaterialTheme.colorScheme.onBackground
-    )
+    labelColor: Color = MaterialTheme.colorScheme.onBackground,
 ) {
     val textStyle = TextStyle(
         fontSize = MaterialTheme.typography.bodyMedium.fontSize,
@@ -67,7 +66,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(12.dp)
             )
             .padding(start = padding),
         content = {
@@ -77,16 +76,17 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 content = {
                     if (!enabled) {
                         Icon(
-                            imageVector = Icons.Default.Diamond,
+                            imageVector = Icons.Default.AutoAwesome,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
+                            modifier = Modifier.size(14.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
 
                     Text(
                         text = field.label,
-                        style = labelStyle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = labelColor,
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 }

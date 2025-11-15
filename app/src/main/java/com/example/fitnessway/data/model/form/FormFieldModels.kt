@@ -17,4 +17,7 @@ typealias LoginField = FormField<FormFieldName.Login>
 typealias RegisterField = FormField<FormFieldName.Register>
 typealias FoodLogField = FormField<FormFieldName.FoodLog>
 
+typealias FoodCreationBaseField = FormField<FormFieldName.FoodCreation.BaseField>
+typealias FoodCreationNutrientField = FormField<FormFieldName.FoodCreation.NutrientField>
+
 

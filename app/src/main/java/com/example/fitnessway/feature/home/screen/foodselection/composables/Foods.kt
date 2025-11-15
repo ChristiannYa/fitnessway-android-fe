@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -102,7 +103,7 @@ fun Food(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 content = {
                     food.nutrients.basic.forEach { (nutrient, amount) ->
-                        val nutrientColor = getNutrientColor(nutrient.hexColor)
+                        val nutrientColor = getNutrientColor(nutrient.hexColor) ?: Color(0xFFFFFFFF)
 
                         Text(
                             text = doubleFormatter(amount),

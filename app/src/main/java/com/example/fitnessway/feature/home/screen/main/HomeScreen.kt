@@ -46,6 +46,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     onViewFoodsList: () -> Unit,
     onViewFoodLogDetails: () -> Unit,
+    onNavigateToFoodForm: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -109,12 +110,8 @@ fun HomeScreen(
                                             }
                                         )
                                         CreateOptions(
-                                            onCreateFood = {
-                                                viewModel.toggleCreateMenuVisibility()
-                                            },
-                                            onCreateSupplement = {
-                                                viewModel.toggleCreateMenuVisibility()
-                                            },
+                                            onCreateFood = onNavigateToFoodForm,
+                                            onCreateSupplement = {},
                                             isVisible = isCreateMenuVisible
                                         )
                                     }
@@ -201,7 +198,8 @@ fun HomeScreenPreview() {
     FitnesswayTheme {
         HomeScreen(
             onViewFoodsList = {},
-            onViewFoodLogDetails = {}
+            onViewFoodLogDetails = {},
+            onNavigateToFoodForm = {}
         )
     }
 }

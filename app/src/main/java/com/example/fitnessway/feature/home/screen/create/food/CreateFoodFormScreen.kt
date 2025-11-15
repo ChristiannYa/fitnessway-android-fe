@@ -1,0 +1,163 @@
+package com.example.fitnessway.feature.home.screen.create.food
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
+import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.feature.home.screen.create.food.composables.NextButton
+import com.example.fitnessway.feature.home.screen.create.food.composables.SetBasicData
+import com.example.fitnessway.feature.home.screen.create.food.composables.SetNutrients
+import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
+import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.Nutrient.filterNutrientsByType
+import com.example.fitnessway.util.Nutrient.sortByPremiumStatus
+import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
+import org.koin.androidx.compose.koinViewModel
+
+
+@Composable
+fun CreateFoodFormScreen(
+    viewModel: HomeViewModel = koinViewModel(),
+    onBackClick: () -> Unit,
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val currentStep by viewModel.currentStep.collectAsState()
+    val foodCreationFormState by viewModel.foodCreationFormState.collectAsState()
+
+    val fieldsProvider = FoodCreationFieldsProvider(
+        formState = foodCreationFormState,
+        onFieldUpdate = { fieldName, value ->
+            viewModel.updateFoodCreationFormField(fieldName, value)
+        }
+    )
+
+    val (title, buttonText) = when (currentStep) {
+        1 -> "Food Information" to "Add Nutrients"
+        2 -> "Nutrients" to "Add Vitamins"
+        3 -> "Vitamins" to "Add Minerals"
+        4 -> "Minerals" to "Create Food"
+        else -> "" to ""
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getNutrients()
+    }
+
+    Screen(
+        header = {
+            Header(
+                onBackClick = {
+                    viewModel.updateStep(
+                        step = currentStep,
+                        goesBack = true,
+                        onExitForm = onBackClick
+                    )
+                },
+                title = title
+            )
+        },
+        content = {
+            when (uiState.nutrientsState) {
+                is UiState.Loading -> Text("Loading form")
+
+                is UiState.Success -> Column(
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxHeight(),
+                    content = {
+                        val isPremiumUser = if (viewModel.user != null) {
+                            viewModel.user.isPremium
+                        } else false
+
+                        val nutrients =
+                            (uiState.nutrientsState as UiState.Success<NutrientsByType<NutrientApiFormat>>).data
+
+                        val basicNutrients = filterNutrientsByType(
+                            nutrients = nutrients,
+                            type = NutrientType.BASIC
+                        )
+
+                        val vitamins = filterNutrientsByType(
+                            nutrients = nutrients,
+                            type = NutrientType.VITAMIN
+                        )
+
+                        val minerals = filterNutrientsByType(
+                            nutrients = nutrients,
+                            type = NutrientType.MINERAL
+                        )
+
+                        val foodBaseFields = listOf(
+                            fieldsProvider.name(),
+                            fieldsProvider.brand(),
+                            fieldsProvider.amountPerServing(),
+                            fieldsProvider.servingUnit(),
+                        )
+
+                        val foodBasicNutrientsFields = basicNutrients
+                            .sortByPremiumStatus(isPremiumUser)
+                            .map { (nutrient, _) ->
+                                fieldsProvider.nutrient(nutrient)
+                            }
+
+                        val foodVitaminFields = vitamins
+                            .sortByPremiumStatus(isPremiumUser)
+                            .map { (nutrient, _) ->
+                                fieldsProvider.nutrient(nutrient = nutrient)
+                            }
+
+                        val foodMineralFields = minerals
+                            .sortByPremiumStatus(isPremiumUser)
+                            .map { (nutrient, _) ->
+                                fieldsProvider.nutrient(nutrient = nutrient)
+                            }
+
+                        when (currentStep) {
+                            1 -> SetBasicData(foodBaseFields)
+                            2 -> SetNutrients(
+                                fields = foodBasicNutrientsFields,
+                                isPremiumUser = isPremiumUser
+                            )
+
+                            3 -> SetNutrients(
+                                fields = foodVitaminFields,
+                                isPremiumUser = isPremiumUser
+                            )
+
+                            4 -> SetNutrients(
+                                fields = foodMineralFields,
+                                isPremiumUser = isPremiumUser
+                            )
+                        }
+
+                        NextButton(
+                            onClick = {
+                                viewModel.updateStep(
+                                    step = currentStep,
+                                    goesBack = false
+                                )
+                            },
+                            text = buttonText
+                        )
+                    }
+                )
+
+                is UiState.Error -> ApiErrorMessage(
+                    errMsg = (uiState.nutrientsState as UiState.Error).message
+                )
+
+                is UiState.Idle -> {}
+            }
+        }
+    )
+}

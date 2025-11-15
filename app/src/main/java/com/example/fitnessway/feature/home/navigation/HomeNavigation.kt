@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.fitnessway.feature.home.screen.create.food.CreateFoodFormScreen
 import com.example.fitnessway.feature.home.screen.foodselection.FoodSelectionScreen
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoodLogScreen
 import com.example.fitnessway.feature.home.screen.logdetails.LogDetailsScreen
@@ -18,10 +19,13 @@ import org.koin.compose.viewmodel.koinViewModel
 object HomeMain
 
 @Serializable
-private object FoodLogDetails
+private object FoodSelection
 
 @Serializable
-private object FoodSelection
+private object FoodCreation
+
+@Serializable
+private object FoodLogDetails
 
 @Serializable
 private object FoodLog
@@ -38,20 +42,8 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
             HomeScreen(
                 viewModel = viewModel,
                 onViewFoodsList = { navController.navigate(FoodSelection) },
-                onViewFoodLogDetails = { navController.navigate(FoodLogDetails) }
-            )
-        }
-
-        composable<FoodLogDetails> { entry ->
-            val parentEntry = remember(entry) {
-                navController.getBackStackEntry<HomeGraph>()
-            }
-
-            val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
-
-            LogDetailsScreen(
-                viewModel = viewModel,
-                onBackClick = { navController.popBackStack() }
+                onViewFoodLogDetails = { navController.navigate(FoodLogDetails) },
+                onNavigateToFoodForm = { navController.navigate(FoodCreation) }
             )
         }
 
@@ -66,6 +58,32 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
                 viewModel,
                 onBackClick = { navController.popBackStack() },
                 onSelectedFoodToLog = { navController.navigate(FoodLog) }
+            )
+        }
+
+        composable<FoodCreation> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<HomeGraph>()
+            }
+
+            val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
+            CreateFoodFormScreen(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable<FoodLogDetails> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<HomeGraph>()
+            }
+
+            val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
+            LogDetailsScreen(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 

@@ -26,7 +26,7 @@ import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.util.Nutrient.calcNutrientIntakeData
-import com.example.fitnessway.util.Nutrient.filterDisplayedNutrients
+import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 
 
@@ -65,11 +65,10 @@ fun OtherNutrients(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
         content = {
-            val displayedNutrients = filterDisplayedNutrients(
-                nutrientsByType = nutrients,
-                nutrientType = nutrientType,
-                user = user
-            )
+            val displayedNutrients = filterNutrientsByType(
+                nutrients = nutrients,
+                type = nutrientType
+            ).filter { it.goal != null && (!it.nutrient.isPremium || user.isPremium) }
 
             if (displayedNutrients.isEmpty()) {
                 Text(

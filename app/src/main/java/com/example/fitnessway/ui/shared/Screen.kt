@@ -2,11 +2,14 @@ package com.example.fitnessway.ui.shared
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -16,6 +19,8 @@ fun Screen(
     content: @Composable () -> Unit,
 ) {
     val hasPadding = header != null && isMainScreen == false
+    val localDensity = LocalDensity.current
+    val padding = WindowInsets.navigationBars.getBottom(localDensity) / 2
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -28,7 +33,7 @@ fun Screen(
                             start = 16.dp,
                             end = 16.dp,
                             top = if (hasPadding) 8.dp else 0.dp,
-                            bottom = if (hasPadding) 16.dp else 0.dp,
+                            bottom = if (hasPadding) padding.dp else 0.dp,
                         ),
                     content = {
                         content()

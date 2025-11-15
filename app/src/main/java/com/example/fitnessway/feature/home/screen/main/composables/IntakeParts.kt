@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -17,7 +18,7 @@ import com.example.fitnessway.util.Nutrient.getNutrientColor
 import kotlin.math.roundToInt
 
 class IntakesComposables(private val intake: NutrientIntake) {
-    val nutrientColor = getNutrientColor(intake.nutrient.hexColor)
+    val nutrientColor = getNutrientColor(intake.nutrient.hexColor) ?: Color(0xFFFFFF)
 
     @Composable
     fun intakeGoal() {

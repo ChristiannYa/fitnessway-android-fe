@@ -2,9 +2,11 @@ package com.example.fitnessway.navigation
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -12,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
@@ -58,16 +61,16 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
 
     Scaffold(
         bottomBar = {
-            val animatedTranslation by animateFloatAsState(
-                targetValue = if (shouldShowBottomBar) 0f else bottomBarHeight,
-                animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
-                label = "bottomBarTranslation"
-            )
-
             val animatedAlpha by animateFloatAsState(
                 targetValue = if (shouldShowBottomBar) 1f else 0f,
                 animationSpec = tween(durationMillis = 400, easing = LinearEasing),
                 label = "bottomBarAlpha"
+            )
+
+            val animatedHeight by animateDpAsState(
+                targetValue = if (shouldShowBottomBar) 100.dp else 0.dp,
+                animationSpec = tween(durationMillis = 600, easing = LinearEasing),
+                label = "bottomBarHeight"
             )
 
             // Always render it to preserve layout space
@@ -75,9 +78,9 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
                 modifier = Modifier
                     .zIndex(if (shouldShowBottomBar) 1f else -1f) // Send behind when hidden
                     .graphicsLayer {
-                        translationY = animatedTranslation
                         alpha = animatedAlpha
-                    },
+                    }
+                    .height(animatedHeight),
                 content = {
                     BottomNavigationBar(navController, currentDestination)
                 }

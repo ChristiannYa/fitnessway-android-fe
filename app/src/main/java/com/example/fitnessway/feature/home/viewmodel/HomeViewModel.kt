@@ -35,6 +35,14 @@ class HomeViewModel(
 
     val user = userStateHolder.userState.value.user
 
+    fun getNutrients() {
+        viewModelScope.launch {
+            nutrientRepo.getNutrients().collect { state ->
+                _uiState.update { it.copy(nutrientsState = state) }
+            }
+        }
+    }
+
     fun getNutrientIntakes() {
         val apiDate = managers.date.getApiFormattedDate()
 

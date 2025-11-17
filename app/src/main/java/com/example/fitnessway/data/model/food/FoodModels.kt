@@ -1,5 +1,6 @@
 package com.example.fitnessway.data.model.food
 
+import androidx.compose.ui.text.toLowerCase
 import com.example.fitnessway.data.model.api.ApiResponseWithContent
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
@@ -15,6 +16,19 @@ enum class FoodLogCategories {
     LUNCH,
     DINNER,
     SUPPLEMENT
+}
+
+enum class ServingUnits {
+    G,
+    MG,
+    MCG,
+    ML,
+    OZ,
+    KCAL;
+
+    companion object {
+        val units by lazy { entries.map { it.name.lowercase() } }
+    }
 }
 
 @Serializable

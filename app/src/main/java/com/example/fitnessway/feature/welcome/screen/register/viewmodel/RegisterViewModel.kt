@@ -11,10 +11,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.form.field.Rules.nameRules
-import com.example.fitnessway.util.form.field.Rules.passwordRules
-import com.example.fitnessway.util.form.field.rules.NameInlineRules
-import com.example.fitnessway.util.form.field.rules.PasswordInlineRules
+import com.example.fitnessway.util.form.field.Rules.AuthForm.nameRules
+import com.example.fitnessway.util.form.field.Rules.AuthForm.passwordRules
+import com.example.fitnessway.util.form.field.InlineRules.AuthForm.PasswordInlineRules
+import com.example.fitnessway.util.form.field.InlineRules.AuthForm.NameInlineRules
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

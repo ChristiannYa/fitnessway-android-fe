@@ -33,7 +33,7 @@ fun Screen(
                             start = 16.dp,
                             end = 16.dp,
                             top = if (hasPadding) 8.dp else 0.dp,
-                            bottom = if (hasPadding) padding.dp else 0.dp,
+                            bottom = padding.dp,
                         ),
                     content = {
                         content()

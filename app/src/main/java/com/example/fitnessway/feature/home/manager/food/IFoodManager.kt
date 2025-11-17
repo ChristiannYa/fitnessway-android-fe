@@ -19,4 +19,5 @@ interface IFoodManager {
     fun setSelectedFoodLog(foodLog: FoodLogData)
     fun updateFoodCreationFormField(fieldName: FormFieldName.IFoodCreation, input: String)
     fun updateStep(step: Number, goesBack: Boolean = true, onExitForm: (() -> Unit)? = null)
+    fun areNutrientsValid(nutrients: Set<Int>): Boolean
 }

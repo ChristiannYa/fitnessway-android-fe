@@ -31,9 +31,8 @@ import com.example.fitnessway.data.model.form.FormFieldName
 @Composable
 fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     field: FormField<T>,
-    enabled: Boolean = true,
     modifier: Modifier = Modifier,
-    labelColor: Color = MaterialTheme.colorScheme.onBackground,
+    enabled: Boolean = true,
 ) {
     val textStyle = TextStyle(
         fontSize = MaterialTheme.typography.bodyMedium.fontSize,
@@ -86,7 +85,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                     Text(
                         text = field.label,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = labelColor,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 }

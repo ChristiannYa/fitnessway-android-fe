@@ -140,6 +140,18 @@ fun CreateFoodFormScreen(
                             )
                         }
 
+                        val areBasicNutrientsValid = viewModel.areNutrientsValid(
+                            nutrients = basicNutrients.map { it.nutrient.id }.toSet()
+                        )
+
+                        val isCurrentStepValid = when (currentStep) {
+                            1 -> viewModel.isBasicDataValid
+                            2 -> areBasicNutrientsValid
+                            3 -> true
+                            4 -> true
+                            else -> false
+                        }
+
                         NextButton(
                             onClick = {
                                 viewModel.updateStep(
@@ -147,6 +159,7 @@ fun CreateFoodFormScreen(
                                     goesBack = false
                                 )
                             },
+                            enabled = isCurrentStepValid,
                             text = buttonText
                         )
                     }

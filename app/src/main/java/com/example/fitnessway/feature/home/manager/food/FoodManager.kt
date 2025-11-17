@@ -1,8 +1,10 @@
 package com.example.fitnessway.feature.home.manager.food
 
+import android.util.Log
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
@@ -76,6 +78,13 @@ class FoodManager : IFoodManager {
             (it.toDoubleOrNull() ?: 0.0) > 0
         }
 
+    override fun areNutrientsValid(nutrients: Set<Int>): Boolean {
+        return _foodCreationFormState.value.nutrients
+            .filter { (id, _) -> id in nutrients }
+            .values
+            .any { (it.toDoubleOrNull() ?: 0.0) > 0 }
+    }
+
     override fun setSelectedFoodLog(foodLog: FoodLogData) {
         _selectedFoodLog.value = foodLog
     }
@@ -124,9 +133,13 @@ class FoodManager : IFoodManager {
                 onExitForm?.invoke()
             } else if (isBasicDataValid) _currentStep.value = 2
 
-            2 -> if (goesBack) _currentStep.value = 1 else if (areBasicNutrientsValid) _currentStep.value = 3
+            2 -> if (goesBack) _currentStep.value =
+                1 else if (areBasicNutrientsValid) _currentStep.value = 3
+
             3 -> if (goesBack) _currentStep.value = 2 else _currentStep.value = 4
-            4 -> if (goesBack) _currentStep.value = 3
+            4 -> if (goesBack) _currentStep.value = 3 else {
+                Log.d(Constants.DEBUG_TAG, "food: ${_foodCreationFormState.value}")
+            }
         }
     }
 }

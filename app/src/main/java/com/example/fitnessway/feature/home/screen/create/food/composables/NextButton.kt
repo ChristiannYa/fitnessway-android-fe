@@ -10,29 +10,42 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 @Composable
-fun NextButton(onClick: () -> Unit, text: String) {
+fun NextButton(
+    onClick: () -> Unit,
+    enabled: Boolean = false,
+    text: String,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         content = {
+            val bgColor = if (enabled) MaterialTheme.colorScheme.primary else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
+
+            val textColor = if (enabled) WhiteFont else WhiteFont.copy(0.3f)
+
             TextButton(
                 onClick = onClick,
+                enabled = enabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = bgColor,
                         shape = CircleShape
                     ),
                 content = {
                     Text(
                         text = text,
                         style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
                         fontFamily = robotoSerifFamily,
-                        color = WhiteFont
+                        color = textColor
                     )
                 }
             )

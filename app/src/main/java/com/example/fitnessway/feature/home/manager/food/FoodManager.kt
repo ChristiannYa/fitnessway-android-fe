@@ -65,11 +65,16 @@ class FoodManager : IFoodManager {
             }
         }
 
-    private val isBasicDataValid: Boolean
+    override val isBasicDataValid: Boolean
         get() = _foodCreationFormState.value.name.isNotEmpty() && formNameError == null &&
                 formBrandError == null &&
                 _foodCreationFormState.value.amountPerServing.isNotEmpty() && formAmountPerServingError == null &&
                 _foodCreationFormState.value.servingUnit.isNotEmpty() && formServingUnitError == null
+
+    override val areBasicNutrientsValid: Boolean
+        get() = _foodCreationFormState.value.nutrients.values.any {
+            (it.toDoubleOrNull() ?: 0.0) > 0
+        }
 
     override fun setSelectedFoodLog(foodLog: FoodLogData) {
         _selectedFoodLog.value = foodLog
@@ -117,22 +122,11 @@ class FoodManager : IFoodManager {
             1 -> if (goesBack) {
                 _foodCreationFormState.value = emptyFoodCreationFormState
                 onExitForm?.invoke()
-            } else if (isCurrentStepValid(step)) _currentStep.value = 2
+            } else if (isBasicDataValid) _currentStep.value = 2
 
-
-            2 -> if (goesBack) _currentStep.value = 1 else _currentStep.value = 3
+            2 -> if (goesBack) _currentStep.value = 1 else if (areBasicNutrientsValid) _currentStep.value = 3
             3 -> if (goesBack) _currentStep.value = 2 else _currentStep.value = 4
             4 -> if (goesBack) _currentStep.value = 3
-        }
-    }
-
-    override fun isCurrentStepValid(step: Number): Boolean {
-        return when (step) {
-            1 -> isBasicDataValid
-            2 -> false
-            3 -> false
-            4 -> false
-            else -> false
         }
     }
 }

@@ -13,9 +13,10 @@ interface IFoodManager {
     val formBrandError: String?
     val formAmountPerServingError: String?
     val formServingUnitError: String?
+    val isBasicDataValid: Boolean
+    val areBasicNutrientsValid: Boolean
 
     fun setSelectedFoodLog(foodLog: FoodLogData)
     fun updateFoodCreationFormField(fieldName: FormFieldName.IFoodCreation, input: String)
     fun updateStep(step: Number, goesBack: Boolean = true, onExitForm: (() -> Unit)? = null)
-    fun isCurrentStepValid(step: Number): Boolean
 }

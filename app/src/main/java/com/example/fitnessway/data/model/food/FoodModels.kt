@@ -1,6 +1,5 @@
 package com.example.fitnessway.data.model.food
 
-import androidx.compose.ui.text.toLowerCase
 import com.example.fitnessway.data.model.api.ApiResponseWithContent
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
@@ -31,18 +30,25 @@ enum class ServingUnits {
     }
 }
 
+interface IFoodInformation {
+    val name: String
+    val brand: String?
+    val amountPerServing: Double
+    val servingUnit: String
+}
+
 @Serializable
 data class Food(
     val id: Int,
-    val name: String,
-    val brand: String?,
+    override val name: String,
+    override val brand: String?,
 
     @SerialName("amount_per_serving")
-    val amountPerServing: Double,
+    override val amountPerServing: Double,
 
     @SerialName("serving_unit")
-    val servingUnit: String
-)
+    override val servingUnit: String
+) : IFoodInformation
 
 @Serializable
 data class FoodNutrientAmountData(
@@ -56,7 +62,6 @@ data class FoodInformation(
     val nutrients: NutrientsByType<FoodNutrientAmountData>
 )
 
-
 @Serializable
 data class FoodsApiResponse(
     // There will be cases where the user will not have any foods created, so the
@@ -66,6 +71,43 @@ data class FoodsApiResponse(
 )
 
 typealias FoodsApiFetchResponse = ApiResponseWithContent<FoodsApiResponse>
+
+@Serializable
+data class FoodAddInfoApiFormat(
+    override val name: String,
+    override val brand: String?,
+
+    @SerialName("amount_per_serving")
+    override val amountPerServing: Double,
+
+    @SerialName("serving_unit")
+    override val servingUnit: String,
+) : IFoodInformation
+
+@Serializable
+data class FoodAddNutrientAmountApiFormat(
+    @SerialName("nutrient_id")
+    val nutrientId: Int,
+
+    val amount: Double
+)
+
+@Serializable
+data class FoodAddRequest(
+    @SerialName("user_id")
+    val userId: String,
+
+    val information: FoodAddInfoApiFormat,
+    val nutrients: List<FoodAddNutrientAmountApiFormat>
+)
+
+@Serializable
+data class FoodAddApiResponse(
+    @SerialName("food_created")
+    val foodCreated: FoodInformation
+)
+
+typealias FoodAddApiPostResponse = ApiResponseWithContent<FoodAddApiResponse>
 
 @Serializable
 data class FoodLogData(

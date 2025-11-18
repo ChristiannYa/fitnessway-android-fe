@@ -1,5 +1,7 @@
 package com.example.fitnessway.data.network.food
 
+import com.example.fitnessway.data.model.food.FoodAddApiPostResponse
+import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodLogAddPostResponse
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogDeleteResponse
@@ -15,6 +17,11 @@ import retrofit2.http.Query
 interface IFoodApiService {
     @GET("food/get-foods")
     suspend fun getFoods(): Response<FoodsApiFetchResponse>
+
+    @POST("food/create")
+    suspend fun addFood(
+        @Body request: FoodAddRequest
+    ): Response<FoodAddApiPostResponse>
 
     @GET("food/log/get-logs")
     suspend fun getFoodLogs(

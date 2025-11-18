@@ -61,6 +61,17 @@ class HomeViewModel(
         }
     }
 
+    fun addFood() {
+        val user = user ?: return
+        val request = managers.food.createFoodRequestBody(user.id)
+
+        viewModelScope.launch {
+            foodRepo.addFood(request).collect { state ->
+                _uiState.update { it.copy(foodAddState = state) }
+            }
+        }
+    }
+
     fun getFoodLogs() {
         val apiDate = managers.date.getApiFormattedDate()
 

@@ -1,5 +1,6 @@
 package com.example.fitnessway.data.repository.food
 
+import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogData
@@ -19,6 +20,16 @@ class FoodRepositoryImpl(
             apiCall = { apiService.getFoods() },
             extractData = { it.foods ?: emptyList() },
             errMsg = "Failed to get foods"
+        )
+    }
+
+    override suspend fun addFood(
+        request: FoodAddRequest
+    ): Flow<UiState<FoodInformation>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.addFood(request) },
+            extractData = { it.foodCreated },
+            errMsg = "Failed to add food"
         )
     }
 

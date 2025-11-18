@@ -12,6 +12,7 @@ data class HomeScreenUiState(
     val nutrientsState: UiState<NutrientsByType<NutrientApiFormat>> = UiState.Loading,
     val nutrientIntakesState: UiState<NutrientIntakesByType> = UiState.Loading,
     val foodsState: UiState<List<FoodInformation>> = UiState.Loading,
+    val foodAddState: UiState<FoodInformation> = UiState.Idle,
     val foodLogsState: UiState<FoodLogsByCategory> = UiState.Loading,
     val foodLogAddState: UiState<FoodLogData> = UiState.Idle,
     val foodLogDeleteState: UiState<FoodLogData> = UiState.Idle

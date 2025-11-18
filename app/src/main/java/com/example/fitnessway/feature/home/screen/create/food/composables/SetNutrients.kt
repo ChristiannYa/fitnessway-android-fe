@@ -26,7 +26,7 @@ fun SetNutrients(
                             field = field,
                             enabled = enabled,
                             modifier = Modifier
-                                .blur(if (enabled) 0.dp else 2.dp),
+                                .blur(if (enabled) 0.dp else 3.dp),
                         )
                     }
                 }

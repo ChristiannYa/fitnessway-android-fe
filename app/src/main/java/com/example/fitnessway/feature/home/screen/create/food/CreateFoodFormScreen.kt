@@ -1,5 +1,13 @@
 package com.example.fitnessway.feature.home.screen.create.food
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,9 +17,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.feature.home.screen.create.food.composables.FormProgressIndicator
 import com.example.fitnessway.feature.home.screen.create.food.composables.NextButton
 import com.example.fitnessway.feature.home.screen.create.food.composables.SetBasicData
 import com.example.fitnessway.feature.home.screen.create.food.composables.SetNutrients
@@ -54,123 +64,151 @@ fun CreateFoodFormScreen(
         viewModel.getNutrients()
     }
 
-    Screen(
-        header = {
-            Header(
-                onBackClick = {
-                    viewModel.updateStep(
-                        step = currentStep,
-                        goesBack = true,
-                        onExitForm = onBackClick
+    if (viewModel.user != null) {
+        Screen(
+            header = {
+                Header(
+                    onBackClick = {
+                        viewModel.updateStep(
+                            step = currentStep,
+                            goesBack = true,
+                            onExitForm = onBackClick
+                        )
+                    },
+                    title = title
+                )
+            },
+            content = {
+                when (uiState.nutrientsState) {
+                    is UiState.Loading -> Text("Loading form")
+
+                    is UiState.Success -> Column(
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxHeight(),
+                        content = {
+                            val isPremiumUser = viewModel.user.isPremium
+
+                            val nutrients =
+                                (uiState.nutrientsState as UiState.Success<NutrientsByType<NutrientApiFormat>>).data
+
+                            val basicNutrients = filterNutrientsByType(
+                                nutrients = nutrients,
+                                type = NutrientType.BASIC
+                            )
+
+                            val vitamins = filterNutrientsByType(
+                                nutrients = nutrients,
+                                type = NutrientType.VITAMIN
+                            )
+
+                            val minerals = filterNutrientsByType(
+                                nutrients = nutrients,
+                                type = NutrientType.MINERAL
+                            )
+
+                            val foodBaseFields = listOf(
+                                fieldsProvider.name(),
+                                fieldsProvider.brand(),
+                                fieldsProvider.amountPerServing(),
+                                fieldsProvider.servingUnit(),
+                            )
+
+                            val foodBasicNutrientsFields = basicNutrients
+                                .sortByPremiumStatus(isPremiumUser)
+                                .map { (nutrient, _) ->
+                                    fieldsProvider.nutrient(nutrient)
+                                }
+
+                            val foodVitaminFields = vitamins
+                                .sortByPremiumStatus(isPremiumUser)
+                                .map { (nutrient, _) ->
+                                    fieldsProvider.nutrient(nutrient = nutrient)
+                                }
+
+                            val foodMineralFields = minerals
+                                .sortByPremiumStatus(isPremiumUser)
+                                .map { (nutrient, _) ->
+                                    fieldsProvider.nutrient(nutrient = nutrient)
+                                }
+
+                            val areBasicNutrientsValid = viewModel.areNutrientsValid(
+                                nutrients = basicNutrients.map { it.nutrient.id }.toSet()
+                            )
+
+                            val isCurrentStepValid = when (currentStep) {
+                                1 -> viewModel.isBasicDataValid
+                                2 -> areBasicNutrientsValid
+                                3 -> true
+                                4 -> true
+                                else -> false
+                            }
+
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(26.dp),
+                                content = {
+                                    FormProgressIndicator(
+                                        currentStep = currentStep,
+                                        isStepOneValid = viewModel.isBasicDataValid,
+                                        isStepTwoValid = viewModel.areBasicNutrientsValid
+                                    )
+
+                                    AnimatedContent(
+                                        targetState = currentStep,
+                                        transitionSpec = {
+                                            val isForward = targetState > initialState
+
+                                            if (isForward)
+                                                slideInHorizontally { it } + fadeIn() + scaleIn(initialScale = 0.7f) togetherWith
+                                                        slideOutHorizontally { -it } + fadeOut() + scaleOut(targetScale = 0.7f)
+                                            else
+                                                slideInHorizontally { -it } + fadeIn() + scaleIn(initialScale = 0.7f) togetherWith
+                                                        slideOutHorizontally { it } + fadeOut() + scaleOut(targetScale = 0.7f)
+                                        },
+                                        content = { step ->
+                                            when (step) {
+                                                1 -> SetBasicData(foodBaseFields)
+
+                                                2 -> SetNutrients(
+                                                    fields = foodBasicNutrientsFields,
+                                                    isPremiumUser = isPremiumUser
+                                                )
+
+                                                3 -> SetNutrients(
+                                                    fields = foodVitaminFields,
+                                                    isPremiumUser = isPremiumUser
+                                                )
+
+                                                4 -> SetNutrients(
+                                                    fields = foodMineralFields,
+                                                    isPremiumUser = isPremiumUser
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                            )
+
+                            NextButton(
+                                onClick = {
+                                    viewModel.updateStep(
+                                        step = currentStep,
+                                        goesBack = false,
+                                        onSubmit = { viewModel.addFood() }
+                                    )
+                                },
+                                enabled = isCurrentStepValid,
+                                text = buttonText
+                            )
+                        }
                     )
-                },
-                title = title
-            )
-        },
-        content = {
-            when (uiState.nutrientsState) {
-                is UiState.Loading -> Text("Loading form")
 
-                is UiState.Success -> Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxHeight(),
-                    content = {
-                        val isPremiumUser = if (viewModel.user != null) {
-                            viewModel.user.isPremium
-                        } else false
+                    is UiState.Error -> ApiErrorMessage(
+                        errMsg = (uiState.nutrientsState as UiState.Error).message
+                    )
 
-                        val nutrients =
-                            (uiState.nutrientsState as UiState.Success<NutrientsByType<NutrientApiFormat>>).data
-
-                        val basicNutrients = filterNutrientsByType(
-                            nutrients = nutrients,
-                            type = NutrientType.BASIC
-                        )
-
-                        val vitamins = filterNutrientsByType(
-                            nutrients = nutrients,
-                            type = NutrientType.VITAMIN
-                        )
-
-                        val minerals = filterNutrientsByType(
-                            nutrients = nutrients,
-                            type = NutrientType.MINERAL
-                        )
-
-                        val foodBaseFields = listOf(
-                            fieldsProvider.name(),
-                            fieldsProvider.brand(),
-                            fieldsProvider.amountPerServing(),
-                            fieldsProvider.servingUnit(),
-                        )
-
-                        val foodBasicNutrientsFields = basicNutrients
-                            .sortByPremiumStatus(isPremiumUser)
-                            .map { (nutrient, _) ->
-                                fieldsProvider.nutrient(nutrient)
-                            }
-
-                        val foodVitaminFields = vitamins
-                            .sortByPremiumStatus(isPremiumUser)
-                            .map { (nutrient, _) ->
-                                fieldsProvider.nutrient(nutrient = nutrient)
-                            }
-
-                        val foodMineralFields = minerals
-                            .sortByPremiumStatus(isPremiumUser)
-                            .map { (nutrient, _) ->
-                                fieldsProvider.nutrient(nutrient = nutrient)
-                            }
-
-                        when (currentStep) {
-                            1 -> SetBasicData(foodBaseFields)
-                            2 -> SetNutrients(
-                                fields = foodBasicNutrientsFields,
-                                isPremiumUser = isPremiumUser
-                            )
-
-                            3 -> SetNutrients(
-                                fields = foodVitaminFields,
-                                isPremiumUser = isPremiumUser
-                            )
-
-                            4 -> SetNutrients(
-                                fields = foodMineralFields,
-                                isPremiumUser = isPremiumUser
-                            )
-                        }
-
-                        val areBasicNutrientsValid = viewModel.areNutrientsValid(
-                            nutrients = basicNutrients.map { it.nutrient.id }.toSet()
-                        )
-
-                        val isCurrentStepValid = when (currentStep) {
-                            1 -> viewModel.isBasicDataValid
-                            2 -> areBasicNutrientsValid
-                            3 -> true
-                            4 -> true
-                            else -> false
-                        }
-
-                        NextButton(
-                            onClick = {
-                                viewModel.updateStep(
-                                    step = currentStep,
-                                    goesBack = false
-                                )
-                            },
-                            enabled = isCurrentStepValid,
-                            text = buttonText
-                        )
-                    }
-                )
-
-                is UiState.Error -> ApiErrorMessage(
-                    errMsg = (uiState.nutrientsState as UiState.Error).message
-                )
-
-                is UiState.Idle -> {}
+                    is UiState.Idle -> {}
+                }
             }
-        }
-    )
+        )
+    }
 }

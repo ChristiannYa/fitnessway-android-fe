@@ -1,10 +1,11 @@
 package com.example.fitnessway.feature.home.manager.food
 
-import android.util.Log
+import com.example.fitnessway.data.model.food.FoodAddInfoApiFormat
+import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
+import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
@@ -27,8 +28,8 @@ class FoodManager : IFoodManager {
     private val _foodCreationFormState = MutableStateFlow(emptyFoodCreationFormState)
     override val foodCreationFormState: StateFlow<FormStates.FoodCreation> = _foodCreationFormState
 
-    private val _currentStep = MutableStateFlow<Number>(1)
-    override val currentStep: StateFlow<Number> = _currentStep
+    private val _currentStep = MutableStateFlow(1)
+    override val currentStep: StateFlow<Int> = _currentStep
 
     override val formNameError: String?
         get() = _foodCreationFormState.value.name.let { value ->
@@ -123,9 +124,10 @@ class FoodManager : IFoodManager {
     }
 
     override fun updateStep(
-        step: Number,
+        step: Int,
         goesBack: Boolean,
-        onExitForm: (() -> Unit)?
+        onExitForm: (() -> Unit)?,
+        onSubmit: (() -> Unit)?,
     ) {
         when (step) {
             1 -> if (goesBack) {
@@ -138,8 +140,30 @@ class FoodManager : IFoodManager {
 
             3 -> if (goesBack) _currentStep.value = 2 else _currentStep.value = 4
             4 -> if (goesBack) _currentStep.value = 3 else {
-                Log.d(Constants.DEBUG_TAG, "food: ${_foodCreationFormState.value}")
+                onSubmit?.invoke()
             }
         }
+    }
+
+    override fun createFoodRequestBody(userId: String): FoodAddRequest {
+        val formState = _foodCreationFormState.value
+
+        return FoodAddRequest(
+            userId = userId,
+            information = FoodAddInfoApiFormat(
+                name = formState.name,
+                brand = formState.brand,
+                amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
+                servingUnit = formState.servingUnit
+            ),
+            nutrients = formState.nutrients
+                .filter { (_, amount) -> (amount.toDoubleOrNull() ?: 0.0) > 0 }
+                .map { (nutrientId, amount) ->
+                    FoodAddNutrientAmountApiFormat(
+                        nutrientId = nutrientId,
+                        amount = amount.toDoubleOrNull() ?: 0.0
+                    )
+                }
+        )
     }
 }

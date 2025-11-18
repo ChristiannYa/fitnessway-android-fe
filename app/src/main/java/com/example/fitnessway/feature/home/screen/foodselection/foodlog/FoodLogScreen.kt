@@ -42,8 +42,6 @@ fun FoodLogScreen(
 
     var shouldShowFoodLogSuccess by remember { mutableStateOf(false) }
 
-    // This will run just in case the user exits the screen before the 5s after
-    // the success state
     DisposableEffect(Unit) {
         onDispose {
             viewModel.resetFoodLogAddState()

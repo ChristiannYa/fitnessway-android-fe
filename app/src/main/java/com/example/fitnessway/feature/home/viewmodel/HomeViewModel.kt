@@ -72,6 +72,10 @@ class HomeViewModel(
         }
     }
 
+    fun resetFoodAddState() {
+        _uiState.update { it.copy(foodAddState = UiState.Idle) }
+    }
+
     fun getFoodLogs() {
         val apiDate = managers.date.getApiFormattedDate()
 
@@ -173,6 +177,7 @@ class HomeViewModel(
 
                     else -> {}
                 }
+
             }
         }
     }

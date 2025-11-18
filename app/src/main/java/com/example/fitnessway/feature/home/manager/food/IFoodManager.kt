@@ -25,6 +25,7 @@ interface IFoodManager {
         onExitForm: (() -> Unit)? = null,
         onSubmit: (() -> Unit)? = null
     )
+    fun resetFoodFormState()
     fun areNutrientsValid(nutrients: Set<Int>): Boolean
     fun createFoodRequestBody(userId: String): FoodAddRequest
 }

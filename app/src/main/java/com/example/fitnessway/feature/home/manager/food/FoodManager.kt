@@ -123,6 +123,11 @@ class FoodManager : IFoodManager {
         }
     }
 
+    override fun resetFoodFormState() {
+        _currentStep.value = 1
+        _foodCreationFormState.value = emptyFoodCreationFormState
+    }
+
     override fun updateStep(
         step: Int,
         goesBack: Boolean,
@@ -131,7 +136,6 @@ class FoodManager : IFoodManager {
     ) {
         when (step) {
             1 -> if (goesBack) {
-                _foodCreationFormState.value = emptyFoodCreationFormState
                 onExitForm?.invoke()
             } else if (isBasicDataValid) _currentStep.value = 2
 

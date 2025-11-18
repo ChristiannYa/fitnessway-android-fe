@@ -18,12 +18,14 @@ import com.example.fitnessway.util.UiState
 
 @Composable
 fun FoodsList(
-    state: UiState<List<FoodInformation>>
+    state: UiState<List<FoodInformation>>,
+    onViewDetails: (FoodInformation) -> Unit
 ) {
     when (state) {
         is UiState.Loading -> Text("Loading foods")
         is UiState.Success -> Foods(
-            foods = state.data
+            foods = state.data,
+            onViewDetails = onViewDetails
         )
 
         is UiState.Error -> ApiErrorMessage(state.message)
@@ -32,7 +34,10 @@ fun FoodsList(
 }
 
 @Composable
-fun Foods(foods: List<FoodInformation>) {
+fun Foods(
+    foods: List<FoodInformation>,
+    onViewDetails: (FoodInformation) -> Unit
+) {
     if (foods.isEmpty()) {
         Text(
             text = "Foods that you add to your list will appear here.",
@@ -47,7 +52,10 @@ fun Foods(foods: List<FoodInformation>) {
             content = {
                 foods.forEach { food ->
                     item {
-                        Food(food = food)
+                        Food(
+                            food = food,
+                            onViewDetails = { onViewDetails(food) }
+                        )
                     }
                 }
             }
@@ -56,14 +64,17 @@ fun Foods(foods: List<FoodInformation>) {
 }
 
 @Composable
-fun Food(food: FoodInformation) {
+fun Food(
+    food: FoodInformation,
+    onViewDetails: () -> Unit,
+) {
     val missingBrand = food.information.brand == null || food.information.brand == ""
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .areaContainerSmall(
-                onClick = {}
+                onClick = onViewDetails
             ),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         content = {

@@ -17,7 +17,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ListsScreen(
-    listsViewModel: ListsViewModel = koinViewModel()
+    listsViewModel: ListsViewModel = koinViewModel(),
+    onViewDetails: () -> Unit,
 ) {
     val uiState by listsViewModel.uiState.collectAsState()
     val selectedList by listsViewModel.selectedList.collectAsState()
@@ -40,7 +41,11 @@ fun ListsScreen(
                 when (selectedList) {
                     ListOption.Food -> {
                         FoodsList(
-                            state = uiState.foodsState
+                            state = uiState.foodsState,
+                            onViewDetails = {
+                                listsViewModel.setSelectedFood(it)
+                                onViewDetails()
+                            }
                         )
                     }
 

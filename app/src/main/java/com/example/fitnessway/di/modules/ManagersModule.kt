@@ -8,6 +8,7 @@ import com.example.fitnessway.feature.home.manager.food.FoodManager
 import com.example.fitnessway.feature.home.manager.ui.UiManager
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.ListsManagersImpl
+import com.example.fitnessway.feature.lists.manager.edition.EditionManager
 import com.example.fitnessway.feature.lists.manager.toggle.SelectionManager
 import org.koin.dsl.module
 
@@ -23,7 +24,8 @@ val managersModule = module {
 
     single<IListsManagers> {
         ListsManagersImpl(
-            selection = SelectionManager()
+            selection = SelectionManager(),
+            edition = EditionManager()
         )
     }
 }

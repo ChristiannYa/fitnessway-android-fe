@@ -29,7 +29,10 @@ class FoodRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = { apiService.addFood(request) },
             extractData = { it.foodCreated },
-            errMsg = "Failed to add food"
+            errMsg = "Failed to add food",
+            invalidatedUrls = listOf(
+                ApiUrls.Food.getFoods
+            )
         )
     }
 

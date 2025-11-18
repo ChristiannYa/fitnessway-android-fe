@@ -8,7 +8,7 @@ object ApiUrls {
     }
 
     object Food {
-        val getFoods = "${BASE_URL}food/create"
+        const val GET_FOODS = "${BASE_URL}food/get-foods"
         fun getLogs(date: String) = "${BASE_URL}food/log/get-logs?date=$date"
     }
 }

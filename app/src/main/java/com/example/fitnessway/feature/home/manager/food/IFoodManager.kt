@@ -27,5 +27,4 @@ interface IFoodManager {
     )
     fun resetFoodFormState()
     fun areNutrientsValid(nutrients: Set<Int>): Boolean
-    fun createFoodRequestBody(userId: String): FoodAddRequest
 }

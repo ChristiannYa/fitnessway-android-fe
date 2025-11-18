@@ -2,6 +2,9 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.model.food.FoodAddInfoApiFormat
+import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
+import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.repository.food.IFoodRepository
@@ -63,7 +66,25 @@ class HomeViewModel(
 
     fun addFood() {
         val user = user ?: return
-        val request = managers.food.createFoodRequestBody(user.id)
+        val formState = managers.food.foodCreationFormState.value
+
+        val request = FoodAddRequest(
+            userId = user.id,
+            information = FoodAddInfoApiFormat(
+                name = formState.name,
+                brand = formState.brand,
+                amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
+                servingUnit = formState.servingUnit
+            ),
+            nutrients = formState.nutrients
+                .filter { (_, amount) -> (amount.toDoubleOrNull() ?: 0.0) > 0 }
+                .map { (nutrientId, amount) ->
+                    FoodAddNutrientAmountApiFormat(
+                        nutrientId = nutrientId,
+                        amount = amount.toDoubleOrNull() ?: 0.0
+                    )
+                }
+        )
 
         viewModelScope.launch {
             foodRepo.addFood(request).collect { state ->

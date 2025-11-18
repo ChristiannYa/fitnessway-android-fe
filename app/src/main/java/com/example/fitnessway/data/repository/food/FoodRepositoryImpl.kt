@@ -31,7 +31,7 @@ class FoodRepositoryImpl(
             extractData = { it.foodCreated },
             errMsg = "Failed to add food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.getFoods
+                ApiUrls.Food.GET_FOODS
             )
         )
     }

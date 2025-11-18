@@ -1,8 +1,5 @@
 package com.example.fitnessway.feature.home.manager.food
 
-import com.example.fitnessway.data.model.food.FoodAddInfoApiFormat
-import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
-import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
@@ -147,27 +144,5 @@ class FoodManager : IFoodManager {
                 onSubmit?.invoke()
             }
         }
-    }
-
-    override fun createFoodRequestBody(userId: String): FoodAddRequest {
-        val formState = _foodCreationFormState.value
-
-        return FoodAddRequest(
-            userId = userId,
-            information = FoodAddInfoApiFormat(
-                name = formState.name,
-                brand = formState.brand,
-                amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
-                servingUnit = formState.servingUnit
-            ),
-            nutrients = formState.nutrients
-                .filter { (_, amount) -> (amount.toDoubleOrNull() ?: 0.0) > 0 }
-                .map { (nutrientId, amount) ->
-                    FoodAddNutrientAmountApiFormat(
-                        nutrientId = nutrientId,
-                        amount = amount.toDoubleOrNull() ?: 0.0
-                    )
-                }
-        )
     }
 }

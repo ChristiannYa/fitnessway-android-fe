@@ -1,12 +1,15 @@
 package com.example.fitnessway.ui.theme
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -38,13 +41,20 @@ object AppModifiers {
     @Composable
     fun Modifier.areaContainerSmall(
         areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
-        onClick: (() -> Unit)? = null
+        showsIndication: Boolean = true,
+        onClick: (() -> Unit)? = null,
     ) = this
         .then(
             if (onClick != null) {
                 Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .clickable(onClick = onClick)
+                    .clickable(
+                        interactionSource = if (showsIndication) null else {
+                            remember { MutableInteractionSource() }
+                        },
+                        indication = if (showsIndication) LocalIndication.current else null,
+                        onClick = onClick
+                    )
             } else Modifier
         )
         .fillMaxWidth()

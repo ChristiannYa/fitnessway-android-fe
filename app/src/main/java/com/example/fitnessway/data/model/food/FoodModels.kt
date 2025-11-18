@@ -30,6 +30,11 @@ enum class ServingUnits {
     }
 }
 
+enum class ListOption {
+    Food,
+    Supplement
+}
+
 interface IFoodInformation {
     val name: String
     val brand: String?

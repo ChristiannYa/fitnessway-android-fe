@@ -28,12 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
+import com.example.fitnessway.data.model.food.ListOption
 import com.example.fitnessway.ui.theme.WhiteFont
-
-enum class CreateOption {
-    Food,
-    Supplement,
-}
 
 
 @Composable
@@ -79,12 +75,12 @@ fun CreateOptions(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 content = {
                     Option(
-                        createOption = CreateOption.Food,
+                        createOption = ListOption.Food,
                         onCreate = onCreateFood,
                         modifier = Modifier.weight(1f)
                     )
                     Option(
-                        createOption = CreateOption.Supplement,
+                        createOption = ListOption.Supplement,
                         onCreate = onCreateSupplement,
                         modifier = Modifier.weight(1f)
                     )
@@ -96,18 +92,18 @@ fun CreateOptions(
 
 @Composable
 fun Option(
-    createOption: CreateOption,
+    createOption: ListOption,
     onCreate: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val icon = when (createOption) {
-        CreateOption.Food -> R.drawable.food
-        CreateOption.Supplement -> R.drawable.energy
+        ListOption.Food -> R.drawable.food
+        ListOption.Supplement -> R.drawable.energy
     }
 
     val optionName = when (createOption) {
-        CreateOption.Food -> CreateOption.Food.name.replaceFirstChar { it.uppercase() }
-        CreateOption.Supplement -> CreateOption.Supplement.name.replaceFirstChar { it.uppercase() }
+        ListOption.Food -> ListOption.Food.name.replaceFirstChar { it.uppercase() }
+        ListOption.Supplement -> ListOption.Supplement.name.replaceFirstChar { it.uppercase() }
     }
 
     Box(

@@ -20,7 +20,8 @@ fun Screen(
 ) {
     val hasPadding = header != null && isMainScreen == false
     val localDensity = LocalDensity.current
-    val padding = WindowInsets.navigationBars.getBottom(localDensity) / 2
+    val bottomInsetPadding = WindowInsets.navigationBars.getBottom(localDensity) / 2
+    val bottomPaddingDynamic = if (isMainScreen == true) 0.dp else bottomInsetPadding.dp
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -33,7 +34,7 @@ fun Screen(
                             start = 16.dp,
                             end = 16.dp,
                             top = if (hasPadding) 8.dp else 0.dp,
-                            bottom = padding.dp,
+                            bottom = bottomPaddingDynamic,
                         ),
                     content = {
                         content()

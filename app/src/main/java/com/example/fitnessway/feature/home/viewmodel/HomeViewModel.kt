@@ -33,6 +33,7 @@ class HomeViewModel(
     IFoodLogManager by managers.foodLog,
     IDateManager by managers.date,
     IUiManager by managers.ui {
+
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
@@ -67,6 +68,8 @@ class HomeViewModel(
     fun addFood() {
         val user = user ?: return
         val formState = managers.food.foodCreationFormState.value
+
+        // @TODO: Make the request optimistic
 
         val request = FoodAddRequest(
             userId = user.id,

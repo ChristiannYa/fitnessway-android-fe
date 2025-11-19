@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,44 +41,49 @@ fun EditionMode(
         NutrientType.MINERAL to food.nutrients.mineral
     )
 
-    Column(
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         content = {
-            Column(
-                modifier = Modifier.areaContainerMedium(),
-                content = {
-                    EditableStrips(
-                        title = "Food Details",
-                        items = baseFields
-                    )
-                }
-            )
+            item {
+                Column(
+                    modifier = Modifier.areaContainerMedium(),
+                    content = {
+                        EditableStrips(
+                            title = "Food Details",
+                            items = baseFields
+                        )
+                    }
+                )
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.areaContainerMedium(),
-                content = {
-                    nutrients.forEach { (type, ns) ->
-                        if (ns.isNotEmpty()) {
-                            val title = type.name.lowercase()
-                                .replaceFirstChar { it.uppercase() }
+            }
 
-                            val titleDynamic = when (type) {
-                                NutrientType.BASIC -> "Nutrient"
-                                NutrientType.VITAMIN -> title
-                                NutrientType.MINERAL -> title
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier.areaContainerMedium(),
+                    content = {
+                        nutrients.forEach { (type, ns) ->
+                            if (ns.isNotEmpty()) {
+                                val title = type.name.lowercase()
+                                    .replaceFirstChar { it.uppercase() }
+
+                                val titleDynamic = when (type) {
+                                    NutrientType.BASIC -> "Summary"
+                                    NutrientType.VITAMIN -> "${title}s"
+                                    NutrientType.MINERAL -> "${title}s"
+                                }
+
+                                val fields = getNutrientFields(ns)
+
+                                EditableStrips(
+                                    title = titleDynamic,
+                                    items = fields
+                                )
                             }
-
-                            val fields = getNutrientFields(ns)
-
-                            EditableStrips(
-                                title = "${titleDynamic}s",
-                                items = fields
-                            )
                         }
                     }
-                }
-            )
+                )
+            }
         }
     )
 }
@@ -160,13 +166,8 @@ private fun getNutrientFields(
     nutrients: List<FoodNutrientAmountData>
 ): List<Field> {
     return nutrients.map { (nutrient, amount) ->
-        val key =
-            if (nutrient.type == NutrientType.BASIC || nutrient.type == NutrientType.VITAMIN) {
-                "${nutrient.name} ${nutrient.unit}"
-            } else "${nutrient.name} (${nutrient.symbol}) ${nutrient.unit}"
-
         Field(
-            key = key,
+            key = "${nutrient.name} ${nutrient.unit}",
             value = doubleFormatter(amount)
         )
     }

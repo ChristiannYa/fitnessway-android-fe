@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -38,12 +39,16 @@ import com.example.fitnessway.util.Formatters.doubleFormatter
 
 @Composable
 fun FoodInformation(food: FoodInformation) {
-    Column(
+    LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp),
         content = {
-            BaseInformation(food)
-            NutrientsInformation(food.nutrients)
+            item {
+                BaseInformation(food)
+            }
+            item {
+                NutrientsInformation(food.nutrients)
+            }
         }
     )
 }
@@ -111,7 +116,7 @@ fun NutrientSummary(nutrients: NutrientsByType<FoodNutrientAmountData>) {
             Text(
                 text = "Summary",
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -149,7 +154,7 @@ fun NutrientSummary(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                             content = {
                                 Box(
                                     contentAlignment = Alignment.Center,
-                                    modifier = Modifier.size(70.dp),
+                                    modifier = Modifier.size(68.dp),
                                     content = {
                                         CircularProgressIndicator(
                                             progress = { animatedProgress },
@@ -211,10 +216,10 @@ fun RemainingNutrients(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                 Text(
                                     text = "${title}s",
                                     style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.SemiBold
                                 )
 
-                                Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
 
                                 ns.forEachIndexed { index, nutrientData ->
                                     val targetProgress =
@@ -245,7 +250,9 @@ fun RemainingNutrients(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                     val onBackground = MaterialTheme.colorScheme.onBackground
 
                                     Column(
-                                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                                        // Space between the nutrient left-right pair and bar
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
+
                                         content = {
                                             Row(
                                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -330,16 +337,18 @@ fun RemainingNutrients(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                         }
                                     )
 
+                                    // Space between each nutrient
                                     if (index < ns.lastIndex && ns.isNotEmpty()) {
-                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Spacer(modifier = Modifier.height(14.dp))
                                     }
                                 }
                             }
                         }
                     )
 
+                    // Space between each nutrient category mini section
                     if (index < remainingNutrients.lastIndex && ns.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
             }

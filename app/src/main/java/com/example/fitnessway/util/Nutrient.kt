@@ -4,10 +4,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
-import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
-import com.example.fitnessway.data.model.user.User
 
 object Nutrient {
     data class NutrientData(
@@ -23,7 +21,7 @@ object Nutrient {
         val intake = intakeData.intake
         val goal = intakeData.goal ?: 0.0
 
-        val progress = if (goal > 0) ((intake / goal) * 100)  else 0.0
+        val progress = if (goal > 0) ((intake / goal) * 100) else 0.0
 
         val remaining = goal - intake
         val over = intake - goal

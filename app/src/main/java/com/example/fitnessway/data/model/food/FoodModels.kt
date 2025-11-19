@@ -58,7 +58,8 @@ data class Food(
 @Serializable
 data class FoodNutrientAmountData(
     val nutrient: Nutrient,
-    val amount: Double
+    val amount: Double,
+    val goal: Double?
 )
 
 @Serializable

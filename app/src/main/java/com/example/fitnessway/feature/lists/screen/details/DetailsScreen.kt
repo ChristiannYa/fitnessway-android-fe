@@ -50,46 +50,35 @@ fun DetailsScreen(
                         }
                     )
 
-                    val summary = filterNutrientsByType(
-                            nutrients = food.nutrients,
-                    type = NutrientType.BASIC
-                    )
-
-                    val vitamins = filterNutrientsByType(
-                        nutrients = food.nutrients,
-                        type = NutrientType.VITAMIN
-                    )
-
-                    val minerals = filterNutrientsByType(
-                        nutrients = food.nutrients,
-                        type = NutrientType.MINERAL
-                    )
-
-                    val foodDetailFields = listOf(
+                    val detailFields = listOf(
                         fieldsProvider.name(),
                         fieldsProvider.brand(),
                         fieldsProvider.amountPerServing(),
                         fieldsProvider.servingUnit()
                     )
 
-                    val foodSummaryFields = summary.map {
-                        fieldsProvider.nutrient(it.nutrient)
-                    }
+                    val summaryFields = filterNutrientsByType(
+                        nutrients = food.nutrients,
+                        type = NutrientType.BASIC
+                    ).map { fieldsProvider.nutrient(it.nutrient) }
 
-                    val foodVitaminsFields = vitamins.map {
-                        fieldsProvider.nutrient(it.nutrient)
-                    }
+                    val vitaminFields = filterNutrientsByType(
+                        nutrients = food.nutrients,
+                        type = NutrientType.VITAMIN
+                    ).map { fieldsProvider.nutrient(it.nutrient) }
 
-                    val foodMineralsFields = minerals.map {
-                        fieldsProvider.nutrient(it.nutrient)
-                    }
+                    val mineralFields = filterNutrientsByType(
+                        nutrients = food.nutrients,
+                        type = NutrientType.MINERAL
+                    ).map { fieldsProvider.nutrient(it.nutrient) }
 
                     // FoodInformation(food)
+
                     EditionMode(
-                        foodDetailFields = foodDetailFields,
-                        foodSummaryFields = foodSummaryFields,
-                        foodVitaminFields = foodVitaminsFields,
-                        foodMineralFields = foodMineralsFields
+                        foodDetailFields = detailFields,
+                        foodSummaryFields = summaryFields,
+                        foodVitaminFields = vitaminFields,
+                        foodMineralFields = mineralFields
                     )
                 }
             }

@@ -24,10 +24,26 @@ fun EditionMode(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         content = {
-            fieldSection("Details", foodDetailFields) { EditableField(it) }
-            fieldSection("Summary", foodSummaryFields) { EditableField(it) }
-            fieldSection("Vitamins", foodVitaminFields) { EditableField(it) }
-            fieldSection("Minerals", foodMineralFields) { EditableField(it) }
+            fieldSection(
+                title = "Details",
+                foodDetailFields,
+                content = { EditableField(it) }
+            )
+            fieldSection(
+                title = "Summary",
+                foodSummaryFields,
+                content = { EditableField(it) }
+            )
+            fieldSection(
+                title = "Vitamins",
+                foodVitaminFields,
+                content = { EditableField(it) }
+            )
+            fieldSection(
+                title = "Minerals",
+                foodMineralFields,
+                content = { EditableField(it) }
+            )
         }
     )
 }

@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.lists.screen.details
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -22,15 +23,11 @@ fun DetailsScreen(
     val selectedFood by viewModel.selectedFood.collectAsState()
     val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
 
-    val fieldsProvider = FoodEditionFieldsProvider(
-        formState = foodEditionFormState,
-        onFieldUpdate = { fieldName, value ->
-            viewModel.updateFoodCreationFormField(
-                fieldName = fieldName,
-                input = value
-            )
+    LaunchedEffect(selectedFood) {
+        selectedFood?.let { food ->
+            viewModel.initializeFoodForm(food)
         }
-    )
+    }
 
     Screen(
         header = {
@@ -42,47 +39,59 @@ fun DetailsScreen(
             if (food == null) {
                 Text("No food selected")
             } else {
-                val summary = filterNutrientsByType(
-                    nutrients = food.nutrients,
+                foodEditionFormState?.let { formState ->
+                    val fieldsProvider = FoodEditionFieldsProvider(
+                        formState = formState,
+                        onFieldUpdate = { fieldName, value ->
+                            viewModel.updateFoodCreationFormField(
+                                fieldName = fieldName,
+                                input = value
+                            )
+                        }
+                    )
+
+                    val summary = filterNutrientsByType(
+                            nutrients = food.nutrients,
                     type = NutrientType.BASIC
-                )
+                    )
 
-                val vitamins = filterNutrientsByType(
-                    nutrients = food.nutrients,
-                    type = NutrientType.VITAMIN
-                )
+                    val vitamins = filterNutrientsByType(
+                        nutrients = food.nutrients,
+                        type = NutrientType.VITAMIN
+                    )
 
-                val minerals = filterNutrientsByType(
-                    nutrients = food.nutrients,
-                    type = NutrientType.MINERAL
-                )
+                    val minerals = filterNutrientsByType(
+                        nutrients = food.nutrients,
+                        type = NutrientType.MINERAL
+                    )
 
-                val foodDetailFields = listOf(
-                    fieldsProvider.name(),
-                    fieldsProvider.brand(),
-                    fieldsProvider.amountPerServing(),
-                    fieldsProvider.servingUnit()
-                )
+                    val foodDetailFields = listOf(
+                        fieldsProvider.name(),
+                        fieldsProvider.brand(),
+                        fieldsProvider.amountPerServing(),
+                        fieldsProvider.servingUnit()
+                    )
 
-                val foodSummaryFields = summary.map {
-                    fieldsProvider.nutrient(it.nutrient)
+                    val foodSummaryFields = summary.map {
+                        fieldsProvider.nutrient(it.nutrient)
+                    }
+
+                    val foodVitaminsFields = vitamins.map {
+                        fieldsProvider.nutrient(it.nutrient)
+                    }
+
+                    val foodMineralsFields = minerals.map {
+                        fieldsProvider.nutrient(it.nutrient)
+                    }
+
+                    // FoodInformation(food)
+                    EditionMode(
+                        foodDetailFields = foodDetailFields,
+                        foodSummaryFields = foodSummaryFields,
+                        foodVitaminFields = foodVitaminsFields,
+                        foodMineralFields = foodMineralsFields
+                    )
                 }
-
-                val foodVitaminsFields = vitamins.map {
-                    fieldsProvider.nutrient(it.nutrient)
-                }
-
-                val foodMineralsFields = minerals.map {
-                    fieldsProvider.nutrient(it.nutrient)
-                }
-
-                // FoodInformation(food)
-                EditionMode(
-                    foodDetailFields = foodDetailFields,
-                    foodSummaryFields = foodSummaryFields,
-                    foodVitaminFields = foodVitaminsFields,
-                    foodMineralFields = foodMineralsFields
-                )
             }
         }
     )

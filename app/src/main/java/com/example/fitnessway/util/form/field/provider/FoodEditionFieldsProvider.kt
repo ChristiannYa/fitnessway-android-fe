@@ -5,10 +5,11 @@ import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.Nutrient
+import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 
 class FoodEditionFieldsProvider(
-    private val formState: FormStates.FoodEdition,
+    private val formState: FormState<FormStates.FoodEdition>,
     private val onFieldUpdate: (FormFieldName.IFoodEdition, String) -> Unit
 ) {
     @Composable
@@ -16,7 +17,7 @@ class FoodEditionFieldsProvider(
         return FoodEditionDetailField(
             name = FormFieldName.FoodEdition.DetailField.NAME,
             label = "Name",
-            value = formState.name,
+            value = formState.data.name,
             updateState = { newValue ->
                 onFieldUpdate(
                     FormFieldName.FoodEdition.DetailField.NAME,
@@ -31,7 +32,7 @@ class FoodEditionFieldsProvider(
         return FoodEditionDetailField(
             name = FormFieldName.FoodEdition.DetailField.BRAND,
             label = "Brand",
-            value = formState.brand,
+            value = formState.data.brand,
             updateState = { newValue ->
                 onFieldUpdate(
                     FormFieldName.FoodEdition.DetailField.BRAND,
@@ -46,7 +47,7 @@ class FoodEditionFieldsProvider(
         return FoodEditionDetailField(
             name = FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING,
             label = "Amount Per Serving",
-            value = formState.amountPerServing,
+            value = formState.data.amountPerServing,
             updateState = { newValue ->
                 onFieldUpdate(
                     FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING,
@@ -61,7 +62,7 @@ class FoodEditionFieldsProvider(
         return FoodEditionDetailField(
             name = FormFieldName.FoodEdition.DetailField.SERVING_UNIT,
             label = "Serving Unit",
-            value = formState.servingUnit,
+            value = formState.data.servingUnit,
             updateState = { newValue ->
                 onFieldUpdate(
                     FormFieldName.FoodEdition.DetailField.SERVING_UNIT,
@@ -76,7 +77,7 @@ class FoodEditionFieldsProvider(
         return FoodEditionNutrientField(
             name = FormFieldName.FoodEdition.NutrientField(nutrient),
             label = "${nutrient.name} ${nutrient.unit}",
-            value = formState.nutrients[nutrient.id] ?: "",
+            value = formState.data.nutrients[nutrient.id] ?: "",
             updateState = { newValue ->
                 onFieldUpdate(
                     FormFieldName.FoodEdition.NutrientField(nutrient),

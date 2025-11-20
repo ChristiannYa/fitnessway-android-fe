@@ -23,8 +23,6 @@ class FoodLogManager : IFoodLogManager {
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
 
-    // @NOTE
-    // We are inferring a value, so there is no need to use `StateFlow`
     override val isFoodLogFormValid: Boolean
         get() = foodLogFormState.value?.data?.let { data ->
             val servings = data.servings.toDoubleOrNull()

@@ -20,4 +20,7 @@ typealias FoodLogField = FormField<FormFieldName.FoodLog>
 typealias FoodCreationBaseField = FormField<FormFieldName.FoodCreation.BaseField>
 typealias FoodCreationNutrientField = FormField<FormFieldName.FoodCreation.NutrientField>
 
+typealias FoodEditionDetailField = FormField<FormFieldName.FoodEdition.DetailField>
+typealias FoodEditionNutrientField = FormField<FormFieldName.FoodEdition.NutrientField>
+
 

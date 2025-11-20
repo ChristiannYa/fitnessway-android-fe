@@ -33,4 +33,17 @@ sealed interface FormFieldName {
 
         data class NutrientField(val nutrient: Nutrient) : IFoodCreation
     }
+
+    sealed interface IFoodEdition : FormFieldName
+
+    object FoodEdition {
+        enum class DetailField : IFoodEdition {
+            NAME,
+            BRAND,
+            AMOUNT_PER_SERVING,
+            SERVING_UNIT
+        }
+
+        data class NutrientField(val nutrient: Nutrient) : IFoodEdition
+    }
 }

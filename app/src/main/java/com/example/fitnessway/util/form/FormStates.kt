@@ -9,6 +9,14 @@ object FormStates {
         val nutrients: Map<Int, String> = emptyMap()
     )
 
+    data class FoodEdition(
+        val name: String,
+        val brand: String,
+        val amountPerServing: String,
+        val servingUnit: String,
+        val nutrients: Map<Int, String> = emptyMap()
+    )
+
     data class FoodLog(
         val servings: String,
         val amountPerServing: String,

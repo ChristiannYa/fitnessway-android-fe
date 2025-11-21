@@ -12,23 +12,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 @Composable
 fun ToggleEditButton(
     text: String,
     onClick: () -> Unit,
-    background: Color? = MaterialTheme.colorScheme.primary
+    backgroundColor: Color,
+    enabled: Boolean = true
 ) {
     Box(
         modifier = Modifier
             .clip(CircleShape)
             .background(
-                color = background ?: MaterialTheme.colorScheme.primary,
+                color = backgroundColor,
                 shape = CircleShape
             )
             .clickable(
-                onClick = onClick
+                onClick = onClick,
+                enabled = enabled
             )
             .padding(
                 horizontal = 14.dp, // vertical * 1.75
@@ -38,7 +41,8 @@ fun ToggleEditButton(
             Text(
                 text = text,
                 fontFamily = robotoSerifFamily,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                color = WhiteFont.copy(if (enabled) 1f else 0.3f)
             )
         }
     )

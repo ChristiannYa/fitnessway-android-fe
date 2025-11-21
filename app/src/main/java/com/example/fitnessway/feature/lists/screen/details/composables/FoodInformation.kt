@@ -42,7 +42,8 @@ import com.example.fitnessway.util.Formatters.doubleFormatter
 fun FoodInformation(
     food: FoodInformation,
     onEdit: () -> Unit,
-    isEditing: Boolean
+    isEditing: Boolean,
+    isBlurOverlayEnabled: Boolean
 ) {
     Column(
         content = {
@@ -61,7 +62,8 @@ fun FoodInformation(
                     item {
                         ToggleEditButton(
                             text = "Edit",
-                            onClick = onEdit
+                            onClick = onEdit,
+                            backgroundColor = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -71,7 +73,8 @@ fun FoodInformation(
 
     BlurOverlay(
         isVisible = isEditing,
-        onClick = onEdit
+        onClick = onEdit,
+        enabled = isBlurOverlayEnabled
     )
 }
 

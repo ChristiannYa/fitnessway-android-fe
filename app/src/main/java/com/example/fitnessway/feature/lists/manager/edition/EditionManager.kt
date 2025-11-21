@@ -7,6 +7,13 @@ import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import com.example.fitnessway.util.Nutrient.getFoodNutrientsAsMap
+import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
+import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
+import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
+import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
+import kotlin.text.toDoubleOrNull
+import com.example.fitnessway.data.model.food.ServingUnits
 
 class EditionManager : IEditionManager {
     private val _selectedFood = MutableStateFlow<FoodInformation?>(null)
@@ -19,19 +26,79 @@ class EditionManager : IEditionManager {
     private val _isEditing = MutableStateFlow(false)
     override val isEditing: StateFlow<Boolean> = _isEditing
 
+    override val formNameError: String?
+        get() = _foodEditionFormState.value?.let { formState ->
+            formState.data.name.let { value ->
+                if (value.isNotEmpty()) null else {
+                    val result = NameInlineRules(value.trim()) checkWith nameRules
+                    result.exceptionOrNull()?.message
+                }
+            }
+        }
+
+    override val formBrandError: String?
+        get() = _foodEditionFormState.value?.let { formState ->
+            formState.data.brand.let { value ->
+                if (value.isEmpty()) null else {
+                    val result = BrandInlineRules(value.trim()) checkWith brandRules
+                    result.exceptionOrNull()?.message
+                }
+            }
+        }
+
+    override val formAmountPerServingError: String?
+        get() = _foodEditionFormState.value?.let { formState ->
+            formState.data.amountPerServing.let { value ->
+                if (value.isEmpty()) null else {
+                    val amount = value.toDoubleOrNull()
+
+                    if (amount == null) "Amount must be provided" else {
+                        if (amount > 0.0) null else "Amount must be greater than 0"
+                    }
+                }
+            }
+        }
+
+    override val formServingUnitError: String?
+        get() = _foodEditionFormState.value?.let { formState ->
+            formState.data.servingUnit.let { value ->
+                if (value.isEmpty()) null else {
+                    val isValid = when (value) {
+                        in ServingUnits.units -> true
+                        else -> false
+                    }
+
+                    if (isValid) null else "Must be one of ${ServingUnits.units}"
+                }
+            }
+        }
+
+    override val areFormNutrientsValid: Boolean
+        get() = _foodEditionFormState.value?.let { formState ->
+            formState.data.nutrients.values.all {
+                val amount = it.toDoubleOrNull()
+
+                if (amount == null) false else {
+                    if (amount > 0.0) true else false
+                }
+            }
+        } ?: false
+
+    override val isFormValid: Boolean
+        get() = _foodEditionFormState.value?.let {
+            it.data.name.isNotEmpty() && formNameError == null &&
+                    formBrandError == null &&
+                    it.data.amountPerServing.isNotEmpty() && formAmountPerServingError == null &&
+                    it.data.servingUnit.isNotEmpty() && formServingUnitError == null &&
+                    areFormNutrientsValid
+        } ?: false
+
     override fun setSelectedFood(food: FoodInformation) {
         _selectedFood.value = food
     }
 
     override fun initializeFoodForm(food: FoodInformation) {
-        val nutrients = (food.nutrients.basic + food.nutrients.vitamin + food.nutrients.mineral)
-            .associate { it.nutrient.id to doubleFormatter(it.amount) }
-        // Result: {1="10.5", 2="20.3", 3="15"}
-        //
-        // If `.map` where to be used instead it would result in:
-        // [(1, "10.5"), (2, "20.3"), (3, "15")]
-        // which is a `List` but we need a map
-
+        val nutrients = getFoodNutrientsAsMap(food.nutrients)
 
         _foodEditionFormState.value = FormState(
             data = FormStates.FoodEdition(
@@ -83,6 +150,6 @@ class EditionManager : IEditionManager {
     }
 
     override fun toggleEditionMode() {
-        _isEditing.value = !isEditing.value
+        _isEditing.value = !_isEditing.value
     }
 }

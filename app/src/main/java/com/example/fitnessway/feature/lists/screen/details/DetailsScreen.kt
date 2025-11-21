@@ -87,7 +87,8 @@ fun DetailsScreen(
                         FoodInformation(
                             food = food,
                             onEdit = { viewModel.toggleEditionMode() },
-                            isEditing = isEditing
+                            isEditing = isEditing,
+                            isBlurOverlayEnabled = viewModel.isFormValid
                         )
 
                         AnimatedVisibility (
@@ -106,7 +107,8 @@ fun DetailsScreen(
                                     foodSummaryFields = summaryFields,
                                     foodVitaminFields = vitaminFields,
                                     foodMineralFields = mineralFields,
-                                    onDone = { viewModel.toggleEditionMode() }
+                                    onDone = { viewModel.toggleEditionMode() },
+                                    enabled = viewModel.isFormValid
                                 )
                             }
                         )

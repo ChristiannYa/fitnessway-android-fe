@@ -2,10 +2,13 @@ package com.example.fitnessway.util
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.toColorInt
+import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.food.FoodNutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.util.Formatters.doubleFormatter
 
 object Nutrient {
     data class NutrientData(
@@ -36,7 +39,7 @@ object Nutrient {
         )
     }
 
-    fun<T> filterNutrientsByType(
+    fun <T> filterNutrientsByType(
         nutrients: NutrientsByType<T>,
         type: NutrientType
     ): List<T> {
@@ -61,5 +64,17 @@ object Nutrient {
         return hexColor?.let {
             Color(it.toColorInt())
         }
+    }
+
+    fun getFoodNutrientsAsMap(
+        nutrients: NutrientsByType<FoodNutrientAmountData>
+    ): Map<Int, String> {
+        return (nutrients.basic + nutrients.vitamin + nutrients.mineral)
+            .associate { it.nutrient.id to doubleFormatter(it.amount) }
+        // Result: {1="10.5", 2="20.3", 3="15"}
+        //
+        // If `.map` where to be used instead it would result in:
+        // [(1, "10.5"), (2, "20.3"), (3, "15")]
+        // which is a `List` but we need a map
     }
 }

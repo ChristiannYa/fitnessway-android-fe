@@ -1,19 +1,18 @@
 package com.example.fitnessway.feature.lists.manager.edition
 
 import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Nutrient.getFoodNutrientsAsMap
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
+import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
+import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
+import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import com.example.fitnessway.util.Nutrient.getFoodNutrientsAsMap
-import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
-import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
-import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
-import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
-import kotlin.text.toDoubleOrNull
-import com.example.fitnessway.data.model.food.ServingUnits
 
 class EditionManager : IEditionManager {
     private val _selectedFood = MutableStateFlow<FoodInformation?>(null)
@@ -23,13 +22,10 @@ class EditionManager : IEditionManager {
     override val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?> =
         _foodEditionFormState
 
-    private val _isEditing = MutableStateFlow(false)
-    override val isEditing: StateFlow<Boolean> = _isEditing
-
     override val formNameError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.name.let { value ->
-                if (value.isNotEmpty()) null else {
+                if (value.isEmpty()) null else {
                     val result = NameInlineRules(value.trim()) checkWith nameRules
                     result.exceptionOrNull()?.message
                 }
@@ -149,7 +145,15 @@ class EditionManager : IEditionManager {
         }
     }
 
-    override fun toggleEditionMode() {
-        _isEditing.value = !_isEditing.value
+    override fun startEditionMode() {
+        _foodEditionFormState.value = _foodEditionFormState.value?.edit()
+    }
+
+    override fun saveEdition() {
+        _foodEditionFormState.value = _foodEditionFormState.value?.save()
+    }
+
+    override fun cancelEditionMode() {
+        _foodEditionFormState.value = _foodEditionFormState.value?.cancel()
     }
 }

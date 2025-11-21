@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -29,7 +30,8 @@ fun EditionMode(
     foodVitaminFields: List<FoodEditionNutrientField>,
     foodMineralFields: List<FoodEditionNutrientField>,
     enabled: Boolean,
-    onDone: () -> Unit
+    onDone: () -> Unit,
+    onCancel: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxHeight(),
@@ -49,11 +51,22 @@ fun EditionMode(
                                 MaterialTheme.colorScheme.primary
                             } else MaterialTheme.colorScheme.surfaceVariant
 
-                            ToggleEditButton(
-                                text = "Done",
-                                onClick = onDone,
-                                enabled = enabled,
-                                backgroundColor = backgroundColor
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                content = {
+                                    ToggleEditButton(
+                                        text = "Done",
+                                        onClick = onDone,
+                                        enabled = enabled,
+                                        backgroundColor = backgroundColor
+                                    )
+
+                                    ToggleEditButton(
+                                        text = "Cancel",
+                                        onClick = onCancel,
+                                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+                                    )
+                                }
                             )
 
                             LazyColumn(

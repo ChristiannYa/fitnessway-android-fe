@@ -29,7 +29,9 @@ fun Header(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go Back",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = MaterialTheme.colorScheme.onBackground.copy(
+                            if (isOnBackEnabled == true) 1f else 0.5f
+                        )
                     )
                 }
             )

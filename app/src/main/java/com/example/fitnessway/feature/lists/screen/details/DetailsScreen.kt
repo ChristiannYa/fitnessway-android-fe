@@ -1,23 +1,27 @@
 package com.example.fitnessway.feature.lists.screen.details
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -29,7 +33,6 @@ fun DetailsScreen(
 ) {
     val selectedFood by viewModel.selectedFood.collectAsState()
     val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
-    val isEditing by viewModel.isEditing.collectAsState()
 
     LaunchedEffect(selectedFood) {
         selectedFood?.let { food ->
@@ -37,20 +40,31 @@ fun DetailsScreen(
         }
     }
 
-    Screen(
-        header = {
-            Header(
-                onBackClick = onBackClick,
-                isOnBackEnabled = !isEditing
-            )
-        },
-        content = {
-            val food = selectedFood
+    val food = selectedFood
 
-            if (food == null) {
-                Text("No food selected")
-            } else {
-                foodEditionFormState?.let { formState ->
+    if (food == null) {
+        Screen(
+            header = {
+                Header(onBackClick)
+            },
+            content = {
+                Text(
+                    text = "No food selected",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        )
+    } else {
+        foodEditionFormState?.let { formState ->
+            Screen(
+                header = {
+                    Header(
+                        onBackClick = onBackClick,
+                        isOnBackEnabled = !formState.isEditing
+                    )
+                },
+                content = {
                     val fieldsProvider = FoodEditionFieldsProvider(
                         formState = formState,
                         onFieldUpdate = { fieldName, value ->
@@ -86,13 +100,13 @@ fun DetailsScreen(
                     Box(modifier = Modifier.fillMaxSize()) {
                         FoodInformation(
                             food = food,
-                            onEdit = { viewModel.toggleEditionMode() },
-                            isEditing = isEditing,
+                            onEdit = { viewModel.startEditionMode() },
+                            isEditing = formState.isEditing,
                             isBlurOverlayEnabled = viewModel.isFormValid
                         )
 
-                        AnimatedVisibility (
-                            visible = isEditing,
+                        AnimatedVisibility(
+                            visible = formState.isEditing,
                             enter = slideInVertically(
                                 initialOffsetY = { fullHeight -> fullHeight },
                                 animationSpec = tween(durationMillis = 300)
@@ -107,14 +121,18 @@ fun DetailsScreen(
                                     foodSummaryFields = summaryFields,
                                     foodVitaminFields = vitaminFields,
                                     foodMineralFields = mineralFields,
-                                    onDone = { viewModel.toggleEditionMode() },
-                                    enabled = viewModel.isFormValid
+                                    enabled = viewModel.isFormValid,
+                                    onDone = {
+                                        Log.d(Constants.DEBUG_TAG, "${formState.data}")
+                                        viewModel.saveEdition()
+                                    },
+                                    onCancel = { viewModel.cancelEditionMode() }
                                 )
                             }
                         )
                     }
                 }
-            }
+            )
         }
-    )
+    }
 }

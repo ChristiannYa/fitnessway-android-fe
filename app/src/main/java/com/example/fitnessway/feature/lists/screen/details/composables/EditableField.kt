@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
@@ -35,12 +36,13 @@ fun <T : FormFieldName.IFoodEdition> EditableField(
         lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
         fontFamily = FontFamily.Default,
         color = MaterialTheme.colorScheme.primary,
+        textAlign = TextAlign.Center
     )
 
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
 
-    val padding = 12.dp
+    val padding = 10.dp
     val shape = 12.dp
 
     val measuredWidth = remember(field.value, textStyle) {

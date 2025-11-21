@@ -16,6 +16,9 @@ class EditionManager : IEditionManager {
     override val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?> =
         _foodEditionFormState
 
+    private val _isEditing = MutableStateFlow(false)
+    override val isEditing: StateFlow<Boolean> = _isEditing
+
     override fun setSelectedFood(food: FoodInformation) {
         _selectedFood.value = food
     }
@@ -77,5 +80,9 @@ class EditionManager : IEditionManager {
 
             _foodEditionFormState.value = currentState.copy(data = updatedData)
         }
+    }
+
+    override fun toggleEditionMode() {
+        _isEditing.value = !isEditing.value
     }
 }

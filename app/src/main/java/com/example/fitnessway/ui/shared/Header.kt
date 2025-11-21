@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 fun Header(
     onBackClick: () -> Unit,
     title: String? = null,
+    isOnBackEnabled: Boolean? = true,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -23,6 +24,7 @@ fun Header(
         content = {
             IconButton(
                 onClick = onBackClick,
+                enabled = isOnBackEnabled == true,
                 content = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,

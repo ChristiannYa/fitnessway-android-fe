@@ -38,17 +38,32 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 import com.example.fitnessway.util.Formatters.doubleFormatter
 
 @Composable
-fun FoodInformation(food: FoodInformation) {
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+fun FoodInformation(
+    food: FoodInformation,
+    onEdit: () -> Unit,
+) {
+    Column(
         content = {
-            item {
-                BaseInformation(food)
-            }
-            item {
-                NutrientsInformation(food.nutrients)
-            }
+            LazyColumn(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                content = {
+                    item {
+                        BaseInformation(food)
+                    }
+
+                    item {
+                        NutrientsInformation(food.nutrients)
+                    }
+
+                    item {
+                        ToggleEditButton(
+                            text = "Edit",
+                            onClick = onEdit
+                        )
+                    }
+                }
+            )
         }
     )
 }

@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
-import com.example.fitnessway.feature.home.screen.main.composables.BlurOverlay
+import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.feature.home.screen.main.composables.CreateOptions
 import com.example.fitnessway.feature.home.screen.main.composables.DatePicker
 import com.example.fitnessway.feature.home.screen.main.composables.FoodLogs
@@ -178,7 +178,7 @@ fun HomeScreen(
                     BlurOverlay(
                         isVisible = isCreateMenuVisible,
                         onClick = { viewModel.toggleCreateMenuVisibility() },
-                        topPadding = headerHeight
+                        modifier = Modifier.padding(top = headerHeight),
                     )
 
                     ApiErrorBanner(

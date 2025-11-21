@@ -34,6 +34,7 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodNutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 import com.example.fitnessway.util.Formatters.doubleFormatter
 
@@ -41,6 +42,7 @@ import com.example.fitnessway.util.Formatters.doubleFormatter
 fun FoodInformation(
     food: FoodInformation,
     onEdit: () -> Unit,
+    isEditing: Boolean
 ) {
     Column(
         content = {
@@ -65,6 +67,11 @@ fun FoodInformation(
                 }
             )
         }
+    )
+
+    BlurOverlay(
+        isVisible = isEditing,
+        onClick = onEdit
     )
 }
 

@@ -86,7 +86,8 @@ fun DetailsScreen(
                     Box(modifier = Modifier.fillMaxSize()) {
                         FoodInformation(
                             food = food,
-                            onEdit = { viewModel.toggleEditionMode() }
+                            onEdit = { viewModel.toggleEditionMode() },
+                            isEditing = isEditing
                         )
 
                         AnimatedVisibility (

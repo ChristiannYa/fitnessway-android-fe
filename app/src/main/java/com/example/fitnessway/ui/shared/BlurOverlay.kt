@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.main.composables
+package com.example.fitnessway.ui.shared
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -10,29 +10,26 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 
 @Composable
 fun BlurOverlay(
     isVisible: Boolean,
     onClick: () -> Unit,
-    topPadding: Dp
+    modifier: Modifier = Modifier
 ) {
-    AnimatedVisibility (
+    AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn(animationSpec = tween(300)),
         exit = fadeOut(animationSpec = tween(300)),
         content = {
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(top = topPadding)
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
                     .clickable(
                         onClick = onClick,

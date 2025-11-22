@@ -30,7 +30,8 @@ val viewModelModule = module {
     viewModel {
         ListsViewModel(
             foodRepo = get(),
-            managers = get()
+            managers = get(),
+            userStateHolder = get()
         )
     }
     viewModel {

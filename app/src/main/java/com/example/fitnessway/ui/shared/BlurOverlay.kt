@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun BlurOverlay(
     isVisible: Boolean,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
@@ -33,7 +33,7 @@ fun BlurOverlay(
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
                     .clickable(
-                        onClick = onClick,
+                        onClick = { onClick?.invoke() },
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
                         enabled = enabled

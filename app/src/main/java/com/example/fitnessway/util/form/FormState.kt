@@ -25,4 +25,10 @@ data class FormState<T>(
             originalData = null
         )
     }
+
+    fun setIsEditingToFalse(): FormState<T> {
+        return copy(
+            isEditing = false
+        )
+    }
 }

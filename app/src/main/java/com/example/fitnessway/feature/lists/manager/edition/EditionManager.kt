@@ -22,6 +22,9 @@ class EditionManager : IEditionManager {
     override val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?> =
         _foodEditionFormState
 
+    private val _deletedNutrients = MutableStateFlow<List<Int>>(emptyList())
+    override val deletedNutrients: StateFlow<List<Int>> = _deletedNutrients
+
     override val formNameError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.name.let { value ->
@@ -145,15 +148,38 @@ class EditionManager : IEditionManager {
         }
     }
 
+    override fun filterNutrientFromForm(nutrientId: Int) {
+        val currentList = _deletedNutrients.value
+
+        if (nutrientId !in currentList) {
+            _deletedNutrients.value = currentList + nutrientId
+        }
+
+        _foodEditionFormState.value?.let { formState ->
+            val updatedNutrients = formState.data.nutrients.toMutableMap().apply {
+                remove(nutrientId)
+            }
+
+            _foodEditionFormState.value = formState.copy(
+                data = formState.data.copy(nutrients = updatedNutrients)
+            )
+        }
+    }
+
+    override fun resetDeletedNutrients() {
+        _deletedNutrients.value = emptyList()
+    }
+
     override fun startEditionMode() {
         _foodEditionFormState.value = _foodEditionFormState.value?.edit()
     }
 
-    override fun saveEdition() {
-        _foodEditionFormState.value = _foodEditionFormState.value?.save()
+    override fun simpleFormCancel() {
+        _foodEditionFormState.value = _foodEditionFormState.value?.setIsEditingToFalse()
     }
 
     override fun cancelEditionMode() {
         _foodEditionFormState.value = _foodEditionFormState.value?.cancel()
+        resetDeletedNutrients()
     }
 }

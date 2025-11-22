@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
+import com.example.fitnessway.data.model.food.FoodUpdateRequest
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.food.IFoodApiService
@@ -30,6 +31,19 @@ class FoodRepositoryImpl(
             apiCall = { apiService.addFood(request) },
             extractData = { it.foodCreated },
             errMsg = "Failed to add food",
+            invalidatedUrls = listOf(
+                ApiUrls.Food.GET_FOODS
+            )
+        )
+    }
+
+    override suspend fun updateFood(
+        request: FoodUpdateRequest
+    ): Flow<UiState<FoodInformation>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.updateFood(request) },
+            extractData = { it.updatedFood },
+            errMsg = "Failed to update food",
             invalidatedUrls = listOf(
                 ApiUrls.Food.GET_FOODS
             )

@@ -42,8 +42,7 @@ import com.example.fitnessway.util.Formatters.doubleFormatter
 fun FoodInformation(
     food: FoodInformation,
     onEdit: () -> Unit,
-    isEditing: Boolean,
-    isBlurOverlayEnabled: Boolean
+    shouldOverlayAppear: Boolean,
 ) {
     Column(
         content = {
@@ -71,11 +70,7 @@ fun FoodInformation(
         }
     )
 
-    BlurOverlay(
-        isVisible = isEditing,
-        onClick = onEdit,
-        enabled = isBlurOverlayEnabled
-    )
+    BlurOverlay(isVisible = shouldOverlayAppear)
 }
 
 @Composable

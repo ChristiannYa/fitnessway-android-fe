@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.lists.screen.details
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -21,7 +20,6 @@ import com.example.fitnessway.feature.lists.screen.details.composables.FoodInfor
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -33,6 +31,7 @@ fun DetailsScreen(
 ) {
     val selectedFood by viewModel.selectedFood.collectAsState()
     val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
+    val deletedNutrients by viewModel.deletedNutrients.collectAsState()
 
     LaunchedEffect(selectedFood) {
         selectedFood?.let { food ->
@@ -85,24 +84,31 @@ fun DetailsScreen(
                     val summaryFields = filterNutrientsByType(
                         nutrients = food.nutrients,
                         type = NutrientType.BASIC
-                    ).map { fieldsProvider.nutrient(it.nutrient) }
+                    )
+                        .filter {
+                            it.nutrient.id !in deletedNutrients
+                        }
+                        .map { fieldsProvider.nutrient(it.nutrient) }
 
                     val vitaminFields = filterNutrientsByType(
                         nutrients = food.nutrients,
                         type = NutrientType.VITAMIN
-                    ).map { fieldsProvider.nutrient(it.nutrient) }
+                    )
+                        .filter { it.nutrient.id !in deletedNutrients }
+                        .map { fieldsProvider.nutrient(it.nutrient) }
 
                     val mineralFields = filterNutrientsByType(
                         nutrients = food.nutrients,
                         type = NutrientType.MINERAL
-                    ).map { fieldsProvider.nutrient(it.nutrient) }
+                    )
+                        .filter { it.nutrient.id !in deletedNutrients }
+                        .map { fieldsProvider.nutrient(it.nutrient) }
 
                     Box(modifier = Modifier.fillMaxSize()) {
                         FoodInformation(
                             food = food,
                             onEdit = { viewModel.startEditionMode() },
-                            isEditing = formState.isEditing,
-                            isBlurOverlayEnabled = viewModel.isFormValid
+                            shouldOverlayAppear = formState.isEditing,
                         )
 
                         AnimatedVisibility(
@@ -123,10 +129,15 @@ fun DetailsScreen(
                                     foodMineralFields = mineralFields,
                                     enabled = viewModel.isFormValid,
                                     onDone = {
-                                        Log.d(Constants.DEBUG_TAG, "${formState.data}")
-                                        viewModel.saveEdition()
+                                        viewModel.simpleFormCancel()
+                                        viewModel.updateFood()
                                     },
-                                    onCancel = { viewModel.cancelEditionMode() }
+                                    onCancel = {
+                                        viewModel.cancelEditionMode()
+                                    },
+                                    onRemoveNutrient = { nutrientId ->
+                                        viewModel.filterNutrientFromForm(nutrientId)
+                                    }
                                 )
                             }
                         )

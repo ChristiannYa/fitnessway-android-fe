@@ -43,6 +43,19 @@ interface IFoodInformation {
 }
 
 @Serializable
+data class FoodInformationOptionals(
+    val id: Int,
+    val name: String?,
+    val brand: String?,
+
+    @SerialName("amount_per_serving")
+    val amountPerServing: Double?,
+
+    @SerialName("serving_unit")
+    val servingUnit: String?,
+)
+
+@Serializable
 data class Food(
     val id: Int,
     override val name: String,
@@ -114,6 +127,28 @@ data class FoodAddApiResponse(
 )
 
 typealias FoodAddApiPostResponse = ApiResponseWithContent<FoodAddApiResponse>
+
+@Serializable
+data class FoodUpdateRequest(
+    @SerialName("user_id")
+    val userId: String,
+
+    val information: FoodInformationOptionals,
+
+    @SerialName("upserted_nutrients")
+    val upsertedNutrients: List<FoodAddNutrientAmountApiFormat>,
+
+    @SerialName("deleted_nutrients")
+    val deletedNutrients: List<Int>
+)
+
+@Serializable
+data class FoodUpdateApiResponse(
+    @SerialName("updated_food")
+    val updatedFood: FoodInformation
+)
+
+typealias FoodUpdateApiPutResponse = ApiResponseWithContent<FoodUpdateApiResponse>
 
 @Serializable
 data class FoodLogData(

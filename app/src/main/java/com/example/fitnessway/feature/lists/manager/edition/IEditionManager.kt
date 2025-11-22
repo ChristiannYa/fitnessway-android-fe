@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface IEditionManager {
     val selectedFood: StateFlow<FoodInformation?>
     val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?>
+    val deletedNutrients: StateFlow<List<Int>>
     val formNameError: String?
     val formBrandError: String?
     val formAmountPerServingError: String?
@@ -19,7 +20,9 @@ interface IEditionManager {
     fun setSelectedFood(food: FoodInformation)
     fun initializeFoodForm(food: FoodInformation)
     fun updateFoodCreationFormField(fieldName: FormFieldName.IFoodEdition, input: String)
+    fun filterNutrientFromForm(nutrientId: Int)
+    fun resetDeletedNutrients()
     fun startEditionMode()
-    fun saveEdition()
+    fun simpleFormCancel()
     fun cancelEditionMode()
 }

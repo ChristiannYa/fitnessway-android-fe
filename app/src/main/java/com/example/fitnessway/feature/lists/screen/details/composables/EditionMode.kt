@@ -31,7 +31,8 @@ fun EditionMode(
     foodMineralFields: List<FoodEditionNutrientField>,
     enabled: Boolean,
     onDone: () -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    onRemoveNutrient: (nutrientId: Int) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxHeight(),
@@ -74,23 +75,38 @@ fun EditionMode(
                                 content = {
                                     fieldSection(
                                         title = "Details",
-                                        foodDetailFields,
+                                        fields = foodDetailFields,
                                         content = { EditableField(it) }
                                     )
                                     fieldSection(
                                         title = "Summary",
-                                        foodSummaryFields,
-                                        content = { EditableField(it) }
+                                        fields = foodSummaryFields,
+                                        content = {
+                                            EditableField(
+                                                field = it,
+                                                onRemoveNutrient = onRemoveNutrient
+                                            )
+                                        }
                                     )
                                     fieldSection(
                                         title = "Vitamins",
-                                        foodVitaminFields,
-                                        content = { EditableField(it) }
+                                        fields = foodVitaminFields,
+                                        content = {
+                                            EditableField(
+                                                field = it,
+                                                onRemoveNutrient = onRemoveNutrient
+                                            )
+                                        }
                                     )
                                     fieldSection(
                                         title = "Minerals",
-                                        foodMineralFields,
-                                        content = { EditableField(it) }
+                                        fields = foodMineralFields,
+                                        content = {
+                                            EditableField(
+                                                field = it,
+                                                onRemoveNutrient = onRemoveNutrient
+                                            )
+                                        }
                                     )
                                 }
                             )

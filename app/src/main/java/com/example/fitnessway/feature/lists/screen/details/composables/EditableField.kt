@@ -1,13 +1,20 @@
 package com.example.fitnessway.feature.lists.screen.details.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +35,8 @@ import com.example.fitnessway.data.model.form.FormFieldName
 fun <T : FormFieldName.IFoodEdition> EditableField(
     field: FormField<T>,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    onRemoveNutrient: ((nutrientId: Int) -> Unit)? = null
 ) {
     val textStyle = TextStyle(
         fontSize = MaterialTheme.typography.bodyMedium.fontSize,
@@ -57,15 +65,46 @@ fun <T : FormFieldName.IFoodEdition> EditableField(
         }
     }
 
+    val isNutrient = field.name is FormFieldName.FoodEdition.NutrientField
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
         content = {
-            Text(
-                text = field.label,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(end = padding)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                content = {
+                    if (isNutrient) {
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .clickable(
+                                    onClick = {
+                                        val nutrientId = field.name.nutrient.id
+                                        onRemoveNutrient?.invoke(nutrientId)
+                                    },
+                                ),
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .size(16.dp)
+                                )
+                            }
+                        )
+                    }
+
+                    Text(
+                        text = field.label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(end = padding)
+                    )
+                }
             )
 
             BasicTextField(

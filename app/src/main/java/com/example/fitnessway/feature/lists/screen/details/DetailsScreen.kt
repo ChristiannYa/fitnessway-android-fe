@@ -2,6 +2,12 @@ package com.example.fitnessway.feature.lists.screen.details
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
@@ -15,9 +21,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
@@ -28,6 +37,7 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -52,6 +62,19 @@ fun DetailsScreen(
                 viewModel.resetFoodUpdateState()
             }
         }
+    }
+
+    val foodUpdateErrMsg = when (val state = uiState.foodUpdateState) {
+        is UiState.Error -> {
+            LaunchedEffect(state) {
+                delay(7000)
+                viewModel.resetFoodUpdateState()
+            }
+
+            state.message
+        }
+
+        else -> ""
     }
 
     val food = selectedFood
@@ -123,9 +146,31 @@ fun DetailsScreen(
                         Column(
                             verticalArrangement = Arrangement.spacedBy(18.dp),
                             content = {
-                                if (uiState.foodUpdateState is UiState.Error) {
-                                    ApiErrorMessage((uiState.foodUpdateState as UiState.Error).message)
-                                }
+                                AnimatedVisibility(
+                                    visible = foodUpdateErrMsg != "",
+                                    enter =
+                                        slideInVertically(
+                                            // Start the slide from 40 (pixels) above where the content is supposed to go, to
+                                            // produce a parallax effect
+                                            initialOffsetY = { -40 }
+                                        ) +
+                                                expandVertically(expandFrom = Alignment.Top) +
+                                                scaleIn(
+                                                    // Animate scale from 0f to 1f using the top center as the pivot point.
+                                                    transformOrigin = TransformOrigin(
+                                                        pivotFractionX = .5f,
+                                                        pivotFractionY = 0f
+                                                    )
+                                                ) +
+                                                fadeIn(initialAlpha = 0.3f),
+                                    exit = slideOutVertically() +
+                                            shrinkVertically() +
+                                            fadeOut() +
+                                            scaleOut(targetScale = 1.2f),
+                                    content = {
+                                        ApiErrorMessage(foodUpdateErrMsg)
+                                    }
+                                )
 
                                 FoodInformation(
                                     food = food,
@@ -155,6 +200,7 @@ fun DetailsScreen(
                                     onDone = {
                                         viewModel.simpleFormCancel()
                                         viewModel.updateFood()
+                                        viewModel.resetDeletedNutrients()
                                     },
                                     onCancel = {
                                         viewModel.cancelEditionMode()

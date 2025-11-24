@@ -33,7 +33,7 @@ fun ApiErrorMessage(
                 text = errMsg,
                 fontFamily = FontFamily.Serif,
                 fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                fontWeight = FontWeight.W600,
+                fontWeight = FontWeight.Medium,
                 color = ImperialRed
             )
         }

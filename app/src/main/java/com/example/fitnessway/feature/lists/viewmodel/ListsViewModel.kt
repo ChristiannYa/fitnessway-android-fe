@@ -2,7 +2,6 @@ package com.example.fitnessway.feature.lists.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.data.model.food.Food
 import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
 import com.example.fitnessway.data.model.food.FoodInformation
@@ -151,6 +150,8 @@ class ListsViewModel(
                                 foodUpdateState = state
                             )
                         }
+
+                        managers.edition.setSelectedFood(selectedFood)
                     }
 
                     else -> {}

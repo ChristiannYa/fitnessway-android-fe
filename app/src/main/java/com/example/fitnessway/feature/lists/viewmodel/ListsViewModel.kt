@@ -1,8 +1,8 @@
 package com.example.fitnessway.feature.lists.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.data.model.food.Food
 import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
 import com.example.fitnessway.data.model.food.FoodInformation
@@ -16,7 +16,6 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.toggle.ISelectionManager
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -110,6 +109,9 @@ class ListsViewModel(
             nutrients = filteredUpdatedFoodNutrientsData
         )
 
+        // Change the selected food value to the newly created food
+        managers.edition.setSelectedFood(optimisticFood)
+
         // Finally inserting the new food
         val optimisticFoods = optimisticFoodsWithoutUpdatedFood + optimisticFood
 
@@ -133,8 +135,6 @@ class ListsViewModel(
             deletedNutrients = deletedNutrients
         )
 
-        Log.d(Constants.DEBUG_TAG, "update food request: $request")
-
         // Send the api request
         viewModelScope.launch {
             foodRepo.updateFood(request).collect { state ->
@@ -157,5 +157,9 @@ class ListsViewModel(
                 }
             }
         }
+    }
+
+    fun resetFoodUpdateState() {
+        _uiState.update { it.copy(foodUpdateState = UiState.Idle) }
     }
 }

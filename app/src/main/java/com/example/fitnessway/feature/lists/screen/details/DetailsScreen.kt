@@ -4,23 +4,29 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
+import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
+import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -29,6 +35,7 @@ fun DetailsScreen(
     viewModel: ListsViewModel = koinViewModel(),
     onBackClick: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
     val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
     val deletedNutrients by viewModel.deletedNutrients.collectAsState()
@@ -36,6 +43,14 @@ fun DetailsScreen(
     LaunchedEffect(selectedFood) {
         selectedFood?.let { food ->
             viewModel.initializeFoodForm(food)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            if (uiState.foodUpdateState is UiState.Error) {
+                viewModel.resetFoodUpdateState()
+            }
         }
     }
 
@@ -105,10 +120,19 @@ fun DetailsScreen(
                         .map { fieldsProvider.nutrient(it.nutrient) }
 
                     Box(modifier = Modifier.fillMaxSize()) {
-                        FoodInformation(
-                            food = food,
-                            onEdit = { viewModel.startEditionMode() },
-                            shouldOverlayAppear = formState.isEditing,
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(18.dp),
+                            content = {
+                                if (uiState.foodUpdateState is UiState.Error) {
+                                    ApiErrorMessage((uiState.foodUpdateState as UiState.Error).message)
+                                }
+
+                                FoodInformation(
+                                    food = food,
+                                    onEdit = { viewModel.startEditionMode() },
+                                    shouldOverlayAppear = formState.isEditing,
+                                )
+                            }
                         )
 
                         AnimatedVisibility(

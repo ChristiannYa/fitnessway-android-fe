@@ -5,5 +5,5 @@ import com.example.fitnessway.util.UiState
 
 data class ListsScreenUiState(
     val foodsState: UiState<List<FoodInformation>> = UiState.Loading,
-    val foodUpdateState: UiState<FoodInformation> = UiState.Loading
+    val foodUpdateState: UiState<FoodInformation> = UiState.Idle
 )

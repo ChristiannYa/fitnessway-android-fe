@@ -20,15 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
+import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 
 @Composable
 fun EditionMode(
     foodDetailFields: List<FoodEditionDetailField>,
-    foodSummaryFields: List<FoodEditionNutrientField>,
-    foodVitaminFields: List<FoodEditionNutrientField>,
-    foodMineralFields: List<FoodEditionNutrientField>,
+    nutrientFields: List<Triple<NutrientType, List<FoodEditionNutrientField>, String>>,
     enabled: Boolean,
     onDone: () -> Unit,
     onCancel: () -> Unit,
@@ -78,36 +77,19 @@ fun EditionMode(
                                         fields = foodDetailFields,
                                         content = { EditableField(it) }
                                     )
-                                    fieldSection(
-                                        title = "Summary",
-                                        fields = foodSummaryFields,
-                                        content = {
-                                            EditableField(
-                                                field = it,
-                                                onRemoveNutrient = onRemoveNutrient
-                                            )
-                                        }
-                                    )
-                                    fieldSection(
-                                        title = "Vitamins",
-                                        fields = foodVitaminFields,
-                                        content = {
-                                            EditableField(
-                                                field = it,
-                                                onRemoveNutrient = onRemoveNutrient
-                                            )
-                                        }
-                                    )
-                                    fieldSection(
-                                        title = "Minerals",
-                                        fields = foodMineralFields,
-                                        content = {
-                                            EditableField(
-                                                field = it,
-                                                onRemoveNutrient = onRemoveNutrient
-                                            )
-                                        }
-                                    )
+
+                                    nutrientFields.forEach { (_, fields, title) ->
+                                        fieldSection(
+                                            title = title,
+                                            fields = fields,
+                                            content = {
+                                                EditableField(
+                                                    field = it,
+                                                    onRemoveNutrient = onRemoveNutrient
+                                                )
+                                            }
+                                        )
+                                    }
                                 }
                             )
                         }

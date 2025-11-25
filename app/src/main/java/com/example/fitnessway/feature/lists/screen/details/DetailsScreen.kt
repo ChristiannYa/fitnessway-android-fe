@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
@@ -34,7 +33,6 @@ import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import kotlinx.coroutines.delay
@@ -119,28 +117,31 @@ fun DetailsScreen(
                         fieldsProvider.servingUnit()
                     )
 
-                    val summaryFields = filterNutrientsByType(
-                        nutrients = food.nutrients,
-                        type = NutrientType.BASIC
+                    val nutrients = listOf(
+                        Triple(
+                            NutrientType.BASIC,
+                            food.nutrients.basic,
+                            "Summary"
+                        ),
+                        Triple(
+                            NutrientType.VITAMIN,
+                            food.nutrients.vitamin,
+                            "Vitamins"
+                        ),
+                        Triple(
+                            NutrientType.MINERAL,
+                            food.nutrients.mineral,
+                            "Minerals"
+                        )
                     )
-                        .filter {
-                            it.nutrient.id !in deletedNutrients
-                        }
-                        .map { fieldsProvider.nutrient(it.nutrient) }
 
-                    val vitaminFields = filterNutrientsByType(
-                        nutrients = food.nutrients,
-                        type = NutrientType.VITAMIN
-                    )
-                        .filter { it.nutrient.id !in deletedNutrients }
-                        .map { fieldsProvider.nutrient(it.nutrient) }
+                    val nutrientFields = nutrients.map { (type, ns, title) ->
+                        val fields = ns
+                            .filter { it.nutrient.id !in deletedNutrients }
+                            .map { fieldsProvider.nutrient(it.nutrient) }
 
-                    val mineralFields = filterNutrientsByType(
-                        nutrients = food.nutrients,
-                        type = NutrientType.MINERAL
-                    )
-                        .filter { it.nutrient.id !in deletedNutrients }
-                        .map { fieldsProvider.nutrient(it.nutrient) }
+                        Triple(type, fields, title)
+                    }
 
                     Box(modifier = Modifier.fillMaxSize()) {
                         Column(
@@ -193,9 +194,7 @@ fun DetailsScreen(
                             content = {
                                 EditionMode(
                                     foodDetailFields = detailFields,
-                                    foodSummaryFields = summaryFields,
-                                    foodVitaminFields = vitaminFields,
-                                    foodMineralFields = mineralFields,
+                                    nutrientFields = nutrientFields,
                                     enabled = viewModel.isFormValid,
                                     onDone = {
                                         viewModel.simpleFormCancel()

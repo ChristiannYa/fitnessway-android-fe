@@ -72,15 +72,24 @@ class EditionManager : IEditionManager {
             }
         }
 
+    private val hasBasicNutrient: Boolean
+        get() {
+            val formNutrientIds = _foodEditionFormState.value?.data?.nutrients?.keys ?: return false
+            val basicNutrients = _selectedFood.value?.nutrients?.basic ?: return false
+
+            return basicNutrients.any { basicNutrient ->
+                basicNutrient.nutrient.id in formNutrientIds
+            }
+        }
+
     override val areFormNutrientsValid: Boolean
         get() = _foodEditionFormState.value?.let { formState ->
-            formState.data.nutrients.values.all {
+            val areAllAmountsValid = formState.data.nutrients.values.all {
                 val amount = it.toDoubleOrNull()
-
-                if (amount == null) false else {
-                    if (amount > 0.0) true else false
-                }
+                amount != null && amount > 0.0
             }
+
+            areAllAmountsValid && hasBasicNutrient
         } ?: false
 
     override val isFormValid: Boolean

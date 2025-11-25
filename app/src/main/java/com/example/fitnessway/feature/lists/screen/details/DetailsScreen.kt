@@ -76,11 +76,15 @@ fun DetailsScreen(
     }
 
     val food = selectedFood
+    val title = "Food Details"
 
     if (food == null) {
         Screen(
             header = {
-                Header(onBackClick)
+                Header(
+                    onBackClick = onBackClick,
+                    title = title
+                )
             },
             content = {
                 Text(
@@ -96,7 +100,8 @@ fun DetailsScreen(
                 header = {
                     Header(
                         onBackClick = onBackClick,
-                        isOnBackEnabled = !formState.isEditing
+                        isOnBackEnabled = !formState.isEditing,
+                        title = title
                     )
                 },
                 content = {

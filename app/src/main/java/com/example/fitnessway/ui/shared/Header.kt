@@ -17,10 +17,11 @@ fun Header(
     onBackClick: () -> Unit,
     title: String? = null,
     isOnBackEnabled: Boolean? = true,
+    modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         content = {
             IconButton(
                 onClick = onBackClick,

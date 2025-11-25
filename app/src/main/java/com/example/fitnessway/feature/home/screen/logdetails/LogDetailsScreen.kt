@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,13 +36,7 @@ fun LogDetailsScreen(
 
     Screen(
         header = {
-            val foodLog = selectedFoodLog
-            val headerTitle = foodLog?.food?.information?.name ?: "Food not found"
-
-            Header(
-                onBackClick = onBackClick,
-                title = headerTitle
-            )
+            Header(onBackClick = onBackClick)
         },
         content = {
             val foodLog = selectedFoodLog
@@ -79,32 +74,43 @@ fun LogDetailsScreen(
                 )
 
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.areaContainerMedium(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
                     content = {
-                        fields.forEachIndexed { index, field ->
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth(),
-                                content = {
-                                    Text(
-                                        text = field.key,
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                    Text(
-                                        text = field.value,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            )
+                        Text(
+                            text = foodLog.food.information.name,
+                            style = MaterialTheme.typography.titleSmall
+                        )
 
-                            if (index < fields.lastIndex) {
-                                HorizontalDivider(
-                                    color = MaterialTheme.colorScheme.onBackground.copy(0.1f)
-                                )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(14.dp),
+                            content = {
+                                fields.forEachIndexed { index, field ->
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        content = {
+                                            Text(
+                                                text = field.key,
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                            Text(
+                                                text = field.value,
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    )
+
+                                    if (index < fields.lastIndex) {
+                                        HorizontalDivider(
+                                            color = MaterialTheme.colorScheme.onBackground.copy(0.1f)
+                                        )
+                                    }
+                                }
                             }
-                        }
+                        )
                     }
                 )
             }

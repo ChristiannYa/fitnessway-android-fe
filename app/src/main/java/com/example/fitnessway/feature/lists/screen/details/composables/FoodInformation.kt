@@ -75,7 +75,6 @@ fun FoodInformation(
 fun BaseInformation(food: FoodInformation) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxWidth(),
         content = {
             Column(
                 horizontalAlignment = Alignment.End,

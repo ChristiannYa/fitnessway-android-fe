@@ -7,12 +7,10 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -83,21 +81,11 @@ fun ListOptionButton(
         label = "listOptionIconTint"
     )
 
-    val textTint by animateColorAsState(
-        targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.onSurface
-        } else {
-            MaterialTheme.colorScheme.onSurface.copy(0.5f)
-        },
-        animationSpec = tween(durationMillis = 300),
-        label = "listOptionTextTint"
-    )
-
     val areaColor by animateColorAsState(
         targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.surfaceVariant
         } else {
-            MaterialTheme.colorScheme.primaryContainer.copy(0.5f)
+            MaterialTheme.colorScheme.surfaceVariant.copy(0.3f)
         },
         animationSpec = tween(durationMillis = 300),
         label = "listOptionAreaColor"
@@ -112,23 +100,11 @@ fun ListOptionButton(
             ),
         contentAlignment = Alignment.Center,
         content = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                content = {
-                    Icon(
-                        painter = painterResource(icon),
-                        contentDescription = "View ${optionName}s",
-                        modifier = Modifier.size(iconSize),
-                        tint = iconTint
-                    )
-
-                    Text(
-                        text = optionName,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = textTint
-                    )
-                }
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = "View ${optionName}s",
+                modifier = Modifier.size(iconSize),
+                tint = iconTint
             )
         }
     )

@@ -23,11 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.food.FoodInformation
@@ -98,10 +96,12 @@ fun BaseInformation(food: FoodInformation) {
                     )
 
                     Row(
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
                         content = {
                             Text(
                                 text = doubleFormatter(food.information.amountPerServing),
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Default
                             )
                             Text(
                                 text = food.information.servingUnit,
@@ -187,6 +187,7 @@ fun NutrientSummary(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                         Text(
                                             text = doubleFormatter(nutrientData.amount),
                                             style = MaterialTheme.typography.bodyLarge,
+                                            fontFamily = FontFamily.Default
                                         )
                                     }
                                 )
@@ -198,6 +199,7 @@ fun NutrientSummary(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                             text = "${doubleFormatter(percentage.toDouble())}%",
                                             style = MaterialTheme.typography.labelLarge,
                                             color = color.copy(0.8f),
+                                            fontFamily = FontFamily.Default
                                         )
                                         Text(
                                             text = nutrientData.nutrient.name,
@@ -267,8 +269,6 @@ fun RemainingNutrients(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                             MaterialTheme.colorScheme.surfaceVariant
                                         }
 
-                                    val onBackground = MaterialTheme.colorScheme.onBackground
-
                                     Column(
                                         // Space between the nutrient left-right pair and bar
                                         verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -280,27 +280,24 @@ fun RemainingNutrients(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                                 content = {
                                                     // Left side: nutrient name and symbol
                                                     if (nutrientData.nutrient.type == NutrientType.MINERAL) {
-                                                        Text(
-                                                            text = buildAnnotatedString {
-                                                                withStyle(style = SpanStyle(color = onBackground)) {
-                                                                    append(nutrientData.nutrient.name)
-                                                                }
-                                                                withStyle(style = SpanStyle(color = onBackground)) {
-                                                                    append(" ")
-                                                                }
-                                                                withStyle(
-                                                                    style = SpanStyle(
-                                                                        color = onBackground.copy(
-                                                                            alpha = 0.5f
-                                                                        )
+                                                            Row(
+                                                                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                                                content = {
+                                                                    Text(
+                                                                        text = nutrientData.nutrient.name,
+                                                                        style = MaterialTheme.typography.bodyMedium,
+                                                                        fontWeight = FontWeight.Medium
                                                                     )
-                                                                ) {
-                                                                    append(nutrientData.nutrient.symbol)
+                                                                    nutrientData.nutrient.symbol?.let {
+                                                                        Text(
+                                                                            text = it,
+                                                                            style = MaterialTheme.typography.bodyMedium,
+                                                                            fontWeight = FontWeight.Medium,
+                                                                            color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                                                                        )
+                                                                    }
                                                                 }
-                                                            },
-                                                            style = MaterialTheme.typography.bodyMedium,
-                                                            fontWeight = FontWeight.Medium
-                                                        )
+                                                            )
                                                     } else {
                                                         Text(
                                                             text = nutrientData.nutrient.name,
@@ -309,25 +306,24 @@ fun RemainingNutrients(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                                         )
                                                     }
 
-                                                    // Right side: amount and unit
-                                                    Text(
-                                                        text = buildAnnotatedString {
-                                                            withStyle(style = SpanStyle(color = onBackground)) {
-                                                                append(doubleFormatter(nutrientData.amount))
-                                                            }
-                                                            append(" ")
-                                                            withStyle(
-                                                                style = SpanStyle(
-                                                                    color = onBackground.copy(
-                                                                        alpha = 0.5f
-                                                                    )
+                                                    Row(
+                                                        horizontalArrangement = Arrangement.spacedBy(
+                                                            2.dp
+                                                        ),
+                                                        content = {
+                                                            Text(
+                                                                text = doubleFormatter(nutrientData.amount),
+                                                                style = MaterialTheme.typography.bodyMedium,
+                                                                fontFamily = FontFamily.Default,
+                                                            )
+                                                            Text(
+                                                                text = nutrientData.nutrient.unit,
+                                                                style = MaterialTheme.typography.bodyMedium,
+                                                                color = MaterialTheme.colorScheme.onBackground.copy(
+                                                                    0.5f
                                                                 )
-                                                            ) {
-                                                                append(nutrientData.nutrient.unit)
-                                                            }
-                                                        },
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        fontWeight = FontWeight.Medium
+                                                            )
+                                                        }
                                                     )
                                                 }
                                             )
@@ -347,8 +343,8 @@ fun RemainingNutrients(nutrients: NutrientsByType<FoodNutrientAmountData>) {
                                                     Text(
                                                         text = "${doubleFormatter(percentage.toDouble())}%",
                                                         style = MaterialTheme.typography.bodyMedium,
+                                                        fontFamily = FontFamily.Default,
                                                         color = color,
-                                                        fontWeight = FontWeight.Medium,
                                                         textAlign = TextAlign.End,
                                                         modifier = Modifier.width(68.dp)
                                                     )

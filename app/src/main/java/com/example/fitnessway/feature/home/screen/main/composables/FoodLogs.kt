@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -273,7 +274,6 @@ fun FoodLog(
                 verticalAlignment = Alignment.Bottom,
                 content = {
                     val totalApsCalc = doubleFormatter(food.amountPerServing * foodLog.servings)
-                    val totalAmountPerServings = "$totalApsCalc ${food.servingUnit}"
 
                     Column(
                         modifier = Modifier.weight(1f),
@@ -309,10 +309,21 @@ fun FoodLog(
                                 color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
                             )
 
-                            Text(
-                                text = totalAmountPerServings,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                content = {
+                                    Text(
+                                        text = totalApsCalc,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontFamily = FontFamily.Default,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
+                                    )
+                                    Text(
+                                        text = food.servingUnit,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
+                                    )
+                                }
                             )
                         }
                     )
@@ -322,6 +333,7 @@ fun FoodLog(
                     Text(
                         text = foodLog.time,
                         style = MaterialTheme.typography.bodyMedium,
+                        fontFamily = FontFamily.Default,
                         color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
                         modifier = Modifier.wrapContentWidth(unbounded = false)
                     )

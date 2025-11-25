@@ -1,6 +1,5 @@
 package com.example.fitnessway.navigation
 
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -57,19 +56,17 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
         currentDestination?.hasRoute(route) == true
     }
 
-    val bottomBarHeight = 300f
-
     Scaffold(
         bottomBar = {
             val animatedAlpha by animateFloatAsState(
                 targetValue = if (shouldShowBottomBar) 1f else 0f,
-                animationSpec = tween(durationMillis = 400, easing = LinearEasing),
+                animationSpec = tween(durationMillis = 100, easing = LinearEasing),
                 label = "bottomBarAlpha"
             )
 
             val animatedHeight by animateDpAsState(
                 targetValue = if (shouldShowBottomBar) 100.dp else 0.dp,
-                animationSpec = tween(durationMillis = 600, easing = LinearEasing),
+                animationSpec = tween(durationMillis = 300, easing = LinearEasing),
                 label = "bottomBarHeight"
             )
 

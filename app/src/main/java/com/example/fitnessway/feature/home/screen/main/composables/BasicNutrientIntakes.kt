@@ -93,7 +93,7 @@ fun BasicNutrient(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacedBy),
         content = {
-            intakeComposables.intakeGoal()
+            intakeComposables.IntakeGoal()
 
             Box(
                 modifier = Modifier
@@ -119,7 +119,7 @@ fun BasicNutrient(
                             .align(Alignment.BottomCenter)
                     )
 
-                    intakeComposables.intakeProgress(
+                    intakeComposables.IntakeProgress(
                         data = data,
                         modifier
                             .align(Alignment.BottomCenter)
@@ -128,7 +128,7 @@ fun BasicNutrient(
                 }
             )
 
-            intakeComposables.intakeName(data = data)
+            intakeComposables.IntakeName(data = data)
         }
     )
 }

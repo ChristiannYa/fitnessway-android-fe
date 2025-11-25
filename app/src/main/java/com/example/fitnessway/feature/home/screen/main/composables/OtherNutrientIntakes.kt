@@ -105,7 +105,7 @@ fun OtherNutrient(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         content = {
-            intakeComposables.intakeGoal()
+            intakeComposables.IntakeGoal()
 
             Box(
                 modifier = Modifier
@@ -126,7 +126,7 @@ fun OtherNutrient(
                             )
                             .align(Alignment.BottomCenter),
                     )
-                    intakeComposables.intakeProgress(
+                    intakeComposables.IntakeProgress(
                         data = data,
                         modifier
                             .align(Alignment.Center)
@@ -134,7 +134,7 @@ fun OtherNutrient(
                 }
             )
 
-            intakeComposables.intakeName(data = data)
+            intakeComposables.IntakeName(data = data)
         }
     )
 }

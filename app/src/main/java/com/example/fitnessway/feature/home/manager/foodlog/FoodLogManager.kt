@@ -14,11 +14,17 @@ class FoodLogManager : IFoodLogManager {
     private val _foodLogCategory = MutableStateFlow("")
     override val foodLogCategory: StateFlow<String> = _foodLogCategory
 
+    private val _selectedFoodLog = MutableStateFlow<FoodLogData?>(null)
+    override val selectedFoodLog: StateFlow<FoodLogData?> = _selectedFoodLog
+
     private val _selectedFoodToLog = MutableStateFlow<FoodInformation?>(null)
     override val selectedFoodToLog: StateFlow<FoodInformation?> = _selectedFoodToLog
 
     private val _selectedFoodLogToRemove = MutableStateFlow<FoodLogData?>(null)
     override val selectedFoodLogToRemove: StateFlow<FoodLogData?> = _selectedFoodLogToRemove
+
+    private val _foodLogEditionFormState = MutableStateFlow<FormState<FormStates.FoodLogEdition>?>(null)
+    override val foodLogEditionFormState: StateFlow<FormState<FormStates.FoodLogEdition>?> = _foodLogEditionFormState
 
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
@@ -44,6 +50,10 @@ class FoodLogManager : IFoodLogManager {
         }
     }
 
+    override fun setSelectedFoodLog(foodLog: FoodLogData) {
+        _selectedFoodLog.value = foodLog
+    }
+
     override fun setSelectedFoodToLog(food: FoodInformation) {
         _selectedFoodToLog.value = food
     }
@@ -61,6 +71,46 @@ class FoodLogManager : IFoodLogManager {
                 time = time
             )
         )
+    }
+
+    override fun updateFoodLogEditionFormField(
+        fieldName: FormFieldName.FoodLogEdition,
+        input: String
+    ) {
+        _foodLogEditionFormState.value?.let { formState ->
+            val updatedData = when (fieldName) {
+                FormFieldName.FoodLogEdition.SERVINGS -> {
+                    val newAmount = input.toDoubleOrNull()
+
+                    val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
+                        val amount = formState.data.amountPerServingDb * newAmount
+
+                        doubleFormatter(amount, 2)
+                    } else formState.data.amountPerServing
+
+                    formState.data.copy(
+                        servings = input,
+                        amountPerServing = dynAmountPerServing
+                    )
+                }
+
+                FormFieldName.FoodLogEdition.AMOUNT_PER_SERVING -> {
+                    val newAmount = input.toDoubleOrNull()
+
+                    val dynServings = if (newAmount != null && newAmount > 0) {
+                        val amount = newAmount / formState.data.amountPerServingDb
+                        doubleFormatter(amount, 2)
+                    } else formState.data.servings
+
+                    formState.data.copy(
+                        amountPerServing = input,
+                        servings = dynServings
+                    )
+                }
+            }
+
+            _foodLogEditionFormState.value = formState.copy(data = updatedData)
+        }
     }
 
     override fun updateFoodLogFormField(

@@ -112,8 +112,8 @@ private fun getFoodLogFormFields(
     servingUnit: String,
 ): List<FoodLogField> {
     return listOf(
-        fieldsProvider.Servings(),
-        fieldsProvider.AmountPerServing(servingUnit),
-        fieldsProvider.Time()
+        fieldsProvider.servings(),
+        fieldsProvider.amountPerServing(servingUnit),
+        fieldsProvider.time()
     )
 }

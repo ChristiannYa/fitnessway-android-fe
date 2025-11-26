@@ -17,13 +17,16 @@ object FormStates {
         val nutrients: Map<Int, String> = emptyMap()
     )
 
+    data class FoodLogEdition(
+        val servings: String,
+        val amountPerServing: String,
+        val amountPerServingDb: Double
+    )
+
     data class FoodLog(
         val servings: String,
         val amountPerServing: String,
-
-        // Original value from the database
-        val amountPerServingDb: Double,
-
+        val amountPerServingDb: Double, // Original value from the database
         val time: String,
     )
 }

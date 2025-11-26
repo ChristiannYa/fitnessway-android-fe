@@ -15,7 +15,10 @@ data class FormField<T: FormFieldName> (
 
 typealias LoginField = FormField<FormFieldName.Login>
 typealias RegisterField = FormField<FormFieldName.Register>
+
 typealias FoodLogField = FormField<FormFieldName.FoodLog>
+
+typealias FoodLogEditionField = FormField<FormFieldName.FoodLogEdition>
 
 typealias FoodCreationBaseField = FormField<FormFieldName.FoodCreation.BaseField>
 typealias FoodCreationNutrientField = FormField<FormFieldName.FoodCreation.NutrientField>

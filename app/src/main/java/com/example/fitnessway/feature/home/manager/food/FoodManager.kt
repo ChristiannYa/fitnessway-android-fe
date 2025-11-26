@@ -12,9 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FoodManager : IFoodManager {
-    private val _selectedFoodLog = MutableStateFlow<FoodLogData?>(null)
-    override val selectedFoodLog: StateFlow<FoodLogData?> = _selectedFoodLog
-
     private val emptyFoodCreationFormState = FormStates.FoodCreation(
         name = "",
         brand = "",
@@ -81,10 +78,6 @@ class FoodManager : IFoodManager {
             .filter { (id, _) -> id in nutrients }
             .values
             .any { (it.toDoubleOrNull() ?: 0.0) > 0 }
-    }
-
-    override fun setSelectedFoodLog(foodLog: FoodLogData) {
-        _selectedFoodLog.value = foodLog
     }
 
     override fun updateFoodCreationFormField(

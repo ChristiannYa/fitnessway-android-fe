@@ -21,6 +21,11 @@ sealed interface FormFieldName {
         TIME
     }
 
+    enum class FoodLogEdition : FormFieldName {
+        SERVINGS,
+        AMOUNT_PER_SERVING
+    }
+
     sealed interface IFoodCreation : FormFieldName
 
     object FoodCreation {

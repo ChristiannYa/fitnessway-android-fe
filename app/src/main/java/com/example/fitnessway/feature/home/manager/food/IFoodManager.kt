@@ -7,7 +7,6 @@ import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodManager {
-    val selectedFoodLog: StateFlow<FoodLogData?>
     val foodCreationFormState: StateFlow<FormStates.FoodCreation>
     val currentStep: StateFlow<Int>
     val formNameError: String?
@@ -17,7 +16,6 @@ interface IFoodManager {
     val isBasicDataValid: Boolean
     val areBasicNutrientsValid: Boolean
 
-    fun setSelectedFoodLog(foodLog: FoodLogData)
     fun updateFoodCreationFormField(fieldName: FormFieldName.IFoodCreation, input: String)
     fun updateStep(
         step: Int,

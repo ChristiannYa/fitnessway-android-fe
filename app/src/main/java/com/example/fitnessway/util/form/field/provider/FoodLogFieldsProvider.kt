@@ -14,7 +14,7 @@ class FoodLogFieldsProvider(
     val isEditing = formState.isEditing
 
     @Composable
-    fun Servings(): FoodLogField {
+    fun servings(): FoodLogField {
         val value = if (isEditing) {
             formState.data.servings
         } else doubleFormatter(
@@ -26,24 +26,14 @@ class FoodLogFieldsProvider(
             name = FormFieldName.FoodLog.SERVINGS,
             label = "Servings",
             value = value,
-
-            // @NOTE
-            // By providing the `newValue` lambda, we satisfy the (String) -> Unit requirement
-            // that `updateState` needs
             updateState = { newValue ->
                 onFieldUpdate(FormFieldName.FoodLog.SERVINGS, newValue)
-            } // This whole code block results in `(String) -> Unit`
-
-            // ```
-            // fun updateState(newValue: String) {
-            //     onFieldUpdate(FormFieldName.FoodLog.SERVINGS, newValue)
-            // }
-            // ```
+            }
         )
     }
 
     @Composable
-    fun AmountPerServing(servingUnit: String): FoodLogField {
+    fun amountPerServing(servingUnit: String): FoodLogField {
         val value = if (isEditing) {
             formState.data.amountPerServing
         } else doubleFormatter(
@@ -62,7 +52,7 @@ class FoodLogFieldsProvider(
     }
 
     @Composable
-    fun Time(): FoodLogField {
+    fun time(): FoodLogField {
         return FoodLogField(
             name = FormFieldName.FoodLog.TIME,
             label = "Time",

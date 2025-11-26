@@ -108,7 +108,7 @@ fun DetailsScreen(
                     val fieldsProvider = FoodEditionFieldsProvider(
                         formState = formState,
                         onFieldUpdate = { fieldName, value ->
-                            viewModel.updateFoodCreationFormField(
+                            viewModel.updateFoodEditionFormField(
                                 fieldName = fieldName,
                                 input = value
                             )

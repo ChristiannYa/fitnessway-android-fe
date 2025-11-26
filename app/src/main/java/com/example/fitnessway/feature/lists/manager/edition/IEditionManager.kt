@@ -19,7 +19,7 @@ interface IEditionManager {
 
     fun setSelectedFood(food: FoodInformation)
     fun initializeFoodForm(food: FoodInformation)
-    fun updateFoodCreationFormField(fieldName: FormFieldName.IFoodEdition, input: String)
+    fun updateFoodEditionFormField(fieldName: FormFieldName.IFoodEdition, input: String)
     fun filterNutrientFromForm(nutrientId: Int)
     fun resetDeletedNutrients()
     fun startEditionMode()

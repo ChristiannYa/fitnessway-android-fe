@@ -119,7 +119,7 @@ class EditionManager : IEditionManager {
         )
     }
 
-    override fun updateFoodCreationFormField(
+    override fun updateFoodEditionFormField(
         fieldName: FormFieldName.IFoodEdition,
         input: String
     ) {

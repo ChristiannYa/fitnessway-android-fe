@@ -102,7 +102,8 @@ fun LogDetailsScreen(
                                     foodComposables.BaseInformation(
                                         topHorizontalAlignment = Alignment.CenterHorizontally,
                                         bottomHorizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalSpace = verticalSpace
+                                        verticalSpace = verticalSpace,
+                                        foodLogServings = foodLog.servings
                                     )
 
                                     CatAndTime(foodLog)

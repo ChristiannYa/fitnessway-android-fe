@@ -38,10 +38,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
@@ -273,8 +276,6 @@ fun FoodLog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,
                 content = {
-                    val totalApsCalc = doubleFormatter(food.amountPerServing * foodLog.servings)
-
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -309,21 +310,24 @@ fun FoodLog(
                                 color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
                             )
 
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                content = {
-                                    Text(
-                                        text = totalApsCalc,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontFamily = FontFamily.Default,
-                                        color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontFamily = FontFamily.Default
+                                        ),
+                                        block = {
+                                            append(
+                                                text = doubleFormatter(foodLog.servings)
+                                            )
+                                        }
                                     )
-                                    Text(
-                                        text = food.servingUnit,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
+                                    append(
+                                        text = " Servings"
                                     )
-                                }
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
                             )
                         }
                     )

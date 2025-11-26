@@ -97,7 +97,9 @@ object Food {
             /**
              * Vertical space between the brand, name, and amount per serving
              */
-            verticalSpace: Dp = 0.dp
+            verticalSpace: Dp = 0.dp,
+
+            foodLogServings: Double = 1.0
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -129,8 +131,10 @@ object Food {
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                                 content = {
+                                    val amPerSer = doubleFormatter(food.information.amountPerServing * foodLogServings)
+
                                     Text(
-                                        text = doubleFormatter(food.information.amountPerServing),
+                                        text = amPerSer,
                                         style = MaterialTheme.typography.bodySmall,
                                         fontFamily = FontFamily.Default,
                                         color = asideColor

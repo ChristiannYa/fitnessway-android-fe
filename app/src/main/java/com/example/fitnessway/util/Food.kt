@@ -33,7 +33,6 @@ import com.example.fitnessway.data.model.food.FoodNutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 import com.example.fitnessway.util.Formatters.doubleFormatter
 
@@ -55,6 +54,7 @@ object Food {
 
             return if (foodNutrient != null) {
                 val amountToSubtract = foodNutrient.amount * servings
+
                 intake.copy(intake = (intake.intake - amountToSubtract))
             } else intake
         }
@@ -76,9 +76,11 @@ object Food {
         )
     }
 
-    object Composables {
+    data class FoodComposables(
+        val food: FoodInformation,
+    ) {
         @Composable
-        fun BaseInformation(food: FoodInformation) {
+        fun BaseInformation() {
             Box(
                 contentAlignment = Alignment.Center,
                 content = {
@@ -121,9 +123,7 @@ object Food {
         }
 
         @Composable
-        fun NutrientSummary(
-            nutrients: NutrientsByType<FoodNutrientAmountData>
-        ) {
+        fun NutrientSummary() {
             Column(
                 modifier = Modifier.areaContainerMedium(),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -138,23 +138,23 @@ object Food {
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier.fillMaxWidth(),
                         content = {
-                            nutrients.basic.forEach { nutrientData ->
+                            food.nutrients.basic.forEach { nutrientData ->
                                 val targetProgress =
                                     if (nutrientData.goal != null) {
-                                        ((nutrientData.amount / nutrientData.goal).toFloat())
+                                        (nutrientData.amount / nutrientData.goal)
                                     } else {
-                                        0f
+                                        0.0
                                     }
 
                                 val animatedProgress by animateFloatAsState(
-                                    targetValue = targetProgress,
+                                    targetValue = targetProgress.toFloat(),
                                     animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                                 )
 
                                 val percentage = if (nutrientData.goal != null) {
-                                    ((nutrientData.amount / nutrientData.goal) * 100).toFloat()
+                                    (nutrientData.amount / nutrientData.goal) * 100
                                 } else {
-                                    0f
+                                    0.0
                                 }
 
                                 val color =
@@ -192,7 +192,7 @@ object Food {
                                             verticalArrangement = Arrangement.spacedBy(2.dp),
                                             content = {
                                                 Text(
-                                                    text = "${doubleFormatter(percentage.toDouble())}%",
+                                                    text = "${doubleFormatter(percentage)}%",
                                                     style = MaterialTheme.typography.labelLarge,
                                                     color = color.copy(0.8f),
                                                     fontFamily = FontFamily.Default
@@ -213,12 +213,10 @@ object Food {
         }
 
         @Composable
-        fun RemainingNutrients(
-            nutrients: NutrientsByType<FoodNutrientAmountData>
-        ) {
+        fun RemainingNutrients() {
             val remainingNutrients = listOf(
-                NutrientType.VITAMIN to nutrients.vitamin,
-                NutrientType.MINERAL to nutrients.mineral
+                NutrientType.VITAMIN to food.nutrients.vitamin,
+                NutrientType.MINERAL to food.nutrients.mineral
             )
 
             if (remainingNutrients.any { it.second.isNotEmpty() }) {

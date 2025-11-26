@@ -23,8 +23,10 @@ class FoodLogManager : IFoodLogManager {
     private val _selectedFoodLogToRemove = MutableStateFlow<FoodLogData?>(null)
     override val selectedFoodLogToRemove: StateFlow<FoodLogData?> = _selectedFoodLogToRemove
 
-    private val _foodLogEditionFormState = MutableStateFlow<FormState<FormStates.FoodLogEdition>?>(null)
-    override val foodLogEditionFormState: StateFlow<FormState<FormStates.FoodLogEdition>?> = _foodLogEditionFormState
+    private val _foodLogEditionFormState =
+        MutableStateFlow<FormState<FormStates.FoodLogEdition>?>(null)
+    override val foodLogEditionFormState: StateFlow<FormState<FormStates.FoodLogEdition>?> =
+        _foodLogEditionFormState
 
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
@@ -156,15 +158,33 @@ class FoodLogManager : IFoodLogManager {
         }
     }
 
-    override fun startFoodLogEdit() {
-        _foodLogFormState.value = _foodLogFormState.value?.edit()
+    override fun startFormEdit(formState: FormStates) {
+        when (formState) {
+            is FormStates.FoodLog -> _foodLogFormState.value = _foodLogFormState.value?.edit()
+            is FormStates.FoodLogEdition -> _foodLogEditionFormState.value =
+                _foodLogEditionFormState.value?.edit()
+
+            else -> {}
+        }
     }
 
-    override fun cancelFoodLogEdit() {
-        _foodLogFormState.value = _foodLogFormState.value?.cancel()
+    override fun cancelFormEdit(formState: FormStates) {
+        when (formState) {
+            is FormStates.FoodLog -> _foodLogFormState.value = _foodLogFormState.value?.cancel()
+            is FormStates.FoodLogEdition -> _foodLogEditionFormState.value =
+                _foodLogEditionFormState.value?.cancel()
+
+            else -> {}
+        }
     }
 
-    override fun saveFoodLogEdit() {
-        _foodLogFormState.value = _foodLogFormState.value?.save()
+    override fun saveFormEdit(formState: FormStates) {
+        when (formState) {
+            is FormStates.FoodLog -> _foodLogFormState.value = _foodLogFormState.value?.save()
+            is FormStates.FoodLogEdition -> _foodLogEditionFormState.value =
+                _foodLogEditionFormState.value?.save()
+
+            else -> {}
+        }
     }
 }

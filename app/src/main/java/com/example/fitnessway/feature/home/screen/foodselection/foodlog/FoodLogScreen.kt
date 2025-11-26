@@ -118,9 +118,9 @@ fun FoodLogScreen(
                                 isSubmitSuccess = shouldShowFoodLogSuccess,
 
                                 // Updating state...
-                                onEdit = { viewModel.startFoodLogEdit() },
-                                onSave = { viewModel.saveFoodLogEdit() },
-                                onCancel = { viewModel.cancelFoodLogEdit() },
+                                onEdit = { viewModel.startFormEdit(formState.data) },
+                                onSave = { viewModel.saveFormEdit(formState.data) },
+                                onCancel = { viewModel.cancelFormEdit(formState.data) },
                                 onSubmit = { viewModel.addFoodLog() },
 
                                 onSubmitText = "Log"

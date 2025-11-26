@@ -24,7 +24,7 @@ interface IFoodLogManager {
     fun initializeFoodLogForm(food: FoodInformation, time: String)
     fun updateFoodLogEditionFormField(fieldName: FormFieldName.FoodLogEdition, input: String)
     fun updateFoodLogFormField(fieldName: FormFieldName.FoodLog, input: String)
-    fun startFoodLogEdit()
-    fun cancelFoodLogEdit()
-    fun saveFoodLogEdit()
+    fun startFormEdit(formState: FormStates)
+    fun cancelFormEdit(formState: FormStates)
+    fun saveFormEdit(formState: FormStates)
 }

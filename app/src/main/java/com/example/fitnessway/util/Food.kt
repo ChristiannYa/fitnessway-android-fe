@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.food.FoodInformation
@@ -81,18 +82,40 @@ object Food {
         val food: FoodInformation,
     ) {
         @Composable
-        fun BaseInformation() {
+        fun BaseInformation(
+            /**
+             * Horizontal alignment in between the brand and name
+             */
+            topHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
+
+            /**
+             * Horizontal alignment for the amount per serving
+             */
+            bottomHorizontalAlignment: Alignment.Horizontal = Alignment.End,
+
+
+            /**
+             * Vertical space between the brand, name, and amount per serving
+             */
+            verticalSpace: Dp = 0.dp
+        ) {
             Box(
                 contentAlignment = Alignment.Center,
                 content = {
                     Column(
-                        horizontalAlignment = Alignment.End,
+                        horizontalAlignment = bottomHorizontalAlignment,
+                        verticalArrangement = Arrangement.spacedBy(verticalSpace),
                         content = {
+                            val asideColor = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+
                             Column(
+                                horizontalAlignment = topHorizontalAlignment,
+                                verticalArrangement = Arrangement.spacedBy(verticalSpace),
                                 content = {
                                     Text(
                                         text = food.information.brand ?: "~",
-                                        style = MaterialTheme.typography.labelMedium
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = asideColor
                                     )
 
                                     Text(
@@ -109,11 +132,13 @@ object Food {
                                     Text(
                                         text = doubleFormatter(food.information.amountPerServing),
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontFamily = FontFamily.Default
+                                        fontFamily = FontFamily.Default,
+                                        color = asideColor
                                     )
                                     Text(
                                         text = food.information.servingUnit,
                                         style = MaterialTheme.typography.bodySmall,
+                                        color = asideColor
                                     )
                                 }
                             )

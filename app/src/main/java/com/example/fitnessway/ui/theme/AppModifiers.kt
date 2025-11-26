@@ -18,36 +18,39 @@ import androidx.compose.ui.unit.dp
 object AppModifiers {
     @Composable
     fun Modifier.areaContainerLarge(
-        areaColor: Color = MaterialTheme.colorScheme.primaryContainer
+        areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
+        shape: RoundedCornerShape = RoundedCornerShape(16.dp),
     ) = this
         .fillMaxWidth()
         .background(
             color = areaColor,
-            shape = RoundedCornerShape(16.dp)
+            shape = shape
         )
         .padding(18.dp)
 
     @Composable
     fun Modifier.areaContainerMedium(
-        areaColor: Color = MaterialTheme.colorScheme.primaryContainer
+        areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
+        shape: RoundedCornerShape = RoundedCornerShape(14.dp),
     ) = this
         .fillMaxWidth()
         .background(
             color = areaColor,
-            shape = RoundedCornerShape(14.dp)
+            shape = shape
         )
-        .padding(20.dp)
+        .padding(16.dp)
 
     @Composable
     fun Modifier.areaContainerSmall(
         areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
+        shape: RoundedCornerShape = RoundedCornerShape(12.dp),
         showsIndication: Boolean = true,
         onClick: (() -> Unit)? = null,
     ) = this
         .then(
             if (onClick != null) {
                 Modifier
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(shape)
                     .clickable(
                         interactionSource = if (showsIndication) null else {
                             remember { MutableInteractionSource() }
@@ -60,7 +63,7 @@ object AppModifiers {
         .fillMaxWidth()
         .background(
             color = areaColor,
-            shape = RoundedCornerShape(12.dp)
+            shape = shape
         )
         .padding(14.dp)
 }

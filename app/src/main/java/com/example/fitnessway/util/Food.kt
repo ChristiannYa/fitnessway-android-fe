@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogData
-import com.example.fitnessway.data.model.food.FoodNutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -42,7 +41,6 @@ object Food {
         foodLog: FoodLogData
     ): NutrientIntakesByType {
         val nutrients = foodLog.food.nutrients
-        val servings = foodLog.servings
 
         fun updateIntake(
             intake: NutrientIntake,
@@ -53,24 +51,27 @@ object Food {
             }
 
             return if (foodNutrient != null) {
-                val amountToSubtract = foodNutrient.amount * servings
-
-                intake.copy(intake = (intake.intake - amountToSubtract))
+                intake.copy(intake = (intake.intake - foodNutrient.amount))
             } else intake
         }
 
         return NutrientIntakesByType(
             basic = currentIntakes.basic.map {
                 updateIntake(
-                    intake = it, nutrientId = it.nutrient.id
+                    intake = it,
+                    nutrientId = it.nutrient.id
                 )
-            }, vitamin = currentIntakes.vitamin.map {
+            },
+            vitamin = currentIntakes.vitamin.map {
                 updateIntake(
-                    intake = it, nutrientId = it.nutrient.id
+                    intake = it,
+                    nutrientId = it.nutrient.id
                 )
-            }, mineral = currentIntakes.mineral.map {
+            },
+            mineral = currentIntakes.mineral.map {
                 updateIntake(
-                    intake = it, nutrientId = it.nutrient.id
+                    intake = it,
+                    nutrientId = it.nutrient.id
                 )
             }
         )

@@ -5,7 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.fitnessway.feature.lists.screen.details.DetailsScreen
+import com.example.fitnessway.feature.lists.screen.details.FoodDetailsScreen
 import com.example.fitnessway.feature.lists.screen.main.ListsScreen
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.navigation.ListsGraph
@@ -43,7 +43,7 @@ fun NavGraphBuilder.listsNavigationGraph(navController: NavController) {
 
             val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
-            DetailsScreen(
+            FoodDetailsScreen(
                 viewModel = viewModel,
                 onBackClick = { navController.popBackStack() }
             )

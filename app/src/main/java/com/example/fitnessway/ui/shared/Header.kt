@@ -34,8 +34,9 @@ fun Header(
                 verticalAlignment = Alignment.CenterVertically,
                 content = {
                     IconButton(
-                        onClick = onBackClick,
-                        enabled = isOnBackEnabled == true,
+                        onClick = {
+                            if (isOnBackEnabled == true) onBackClick()
+                        },
                         content = {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,

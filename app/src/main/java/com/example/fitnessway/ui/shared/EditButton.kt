@@ -8,21 +8,28 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 @Composable
 fun EditButton(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    text: String = "Edit",
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        contentAlignment = Alignment.Center,
+        modifier = modifier
             .clip(CircleShape)
             .background(
-                color = MaterialTheme.colorScheme.primary,
+                color = backgroundColor,
                 shape = CircleShape
             )
             .clickable(
@@ -34,10 +41,10 @@ fun EditButton(
             ),
         content = {
             Text(
-                text = "Edit",
+                text = text,
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Medium,
-                fontFamily = robotoSerifFamily
+                fontFamily = robotoSerifFamily,
             )
         }
     )

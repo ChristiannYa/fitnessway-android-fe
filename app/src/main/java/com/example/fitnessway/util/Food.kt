@@ -30,9 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogData
+import com.example.fitnessway.data.model.food.FoodNutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 import com.example.fitnessway.util.Formatters.doubleFormatter
 
@@ -72,6 +74,49 @@ object Food {
             mineral = currentIntakes.mineral.map {
                 updateIntake(
                     intake = it,
+                    nutrientId = it.nutrient.id
+                )
+            }
+        )
+    }
+
+    fun calcNutrientsBasedOnFoodLogServings(
+        currentFoodLog: FoodLogData,
+        newServings: Double
+    ): NutrientsByType<FoodNutrientAmountData> {
+        val nutrients = currentFoodLog.food.nutrients
+
+        fun updateNutrientAmount(
+            nutrientAmount: FoodNutrientAmountData,
+            nutrientId: Int
+        ): FoodNutrientAmountData {
+            val foodNutrient = (nutrients.basic + nutrients.vitamin + nutrients.mineral).find {
+                it.nutrient.id == nutrientId
+            }
+
+            return if (foodNutrient != null) {
+                val newAmount = (foodNutrient.amount / currentFoodLog.servings) * newServings
+
+                nutrientAmount.copy(amount = newAmount)
+            } else nutrientAmount
+        }
+
+        return NutrientsByType(
+            basic = nutrients.basic.map {
+                updateNutrientAmount(
+                    nutrientAmount = it,
+                    nutrientId = it.nutrient.id
+                )
+            },
+            vitamin = nutrients.vitamin.map {
+                updateNutrientAmount(
+                    nutrientAmount = it,
+                    nutrientId = it.nutrient.id
+                )
+            },
+            mineral = nutrients.vitamin.map {
+                updateNutrientAmount(
+                    nutrientAmount = it,
                     nutrientId = it.nutrient.id
                 )
             }
@@ -131,7 +176,8 @@ object Food {
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                                 content = {
-                                    val amPerSer = doubleFormatter(food.information.amountPerServing * foodLogServings)
+                                    val amPerSer =
+                                        doubleFormatter(food.information.amountPerServing * foodLogServings)
 
                                     Text(
                                         text = amPerSer,

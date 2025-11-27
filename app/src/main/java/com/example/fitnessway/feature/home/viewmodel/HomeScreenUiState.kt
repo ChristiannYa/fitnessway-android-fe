@@ -15,5 +15,6 @@ data class HomeScreenUiState(
     val foodAddState: UiState<FoodInformation> = UiState.Idle,
     val foodLogsState: UiState<FoodLogsByCategory> = UiState.Loading,
     val foodLogAddState: UiState<FoodLogData> = UiState.Idle,
+    val foodLogUpdateState: UiState<FoodLogData> = UiState.Idle,
     val foodLogDeleteState: UiState<FoodLogData> = UiState.Idle
 )

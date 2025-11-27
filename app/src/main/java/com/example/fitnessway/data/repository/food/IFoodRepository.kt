@@ -4,6 +4,7 @@ import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogData
+import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.model.food.FoodUpdateRequest
 import com.example.fitnessway.util.UiState
@@ -17,6 +18,11 @@ interface IFoodRepository {
 
     suspend fun addFoodLog(
         request: FoodLogAddRequest,
+        date: String
+    ): Flow<UiState<FoodLogData>>
+
+    suspend fun updateFoodLog(
+        request: FoodLogUpdateRequest,
         date: String
     ): Flow<UiState<FoodLogData>>
 

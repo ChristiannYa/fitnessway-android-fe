@@ -6,6 +6,8 @@ import com.example.fitnessway.data.model.food.FoodAddInfoApiFormat
 import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
 import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
+import com.example.fitnessway.data.model.food.FoodLogData
+import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
@@ -15,6 +17,7 @@ import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
+import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Food.subtractNutrientsFromIntakes
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -136,8 +139,73 @@ class HomeViewModel(
         }
     }
 
-    fun resetFoodLogAddState() {
-        _uiState.update { it.copy(foodLogAddState = UiState.Idle) }
+    fun updateFoodLog() {
+        // Check for states before proceeding
+        val user = user ?: return
+        val formState = managers.foodLog.foodLogEditionFormState.value ?: return
+        val selectedFoodLog = managers.foodLog.selectedFoodLog.value ?: return
+
+        // Get current food logs data to update optimistically
+        val currentFoodLogsData = _uiState.value.foodLogsState
+
+        // Only proceed if there are food logs
+        if (currentFoodLogsData !is UiState.Success) return
+
+        // Gather new nutrient data based on amount per servings
+        val newNutrientData = calcNutrientsBasedOnFoodLogServings(
+            currentFoodLog = selectedFoodLog,
+            newServings = formState.data.servings.toDouble()
+        )
+
+        // Update the current food log's nutrients
+        val foodWithUpdatedNutrients = selectedFoodLog.food.copy(
+            nutrients = newNutrientData
+        )
+
+        // Create the updated food log information
+        val updatedFoodLog = FoodLogData(
+            id = selectedFoodLog.id,
+            category = selectedFoodLog.category,
+            time = selectedFoodLog.time,
+            servings = formState.data.servings.toDouble(),
+            foodStatus = selectedFoodLog.foodStatus,
+            foodSnapshotId = selectedFoodLog.foodSnapshotId,
+            food = foodWithUpdatedNutrients
+        )
+
+        // Change the selected food log's nutrients value
+        managers.foodLog.setSelectedFoodLog(updatedFoodLog)
+
+        val request = FoodLogUpdateRequest(
+            userId = user.id,
+            foodLogId = updatedFoodLog.id,
+            servings = updatedFoodLog.servings
+        )
+
+        val date = managers.date.getApiFormattedDate()
+
+        // Send the api request
+        viewModelScope.launch {
+            foodRepo.updateFoodLog(request, date).collect { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(foodLogUpdateState = state) }
+                    }
+
+                    is UiState.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                foodLogUpdateState = state
+                            )
+                        }
+
+                        managers.foodLog.setSelectedFoodLog(selectedFoodLog)
+                    }
+
+                    else -> {}
+                }
+            }
+        }
     }
 
     fun deleteFoodLog() {
@@ -204,6 +272,10 @@ class HomeViewModel(
 
             }
         }
+    }
+
+    fun resetFoodLogAddState() {
+        _uiState.update { it.copy(foodLogAddState = UiState.Idle) }
     }
 
     fun resetFoodLogDeleteState() {

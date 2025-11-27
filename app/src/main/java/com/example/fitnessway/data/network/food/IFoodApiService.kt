@@ -5,6 +5,8 @@ import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodLogAddPostResponse
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogDeleteResponse
+import com.example.fitnessway.data.model.food.FoodLogUpdatePutResponse
+import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.food.FoodLogsApiFetchResponse
 import com.example.fitnessway.data.model.food.FoodUpdateApiPutResponse
 import com.example.fitnessway.data.model.food.FoodUpdateRequest
@@ -40,6 +42,11 @@ interface IFoodApiService {
     suspend fun addFoodLog(
         @Body request: FoodLogAddRequest
     ): Response<FoodLogAddPostResponse>
+
+    @PUT("food/log/update")
+    suspend fun updateFoodLog(
+        @Body request: FoodLogUpdateRequest
+    ): Response<FoodLogUpdatePutResponse>
 
     @DELETE("food/log/delete")
     suspend fun deleteFoodLog(

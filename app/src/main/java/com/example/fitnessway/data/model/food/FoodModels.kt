@@ -204,6 +204,25 @@ data class FoodLogAddApiResponse(
 typealias FoodLogAddPostResponse = ApiResponseWithContent<FoodLogAddApiResponse>
 
 @Serializable
+data class FoodLogUpdateRequest(
+    @SerialName("user_id")
+    val userId: String,
+
+    @SerialName("food_log_id")
+    val foodLogId: Int,
+
+    val servings: Double
+)
+
+@Serializable
+data class FoodLogUpdateApiResponse(
+    @SerialName("updated_food_log")
+    val updatedFoodLog: FoodLogData
+)
+
+typealias FoodLogUpdatePutResponse = ApiResponseWithContent<FoodLogUpdateApiResponse>
+
+@Serializable
 data class FoodLogDeleteApiResponse(
     @SerialName("food_log_deleted")
     val foodLogDeleted: FoodLogData

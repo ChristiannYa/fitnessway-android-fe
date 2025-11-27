@@ -138,11 +138,14 @@ fun LogDetailsScreen(
                                     animationSpec = tween(durationMillis = 300)
                                 ),
                                 content = {
+                                    val isValid = viewModel.isFleFormValid &&
+                                            formState.data.servings.toDouble() != foodLog.servings
+
                                     EditionMode(
                                         fields = fields,
-                                        isDoneEnabled = viewModel.isFleFormValid,
+                                        isDoneEnabled = isValid,
                                         onDone = {
-                                            viewModel.cancelFormEdit(formState.data)
+                                            viewModel.updateFoodLog()
                                         },
                                         onCancel = {
                                             viewModel.cancelFormEdit(formState.data)

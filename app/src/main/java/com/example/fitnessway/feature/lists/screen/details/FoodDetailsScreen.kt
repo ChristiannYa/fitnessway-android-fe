@@ -1,32 +1,16 @@
 package com.example.fitnessway.feature.lists.screen.details
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,22 +20,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
+import com.example.fitnessway.feature.lists.screen.details.composables.MoreOptionsPopup
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
-import com.example.fitnessway.ui.shared.EditButton
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.ImperialRed
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
@@ -199,68 +179,14 @@ fun FoodDetailsScreen(
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         content = {
-                            AnimatedVisibility(
-                                visible = isMoreOptionsDisplayed,
-                                enter = fadeIn(
-                                    animationSpec = tween(durationMillis = 200)
-                                ) + scaleIn(
-                                    initialScale = 0.8f,
-                                    transformOrigin = TransformOrigin(1f, 0f),
-                                    animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                        stiffness = Spring.StiffnessMedium
-                                    )
-                                ),
-                                exit = fadeOut(
-                                    animationSpec = tween(durationMillis = 150)
-                                ) + scaleOut(
-                                    targetScale = 0.8f,
-                                    transformOrigin = TransformOrigin(1f, 0f),
-                                    animationSpec = tween(durationMillis = 150)
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .zIndex(2f),
-                                content = {
-                                    Box(
-                                        contentAlignment = Alignment.CenterEnd,
-                                        content = {
-                                            val shape = RoundedCornerShape(12.dp)
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(shape)
-                                                    .background(
-                                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                                        shape = shape
-                                                    )
-                                                    .width(IntrinsicSize.Max)
-                                                    .padding(12.dp),
-                                                content = {
-                                                    Column(
-                                                        verticalArrangement = Arrangement.spacedBy(
-                                                            12.dp
-                                                        ),
-                                                        content = {
-                                                            EditButton(
-                                                                onClick = {
-                                                                    isMoreOptionsDisplayed = false
-                                                                    viewModel.startEditionMode()
-                                                                },
-                                                                modifier = Modifier.fillMaxWidth()
-                                                            )
-                                                            EditButton(
-                                                                onClick = { viewModel.cancelEditionMode() },
-                                                                backgroundColor = ImperialRed,
-                                                                text = "Delete",
-                                                                modifier = Modifier.fillMaxWidth()
-                                                            )
-                                                        }
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
+                            MoreOptionsPopup(
+                                isVisible = isMoreOptionsDisplayed,
+                                onEdit = {
+                                    isMoreOptionsDisplayed = false
+                                    viewModel.startEditionMode()
+                                },
+                                onDelete = {
+                                    viewModel.cancelEditionMode()
                                 }
                             )
 
@@ -280,34 +206,22 @@ fun FoodDetailsScreen(
                                 }
                             )
 
-                            AnimatedVisibility(
-                                visible = formState.isEditing,
-                                enter = slideInVertically(
-                                    initialOffsetY = { fullHeight -> fullHeight },
-                                    animationSpec = tween(durationMillis = 300)
-                                ),
-                                exit = slideOutVertically(
-                                    targetOffsetY = { fullHeight -> fullHeight },
-                                    animationSpec = tween(durationMillis = 300)
-                                ),
-                                content = {
-                                    EditionMode(
-                                        foodDetailFields = detailFields,
-                                        nutrientFields = nutrientFields,
-                                        enabled = viewModel.isFormValid,
-                                        onDone = {
-                                            viewModel.simpleFormCancel()
-                                            viewModel.updateFood()
-                                            viewModel.resetDeletedNutrients()
-                                        },
-                                        onCancel = {
-                                            viewModel.cancelEditionMode()
-                                        },
-                                        onRemoveNutrient = { nutrientId ->
-                                            viewModel.filterNutrientFromForm(nutrientId)
-                                        }
-                                    )
-                                }
+                            EditionMode(
+                                foodDetailFields = detailFields,
+                                nutrientFields = nutrientFields,
+                                enabled = viewModel.isFormValid,
+                                onDone = {
+                                    viewModel.simpleFormCancel()
+                                    viewModel.updateFood()
+                                    viewModel.resetDeletedNutrients()
+                                },
+                                onCancel = {
+                                    viewModel.cancelEditionMode()
+                                },
+                                onRemoveNutrient = { nutrientId ->
+                                    viewModel.filterNutrientFromForm(nutrientId)
+                                },
+                                isVisible = formState.isEditing
                             )
                         }
                     )

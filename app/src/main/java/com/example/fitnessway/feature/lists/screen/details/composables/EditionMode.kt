@@ -1,5 +1,9 @@
 package com.example.fitnessway.feature.lists.screen.details.composables
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,65 +36,79 @@ fun EditionMode(
     enabled: Boolean,
     onDone: () -> Unit,
     onCancel: () -> Unit,
-    onRemoveNutrient: (nutrientId: Int) -> Unit
+    onRemoveNutrient: (nutrientId: Int) -> Unit,
+    isVisible: Boolean
 ) {
-    Box(
-        modifier = Modifier.fillMaxHeight(),
-        contentAlignment = Alignment.BottomCenter,
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(
+            initialOffsetY = { fullHeight -> fullHeight },
+            animationSpec = tween(durationMillis = 300)
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { fullHeight -> fullHeight },
+            animationSpec = tween(durationMillis = 300)
+        ),
         content = {
             Box(
-                modifier = Modifier
-                    .areaContainerLarge(
-                        areaColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.BottomCenter,
                 content = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(18.dp),
+                    Box(
+                        modifier = Modifier
+                            .areaContainerLarge(
+                                areaColor = MaterialTheme.colorScheme.primaryContainer
+                            ),
                         content = {
-                            val backgroundColor = if (enabled) {
-                                MaterialTheme.colorScheme.primary
-                            } else MaterialTheme.colorScheme.surfaceVariant
-
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(18.dp),
                                 content = {
-                                    ToggleEditButton(
-                                        text = "Done",
-                                        onClick = onDone,
-                                        enabled = enabled,
-                                        backgroundColor = backgroundColor
+                                    val backgroundColor = if (enabled) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else MaterialTheme.colorScheme.surfaceVariant
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                        content = {
+                                            ToggleEditButton(
+                                                text = "Done",
+                                                onClick = onDone,
+                                                enabled = enabled,
+                                                backgroundColor = backgroundColor
+                                            )
+
+                                            ToggleEditButton(
+                                                text = "Cancel",
+                                                onClick = onCancel,
+                                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+                                            )
+                                        }
                                     )
 
-                                    ToggleEditButton(
-                                        text = "Cancel",
-                                        onClick = onCancel,
-                                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant
-                                    )
-                                }
-                            )
+                                    LazyColumn(
+                                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                                        content = {
+                                            fieldSection(
+                                                title = "Details",
+                                                fields = foodDetailFields,
+                                                content = { EditableField(it) }
+                                            )
 
-                            LazyColumn(
-                                verticalArrangement = Arrangement.spacedBy(24.dp),
-                                content = {
-                                    fieldSection(
-                                        title = "Details",
-                                        fields = foodDetailFields,
-                                        content = { EditableField(it) }
-                                    )
-
-                                    nutrientFields.forEach { (_, fields, title) ->
-                                        fieldSection(
-                                            title = title,
-                                            fields = fields,
-                                            content = {
-                                                EditableField(
-                                                    field = it,
-                                                    onRemoveNutrient = onRemoveNutrient
+                                            nutrientFields.forEach { (_, fields, title) ->
+                                                fieldSection(
+                                                    title = title,
+                                                    fields = fields,
+                                                    content = {
+                                                        EditableField(
+                                                            field = it,
+                                                            onRemoveNutrient = onRemoveNutrient
+                                                        )
+                                                    }
                                                 )
                                             }
-                                        )
-                                    }
+                                        }
+                                    )
                                 }
                             )
                         }

@@ -5,16 +5,20 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -53,6 +57,8 @@ fun ListOptionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val baseIconSize = 18.dp
+
     val (icon, optionName, activeColor) = when (option) {
         ListOption.Food -> Triple(
             R.drawable.food,
@@ -67,7 +73,7 @@ fun ListOptionButton(
     }
 
     val iconSize by animateDpAsState(
-        targetValue = if (isSelected) 18.dp else 12.dp,
+        targetValue = if (isSelected) baseIconSize else baseIconSize - 6.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
@@ -76,7 +82,7 @@ fun ListOptionButton(
     )
 
     val iconTint by animateColorAsState(
-        targetValue = if (isSelected) activeColor else MaterialTheme.colorScheme.onSurface.copy(0.5f),
+        targetValue = if (isSelected) activeColor else MaterialTheme.colorScheme.onSurface,
         animationSpec = tween(durationMillis = 300),
         label = "listOptionIconTint"
     )
@@ -84,20 +90,33 @@ fun ListOptionButton(
     val areaColor by animateColorAsState(
         targetValue = if (isSelected) {
             MaterialTheme.colorScheme.surfaceVariant
-        } else {
-            MaterialTheme.colorScheme.surfaceVariant.copy(0.3f)
-        },
+        } else MaterialTheme.colorScheme.primaryContainer,
         animationSpec = tween(durationMillis = 300),
         label = "listOptionAreaColor"
     )
 
+    val borderColor by animateColorAsState(
+        targetValue = if (!isSelected) {
+            MaterialTheme.colorScheme.surfaceVariant
+        } else Color.Transparent,
+        animationSpec = tween(durationMillis = 300),
+        label = "listOptionBorderColor"
+    )
+
     Box(
         modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 2.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(12.dp)
+            )
             .areaContainerSmall(
                 onClick = onClick,
                 showsIndication = false,
                 areaColor = areaColor
-            ),
+            )
+            .height(baseIconSize),
         contentAlignment = Alignment.Center,
         content = {
             Icon(

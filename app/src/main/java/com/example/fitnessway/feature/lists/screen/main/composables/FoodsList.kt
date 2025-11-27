@@ -1,69 +1,55 @@
 package com.example.fitnessway.feature.lists.screen.main.composables
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
-import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
 import com.example.fitnessway.util.UiState
+import androidx.compose.foundation.lazy.items
+import com.example.fitnessway.ui.shared.ApiErrorMessage
 
-@Composable
-fun FoodsList(
+fun LazyListScope.foodsList(
     state: UiState<List<FoodInformation>>,
     onViewDetails: (FoodInformation) -> Unit
 ) {
     when (state) {
-        is UiState.Loading -> Text("Loading foods")
-        is UiState.Success -> Foods(
-            foods = state.data,
-            onViewDetails = onViewDetails
-        )
+        is UiState.Loading -> item { Text(text = "Loading foods") }
+        is UiState.Success -> {
+            val foods = state.data
 
-        is UiState.Error -> ApiErrorMessage(state.message)
-        is UiState.Idle -> {}
-    }
-}
-
-@Composable
-fun Foods(
-    foods: List<FoodInformation>,
-    onViewDetails: (FoodInformation) -> Unit
-) {
-    if (foods.isEmpty()) {
-        Text(
-            text = "Foods that you add to your list will appear here.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(0.8f),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-    } else {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            content = {
-                foods.forEach { food ->
-                    item {
-                        Food(
-                            food = food,
-                            onViewDetails = { onViewDetails(food) }
-                        )
-                    }
+            if (foods.isEmpty()) {
+                item {
+                    Text(
+                        text = "Foods that you add to your list will appear here.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(0.8f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            } else {
+                items(
+                    items = foods,
+                    key = { food -> food.information.id }
+                ) { food ->
+                    Food(
+                        food = food,
+                        onViewDetails = { onViewDetails(food) }
+                    )
                 }
             }
-        )
+        }
+        is UiState.Error -> item { ApiErrorMessage(state.message) }
+        is UiState.Idle -> {}
     }
 }
 
@@ -76,16 +62,8 @@ fun Food(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(
-                width = 3.dp,
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(12.dp)
-            )
             .areaContainerSmall(
                 onClick = onViewDetails,
-                areaColor = Color.Transparent
             ),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         content = {

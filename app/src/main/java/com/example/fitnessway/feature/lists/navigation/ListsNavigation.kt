@@ -31,7 +31,7 @@ fun NavGraphBuilder.listsNavigationGraph(navController: NavController) {
             val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
             ListsScreen(
-                listsViewModel = viewModel,
+                viewModel = viewModel,
                 onViewDetails = { navController.navigate(Details) }
             )
         }

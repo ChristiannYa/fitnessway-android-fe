@@ -1,60 +1,70 @@
 package com.example.fitnessway.feature.lists.screen.main
 
+import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.ListOption
-import com.example.fitnessway.feature.lists.screen.main.composables.FoodsList
 import com.example.fitnessway.feature.lists.screen.main.composables.SupplementList
 import com.example.fitnessway.feature.lists.screen.main.composables.ToggleListViewButtons
+import com.example.fitnessway.feature.lists.screen.main.composables.foodsList
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Screen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ListsScreen(
-    listsViewModel: ListsViewModel = koinViewModel(),
+    viewModel: ListsViewModel = koinViewModel(),
     onViewDetails: () -> Unit,
 ) {
-    val uiState by listsViewModel.uiState.collectAsState()
-    val selectedList by listsViewModel.selectedList.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val selectedList by viewModel.selectedList.collectAsState()
 
     LaunchedEffect(Unit) {
-        listsViewModel.getFoods()
+        viewModel.getFoods()
     }
 
     Screen(
         isMainScreen = true
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+        CompositionLocalProvider(
+            values = arrayOf(LocalOverscrollFactory provides null),
             content = {
-                ToggleListViewButtons(
-                    onToggleSelectedList = listsViewModel::setSelectedList,
-                    selectedOption = selectedList
-                )
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    content = {
+                        stickyHeader {
+                            ToggleListViewButtons(
+                                onToggleSelectedList = viewModel::setSelectedList,
+                                selectedOption = selectedList
+                            )
+                        }
 
-                when (selectedList) {
-                    ListOption.Food -> {
-                        FoodsList(
-                            state = uiState.foodsState,
-                            onViewDetails = {
-                                listsViewModel.setSelectedFood(it)
-                                onViewDetails()
+                        when (selectedList) {
+                            ListOption.Food -> {
+                                foodsList(
+                                    state = uiState.foodsState,
+                                    onViewDetails = { food ->
+                                        viewModel.setSelectedFood(food)
+                                        onViewDetails()
+                                    }
+                                )
                             }
-                        )
-                    }
 
-                    ListOption.Supplement -> {
-                        SupplementList()
+                            ListOption.Supplement -> {
+                                item {
+                                    SupplementList()
+                                }
+                            }
+                        }
                     }
-                }
+                )
             }
         )
-
     }
 }

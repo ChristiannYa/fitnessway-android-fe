@@ -83,7 +83,8 @@ class FoodRepositoryImpl(
             extractData = { it.updatedFoodLog },
             errMsg = "Failed to update food log",
             invalidatedUrls = listOf(
-                ApiUrls.Food.getLogs(date)
+                ApiUrls.Food.getLogs(date),
+                ApiUrls.Nutrient.getIntakes(date)
             )
         )
     }

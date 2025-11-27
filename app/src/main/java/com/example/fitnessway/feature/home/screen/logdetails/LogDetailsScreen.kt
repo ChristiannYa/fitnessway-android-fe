@@ -1,7 +1,6 @@
 package com.example.fitnessway.feature.home.screen.logdetails
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -15,21 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.example.fitnessway.feature.home.screen.logdetails.composables.EditButton
 import com.example.fitnessway.feature.home.screen.logdetails.composables.EditionMode
 import com.example.fitnessway.feature.home.screen.logdetails.composables.LogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.EditButton
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -52,7 +46,7 @@ fun LogDetailsScreen(
 
     if (foodLog == null) {
         Screen(
-            header = { Header(onBackClick, title) },
+            header = { Header(onBackClick = onBackClick, title = title) },
             content = {
                 Text(
                     text = "Food log not found",
@@ -63,29 +57,24 @@ fun LogDetailsScreen(
         )
     } else {
         foodLogDetailsFormState?.let { formState ->
-            var headerHeight by remember { mutableIntStateOf(0) }
-
-            val headerOffset by animateDpAsState(
-                targetValue = if (formState.isEditing) {
-                    with(LocalDensity.current) { -headerHeight.toDp() }
-                } else 0.dp,
-                animationSpec = tween(durationMillis = 300)
+            val (headerOffset, headerAnimationModifier) = rememberHeaderSlideUpAnimation(
+                shouldSlideUp = formState.isEditing
             )
 
             Screen(
                 header = {
-                    Header(
-                        onBackClick = onBackClick,
-                        isOnBackEnabled = !formState.isEditing,
-                        title = "Food Log Details",
-                        modifier = Modifier
-                            .offset(y = headerOffset)
-                            .onSizeChanged { size ->
-                                headerHeight = size.height
-                            },
-                        extraContent = {
-                            EditButton(
-                                onClick = { viewModel.startFormEdit(formState.data) }
+                    Box(
+                        modifier = headerAnimationModifier,
+                        content = {
+                            Header(
+                                onBackClick = onBackClick,
+                                isOnBackEnabled = !formState.isEditing,
+                                title = "Log Details",
+                                extraContent = {
+                                    EditButton(
+                                        onClick = { viewModel.startFormEdit(formState.data) }
+                                    )
+                                }
                             )
                         }
                     )

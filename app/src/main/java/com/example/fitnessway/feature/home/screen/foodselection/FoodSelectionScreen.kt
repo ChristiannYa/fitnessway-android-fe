@@ -30,8 +30,8 @@ fun FoodSelectionScreen(
     Screen(
         header = {
             Header(
-                onBackClick,
-                "${foodCategory.replaceFirstChar { it.uppercase() }} selection"
+                onBackClick = onBackClick,
+                title = "${foodCategory.replaceFirstChar { it.uppercase() }} selection"
             )
         },
         content = {

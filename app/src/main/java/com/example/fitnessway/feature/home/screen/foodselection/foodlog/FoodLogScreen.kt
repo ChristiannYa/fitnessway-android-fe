@@ -66,7 +66,7 @@ fun FoodLogScreen(
     Screen(
         header = {
             Header(
-                onBackClick,
+                onBackClick = onBackClick,
                 title = "Log Information"
             )
         },

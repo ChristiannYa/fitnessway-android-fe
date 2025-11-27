@@ -17,11 +17,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Header(
+    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     title: String? = null,
     isOnBackEnabled: Boolean? = true,
     extraContent: (@Composable () -> Unit)? = null,
-    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -40,9 +40,6 @@ fun Header(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Go Back",
-                                tint = MaterialTheme.colorScheme.onBackground.copy(
-                                    if (isOnBackEnabled == true) 1f else 0.5f
-                                )
                             )
                         }
                     )

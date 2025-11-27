@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -23,8 +24,10 @@ import com.example.fitnessway.feature.lists.screen.details.composables.EditionMo
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.EditButton
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import kotlinx.coroutines.delay
@@ -72,7 +75,7 @@ fun DetailsScreen(
 
     if (food == null) {
         Screen(
-            header = { Header(onBackClick, title) },
+            header = { Header(onBackClick = onBackClick, title = title) },
             content = {
                 Text(
                     text = "No food selected",
@@ -83,12 +86,26 @@ fun DetailsScreen(
         )
     } else {
         foodEditionFormState?.let { formState ->
+            val (headerOffset, headerAnimationModifier) = rememberHeaderSlideUpAnimation(
+                shouldSlideUp = formState.isEditing
+            )
+
             Screen(
                 header = {
-                    Header(
-                        onBackClick = onBackClick,
-                        isOnBackEnabled = !formState.isEditing,
-                        title = title
+                    Box(
+                        modifier = headerAnimationModifier,
+                        content = {
+                            Header(
+                                onBackClick = onBackClick,
+                                isOnBackEnabled = !formState.isEditing,
+                                title = title,
+                                extraContent = {
+                                    EditButton(
+                                        onClick = { viewModel.startEditionMode() }
+                                    )
+                                }
+                            )
+                        }
                     )
                 },
                 content = {
@@ -140,6 +157,7 @@ fun DetailsScreen(
                         content = {
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(18.dp),
+                                modifier = Modifier.offset(y = headerOffset),
                                 content = {
                                     ApiErrorMessageAnimated(
                                         isVisible = foodUpdateErrMsg != "",
@@ -148,7 +166,6 @@ fun DetailsScreen(
 
                                     FoodInformation(
                                         food = food,
-                                        onEdit = { viewModel.startEditionMode() },
                                         shouldOverlayAppear = formState.isEditing,
                                     )
                                 }

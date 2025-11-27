@@ -20,4 +20,17 @@ object Formatters {
 
         return decimalFormat.format(truncated)
     }
+
+    fun validateDoubleAsString(
+        doubleAsString: String,
+        itemToBeValidated: String? = "Value"
+    ): String? {
+        return if (doubleAsString.isEmpty()) null else {
+            val amount = doubleAsString.toDoubleOrNull()
+
+            if (amount == null) "$itemToBeValidated must be provided" else {
+                if (amount > 0.0) null else "$itemToBeValidated must be greater than 0"
+            }
+        }
+    }
 }

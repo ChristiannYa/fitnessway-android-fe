@@ -140,7 +140,7 @@ fun LogDetailsScreen(
                                 content = {
                                     EditionMode(
                                         fields = fields,
-                                        isDoneEnabled = true,
+                                        isDoneEnabled = viewModel.isFleFormValid,
                                         onDone = {
                                             viewModel.cancelFormEdit(formState.data)
                                         },

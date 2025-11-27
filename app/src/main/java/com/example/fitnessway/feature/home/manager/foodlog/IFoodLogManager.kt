@@ -16,6 +16,9 @@ interface IFoodLogManager {
     val foodLogEditionFormState: StateFlow<FormState<FormStates.FoodLogEdition>?>
     val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?>
     val isFoodLogFormValid: Boolean
+    val fleFormServsError: String?
+    val fleFormAmPerSerError: String?
+    val isFleFormValid: Boolean
 
     fun setFoodLogCategory(categories: FoodLogCategories)
     fun setSelectedFoodLog(foodLog: FoodLogData)

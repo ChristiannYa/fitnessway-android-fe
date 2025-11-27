@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,32 @@ class FoodLogManager : IFoodLogManager {
                     amountPerServing > 0 &&
                     time.isNotEmpty() && time.matches(Regex("^\\d{1,2}:\\d{2} [AP]M$"))
         } ?: false
+
+    override val fleFormServsError: String?
+        get() = _foodLogEditionFormState.value?.let { formState ->
+            formState.data.servings.let { value ->
+                validateDoubleAsString(
+                    doubleAsString = value,
+                    itemToBeValidated = "Servings"
+                )
+            }
+        }
+
+    override val isFleFormValid: Boolean
+        get() = _foodLogEditionFormState.value?.let {
+            it.data.servings.isNotEmpty() && fleFormServsError == null &&
+                    it.data.amountPerServing.isNotEmpty() && fleFormAmPerSerError == null
+        } ?: false
+
+    override val fleFormAmPerSerError: String?
+        get() = _foodLogEditionFormState.value?.let { formState ->
+            formState.data.amountPerServing.let { value ->
+                validateDoubleAsString(
+                    doubleAsString = value,
+                    itemToBeValidated = "Amount Per Serving"
+                )
+            }
+        }
 
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.ui.shared.ToggleEditButton
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 

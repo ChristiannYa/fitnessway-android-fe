@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.details.composables
+package com.example.fitnessway.ui.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

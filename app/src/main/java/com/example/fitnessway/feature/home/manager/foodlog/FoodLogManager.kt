@@ -64,6 +64,18 @@ class FoodLogManager : IFoodLogManager {
         _selectedFoodLogToRemove.value = foodLog
     }
 
+    override fun initializeFoodLogEditionForm(foodLog: FoodLogData) {
+        val amPerSer = foodLog.servings * foodLog.food.information.amountPerServing
+
+        _foodLogEditionFormState.value = FormState(
+            data = FormStates.FoodLogEdition(
+                servings = doubleFormatter(foodLog.servings),
+                amountPerServing = doubleFormatter(amPerSer),
+                amountPerServingDb = amPerSer
+            )
+        )
+    }
+
     override fun initializeFoodLogForm(food: FoodInformation, time: String) {
         _foodLogFormState.value = FormState(
             data = FormStates.FoodLog(

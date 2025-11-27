@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.ui.shared.BlurOverlay
+import com.example.fitnessway.ui.shared.ToggleEditButton
 import com.example.fitnessway.util.Food.FoodComposables
 
 @Composable
@@ -49,8 +50,10 @@ fun FoodInformation(
                     }
                 }
             )
+
+            BlurOverlay(
+                isVisible = shouldOverlayAppear
+            )
         }
     )
-
-    BlurOverlay(isVisible = shouldOverlayAppear)
 }

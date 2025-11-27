@@ -21,6 +21,7 @@ interface IFoodLogManager {
     fun setSelectedFoodLog(foodLog: FoodLogData)
     fun setSelectedFoodToLog(food: FoodInformation)
     fun setSelectedFoodLogToRemove(foodLog: FoodLogData)
+    fun initializeFoodLogEditionForm(foodLog: FoodLogData)
     fun initializeFoodLogForm(food: FoodInformation, time: String)
     fun updateFoodLogEditionFormField(fieldName: FormFieldName.FoodLogEdition, input: String)
     fun updateFoodLogFormField(fieldName: FormFieldName.FoodLog, input: String)

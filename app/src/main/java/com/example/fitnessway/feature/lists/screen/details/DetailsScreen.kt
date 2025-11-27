@@ -2,12 +2,6 @@ package com.example.fitnessway.feature.lists.screen.details
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
@@ -21,16 +15,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.UiState
@@ -80,12 +72,7 @@ fun DetailsScreen(
 
     if (food == null) {
         Screen(
-            header = {
-                Header(
-                    onBackClick = onBackClick,
-                    title = title
-                )
-            },
+            header = { Header(onBackClick, title) },
             content = {
                 Text(
                     text = "No food selected",
@@ -148,74 +135,56 @@ fun DetailsScreen(
                         Triple(type, fields, title)
                     }
 
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(18.dp),
-                            content = {
-                                AnimatedVisibility(
-                                    visible = foodUpdateErrMsg != "",
-                                    enter =
-                                        slideInVertically(
-                                            // Start the slide from 40 (pixels) above where the content is supposed to go, to
-                                            // produce a parallax effect
-                                            initialOffsetY = { -40 }
-                                        ) +
-                                                expandVertically(expandFrom = Alignment.Top) +
-                                                scaleIn(
-                                                    // Animate scale from 0f to 1f using the top center as the pivot point.
-                                                    transformOrigin = TransformOrigin(
-                                                        pivotFractionX = .5f,
-                                                        pivotFractionY = 0f
-                                                    )
-                                                ) +
-                                                fadeIn(initialAlpha = 0.3f),
-                                    exit = slideOutVertically() +
-                                            shrinkVertically() +
-                                            fadeOut() +
-                                            scaleOut(targetScale = 1.2f),
-                                    content = {
-                                        ApiErrorMessage(foodUpdateErrMsg)
-                                    }
-                                )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        content = {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(18.dp),
+                                content = {
+                                    ApiErrorMessageAnimated(
+                                        isVisible = foodUpdateErrMsg != "",
+                                        errorMessage = foodUpdateErrMsg
+                                    )
 
-                                FoodInformation(
-                                    food = food,
-                                    onEdit = { viewModel.startEditionMode() },
-                                    shouldOverlayAppear = formState.isEditing,
-                                )
-                            }
-                        )
+                                    FoodInformation(
+                                        food = food,
+                                        onEdit = { viewModel.startEditionMode() },
+                                        shouldOverlayAppear = formState.isEditing,
+                                    )
+                                }
+                            )
 
-                        AnimatedVisibility(
-                            visible = formState.isEditing,
-                            enter = slideInVertically(
-                                initialOffsetY = { fullHeight -> fullHeight },
-                                animationSpec = tween(durationMillis = 300)
-                            ),
-                            exit = slideOutVertically(
-                                targetOffsetY = { fullHeight -> fullHeight },
-                                animationSpec = tween(durationMillis = 300)
-                            ),
-                            content = {
-                                EditionMode(
-                                    foodDetailFields = detailFields,
-                                    nutrientFields = nutrientFields,
-                                    enabled = viewModel.isFormValid,
-                                    onDone = {
-                                        viewModel.simpleFormCancel()
-                                        viewModel.updateFood()
-                                        viewModel.resetDeletedNutrients()
-                                    },
-                                    onCancel = {
-                                        viewModel.cancelEditionMode()
-                                    },
-                                    onRemoveNutrient = { nutrientId ->
-                                        viewModel.filterNutrientFromForm(nutrientId)
-                                    }
-                                )
-                            }
-                        )
-                    }
+                            AnimatedVisibility(
+                                visible = formState.isEditing,
+                                enter = slideInVertically(
+                                    initialOffsetY = { fullHeight -> fullHeight },
+                                    animationSpec = tween(durationMillis = 300)
+                                ),
+                                exit = slideOutVertically(
+                                    targetOffsetY = { fullHeight -> fullHeight },
+                                    animationSpec = tween(durationMillis = 300)
+                                ),
+                                content = {
+                                    EditionMode(
+                                        foodDetailFields = detailFields,
+                                        nutrientFields = nutrientFields,
+                                        enabled = viewModel.isFormValid,
+                                        onDone = {
+                                            viewModel.simpleFormCancel()
+                                            viewModel.updateFood()
+                                            viewModel.resetDeletedNutrients()
+                                        },
+                                        onCancel = {
+                                            viewModel.cancelEditionMode()
+                                        },
+                                        onRemoveNutrient = { nutrientId ->
+                                            viewModel.filterNutrientFromForm(nutrientId)
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
                 }
             )
         }

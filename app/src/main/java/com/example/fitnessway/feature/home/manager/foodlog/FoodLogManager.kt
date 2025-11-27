@@ -71,7 +71,7 @@ class FoodLogManager : IFoodLogManager {
             data = FormStates.FoodLogEdition(
                 servings = doubleFormatter(foodLog.servings),
                 amountPerServing = doubleFormatter(amPerSer),
-                amountPerServingDb = amPerSer
+                amountPerServingDb = foodLog.food.information.amountPerServing
             )
         )
     }

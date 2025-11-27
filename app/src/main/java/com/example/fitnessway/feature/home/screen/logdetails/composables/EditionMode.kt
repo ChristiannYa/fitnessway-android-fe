@@ -58,7 +58,7 @@ fun EditionMode(
                     Box(
                         modifier = Modifier
                             .areaContainerLarge(
-                                areaColor = MaterialTheme.colorScheme.secondaryContainer
+                                areaColor = MaterialTheme.colorScheme.primaryContainer
                             ),
                         content = {
                             LazyColumn(

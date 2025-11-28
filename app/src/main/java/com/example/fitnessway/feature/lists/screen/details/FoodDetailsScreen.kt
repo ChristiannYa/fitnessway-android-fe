@@ -28,6 +28,7 @@ import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
+import com.example.fitnessway.feature.lists.screen.details.composables.FoodMoreOptionsButton
 import com.example.fitnessway.feature.lists.screen.details.composables.MoreOptionsPopup
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
@@ -108,24 +109,9 @@ fun FoodDetailsScreen(
                                 isOnBackEnabled = !formState.isEditing,
                                 title = title,
                                 extraContent = {
-                                    Box(
-                                        content = {
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(CircleShape)
-                                                    .clickable(
-                                                        onClick = {
-                                                            isMoreOptionsDisplayed =
-                                                                !isMoreOptionsDisplayed
-                                                        }
-                                                    ),
-                                                content = {
-                                                    Icon(
-                                                        imageVector = Icons.Default.MoreHoriz,
-                                                        contentDescription = null
-                                                    )
-                                                }
-                                            )
+                                    FoodMoreOptionsButton(
+                                        onClick = {
+                                            isMoreOptionsDisplayed = !isMoreOptionsDisplayed
                                         }
                                     )
                                 }

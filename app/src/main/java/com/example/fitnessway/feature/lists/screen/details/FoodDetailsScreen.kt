@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
@@ -187,7 +188,11 @@ fun FoodDetailsScreen(
                                 },
                                 onDelete = {
                                     viewModel.cancelEditionMode()
-                                }
+                                },
+                                onOverlayClick = { isMoreOptionsDisplayed = false },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .zIndex(2f)
                             )
 
                             Column(

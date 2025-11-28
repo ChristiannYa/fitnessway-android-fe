@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 @Composable
 fun BlurOverlay(
     isVisible: Boolean,
-    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
     enabled: Boolean = true
 ) {
     AnimatedVisibility(

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -25,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.shared.EditButton
 import com.example.fitnessway.ui.theme.ImperialRed
 
@@ -32,7 +34,9 @@ import com.example.fitnessway.ui.theme.ImperialRed
 fun MoreOptionsPopup(
     isVisible: Boolean,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onOverlayClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
         visible = isVisible,
@@ -53,12 +57,17 @@ fun MoreOptionsPopup(
             transformOrigin = TransformOrigin(1f, 0f),
             animationSpec = tween(durationMillis = 150)
         ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .zIndex(2f),
+        modifier = modifier,
         content = {
+            BlurOverlay(
+                isVisible = isVisible,
+                onClick = onOverlayClick,
+                modifier = Modifier.zIndex(3f)
+            )
+
             Box(
-                contentAlignment = Alignment.CenterEnd,
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier.fillMaxSize(),
                 content = {
                     val shape = RoundedCornerShape(16.dp)
 

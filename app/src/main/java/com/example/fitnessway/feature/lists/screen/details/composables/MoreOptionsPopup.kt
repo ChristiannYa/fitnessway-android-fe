@@ -1,70 +1,44 @@
 package com.example.fitnessway.feature.lists.screen.details.composables
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import com.example.fitnessway.ui.shared.BlurOverlay
-import com.example.fitnessway.ui.shared.EditButton
-import com.example.fitnessway.ui.theme.ImperialRed
+import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.util.Animation.popUpEnter
+import com.example.fitnessway.util.Animation.popupExit
 
 @Composable
 fun MoreOptionsPopup(
     isVisible: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    onOverlayClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = fadeIn(
-            animationSpec = tween(durationMillis = 200)
-        ) + scaleIn(
-            initialScale = 0.8f,
-            transformOrigin = TransformOrigin(1f, 0f),
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
-            )
-        ),
-        exit = fadeOut(
-            animationSpec = tween(durationMillis = 150)
-        ) + scaleOut(
-            targetScale = 0.8f,
-            transformOrigin = TransformOrigin(1f, 0f),
-            animationSpec = tween(durationMillis = 150)
-        ),
+        enter = popUpEnter,
+        exit = popupExit,
         modifier = modifier,
         content = {
-            BlurOverlay(
-                isVisible = isVisible,
-                onClick = onOverlayClick,
-                modifier = Modifier.zIndex(3f)
-            )
-
             Box(
                 contentAlignment = Alignment.TopEnd,
                 modifier = Modifier.fillMaxSize(),
@@ -78,23 +52,24 @@ fun MoreOptionsPopup(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = shape
                             )
-                            .width(IntrinsicSize.Max)
-                            .padding(16.dp),
+                            .padding(20.dp)
+                            .width(100.dp),
                         content = {
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(
                                     16.dp
                                 ),
                                 content = {
-                                    EditButton(
+                                    MoreOptionsButton(
                                         onClick = onEdit,
-                                        modifier = Modifier.fillMaxWidth()
+                                        backgroundColor = MaterialTheme.colorScheme.primary,
+                                        text = "Edit"
                                     )
-                                    EditButton(
+
+                                    MoreOptionsButton(
                                         onClick = onDelete,
-                                        backgroundColor = ImperialRed,
-                                        text = "Delete",
-                                        modifier = Modifier.fillMaxWidth()
+                                        backgroundColor = MaterialTheme.colorScheme.surfaceTint,
+                                        text = "Delete"
                                     )
                                 }
                             )
@@ -104,4 +79,48 @@ fun MoreOptionsPopup(
             )
         }
     )
+}
+
+@Composable
+fun MoreOptionsButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color,
+    text: String
+) {
+    val shape = RoundedCornerShape(10.dp)
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(
+                color = backgroundColor,
+                shape = shape
+            )
+            .clickable(
+                onClick = onClick
+            )
+            .padding(12.dp),
+        content = {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = WhiteFont
+            )
+        }
+    )
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun MoreOptionsPopupPreview() {
+    FitnesswayTheme {
+        MoreOptionsPopup(
+            isVisible = true,
+            onEdit = {},
+            onDelete = {}
+        )
+    }
 }

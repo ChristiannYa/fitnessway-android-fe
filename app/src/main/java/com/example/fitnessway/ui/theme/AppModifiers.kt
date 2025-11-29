@@ -31,7 +31,7 @@ object AppModifiers {
     @Composable
     fun Modifier.areaContainerMedium(
         areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
-        shape: RoundedCornerShape = RoundedCornerShape(14.dp),
+        shape: RoundedCornerShape = RoundedCornerShape(14.dp)
     ) = this
         .fillMaxWidth()
         .background(

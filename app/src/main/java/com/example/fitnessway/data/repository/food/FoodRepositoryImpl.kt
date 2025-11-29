@@ -51,6 +51,19 @@ class FoodRepositoryImpl(
         )
     }
 
+    override suspend fun deleteFood(
+        foodId: Int
+    ): Flow<UiState<FoodInformation>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.deleteFood(foodId) },
+            extractData = { it.foodDeleted },
+            errMsg = "Failed to delete food",
+            invalidatedUrls = listOf(
+                ApiUrls.Food.GET_FOODS
+            )
+        )
+    }
+
     override suspend fun getFoodLogs(date: String): Flow<UiState<FoodLogsByCategory>> {
         return httpClient.makeRequest(
             apiCall = { apiService.getFoodLogs(date) },

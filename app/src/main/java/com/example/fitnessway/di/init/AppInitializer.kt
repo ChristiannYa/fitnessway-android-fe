@@ -18,6 +18,8 @@ class AppInitializer(
     fun initialize() {
         ProcessLifecycleOwner.get().lifecycleScope.launch {
             tokensStetHolder.tokensState.collect { tokensState ->
+                Log.d(Constants.DEBUG_TAG, tokensState.accessToken.toString())
+
                 val userState = userStateHolder.userState.value
 
                 // Fetch user if authenticated but user is not loaded

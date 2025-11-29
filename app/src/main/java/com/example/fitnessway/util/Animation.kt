@@ -1,7 +1,13 @@
 package com.example.fitnessway.util
 
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,6 +15,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
@@ -33,4 +40,23 @@ object Animation {
 
         return headerOffset to headerModifier
     }
+
+    val popUpEnter = fadeIn(
+        animationSpec = tween(durationMillis = 200)
+    ) + scaleIn(
+        initialScale = 0.8f,
+        transformOrigin = TransformOrigin(1f, 0f),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val popupExit = fadeOut(
+        animationSpec = tween(durationMillis = 150)
+    ) + scaleOut(
+        targetScale = 0.8f,
+        transformOrigin = TransformOrigin(1f, 0f),
+        animationSpec = tween(durationMillis = 150)
+    )
 }

@@ -11,6 +11,7 @@ val WhiteFont = Color(0xFFCCCCCC)
 val StormCloud = Color(0xFF1D2125)
 val AreaContainerPrimaryDark = Color(0xFF141414)
 val AreaContainerSecondaryDark = Color(0xFF171717)
+val LightCoal = Color(0xFF283038)
 
 // Light Mode
 val EmeraldDarker = Color(0xFF0A7A7A)
@@ -21,6 +22,7 @@ val BlackFont = Color(0xFF2B2B2B)
 val SilverMist = Color(0xFFAAACB1)
 val AreaContainerPrimaryLight = Color(0xFFEFEFEF)
 val AreaContainerSecondaryLight = Color(0xFFEAEAEA)
+val WhiteCloud = Color(0xFFD4D9DE)
 
 // Extras
 val ImperialRed = Color(0xFFED2939)

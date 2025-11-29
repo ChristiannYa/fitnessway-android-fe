@@ -17,6 +17,7 @@ import com.example.fitnessway.util.Food.FoodComposables
 fun FoodInformation(
     food: FoodInformation,
     shouldOverlayAppear: Boolean,
+    onOverlayClick: () -> Unit
 ) {
     val foodComposables = remember(food) {
         FoodComposables(food)
@@ -44,7 +45,8 @@ fun FoodInformation(
             )
 
             BlurOverlay(
-                isVisible = shouldOverlayAppear
+                isVisible = shouldOverlayAppear,
+                onClick = onOverlayClick
             )
         }
     )

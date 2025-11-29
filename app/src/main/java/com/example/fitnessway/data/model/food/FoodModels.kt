@@ -89,7 +89,7 @@ data class FoodsApiResponse(
     val foods: List<FoodInformation>?
 )
 
-typealias FoodsApiFetchResponse = ApiResponseWithContent<FoodsApiResponse>
+typealias FoodsFetchResponse = ApiResponseWithContent<FoodsApiResponse>
 
 @Serializable
 data class FoodAddInfoApiFormat(
@@ -126,7 +126,7 @@ data class FoodAddApiResponse(
     val foodCreated: FoodInformation
 )
 
-typealias FoodAddApiPostResponse = ApiResponseWithContent<FoodAddApiResponse>
+typealias FoodAddPostResponse = ApiResponseWithContent<FoodAddApiResponse>
 
 @Serializable
 data class FoodUpdateRequest(
@@ -148,7 +148,15 @@ data class FoodUpdateApiResponse(
     val updatedFood: FoodInformation
 )
 
-typealias FoodUpdateApiPutResponse = ApiResponseWithContent<FoodUpdateApiResponse>
+typealias FoodUpdatePutResponse = ApiResponseWithContent<FoodUpdateApiResponse>
+
+@Serializable
+data class FoodDeleteApiResponse(
+    @SerialName("food_deleted")
+    val foodDeleted: FoodInformation
+)
+
+typealias FoodDeleteResponse = ApiResponseWithContent<FoodDeleteApiResponse>
 
 @Serializable
 data class FoodLogData(
@@ -180,7 +188,7 @@ data class FoodLogsApiResponse(
     val foodLogs: FoodLogsByCategory
 )
 
-typealias FoodLogsApiFetchResponse = ApiResponseWithContent<FoodLogsApiResponse>
+typealias FoodLogsFetchResponse = ApiResponseWithContent<FoodLogsApiResponse>
 
 @Serializable
 data class FoodLogAddRequest(

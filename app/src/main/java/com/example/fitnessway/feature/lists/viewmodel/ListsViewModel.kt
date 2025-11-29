@@ -160,7 +160,26 @@ class ListsViewModel(
         }
     }
 
+    // @TODO: In the future, an optimistic update could be added, but for the
+    //   moment, since the food list and the food item do not share the same screen
+    //   it's not necessary because the request will trigger a food list GET request
+    fun deleteFood() {
+        val selectedFood = managers.edition.selectedFood.value ?: return
+
+        val foodId = selectedFood.information.id
+
+        viewModelScope.launch {
+            foodRepo.deleteFood(foodId).collect { state ->
+                _uiState.update { it.copy(foodDeleteState = state) }
+            }
+        }
+    }
+
     fun resetFoodUpdateState() {
         _uiState.update { it.copy(foodUpdateState = UiState.Idle) }
+    }
+
+    fun resetFoodDeleteState() {
+        _uiState.update { it.copy(foodDeleteState = UiState.Idle) }
     }
 }

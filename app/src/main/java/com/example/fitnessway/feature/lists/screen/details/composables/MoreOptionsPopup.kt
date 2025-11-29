@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation.popUpEnter
 import com.example.fitnessway.util.Animation.popupExit
 
@@ -107,7 +108,8 @@ fun MoreOptionsButton(
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyMedium,
-                color = WhiteFont
+                color = WhiteFont,
+                fontFamily = robotoSerifFamily
             )
         }
     )

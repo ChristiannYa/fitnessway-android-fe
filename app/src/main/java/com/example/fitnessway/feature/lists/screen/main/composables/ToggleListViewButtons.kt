@@ -5,7 +5,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -95,22 +94,9 @@ fun ListOptionButton(
         label = "listOptionAreaColor"
     )
 
-    val borderColor by animateColorAsState(
-        targetValue = if (!isSelected) {
-            MaterialTheme.colorScheme.surfaceVariant
-        } else Color.Transparent,
-        animationSpec = tween(durationMillis = 300),
-        label = "listOptionBorderColor"
-    )
-
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .border(
-                width = 2.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(12.dp)
-            )
             .areaContainerSmall(
                 onClick = onClick,
                 showsIndication = false,

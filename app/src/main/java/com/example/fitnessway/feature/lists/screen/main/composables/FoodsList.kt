@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.lists.screen.main.composables
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
 import com.example.fitnessway.util.UiState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 
 fun LazyListScope.foodsList(
@@ -62,8 +64,14 @@ fun Food(
 
     Column(
         modifier = Modifier
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(12.dp)
+            )
             .areaContainerSmall(
                 onClick = onViewDetails,
+                areaColor = MaterialTheme.colorScheme.primaryContainer
             ),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         content = {

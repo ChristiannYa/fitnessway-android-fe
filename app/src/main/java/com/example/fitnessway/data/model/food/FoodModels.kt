@@ -2,6 +2,7 @@ package com.example.fitnessway.data.model.food
 
 import com.example.fitnessway.data.model.api.ApiResponseWithContent
 import com.example.fitnessway.data.model.nutrient.Nutrient
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -69,16 +70,9 @@ data class Food(
 ) : IFoodInformation
 
 @Serializable
-data class FoodNutrientAmountData(
-    val nutrient: Nutrient,
-    val amount: Double,
-    val goal: Double?
-)
-
-@Serializable
 data class FoodInformation(
     val information: Food,
-    val nutrients: NutrientsByType<FoodNutrientAmountData>
+    val nutrients: NutrientsByType<NutrientAmountData>
 )
 
 @Serializable

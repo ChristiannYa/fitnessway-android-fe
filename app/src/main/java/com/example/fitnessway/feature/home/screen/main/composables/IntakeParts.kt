@@ -10,16 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
-import com.example.fitnessway.data.model.nutrient.NutrientIntake
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.theme.WhiteFont
-import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.NutrientData
 import com.example.fitnessway.util.Nutrient.getNutrientColor
 import kotlin.math.roundToInt
 
-class IntakesComposables(private val intake: NutrientIntake) {
+class IntakesComposables(private val intake: NutrientAmountData) {
     val nutrientColor = getNutrientColor(intake.nutrient.hexColor) ?: Color(0xFFFFFFFF)
 
     @Composable

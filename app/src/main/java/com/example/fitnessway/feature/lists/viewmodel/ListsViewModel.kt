@@ -6,8 +6,8 @@ import com.example.fitnessway.data.model.food.Food
 import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodInformationOptionals
-import com.example.fitnessway.data.model.food.FoodNutrientAmountData
 import com.example.fitnessway.data.model.food.FoodUpdateRequest
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.repository.food.IFoodRepository
@@ -81,7 +81,7 @@ class ListsViewModel(
         // Insert updated nutrient data to the food
         val updatedFoodNutrientsData = upsertedNutrients.mapNotNull { upsertedNutrient ->
             originalNutrients[upsertedNutrient.nutrientId]?.let { originalNutrient ->
-                FoodNutrientAmountData(
+                NutrientAmountData(
                     nutrient = originalNutrient.nutrient, // Preserve original metadata
                     amount = upsertedNutrient.amount, // Update amount
                     goal = originalNutrient.goal // Preserve original goal

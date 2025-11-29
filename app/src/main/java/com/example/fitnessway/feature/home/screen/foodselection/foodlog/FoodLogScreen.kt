@@ -71,17 +71,6 @@ fun FoodLogScreen(
             )
         },
         content = {
-            // @NOTE
-            // We create a local `food` variable because if `selectedFoodToLog` were to be used instead
-            // we would get error, "Smart cast to 'FoodInformation' is impossible, because
-            // 'selectedFoodToLog' is a delegated property."
-            //
-            // This is because `selectedFoodToLog` is a delegated property that could change between
-            // the null check and when we access its properties, since the underlying StateFlow
-            // it delegates to can emit new values.
-            //
-            // By creating the local immutable variable, the compiler can safely smart cast it
-            // after the null check, knowing it cannot change during the function execution
             val food = selectedFoodToLog
 
             if (food == null) {
@@ -93,10 +82,6 @@ fun FoodLogScreen(
                     textAlign = TextAlign.Center
                 )
             } else {
-                // @NOTE
-                // `foodLogFormState` is set as null by default. It only gets initialized after the
-                // composable runs for the first time (inside LaunchedEffect). Once initialized it
-                // causes a recomposition, making `foodLogFormState` available
                 foodLogFormState?.let { formState ->
                     val fieldsProvider = FoodLogFieldsProvider(
                         formState = formState,
@@ -110,14 +95,8 @@ fun FoodLogScreen(
                         content = {
                             EditionButtons(
                                 isValid = viewModel.isFoodLogFormValid,
-
-                                // Just reading state, so there is no need to use the view model to
-                                // obtain the value
                                 isEditing = formState.isEditing,
-
                                 isSubmitSuccess = shouldShowFoodLogSuccess,
-
-                                // Updating state...
                                 onEdit = { viewModel.startFormEdit(formState.data) },
                                 onSave = { viewModel.saveFormEdit(formState.data) },
                                 onCancel = { viewModel.cancelFormEdit(formState.data) },

@@ -45,20 +45,20 @@ data class NutrientApiFormat(
 )
 
 @Serializable
+data class NutrientAmountData(
+    val nutrient: Nutrient,
+    val amount: Double,
+    val goal: Double?
+)
+
+@Serializable
 data class NutrientsByTypeApiResponse(
     val nutrients: NutrientsByType<NutrientApiFormat>
 )
 
 typealias NutrientsByTypeFetchResponse = ApiResponseWithContent<NutrientsByTypeApiResponse>
 
-@Serializable
-data class NutrientIntake(
-    val nutrient: Nutrient,
-    val intake: Double,
-    val goal: Double?
-)
-
-typealias NutrientIntakesByType = NutrientsByType<NutrientIntake>
+typealias NutrientIntakesByType = NutrientsByType<NutrientAmountData>
 
 @Serializable
 data class NutrientIntakesByTypeApiResponse(

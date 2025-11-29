@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.nutrient.NutrientIntake
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.user.User
@@ -88,7 +88,7 @@ fun OtherNutrients(
 
 @Composable
 fun OtherNutrient(
-    intakeData: NutrientIntake,
+    intakeData: NutrientAmountData,
     modifier: Modifier = Modifier
 ) {
     val data = remember(key1 = intakeData) { calcNutrientIntakeData(intakeData) }

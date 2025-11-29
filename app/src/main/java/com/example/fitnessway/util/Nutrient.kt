@@ -2,10 +2,8 @@ package com.example.fitnessway.util
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.toColorInt
-import com.example.fitnessway.data.model.food.FoodInformation
-import com.example.fitnessway.data.model.food.FoodNutrientAmountData
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
-import com.example.fitnessway.data.model.nutrient.NutrientIntake
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.util.Formatters.doubleFormatter
@@ -20,8 +18,8 @@ object Nutrient {
         val isOverGoal: Boolean
     )
 
-    fun calcNutrientIntakeData(intakeData: NutrientIntake): NutrientData {
-        val intake = intakeData.intake
+    fun calcNutrientIntakeData(intakeData: NutrientAmountData): NutrientData {
+        val intake = intakeData.amount
         val goal = intakeData.goal ?: 0.0
 
         val progress = if (goal > 0) ((intake / goal) * 100) else 0.0
@@ -37,6 +35,12 @@ object Nutrient {
             isGoalMet = remaining == 0.0,
             isOverGoal = remaining < 0
         )
+    }
+
+    fun <T> getAllNutrients(
+        nutrients: NutrientsByType<T>
+    ): List<T> {
+        return nutrients.basic + nutrients.vitamin + nutrients.mineral
     }
 
     fun <T> filterNutrientsByType(
@@ -67,7 +71,7 @@ object Nutrient {
     }
 
     fun getFoodNutrientsAsMap(
-        nutrients: NutrientsByType<FoodNutrientAmountData>
+        nutrients: NutrientsByType<NutrientAmountData>
     ): Map<Int, String> {
         return (nutrients.basic + nutrients.vitamin + nutrients.mineral)
             .associate { it.nutrient.id to doubleFormatter(it.amount) }
@@ -76,5 +80,11 @@ object Nutrient {
         // If `.map` where to be used instead it would result in:
         // [(1, "10.5"), (2, "20.3"), (3, "15")]
         // which is a `List` but we need a map
+    }
+
+    data class IntakeComposables(
+        val nutrients: List<NutrientAmountData>
+    ) {
+
     }
 }

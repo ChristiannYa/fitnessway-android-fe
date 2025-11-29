@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,25 +14,64 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
+import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.EditionButtons
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformationList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
+import com.example.fitnessway.util.Nutrient.Ui.NutrientsBoxUi
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
+
+private data class NutrientSectionConfig(
+    val title: String,
+    val nutrientType: NutrientType,
+    val progressBarHeight: Dp,
+    val shouldShow: Boolean = true
+)
+
+private fun getNutrientSections(food: FoodInformation): List<NutrientSectionConfig> {
+    return listOf(
+        NutrientSectionConfig(
+            title = "Nutrient Summary",
+            nutrientType = NutrientType.BASIC,
+            progressBarHeight = 100.dp
+        ),
+        NutrientSectionConfig(
+            title = "Vitamins",
+            nutrientType = NutrientType.VITAMIN,
+            progressBarHeight = 55.dp,
+            shouldShow = food.nutrients.vitamin.isNotEmpty()
+        ),
+        NutrientSectionConfig(
+            title = "Minerals",
+            nutrientType = NutrientType.MINERAL,
+            progressBarHeight = 55.dp,
+            shouldShow = food.nutrients.mineral.isNotEmpty()
+        )
+    )
+}
 
 @Composable
 fun FoodLogScreen(
     onBackClick: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
+    val user = viewModel.user
     val foodLogFormState by viewModel.foodLogFormState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val foodLogAddState = uiState.foodLogAddState
@@ -73,7 +113,7 @@ fun FoodLogScreen(
         content = {
             val food = selectedFoodToLog
 
-            if (food == null) {
+            if (food == null || user == null) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = "Food information not found",
@@ -92,6 +132,7 @@ fun FoodLogScreen(
 
                     Column(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         content = {
                             EditionButtons(
                                 isValid = viewModel.isFoodLogFormValid,
@@ -115,10 +156,59 @@ fun FoodLogScreen(
                                 fieldsProvider = fieldsProvider,
                                 isEditing = formState.isEditing
                             )
+
+                            val sections = getNutrientSections(food)
+
+                            sections.forEach { config ->
+                                if (config.shouldShow) {
+                                    NutrientSection(
+                                        title = config.title,
+                                        nutrients = food.nutrients,
+                                        nutrientType = config.nutrientType,
+                                        user = user,
+                                        progressBarHeight = config.progressBarHeight
+                                    )
+                                }
+                            }
                         }
                     )
                 }
             }
+        }
+    )
+}
+
+@Composable
+private fun NutrientSection(
+    title: String,
+    nutrients: NutrientsByType<NutrientAmountData>,
+    nutrientType: NutrientType,
+    user: User,
+    progressBarHeight: Dp
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.areaContainerLarge(),
+        content = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                content = {
+                    NutrientsBoxUi(
+                        nutrients = nutrients,
+                        nutrientType = nutrientType,
+                        user = user,
+                        isDataMinimal = true,
+                        contentWidth = 62.dp,
+                        progressBarHeight = progressBarHeight
+                    )
+                }
+            )
         }
     )
 }

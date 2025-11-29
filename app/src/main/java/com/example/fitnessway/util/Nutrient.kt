@@ -113,7 +113,7 @@ object Nutrient {
             nutrients: NutrientsByType<NutrientAmountData>,
             nutrientType: NutrientType,
             user: User,
-            isUiCleaner: Boolean = false,
+            isDataMinimal: Boolean = false,
             /**
              * Represents the width of the **entire** nutrient UI (everything throughout
              * the goal, bar, and name)
@@ -158,7 +158,7 @@ object Nutrient {
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         content = {
                             // Top part: Goal
-                            if (!isUiCleaner) {
+                            if (!isDataMinimal) {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     content = {
@@ -230,7 +230,7 @@ object Nutrient {
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(2.dp),
                                 content = {
-                                    if (!isUiCleaner) {
+                                    if (!isDataMinimal) {
                                         Text(
                                             text = "${nutrientData.progress.roundToInt()}%",
                                             style = MaterialTheme.typography.labelSmall,

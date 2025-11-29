@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.form.FoodLogField
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 
 @Composable
@@ -33,7 +33,7 @@ fun FoodLogInformationList(
     )
 
     Column(
-        modifier = Modifier.areaContainerMedium(),
+        modifier = Modifier.areaContainerLarge(),
         verticalArrangement = Arrangement.spacedBy(28.dp),
         content = {
             Column(

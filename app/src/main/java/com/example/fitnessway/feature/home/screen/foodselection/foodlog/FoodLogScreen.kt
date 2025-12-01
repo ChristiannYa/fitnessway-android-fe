@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -49,8 +50,8 @@ private data class NutrientSectionConfig(
 private fun getNutrientSections(food: FoodInformation): List<NutrientSectionConfig> {
     val generalContentWidth = 62.dp
 
-    val baseNutrientsBarHeight = 100.dp
-    val otherNutrientsBarHeight = 55.dp
+    val baseNutrientsBarHeight = (generalContentWidth * 0.8f) * 2
+    val otherNutrientsBarHeight = generalContentWidth * 0.8f
 
     return listOf(
         NutrientSectionConfig(
@@ -167,11 +168,8 @@ fun FoodLogScreen(
                                 isEditing = formState.isEditing
                             )
 
-                            val nutrients = remember(
-                                key1 = formState.data.servings,
-                                key2 = food.nutrients
-                            ) {
-                                val servings = formState.data.servings.toDoubleOrNull() ?: 1.0
+                            val nutrients = remember(formState.data.servings) {
+                                val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
 
                                 calcNutrientsBasedOnFoodLogServings(
                                     currentNutrients = food.nutrients,
@@ -212,13 +210,14 @@ private fun NutrientSection(
     contentWidth: Dp,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.areaContainerLarge(),
         content = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),

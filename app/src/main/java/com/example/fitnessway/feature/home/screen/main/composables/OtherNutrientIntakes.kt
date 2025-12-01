@@ -53,7 +53,7 @@ fun OtherNutrients(
                 nutrients = nutrients,
                 nutrientType = nutrientType,
                 user = user,
-                progressBarHeight = 60.dp
+                progressBarHeight = (115.2 / 2).dp
             )
         }
     )

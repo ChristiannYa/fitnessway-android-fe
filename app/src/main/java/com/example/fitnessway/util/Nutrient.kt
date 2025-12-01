@@ -121,9 +121,13 @@ object Nutrient {
             contentWidth: Dp = 72.dp,
 
             /**
-             * Represents the **individual** height of the nutrient amount progress
+             * Represents the **individual** height of the nutrient amount progress.
+             * Default result is obtained by: (72 * 0.8) * 2
+             * - 72 is the value of the content width
+             * - 0.8 comes from the progress bar content width taking a value of 0.8f
+             * - * 2 because ideally we want the height to be double from the other nutrients
              */
-            progressBarHeight: Dp = 142.dp,
+            progressBarHeight: Dp = 115.2.dp,
         ) {
             val nutrientTypeName = nutrientType.name.lowercase().replaceFirstChar { it.uppercase() }
 
@@ -152,8 +156,7 @@ object Nutrient {
                     val spacedBy = if (nutrientType == NutrientType.BASIC) 12.dp else 8.dp
 
                     Column(
-                        modifier = Modifier
-                            .width(contentWidth),
+                        modifier = Modifier.width(contentWidth),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         content = {

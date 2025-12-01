@@ -27,6 +27,7 @@ fun FoodLogInformationList(
     isEditing: Boolean
 ) {
     val spacing = 8.dp
+
     val fields = getFoodLogFormFields(
         fieldsProvider = fieldsProvider,
         servingUnit = food.information.servingUnit

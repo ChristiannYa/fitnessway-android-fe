@@ -60,7 +60,7 @@ fun EditionButtons(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .height(38.dp),
+            .height(42.dp),
         content = {
             if (onSubmit != null && isSubmitSuccess == true) {
                 Box(

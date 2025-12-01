@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,9 +22,9 @@ fun FoodLogBaseInformationField(
     field: FoodLogField,
     isEditing: Boolean,
 ) {
-    val borderWidth = if (isEditing) 1.dp else 0.dp
-    val borderColor = if (isEditing) MaterialTheme.colorScheme.primary else Color.Transparent
-    val borderShape = if (isEditing) 10.dp else 0.dp
+    val backgroundColor =
+        if (isEditing) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent
+    val shape = if (isEditing) 10.dp else 0.dp
     val padding = if (isEditing) 14.dp else 0.dp
 
     val textStyle = TextStyle(
@@ -45,7 +45,7 @@ fun FoodLogBaseInformationField(
 
         // Convert pixels to dp using density
         with(density) {
-            textLayoutResult.size.width.toDp() + 16.dp
+            textLayoutResult.size.width.toDp()
         }
     }
 
@@ -56,11 +56,10 @@ fun FoodLogBaseInformationField(
         singleLine = true,
         enabled = isEditing,
         modifier = Modifier
-            .width(measuredWidth + padding)
-            .border(
-                width = borderWidth,
-                color = borderColor,
-                shape = RoundedCornerShape(borderShape)
+            .width(measuredWidth + padding + if (isEditing) 16.dp else 0.dp)
+            .background(
+                color = backgroundColor,
+                shape = RoundedCornerShape(shape)
             )
             .padding(padding)
     )

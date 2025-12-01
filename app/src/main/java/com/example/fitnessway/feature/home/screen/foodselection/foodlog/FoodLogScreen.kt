@@ -41,26 +41,35 @@ private data class NutrientSectionConfig(
     val title: String,
     val nutrientType: NutrientType,
     val progressBarHeight: Dp,
+    val contentWidth: Dp,
     val shouldShow: Boolean = true
 )
 
 private fun getNutrientSections(food: FoodInformation): List<NutrientSectionConfig> {
+    val generalContentWidth = 62.dp
+
+    val baseNutrientsBarHeight = 100.dp
+    val otherNutrientsBarHeight = 55.dp
+
     return listOf(
         NutrientSectionConfig(
             title = "Nutrient Summary",
             nutrientType = NutrientType.BASIC,
-            progressBarHeight = 100.dp
+            progressBarHeight = baseNutrientsBarHeight,
+            contentWidth = generalContentWidth
         ),
         NutrientSectionConfig(
             title = "Vitamins",
             nutrientType = NutrientType.VITAMIN,
-            progressBarHeight = 55.dp,
+            progressBarHeight = otherNutrientsBarHeight,
+            contentWidth = generalContentWidth,
             shouldShow = food.nutrients.vitamin.isNotEmpty()
         ),
         NutrientSectionConfig(
             title = "Minerals",
             nutrientType = NutrientType.MINERAL,
-            progressBarHeight = 55.dp,
+            progressBarHeight = otherNutrientsBarHeight,
+            contentWidth = generalContentWidth,
             shouldShow = food.nutrients.mineral.isNotEmpty()
         )
     )
@@ -166,7 +175,8 @@ fun FoodLogScreen(
                                         nutrients = food.nutrients,
                                         nutrientType = config.nutrientType,
                                         user = user,
-                                        progressBarHeight = config.progressBarHeight
+                                        progressBarHeight = config.progressBarHeight,
+                                        contentWidth = config.contentWidth
                                     )
                                 }
                             }
@@ -184,7 +194,8 @@ private fun NutrientSection(
     nutrients: NutrientsByType<NutrientAmountData>,
     nutrientType: NutrientType,
     user: User,
-    progressBarHeight: Dp
+    progressBarHeight: Dp,
+    contentWidth: Dp,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -204,7 +215,7 @@ private fun NutrientSection(
                         nutrientType = nutrientType,
                         user = user,
                         isDataMinimal = true,
-                        contentWidth = 62.dp,
+                        contentWidth = contentWidth,
                         progressBarHeight = progressBarHeight
                     )
                 }

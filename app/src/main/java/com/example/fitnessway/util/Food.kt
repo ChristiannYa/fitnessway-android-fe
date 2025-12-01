@@ -1,5 +1,6 @@
 package com.example.fitnessway.util
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,19 +37,18 @@ import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Nutrient.getAllNutrients
 
 object Food {
     fun subtractNutrientsFromIntakes(
         currentIntakes: NutrientIntakesByType,
         foodLog: FoodLogData
     ): NutrientIntakesByType {
-        val nutrients = foodLog.food.nutrients
-
         fun updateIntake(
             intake: NutrientAmountData,
             nutrientId: Int
         ): NutrientAmountData {
-            val foodNutrient = (nutrients.basic + nutrients.vitamin + nutrients.mineral).find {
+            val foodNutrient = getAllNutrients(foodLog.food.nutrients).find {
                 it.nutrient.id == nutrientId
             }
 
@@ -79,41 +79,47 @@ object Food {
         )
     }
 
+    /**
+     * Food log data is not being asked for because the function would not be compatible for
+     * when editing a food **to be** logged, not an **existing** one, hence just the current and
+     * new serving sizes are asked for instead
+     */
     fun calcNutrientsBasedOnFoodLogServings(
-        currentFoodLog: FoodLogData,
+        currentNutrients: NutrientsByType<NutrientAmountData>,
+        currentServings: Double,
         newServings: Double
     ): NutrientsByType<NutrientAmountData> {
-        val nutrients = currentFoodLog.food.nutrients
 
         fun updateNutrientAmount(
             nutrientAmount: NutrientAmountData,
             nutrientId: Int
         ): NutrientAmountData {
-            val foodNutrient = (nutrients.basic + nutrients.vitamin + nutrients.mineral).find {
+            val foodNutrient = getAllNutrients(currentNutrients).find {
                 it.nutrient.id == nutrientId
             }
 
             return if (foodNutrient != null) {
-                val newAmount = (foodNutrient.amount / currentFoodLog.servings) * newServings
+                val originalAmount = foodNutrient.amount / currentServings
+                val newAmount = (originalAmount) * newServings
 
                 nutrientAmount.copy(amount = newAmount)
             } else nutrientAmount
         }
 
         return NutrientsByType(
-            basic = nutrients.basic.map {
+            basic = currentNutrients.basic.map {
                 updateNutrientAmount(
                     nutrientAmount = it,
                     nutrientId = it.nutrient.id
                 )
             },
-            vitamin = nutrients.vitamin.map {
+            vitamin = currentNutrients.vitamin.map {
                 updateNutrientAmount(
                     nutrientAmount = it,
                     nutrientId = it.nutrient.id
                 )
             },
-            mineral = nutrients.vitamin.map {
+            mineral = currentNutrients.mineral.map {
                 updateNutrientAmount(
                     nutrientAmount = it,
                     nutrientId = it.nutrient.id

@@ -31,6 +31,7 @@ import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
+import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsBoxUi
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
@@ -97,7 +98,7 @@ fun FoodLogScreen(
         }
     }
 
-    LaunchedEffect(selectedFoodToLog) {
+    LaunchedEffect(selectedFoodToLog?.information?.id) {
         selectedFoodToLog?.let { food ->
             viewModel.initializeFoodLogForm(food, time)
         }
@@ -166,13 +167,26 @@ fun FoodLogScreen(
                                 isEditing = formState.isEditing
                             )
 
+                            val nutrients = remember(
+                                key1 = formState.data.servings,
+                                key2 = food.nutrients
+                            ) {
+                                val servings = formState.data.servings.toDoubleOrNull() ?: 1.0
+
+                                calcNutrientsBasedOnFoodLogServings(
+                                    currentNutrients = food.nutrients,
+                                    currentServings = 1.0,
+                                    newServings = servings
+                                )
+                            }
+
                             val sections = getNutrientSections(food)
 
                             sections.forEach { config ->
                                 if (config.shouldShow) {
                                     NutrientSection(
                                         title = config.title,
-                                        nutrients = food.nutrients,
+                                        nutrients = nutrients,
                                         nutrientType = config.nutrientType,
                                         user = user,
                                         progressBarHeight = config.progressBarHeight,

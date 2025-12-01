@@ -5,7 +5,7 @@ import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
-import com.example.fitnessway.util.Nutrient.getFoodNutrientsAsMap
+import com.example.fitnessway.util.Nutrient.getNutrientsAsMap
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
@@ -104,7 +104,7 @@ class EditionManager : IEditionManager {
     }
 
     override fun initializeFoodForm(food: FoodInformation) {
-        val nutrients = getFoodNutrientsAsMap(food.nutrients)
+        val nutrients = getNutrientsAsMap(food.nutrients)
 
         _foodEditionFormState.value = FormState(
             data = FormStates.FoodEdition(

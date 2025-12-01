@@ -220,6 +220,7 @@ class FoodLogManager : IFoodLogManager {
     override fun saveFormEdit(formState: FormStates) {
         when (formState) {
             is FormStates.FoodLog -> _foodLogFormState.value = _foodLogFormState.value?.save()
+
             is FormStates.FoodLogEdition -> _foodLogEditionFormState.value =
                 _foodLogEditionFormState.value?.save()
 

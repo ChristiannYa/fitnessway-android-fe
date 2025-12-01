@@ -1,6 +1,5 @@
 package com.example.fitnessway.util
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,11 +94,12 @@ object Nutrient {
         }
     }
 
-    fun getFoodNutrientsAsMap(
+    fun getNutrientsAsMap(
         nutrients: NutrientsByType<NutrientAmountData>
     ): Map<Int, String> {
-        return (nutrients.basic + nutrients.vitamin + nutrients.mineral)
-            .associate { it.nutrient.id to doubleFormatter(it.amount) }
+        return (getAllNutrients(nutrients)).associate {
+            it.nutrient.id to doubleFormatter(it.amount)
+        }
         // Result: {1="10.5", 2="20.3", 3="15"}
         //
         // If `.map` where to be used instead it would result in:
@@ -163,7 +163,9 @@ object Nutrient {
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     content = {
                                         Text(
-                                            text = if (nutrient.goal != null) doubleFormatter(nutrient.goal) else "0",
+                                            text = if (nutrient.goal != null) doubleFormatter(
+                                                nutrient.goal
+                                            ) else "0",
                                             style = MaterialTheme.typography.labelLarge,
                                             fontFamily = FontFamily.Default,
                                             color = nutrientColor

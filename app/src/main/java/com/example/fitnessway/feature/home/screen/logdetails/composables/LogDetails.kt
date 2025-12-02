@@ -18,58 +18,63 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodLogData
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
+import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.util.Food.FoodComposables
 
 @Composable
 fun LogDetails(
     foodLog: FoodLogData,
-    isBlurredOverlayVisible: Boolean
+    isBlurredOverlayVisible: Boolean,
+    nutrients: NutrientsByType<NutrientAmountData>
 ) {
-    val foodComposables = remember(foodLog.food) {
-        FoodComposables(foodLog.food)
-    }
+    val foodComposables = remember(
+        key1 = foodLog.food,
+        key2 = nutrients
+    ) { FoodComposables(foodLog.food, nutrients) }
 
     Box(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            content = {
-                val verticalSpace = 4.dp
+        modifier = Modifier.fillMaxWidth(),
+        content = {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                content = {
+                    val verticalSpace = 4.dp
 
-                item {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(verticalSpace),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        content = {
-                            foodComposables.BaseInformation(
-                                topHorizontalAlignment = Alignment.CenterHorizontally,
-                                bottomHorizontalAlignment = Alignment.CenterHorizontally,
-                                verticalSpace = verticalSpace,
-                                foodLogServings = foodLog.servings
-                            )
+                    item {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(verticalSpace),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            content = {
+                                foodComposables.BaseInformation(
+                                    topHorizontalAlignment = Alignment.CenterHorizontally,
+                                    bottomHorizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalSpace = verticalSpace,
+                                    foodLogServings = foodLog.servings
+                                )
 
-                            CatAndTime(foodLog)
-                        }
-                    )
+                                CatAndTime(foodLog)
+                            }
+                        )
+                    }
+
+                    item {
+                        foodComposables.NutrientSummary()
+                    }
+
+                    item {
+                        foodComposables.RemainingNutrients()
+                    }
                 }
+            )
 
-                item {
-                    foodComposables.NutrientSummary()
-                }
-
-                item {
-                    foodComposables.RemainingNutrients()
-                }
-            }
-        )
-
-        BlurOverlay(
-            isVisible = isBlurredOverlayVisible
-        )
-    }
+            BlurOverlay(
+                isVisible = isBlurredOverlayVisible
+            )
+        }
+    )
 }
 
 @Composable

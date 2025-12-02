@@ -1,6 +1,5 @@
 package com.example.fitnessway.util
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -97,7 +96,6 @@ object Food {
             val foodNutrient = getAllNutrients(currentNutrients).find {
                 it.nutrient.id == nutrientId
             }
-
             return if (foodNutrient != null) {
                 val originalAmount = foodNutrient.amount / currentServings
                 val newAmount = (originalAmount) * newServings
@@ -130,6 +128,7 @@ object Food {
 
     data class FoodComposables(
         val food: FoodInformation,
+        val nutrients: NutrientsByType<NutrientAmountData> = food.nutrients
     ) {
         @Composable
         fun BaseInformation(
@@ -219,7 +218,7 @@ object Food {
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier.fillMaxWidth(),
                         content = {
-                            food.nutrients.basic.forEach { nutrientData ->
+                            nutrients.basic.forEach { nutrientData ->
                                 val targetProgress =
                                     if (nutrientData.goal != null) {
                                         (nutrientData.amount / nutrientData.goal)
@@ -296,8 +295,8 @@ object Food {
         @Composable
         fun RemainingNutrients() {
             val remainingNutrients = listOf(
-                NutrientType.VITAMIN to food.nutrients.vitamin,
-                NutrientType.MINERAL to food.nutrients.mineral
+                NutrientType.VITAMIN to nutrients.vitamin,
+                NutrientType.MINERAL to nutrients.mineral
             )
 
             if (remainingNutrients.any { it.second.isNotEmpty() }) {

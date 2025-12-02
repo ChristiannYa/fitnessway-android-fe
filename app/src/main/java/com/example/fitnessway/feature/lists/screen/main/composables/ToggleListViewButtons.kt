@@ -65,6 +65,7 @@ fun ListOptionButton(
             "Food",
             Color(0xFFE53935)
         )
+
         ListOption.Supplement -> Triple(
             R.drawable.energy,
             "Supplement",

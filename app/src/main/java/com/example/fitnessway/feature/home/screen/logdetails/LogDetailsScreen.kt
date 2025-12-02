@@ -1,9 +1,5 @@
 package com.example.fitnessway.feature.home.screen.logdetails
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.example.fitnessway.feature.home.screen.logdetails.composables.EditionMode
@@ -24,6 +21,7 @@ import com.example.fitnessway.ui.shared.EditButton
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
+import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -104,6 +102,20 @@ fun LogDetailsScreen(
                             Column(
                                 modifier = Modifier.offset(y = headerOffset),
                                 content = {
+                                    val nutrients = remember(
+                                        key1 = foodLog.food.nutrients,
+                                        key2 = formState.data.servings
+                                    ) {
+                                        val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
+
+                                        calcNutrientsBasedOnFoodLogServings(
+                                            currentNutrients = foodLog.food.nutrients,
+                                            currentServings = 1.0,
+                                            newServings = servings
+                                        )
+                                    }
+
+
                                     ApiErrorMessageAnimated(
                                         isVisible = false,
                                         errorMessage = "Food log edition error"
@@ -111,36 +123,25 @@ fun LogDetailsScreen(
 
                                     LogDetails(
                                         foodLog = foodLog,
-                                        isBlurredOverlayVisible = formState.isEditing
+                                        isBlurredOverlayVisible = formState.isEditing,
+                                        nutrients = nutrients
                                     )
                                 }
                             )
 
-                            AnimatedVisibility(
-                                visible = formState.isEditing,
-                                enter = slideInVertically(
-                                    initialOffsetY = { fullHeight -> fullHeight },
-                                    animationSpec = tween(durationMillis = 300)
-                                ),
-                                exit = slideOutVertically(
-                                    targetOffsetY = { fullHeight -> fullHeight },
-                                    animationSpec = tween(durationMillis = 300)
-                                ),
-                                content = {
-                                    val isValid = viewModel.isFleFormValid &&
-                                            formState.data.servings.toDouble() != foodLog.servings
+                            val isValid =
+                                viewModel.isFleFormValid && formState.data.servings.toDouble() != foodLog.servings
 
-                                    EditionMode(
-                                        fields = fields,
-                                        isDoneEnabled = isValid,
-                                        onDone = {
-                                            viewModel.updateFoodLog()
-                                        },
-                                        onCancel = {
-                                            viewModel.cancelFormEdit(formState.data)
-                                        }
-                                    )
-                                }
+                            EditionMode(
+                                fields = fields,
+                                isDoneEnabled = isValid,
+                                onDone = {
+                                    viewModel.updateFoodLog()
+                                },
+                                onCancel = {
+                                    viewModel.cancelFormEdit(formState.data)
+                                },
+                                isVisible = formState.isEditing
                             )
                         }
                     )

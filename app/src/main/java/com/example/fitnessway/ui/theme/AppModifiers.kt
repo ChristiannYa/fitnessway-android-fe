@@ -45,6 +45,7 @@ object AppModifiers {
         areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
         shape: RoundedCornerShape = RoundedCornerShape(12.dp),
         showsIndication: Boolean = true,
+        hugsContent: Boolean = false,
         onClick: (() -> Unit)? = null,
     ) = this
         .then(
@@ -60,10 +61,10 @@ object AppModifiers {
                     )
             } else Modifier
         )
-        .fillMaxWidth()
-        .background(
-            color = areaColor,
-            shape = shape
-        )
-        .padding(14.dp)
+        .then(if (!hugsContent) Modifier.fillMaxWidth() else Modifier)
+            .background(
+                color = areaColor,
+                shape = shape
+            )
+            .padding(14.dp)
 }

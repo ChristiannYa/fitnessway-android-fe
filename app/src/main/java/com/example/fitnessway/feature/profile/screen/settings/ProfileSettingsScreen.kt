@@ -30,6 +30,7 @@ import com.example.fitnessway.ui.theme.robotoSerifFamily
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.UiState
 
 @Composable
@@ -67,7 +68,7 @@ fun ProfileSettingsScreen(
                onClick = { viewModel.logout() },
                colors = ButtonDefaults.buttonColors(
                   containerColor = ImperialRed,
-                  contentColor = SilverMist
+                  contentColor = WhiteFont
                ),
                content = {
                   if (profileSettingsUiState is UiState.Loading) {

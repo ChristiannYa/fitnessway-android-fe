@@ -11,11 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.util.UiMeasures
 
 @Composable
 fun Screen(
     header: (@Composable () -> Unit)? = null,
     isMainScreen: Boolean? = false,
+    usesInnerHorizontalPadding: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val hasPadding = header != null && isMainScreen == false
@@ -27,13 +29,18 @@ fun Screen(
         modifier = Modifier.fillMaxSize(),
         content = {
             Column {
+                val horizontalPadding = if (usesInnerHorizontalPadding) {
+                    UiMeasures.SCREEN_HORIZONTAL_PADDING
+                } else 0.dp
+
+
                 header?.let { it() }
                 Box(
                     modifier = Modifier
                         .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = if (hasPadding) 4.dp else 0.dp,
+                            start = horizontalPadding,
+                            end = horizontalPadding,
+                            top = if (hasPadding) 4.dp else 2.dp,
                             bottom = bottomPaddingDynamic,
                         ),
                     content = {

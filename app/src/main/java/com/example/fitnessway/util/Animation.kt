@@ -1,5 +1,6 @@
 package com.example.fitnessway.util
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -59,4 +61,6 @@ object Animation {
         transformOrigin = TransformOrigin(1f, 0f),
         animationSpec = tween(durationMillis = 150)
     )
+
+    val colorSpec: AnimationSpec<Color> = tween(durationMillis = 300)
 }

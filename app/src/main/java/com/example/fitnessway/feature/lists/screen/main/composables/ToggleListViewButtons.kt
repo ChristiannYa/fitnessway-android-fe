@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
 import com.example.fitnessway.data.model.food.ListOption
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
+import com.example.fitnessway.util.Animation.colorSpec
 
 @Composable
 fun ToggleListViewButtons(
@@ -82,7 +83,7 @@ fun ListOptionButton(
 
     val iconTint by animateColorAsState(
         targetValue = if (isSelected) activeColor else MaterialTheme.colorScheme.onSurface,
-        animationSpec = tween(durationMillis = 300),
+        animationSpec = colorSpec,
         label = "listOptionIconTint"
     )
 
@@ -90,7 +91,7 @@ fun ListOptionButton(
         targetValue = if (isSelected) {
             MaterialTheme.colorScheme.surfaceVariant
         } else MaterialTheme.colorScheme.primaryContainer,
-        animationSpec = tween(durationMillis = 300),
+        animationSpec = colorSpec,
         label = "listOptionAreaColor"
     )
 

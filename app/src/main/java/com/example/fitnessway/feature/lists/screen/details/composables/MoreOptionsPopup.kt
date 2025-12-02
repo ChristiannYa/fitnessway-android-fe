@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.FitnesswayTheme
@@ -44,33 +43,56 @@ fun MoreOptionsPopup(
                 contentAlignment = Alignment.TopEnd,
                 modifier = Modifier.fillMaxSize(),
                 content = {
-                    val shape = RoundedCornerShape(16.dp)
+                    val shape = 16.dp
+                    val space = 5.dp
 
                     Box(
                         modifier = Modifier
-                            .clip(shape)
+                            .clip(RoundedCornerShape(shape))
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = shape
+                                shape = RoundedCornerShape(shape)
                             )
-                            .padding(20.dp)
+                            .padding(space)
                             .width(100.dp),
                         content = {
                             Column(
-                                verticalArrangement = Arrangement.spacedBy(
-                                    16.dp
-                                ),
+                                verticalArrangement = Arrangement.spacedBy(space),
                                 content = {
+                                    val topButtonShape = RoundedCornerShape(
+                                        topStart = shape - 2.dp,
+                                        topEnd = shape - 2.dp,
+                                        bottomStart = 0.dp,
+                                        bottomEnd = 0.dp,
+                                    )
+
+                                    val bottomButtonShape = RoundedCornerShape(
+                                        topStart = 0.dp,
+                                        topEnd = 0.dp,
+                                        bottomStart = shape - 2.dp,
+                                        bottomEnd = shape - 2.dp,
+                                    )
+
                                     MoreOptionsButton(
                                         onClick = onEdit,
-                                        backgroundColor = MaterialTheme.colorScheme.primary,
-                                        text = "Edit"
+                                        text = "Edit",
+                                        modifier = Modifier
+                                            .clip(shape = topButtonShape)
+                                            .background(
+                                                color = MaterialTheme.colorScheme.primary,
+                                                shape = topButtonShape
+                                            )
                                     )
 
                                     MoreOptionsButton(
                                         onClick = onDelete,
-                                        backgroundColor = MaterialTheme.colorScheme.surfaceTint,
-                                        text = "Delete"
+                                        text = "Delete",
+                                        modifier = Modifier
+                                            .clip(shape = bottomButtonShape)
+                                            .background(
+                                                color = MaterialTheme.colorScheme.surfaceTint,
+                                                shape = bottomButtonShape
+                                            )
                                     )
                                 }
                             )
@@ -86,20 +108,12 @@ fun MoreOptionsPopup(
 fun MoreOptionsButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color,
     text: String
 ) {
-    val shape = RoundedCornerShape(10.dp)
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxWidth()
-            .clip(shape)
-            .background(
-                color = backgroundColor,
-                shape = shape
-            )
             .clickable(
                 onClick = onClick
             )

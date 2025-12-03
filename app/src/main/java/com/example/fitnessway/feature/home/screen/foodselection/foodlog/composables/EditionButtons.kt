@@ -34,8 +34,6 @@ private enum class EditionButtonTypes {
     SUBMIT
 }
 
-private val buttonRadius = 10.dp
-
 @Composable
 fun EditionButtons(
     isValid: Boolean? = false,
@@ -60,73 +58,81 @@ fun EditionButtons(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .height(42.dp),
+            .height(42.dp)
+            .background(MaterialTheme.colorScheme.background),
         content = {
-            if (onSubmit != null && isSubmitSuccess == true) {
-                Box(
-                    content = {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Food logged",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                )
-            } else {
-                if (isEditing) {
-                    val saveTextColor = if (isValid == true) {
-                        MaterialTheme.colorScheme.primary
-                    } else MaterialTheme.colorScheme.primary.copy(0.3f)
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        content = {
-                            EditionButton(
-                                text = "Cancel",
-                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                                textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                onClick = { handleBtnPress(EditionButtonTypes.CANCEL) },
-                                modifier = Modifier
-                                    .weight(1f)
-                            )
-                            EditionButton(
-                                text = "Save",
-                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                                textColor = saveTextColor,
-                                onClick = { handleBtnPress(EditionButtonTypes.SAVE) },
-                                modifier = Modifier
-                                    .weight(1f)
-                            )
-                        }
-                    )
-                } else {
-                    Row(
-                        horizontalArrangement = if (onSubmit != null) {
-                            Arrangement.spacedBy(20.dp)
-                        } else Arrangement.spacedBy(0.dp),
-                        content = {
-                            EditionButton(
-                                text = "Edit",
-                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                                textColor = MaterialTheme.colorScheme.primary,
-                                onClick = { handleBtnPress(EditionButtonTypes.EDIT) },
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            if (onSubmit != null) {
-                                EditionButton(
-                                    text = onSubmitText ?: "Submit",
-                                    backgroundColor = MaterialTheme.colorScheme.primary,
-                                    textColor = WhiteFont,
-                                    onClick = { handleBtnPress(EditionButtonTypes.SUBMIT) },
-                                    modifier = Modifier.weight(1f)
+            Box(
+                modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+                content = {
+                    if (onSubmit != null && isSubmitSuccess == true) {
+                        Box(
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = "Food logged",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(28.dp)
                                 )
                             }
+                        )
+                    } else {
+                        val horizontalSpace = 5.dp
+
+                        if (isEditing) {
+                            val saveTextColor = if (isValid == true) {
+                                MaterialTheme.colorScheme.primary
+                            } else MaterialTheme.colorScheme.primary.copy(0.3f)
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(horizontalSpace),
+                                content = {
+                                    EditionButton(
+                                        text = "Cancel",
+                                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        onClick = { handleBtnPress(EditionButtonTypes.CANCEL) },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    )
+                                    EditionButton(
+                                        text = "Save",
+                                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        textColor = saveTextColor,
+                                        onClick = { handleBtnPress(EditionButtonTypes.SAVE) },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    )
+                                }
+                            )
+                        } else {
+                            Row(
+                                horizontalArrangement = if (onSubmit != null) {
+                                    Arrangement.spacedBy(horizontalSpace)
+                                } else Arrangement.spacedBy(0.dp),
+                                content = {
+                                    EditionButton(
+                                        text = "Edit",
+                                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        textColor = MaterialTheme.colorScheme.primary,
+                                        onClick = { handleBtnPress(EditionButtonTypes.EDIT) },
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    if (onSubmit != null) {
+                                        EditionButton(
+                                            text = onSubmitText ?: "Submit",
+                                            backgroundColor = MaterialTheme.colorScheme.primary,
+                                            textColor = WhiteFont,
+                                            onClick = { handleBtnPress(EditionButtonTypes.SUBMIT) },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                }
+                            )
                         }
-                    )
+                    }
                 }
-            }
+            )
         }
     )
 }
@@ -142,7 +148,6 @@ fun EditionButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .clip(RoundedCornerShape(buttonRadius))
             .clickable(
                 onClick = onClick,
                 interactionSource = remember { MutableInteractionSource() },
@@ -151,7 +156,6 @@ fun EditionButton(
             .fillMaxHeight()
             .background(
                 color = backgroundColor,
-                shape = RoundedCornerShape(buttonRadius)
             ),
         content = {
             Text(

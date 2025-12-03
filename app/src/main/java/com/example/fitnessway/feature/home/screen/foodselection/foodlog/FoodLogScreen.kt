@@ -1,12 +1,15 @@
 package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 
+import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -141,57 +144,70 @@ fun FoodLogScreen(
                         }
                     )
 
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                    val nutrients = remember(formState.data.servings) {
+                        val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
+
+                        calcNutrientsBasedOnFoodLogServings(
+                            currentNutrients = food.nutrients,
+                            currentServings = 1.0,
+                            newServings = servings
+                        )
+                    }
+
+                    CompositionLocalProvider(
+                        values = arrayOf(LocalOverscrollFactory provides null),
                         content = {
-                            EditionButtons(
-                                isValid = viewModel.isFoodLogFormValid,
-                                isEditing = formState.isEditing,
-                                isSubmitSuccess = shouldShowFoodLogSuccess,
-                                onEdit = { viewModel.startFormEdit(formState.data) },
-                                onSave = { viewModel.saveFormEdit(formState.data) },
-                                onCancel = { viewModel.cancelFormEdit(formState.data) },
-                                onSubmit = { viewModel.addFoodLog() },
+                            LazyColumn (
+                                verticalArrangement = Arrangement.spacedBy(20.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                content = {
+                                    stickyHeader {
+                                        EditionButtons(
+                                            isValid = viewModel.isFoodLogFormValid,
+                                            isEditing = formState.isEditing,
+                                            isSubmitSuccess = shouldShowFoodLogSuccess,
+                                            onEdit = { viewModel.startFormEdit(formState.data) },
+                                            onSave = { viewModel.saveFormEdit(formState.data) },
+                                            onCancel = { viewModel.cancelFormEdit(formState.data) },
+                                            onSubmit = { viewModel.addFoodLog() },
 
-                                onSubmitText = "Log"
-                            )
+                                            onSubmitText = "Log"
+                                        )
+                                    }
 
-                            if (foodLogAddState is UiState.Error) {
-                                ApiErrorMessage(foodLogAddState.message)
-                            }
+                                    if (foodLogAddState is UiState.Error) {
+                                        item {
+                                            ApiErrorMessage(foodLogAddState.message)
+                                        }
+                                    }
 
-                            FoodLogInformationList(
-                                food = food,
-                                category = foodCategory,
-                                fieldsProvider = fieldsProvider,
-                                isEditing = formState.isEditing
-                            )
+                                    item {
+                                        FoodLogInformationList(
+                                            food = food,
+                                            category = foodCategory,
+                                            fieldsProvider = fieldsProvider,
+                                            isEditing = formState.isEditing
+                                        )
+                                    }
 
-                            val nutrients = remember(formState.data.servings) {
-                                val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
+                                    val sections = getNutrientSections(food)
 
-                                calcNutrientsBasedOnFoodLogServings(
-                                    currentNutrients = food.nutrients,
-                                    currentServings = 1.0,
-                                    newServings = servings
-                                )
-                            }
-
-                            val sections = getNutrientSections(food)
-
-                            sections.forEach { config ->
-                                if (config.shouldShow) {
-                                    NutrientSection(
-                                        title = config.title,
-                                        nutrients = nutrients,
-                                        nutrientType = config.nutrientType,
-                                        user = user,
-                                        progressBarHeight = config.progressBarHeight,
-                                        contentWidth = config.contentWidth
-                                    )
+                                    sections.forEach { config ->
+                                        if (config.shouldShow) {e
+                                            item {
+                                                NutrientSection(
+                                                    title = config.title,
+                                                    nutrients = nutrients,
+                                                    nutrientType = config.nutrientType,
+                                                    user = user,
+                                                    progressBarHeight = config.progressBarHeight,
+                                                    contentWidth = config.contentWidth
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
-                            }
+                            )
                         }
                     )
                 }

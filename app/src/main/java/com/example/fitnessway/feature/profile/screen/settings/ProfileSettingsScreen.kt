@@ -3,17 +3,9 @@ package com.example.fitnessway.feature.profile.screen.settings
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,15 +14,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
+import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.ImperialRed
-import com.example.fitnessway.ui.theme.SilverMist
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
-import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -42,21 +32,9 @@ fun ProfileSettingsScreen(
 
     Screen(
         header = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                content = {
-                    IconButton(
-                        onClick = onBackClick,
-                        content = {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Go Back",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    )
-                }
+            Header(
+                onBackClick = onBackClick,
+                title = "Settings"
             )
         },
 
@@ -65,7 +43,7 @@ fun ProfileSettingsScreen(
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween,
                 content = {
-                    Text("This is the profile settings screen")
+                    Text("")
 
                     TextButton(
                         modifier = Modifier.fillMaxWidth(),
@@ -75,20 +53,11 @@ fun ProfileSettingsScreen(
                             contentColor = WhiteFont
                         ),
                         content = {
-                            if (uiState.logoutState is UiState.Loading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .size(18.dp),
-                                    color = SilverMist,
-                                    strokeWidth = 1.dp
-                                )
-                            } else {
-                                Text(
-                                    text = "Log out",
-                                    fontFamily = robotoSerifFamily,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
+                            Text(
+                                text = "Log out",
+                                fontFamily = robotoSerifFamily,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                     )
                 }

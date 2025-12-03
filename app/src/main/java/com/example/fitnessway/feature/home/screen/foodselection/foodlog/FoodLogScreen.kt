@@ -193,7 +193,7 @@ fun FoodLogScreen(
                                     val sections = getNutrientSections(food)
 
                                     sections.forEach { config ->
-                                        if (config.shouldShow) {e
+                                        if (config.shouldShow) {
                                             item {
                                                 NutrientSection(
                                                     title = config.title,

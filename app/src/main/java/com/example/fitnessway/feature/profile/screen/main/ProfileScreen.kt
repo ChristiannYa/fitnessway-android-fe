@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.profile.screen.main
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,23 +30,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.UiMeasures
 import org.koin.androidx.compose.koinViewModel
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun ProfileScreen(
-    onSettings: () -> Unit,
-    onGoals: () -> Unit,
+    onNavigateToGoals: () -> Unit,
+    onNavigateToColors: () -> Unit,
+    onNavigateToAccInfo: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val user = viewModel.user
@@ -94,30 +91,30 @@ fun ProfileScreen(
 
                         // Buttons
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp)),
                             content = {
                                 ProfileScreenMainButton(
-                                    onClick = onGoals,
+                                    onClick = onNavigateToGoals,
                                     imageVector = Icons.Default.FitnessCenter,
                                     text = "My Goals"
                                 )
 
                                 ProfileScreenMainButton(
-                                    onClick = {},
+                                    onClick = onNavigateToColors,
                                     imageVector = Icons.Default.ColorLens,
-                                    text = "Interface Colors"
+                                    text = "Color Palette"
                                 )
 
                                 ProfileScreenMainButton(
-                                    onClick = {},
-                                    imageVector = Icons.Default.Info,
+                                    onClick = onNavigateToAccInfo,
+                                    imageVector = Icons.Default.Person,
                                     text = "Account Information"
                                 )
 
                                 ProfileScreenMainButton(
-                                    onClick = onSettings,
+                                    onClick = onNavigateToSettings,
                                     imageVector = Icons.Default.Settings,
                                     text = "Settings"
                                 )
@@ -131,7 +128,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileScreenMainButton(
+private fun ProfileScreenMainButton(
     text: String,
     imageVector: ImageVector,
     onClick: () -> Unit,
@@ -141,7 +138,7 @@ fun ProfileScreenMainButton(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(UiMeasures.SCREEN_HORIZONTAL_PADDING),
         content = {
             Row(
@@ -152,7 +149,7 @@ fun ProfileScreenMainButton(
                 content = {
                     Text(
                         text = text,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                         fontFamily = robotoSerifFamily,
                         fontWeight = FontWeight.Medium,
@@ -162,27 +159,10 @@ fun ProfileScreenMainButton(
                         imageVector = imageVector,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             )
         }
     )
-}
-
-private fun formatDate(dateString: String): String {
-    val offsetDateTime = OffsetDateTime.parse(dateString)
-    val formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
-    return offsetDateTime.format(formatter)
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun ProfileScreenPreview() {
-    FitnesswayTheme {
-        ProfileScreen(
-            onSettings = {},
-            onGoals = {}
-        )
-    }
 }

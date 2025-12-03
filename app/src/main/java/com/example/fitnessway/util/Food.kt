@@ -44,7 +44,7 @@ object Food {
         foodLog: FoodLogData
     ): NutrientIntakesByType {
         fun updateIntake(
-            intake: NutrientAmountData,
+            intakeAmountData: NutrientAmountData,
             nutrientId: Int
         ): NutrientAmountData {
             val foodNutrient = getAllNutrients(foodLog.food.nutrients).find {
@@ -52,26 +52,26 @@ object Food {
             }
 
             return if (foodNutrient != null) {
-                intake.copy(amount = (intake.amount - foodNutrient.amount))
-            } else intake
+                intakeAmountData.copy(amount = (intakeAmountData.amount - foodNutrient.amount))
+            } else intakeAmountData
         }
 
         return NutrientIntakesByType(
             basic = currentIntakes.basic.map {
                 updateIntake(
-                    intake = it,
+                    intakeAmountData = it,
                     nutrientId = it.nutrient.id
                 )
             },
             vitamin = currentIntakes.vitamin.map {
                 updateIntake(
-                    intake = it,
+                    intakeAmountData = it,
                     nutrientId = it.nutrient.id
                 )
             },
             mineral = currentIntakes.mineral.map {
                 updateIntake(
-                    intake = it,
+                    intakeAmountData = it,
                     nutrientId = it.nutrient.id
                 )
             }
@@ -90,7 +90,7 @@ object Food {
     ): NutrientsByType<NutrientAmountData> {
 
         fun updateNutrientAmount(
-            nutrientAmount: NutrientAmountData,
+            nutrientAmountData: NutrientAmountData,
             nutrientId: Int
         ): NutrientAmountData {
             val foodNutrient = getAllNutrients(currentNutrients).find {
@@ -100,26 +100,26 @@ object Food {
                 val originalAmount = foodNutrient.amount / currentServings
                 val newAmount = (originalAmount) * newServings
 
-                nutrientAmount.copy(amount = newAmount)
-            } else nutrientAmount
+                nutrientAmountData.copy(amount = newAmount)
+            } else nutrientAmountData
         }
 
         return NutrientsByType(
             basic = currentNutrients.basic.map {
                 updateNutrientAmount(
-                    nutrientAmount = it,
+                    nutrientAmountData = it,
                     nutrientId = it.nutrient.id
                 )
             },
             vitamin = currentNutrients.vitamin.map {
                 updateNutrientAmount(
-                    nutrientAmount = it,
+                    nutrientAmountData = it,
                     nutrientId = it.nutrient.id
                 )
             },
             mineral = currentNutrients.mineral.map {
                 updateNutrientAmount(
-                    nutrientAmount = it,
+                    nutrientAmountData = it,
                     nutrientId = it.nutrient.id
                 )
             }

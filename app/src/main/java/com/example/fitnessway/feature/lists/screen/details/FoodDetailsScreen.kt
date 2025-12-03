@@ -33,6 +33,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
+import com.example.fitnessway.util.Ui.handleErrorStateMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import kotlinx.coroutines.delay
@@ -70,18 +71,10 @@ fun FoodDetailsScreen(
         }
     }
 
-    val foodUpdateErrMsg = when (val state = uiState.foodUpdateState) {
-        is UiState.Error -> {
-            LaunchedEffect(state) {
-                delay(7000)
-                viewModel.resetFoodUpdateState()
-            }
-
-            state.message
-        }
-
-        else -> ""
-    }
+    val foodUpdateErrMsg = handleErrorStateMessage(
+        uiState = uiState.foodUpdateState,
+        onTimeOut = viewModel::resetFoodUpdateState
+    )
 
     val food = selectedFood
     val title = "Food Details"

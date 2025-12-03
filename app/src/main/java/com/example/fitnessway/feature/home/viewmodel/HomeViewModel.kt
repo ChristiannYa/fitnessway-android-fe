@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.food.FoodAddInfoApiFormat
@@ -17,6 +18,7 @@ import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Food.subtractNutrientsFromIntakes
 import com.example.fitnessway.util.UiState
@@ -140,6 +142,8 @@ class HomeViewModel(
     }
 
     fun updateFoodLog() {
+        Log.d(Constants.DEBUG_TAG,"view model updateFoodLog called")
+
         // Check for states before proceeding
         val user = user ?: return
         val formState = managers.foodLog.foodLogEditionFormState.value ?: return
@@ -277,6 +281,10 @@ class HomeViewModel(
 
     fun resetFoodLogAddState() {
         _uiState.update { it.copy(foodLogAddState = UiState.Idle) }
+    }
+
+    fun resetFoodLogUpdateState() {
+        _uiState.update { it.copy(foodLogUpdateState = UiState.Idle) }
     }
 
     fun resetFoodLogDeleteState() {

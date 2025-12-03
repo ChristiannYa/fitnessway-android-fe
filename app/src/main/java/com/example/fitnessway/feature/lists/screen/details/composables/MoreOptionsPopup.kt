@@ -58,29 +58,14 @@ fun MoreOptionsPopup(
                         content = {
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(space),
+                                modifier = Modifier.clip(RoundedCornerShape(shape - 4.dp)),
                                 content = {
-                                    val topButtonShape = RoundedCornerShape(
-                                        topStart = shape - 2.dp,
-                                        topEnd = shape - 2.dp,
-                                        bottomStart = 0.dp,
-                                        bottomEnd = 0.dp,
-                                    )
-
-                                    val bottomButtonShape = RoundedCornerShape(
-                                        topStart = 0.dp,
-                                        topEnd = 0.dp,
-                                        bottomStart = shape - 2.dp,
-                                        bottomEnd = shape - 2.dp,
-                                    )
-
                                     MoreOptionsButton(
                                         onClick = onEdit,
                                         text = "Edit",
                                         modifier = Modifier
-                                            .clip(shape = topButtonShape)
                                             .background(
                                                 color = MaterialTheme.colorScheme.primary,
-                                                shape = topButtonShape
                                             )
                                     )
 
@@ -88,10 +73,8 @@ fun MoreOptionsPopup(
                                         onClick = onDelete,
                                         text = "Delete",
                                         modifier = Modifier
-                                            .clip(shape = bottomButtonShape)
                                             .background(
                                                 color = MaterialTheme.colorScheme.surfaceTint,
-                                                shape = bottomButtonShape
                                             )
                                     )
                                 }

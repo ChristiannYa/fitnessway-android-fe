@@ -27,7 +27,7 @@ class CacheManager(private val cache: Cache) {
         }
     }
 
-    // This should be used for clearing the cached data when logging out
+    // @TODO: This should be used for clearing the cached data when logging out
     fun clearAll() {
         try {
             cache.evictAll()

@@ -163,8 +163,10 @@ object Food {
                                 horizontalAlignment = topHorizontalAlignment,
                                 verticalArrangement = Arrangement.spacedBy(verticalSpace),
                                 content = {
+                                    val foodBrand = food.information.brand?.ifEmpty { "~" } ?: "~"
+
                                     Text(
-                                        text = food.information.brand ?: "~",
+                                        text = foodBrand,
                                         style = MaterialTheme.typography.labelMedium,
                                         color = asideColor
                                     )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
@@ -91,8 +92,11 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.bodyMedium
                         )
 
+                        // Buttons
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp)),
                             content = {
                                 ProfileScreenMainButton(
                                     onClick = onGoals,
@@ -101,7 +105,13 @@ fun ProfileScreen(
                                 )
 
                                 ProfileScreenMainButton(
-                                    onClick = onGoals,
+                                    onClick = {},
+                                    imageVector = Icons.Default.ColorLens,
+                                    text = "Interface Colors"
+                                )
+
+                                ProfileScreenMainButton(
+                                    onClick = {},
                                     imageVector = Icons.Default.Info,
                                     text = "Account Information"
                                 )
@@ -124,14 +134,12 @@ fun ProfileScreen(
 fun ProfileScreenMainButton(
     text: String,
     imageVector: ImageVector,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val shape = RoundedCornerShape(6.dp)
-
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clip(shape)
             .clickable(onClick = onClick)
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(UiMeasures.SCREEN_HORIZONTAL_PADDING),

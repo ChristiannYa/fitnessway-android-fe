@@ -47,9 +47,7 @@ class FoodRepositoryImpl(
             errMsg = "Failed to update food",
             invalidatedUrls = listOf(
                 ApiUrls.Food.GET_FOODS,
-
-                // @TODO: Remove all get logs urls instead of the current date
-                // ApiUrls.Food.getLogs(date)
+                ApiUrls.Food.ALL_LOGS
             )
         )
     }
@@ -62,7 +60,8 @@ class FoodRepositoryImpl(
             extractData = { it.foodDeleted },
             errMsg = "Failed to delete food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.GET_FOODS
+                ApiUrls.Food.GET_FOODS,
+                ApiUrls.Food.ALL_LOGS
             )
         )
     }

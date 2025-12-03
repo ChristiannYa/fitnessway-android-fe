@@ -62,9 +62,11 @@ object AppModifiers {
             } else Modifier
         )
         .then(if (!hugsContent) Modifier.fillMaxWidth() else Modifier)
-            .background(
-                color = areaColor,
-                shape = shape
-            )
-            .padding(14.dp)
+        .background(
+            color = areaColor,
+            shape = shape
+        )
+        .padding(14.dp)
+
+
 }

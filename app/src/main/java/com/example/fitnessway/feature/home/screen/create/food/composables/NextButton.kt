@@ -19,6 +19,7 @@ import com.example.fitnessway.ui.theme.robotoSerifFamily
 fun NextButton(
     onClick: () -> Unit,
     enabled: Boolean = false,
+    isSubmitting: Boolean,
     text: String,
 ) {
     Row(
@@ -28,11 +29,12 @@ fun NextButton(
                 MaterialTheme.colorScheme.surfaceVariant
             }
 
+            val textDynamic = if (isSubmitting) "Creating Food..." else text
             val textColor = if (enabled) WhiteFont else WhiteFont.copy(0.3f)
 
             TextButton(
                 onClick = onClick,
-                enabled = enabled,
+                enabled = enabled && !isSubmitting,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
@@ -41,7 +43,7 @@ fun NextButton(
                     ),
                 content = {
                     Text(
-                        text = text,
+                        text = textDynamic,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         fontFamily = robotoSerifFamily,

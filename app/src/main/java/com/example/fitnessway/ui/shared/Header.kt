@@ -1,5 +1,6 @@
 package com.example.fitnessway.ui.shared
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -30,17 +32,25 @@ fun Header(
             .fillMaxWidth()
             .padding(end = 16.dp),
         content = {
+            val enabled = isOnBackEnabled == true
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 content = {
                     IconButton(
-                        onClick = {
-                            if (isOnBackEnabled == true) onBackClick()
-                        },
+                        onClick =  onBackClick,
+                        enabled = enabled,
                         content = {
+                            val iconTint by animateColorAsState(
+                                targetValue = if (enabled) {
+                                    MaterialTheme.colorScheme.onBackground
+                                } else MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                            )
+
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Go Back",
+                                tint = iconTint
                             )
                         }
                     )

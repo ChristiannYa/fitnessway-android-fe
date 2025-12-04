@@ -12,16 +12,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,12 +31,17 @@ import com.example.fitnessway.feature.home.screen.create.food.composables.SetBas
 import com.example.fitnessway.feature.home.screen.create.food.composables.SetNutrients
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.Nutrient.sortByPremiumStatus
+import com.example.fitnessway.util.Ui.handleErrorStateMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -63,13 +65,20 @@ fun CreateFoodFormScreen(
         "Go home"
     } else "Minerals"
 
-    val (title, buttonText) = when (currentStep) {
+    val (title, nextButtonText) = when (currentStep) {
         1 -> "Food Information" to "Add Nutrients"
         2 -> "Nutrients" to "Add Vitamins"
         3 -> "Vitamins" to "Add Minerals"
         4 -> finalTitle to "Create Food"
         else -> "" to ""
     }
+
+    val foodAddErrMsg = handleErrorStateMessage(
+        uiState = uiState.foodAddState,
+        onTimeOut = viewModel::resetFoodAddState
+    )
+
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.getNutrients()
@@ -81,17 +90,24 @@ fun CreateFoodFormScreen(
                 Header(
                     onBackClick = {
                         if (uiState.foodAddState is UiState.Success) {
-                            viewModel.resetFoodAddState()
                             onBackClick()
-                        } else {
-                            viewModel.updateStep(
-                                step = currentStep,
-                                goesBack = true,
-                                onExitForm = onBackClick
-                            )
-                        }
 
-                        viewModel.resetFoodFormState()
+                            scope.launch {
+                                // Wait for the transition to the previous screen
+                                delay(500)
+
+                                viewModel.resetFoodFormState()
+                                viewModel.resetFoodAddState()
+                            }
+                        } else {
+                            if (uiState.foodAddState !is UiState.Loading) {
+                                viewModel.updateStep(
+                                    step = currentStep,
+                                    goesBack = true,
+                                    onExitForm = onBackClick
+                                )
+                            }
+                        }
                     },
                     title = title
                 )
@@ -107,15 +123,10 @@ fun CreateFoodFormScreen(
                                 verticalArrangement = Arrangement.spacedBy(12.dp),
                                 modifier = Modifier.fillMaxWidth(),
                                 content = {
-                                    Icon(
-                                        imageVector = Icons.Default.CheckCircle,
-                                        contentDescription = "Food added",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(32.dp)
-                                    )
+                                    SuccessIcon()
                                     Text(
                                         text = "Food Added Successfully!",
-                                        style = MaterialTheme.typography.bodyLarge
+                                        style = MaterialTheme.typography.bodyMedium
                                     )
                                 }
                             )
@@ -129,20 +140,32 @@ fun CreateFoodFormScreen(
                                     val nutrients =
                                         (uiState.nutrientsState as UiState.Success<NutrientsByType<NutrientApiFormat>>).data
 
-                                    val basicNutrients = filterNutrientsByType(
+                                    val basicNutrientFields = filterNutrientsByType(
                                         nutrients = nutrients,
                                         type = NutrientType.BASIC
                                     )
+                                        .sortByPremiumStatus(isPremiumUser)
+                                        .map { (nutrient, _) ->
+                                            fieldsProvider.nutrient(nutrient)
+                                        }
 
-                                    val vitamins = filterNutrientsByType(
+                                    val vitaminFields = filterNutrientsByType(
                                         nutrients = nutrients,
                                         type = NutrientType.VITAMIN
                                     )
+                                        .sortByPremiumStatus(isPremiumUser)
+                                        .map { (nutrient, _) ->
+                                            fieldsProvider.nutrient(nutrient = nutrient)
+                                        }
 
-                                    val minerals = filterNutrientsByType(
+                                    val mineralFields = filterNutrientsByType(
                                         nutrients = nutrients,
                                         type = NutrientType.MINERAL
                                     )
+                                        .sortByPremiumStatus(isPremiumUser)
+                                        .map { (nutrient, _) ->
+                                            fieldsProvider.nutrient(nutrient = nutrient)
+                                        }
 
                                     val foodBaseFields = listOf(
                                         fieldsProvider.name(),
@@ -151,26 +174,10 @@ fun CreateFoodFormScreen(
                                         fieldsProvider.servingUnit(),
                                     )
 
-                                    val foodBasicNutrientsFields = basicNutrients
-                                        .sortByPremiumStatus(isPremiumUser)
-                                        .map { (nutrient, _) ->
-                                            fieldsProvider.nutrient(nutrient)
-                                        }
-
-                                    val foodVitaminFields = vitamins
-                                        .sortByPremiumStatus(isPremiumUser)
-                                        .map { (nutrient, _) ->
-                                            fieldsProvider.nutrient(nutrient = nutrient)
-                                        }
-
-                                    val foodMineralFields = minerals
-                                        .sortByPremiumStatus(isPremiumUser)
-                                        .map { (nutrient, _) ->
-                                            fieldsProvider.nutrient(nutrient = nutrient)
-                                        }
-
                                     val areBasicNutrientsValid = viewModel.areNutrientsValid(
-                                        nutrients = basicNutrients.map { it.nutrient.id }.toSet()
+                                        nutrients = filterNutrientsByType(
+                                            nutrients = nutrients, type = NutrientType.BASIC
+                                        ).map { it.nutrient.id }.toSet()
                                     )
 
                                     val isCurrentStepValid = when (currentStep) {
@@ -184,6 +191,11 @@ fun CreateFoodFormScreen(
                                     Column(
                                         verticalArrangement = Arrangement.spacedBy(26.dp),
                                         content = {
+                                            ApiErrorMessageAnimated(
+                                                isVisible = foodAddErrMsg != "",
+                                                errorMessage = foodAddErrMsg
+                                            )
+
                                             FormProgressIndicator(
                                                 currentStep = currentStep,
                                                 isStepOneValid = viewModel.isBasicDataValid,
@@ -215,17 +227,17 @@ fun CreateFoodFormScreen(
                                                         1 -> SetBasicData(foodBaseFields)
 
                                                         2 -> SetNutrients(
-                                                            fields = foodBasicNutrientsFields,
+                                                            fields = basicNutrientFields,
                                                             isPremiumUser = isPremiumUser
                                                         )
 
                                                         3 -> SetNutrients(
-                                                            fields = foodVitaminFields,
+                                                            fields = vitaminFields,
                                                             isPremiumUser = isPremiumUser
                                                         )
 
                                                         4 -> SetNutrients(
-                                                            fields = foodMineralFields,
+                                                            fields = mineralFields,
                                                             isPremiumUser = isPremiumUser
                                                         )
                                                     }
@@ -239,11 +251,12 @@ fun CreateFoodFormScreen(
                                             viewModel.updateStep(
                                                 step = currentStep,
                                                 goesBack = false,
-                                                onSubmit = { viewModel.addFood() }
+                                                onSubmit = viewModel::addFood
                                             )
                                         },
                                         enabled = isCurrentStepValid,
-                                        text = buttonText
+                                        isSubmitting = uiState.foodAddState is UiState.Loading,
+                                        text = nextButtonText
                                     )
                                 }
                             )

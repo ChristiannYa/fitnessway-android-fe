@@ -127,7 +127,10 @@ class FoodManager : IFoodManager {
         when (step) {
             1 -> if (goesBack) {
                 onExitForm?.invoke()
-            } else if (isBasicDataValid) _currentStep.value = 2
+                resetFoodFormState()
+            } else if (isBasicDataValid) {
+                _currentStep.value = 2
+            }
 
             2 -> if (goesBack) _currentStep.value =
                 1 else if (areBasicNutrientsValid) _currentStep.value = 3

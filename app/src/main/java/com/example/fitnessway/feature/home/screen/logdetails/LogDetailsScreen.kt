@@ -130,7 +130,6 @@ fun LogDetailsScreen(
                                         )
                                     }
 
-
                                     ApiErrorMessageAnimated(
                                         isVisible = foodLogUpdateErrMsg != "",
                                         errorMessage = foodLogUpdateErrMsg

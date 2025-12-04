@@ -34,7 +34,7 @@ fun FormProgressIndicator(
             ProgressIndicator(
                 isCurrentStep = currentStep == 1,
                 isValid = isStepOneValid,
-                activeColor = MaterialTheme.colorScheme.primary,
+                activeColor = MaterialTheme.colorScheme.inverseSurface,
             )
             ProgressIndicator(
                 isCurrentStep = currentStep == 2,

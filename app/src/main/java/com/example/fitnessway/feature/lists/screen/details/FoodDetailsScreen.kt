@@ -33,10 +33,9 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
-import com.example.fitnessway.util.Ui.handleErrorStateMessage
+import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -71,7 +70,7 @@ fun FoodDetailsScreen(
         }
     }
 
-    val foodUpdateErrMsg = handleErrorStateMessage(
+    val foodUpdateErrMsg = handleErrStateTempMsg(
         uiState = uiState.foodUpdateState,
         onTimeOut = viewModel::resetFoodUpdateState
     )

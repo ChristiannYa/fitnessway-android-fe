@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.home.manager.food
 
-import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.form.FormStates

@@ -7,7 +7,7 @@ import kotlinx.coroutines.delay
 object Ui {
 
     @Composable
-    fun <T> handleErrorStateMessage(
+    fun <T> handleErrStateTempMsg(
         uiState: UiState<T>,
         onTimeOut: () -> Unit
     ): String {

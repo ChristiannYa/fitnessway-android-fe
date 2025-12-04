@@ -56,7 +56,7 @@ fun FormProgressIndicator(
 }
 
 @Composable
-fun ProgressIndicator(
+private fun ProgressIndicator(
     isCurrentStep: Boolean,
     isValid: Boolean,
     activeColor: Color

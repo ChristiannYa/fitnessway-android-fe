@@ -37,7 +37,7 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.Nutrient.sortByPremiumStatus
-import com.example.fitnessway.util.Ui.handleErrorStateMessage
+import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
 import kotlinx.coroutines.delay
@@ -73,7 +73,7 @@ fun CreateFoodFormScreen(
         else -> "" to ""
     }
 
-    val foodAddErrMsg = handleErrorStateMessage(
+    val foodAddErrMsg = handleErrStateTempMsg(
         uiState = uiState.foodAddState,
         onTimeOut = viewModel::resetFoodAddState
     )

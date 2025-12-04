@@ -24,7 +24,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
-import com.example.fitnessway.util.Ui.handleErrorStateMessage
+import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -46,7 +46,7 @@ fun LogDetailsScreen(
     val foodLog = selectedFoodLog
     val title = "Food Log Details"
 
-    val foodLogUpdateErrMsg = handleErrorStateMessage(
+    val foodLogUpdateErrMsg = handleErrStateTempMsg(
         uiState = uiState.foodLogUpdateState,
 
         // @NOTE: `onTimeout = { viewModel.resetFoodUpdateState() }` could

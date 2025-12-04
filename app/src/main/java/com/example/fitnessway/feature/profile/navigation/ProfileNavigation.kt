@@ -40,25 +40,25 @@ fun NavGraphBuilder.profileNavigationGraph(navController: NavController) {
 
         composable<ProfileGoalsDest> {
             ProfileGoalsScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = navController::popBackStack
             )
         }
 
         composable<ProfileColorsDest> {
             ProfileColorsScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = navController::popBackStack
             )
         }
 
         composable<ProfileAccountInformationDest> {
             ProfileAccountInformationScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = navController::popBackStack
             )
         }
 
         composable<ProfileSettingsDest> {
             ProfileSettingsScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = navController::popBackStack
             )
         }
     }

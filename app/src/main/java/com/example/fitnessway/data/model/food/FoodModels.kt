@@ -1,7 +1,6 @@
 package com.example.fitnessway.data.model.food
 
 import com.example.fitnessway.data.model.api.ApiResponseWithContent
-import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import kotlinx.serialization.SerialName
@@ -29,6 +28,17 @@ enum class ServingUnits {
     companion object {
         val units by lazy { entries.map { it.name.lowercase() } }
     }
+}
+
+enum class FoodLogFoodStatus {
+    @SerialName("present")
+    PRESENT,
+
+    @SerialName("updated")
+    UPDATED,
+
+    @SerialName("deleted")
+    DELETED
 }
 
 enum class ListOption {
@@ -160,7 +170,7 @@ data class FoodLogData(
     val servings: Double,
 
     @SerialName("food_status")
-    val foodStatus: String,
+    val foodStatus: FoodLogFoodStatus,
 
     @SerialName("food_snapshot_id")
     val foodSnapshotId: Int?,

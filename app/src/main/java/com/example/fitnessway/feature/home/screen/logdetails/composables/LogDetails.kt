@@ -18,10 +18,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodLogData
+import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.shared.BlurOverlay
+import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.util.Food.FoodComposables
+
+private const val deletedFoodMessage = "You have removed this food from your food list"
+private const val updatedFoodMessage = "You have updated this food format"
 
 @Composable
 fun LogDetails(
@@ -37,6 +42,12 @@ fun LogDetails(
     Box(
         modifier = Modifier.fillMaxWidth(),
         content = {
+            val (foodStatusMsg, foodStatusAccent) = when (foodLog.foodStatus) {
+                FoodLogFoodStatus.DELETED -> deletedFoodMessage to OrangeWarning
+                FoodLogFoodStatus.UPDATED -> updatedFoodMessage to MaterialTheme.colorScheme.secondary
+                else -> "" to MaterialTheme.colorScheme.onSurfaceVariant
+            }
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -67,6 +78,18 @@ fun LogDetails(
                     item {
                         foodComposables.RemainingNutrients()
                     }
+
+                    if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
+                        item {
+                            Text(
+                                text = foodStatusMsg,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = foodStatusAccent
+                            )
+                        }
+                    }
+
+
                 }
             )
 

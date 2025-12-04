@@ -48,6 +48,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
+import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
@@ -144,7 +145,7 @@ fun FoodLogCategory(
                         areaColor = MaterialTheme.colorScheme.secondaryContainer
                     )
                     .graphicsLayer(clip = true),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
                 content = {
                     if (foodLogs.isEmpty()) {
                         Text(
@@ -281,7 +282,7 @@ fun FoodLog(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         content = {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 content = {
                                     Text(
@@ -292,12 +293,18 @@ fun FoodLog(
                                         overflow = TextOverflow.Ellipsis
                                     )
 
-                                    if (foodLog.foodStatus != "present") {
+                                    val dotInfoColor = when (foodLog.foodStatus) {
+                                        FoodLogFoodStatus.DELETED -> OrangeWarning
+                                        FoodLogFoodStatus.UPDATED -> MaterialTheme.colorScheme.secondary
+                                        else -> Color.Transparent
+                                    }
+
+                                    if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
                                         Box(
                                             modifier = Modifier
-                                                .size(6.dp)
+                                                .size(5.dp)
                                                 .background(
-                                                    color = OrangeWarning,
+                                                    color = dotInfoColor,
                                                     shape = CircleShape
                                                 )
                                         )

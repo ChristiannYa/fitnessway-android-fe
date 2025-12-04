@@ -213,6 +213,9 @@ data class FoodLogUpdateRequest(
     @SerialName("food_log_id")
     val foodLogId: Int,
 
+    @SerialName("food_snapshot_id")
+    val foodSnapshotId: Int?,
+
     val servings: Double
 )
 

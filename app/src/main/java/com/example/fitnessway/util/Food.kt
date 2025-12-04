@@ -1,5 +1,6 @@
 package com.example.fitnessway.util
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -88,6 +89,8 @@ object Food {
         currentServings: Double,
         newServings: Double
     ): NutrientsByType<NutrientAmountData> {
+        // Log.d(Constants.DEBUG_TAG, "current servings: $currentServings")
+            // Log.d(Constants.DEBUG_TAG, "new servings: $newServings")
 
         fun updateNutrientAmount(
             nutrientAmountData: NutrientAmountData,
@@ -97,8 +100,15 @@ object Food {
                 it.nutrient.id == nutrientId
             }
             return if (foodNutrient != null) {
+                // Log.d(Constants.DEBUG_TAG, "")
+                    // Log.d(Constants.DEBUG_TAG, "nutrient: ${foodNutrient.nutrient.name}")
+                    // Log.d(Constants.DEBUG_TAG, "amount: ${foodNutrient.amount}")
+
                 val originalAmount = foodNutrient.amount / currentServings
+                    // Log.d(Constants.DEBUG_TAG, "original amount: $originalAmount")
+
                 val newAmount = (originalAmount) * newServings
+                    // Log.d(Constants.DEBUG_TAG, "new amount: $newAmount")
 
                 nutrientAmountData.copy(amount = newAmount)
             } else nutrientAmountData

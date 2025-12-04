@@ -125,7 +125,7 @@ fun LogDetailsScreen(
 
                                         calcNutrientsBasedOnFoodLogServings(
                                             currentNutrients = foodLog.food.nutrients,
-                                            currentServings = 1.0,
+                                            currentServings = foodLog.servings,
                                             newServings = servings
                                         )
                                     }
@@ -150,12 +150,8 @@ fun LogDetailsScreen(
                             EditionMode(
                                 fields = fields,
                                 isDoneEnabled = isValid,
-                                onDone = {
-                                    viewModel.updateFoodLog()
-                                },
-                                onCancel = {
-                                    viewModel.cancelFormEdit(formState.data)
-                                },
+                                onDone = viewModel::updateFoodLog,
+                                onCancel = { viewModel.cancelFormEdit(formState.data) },
                                 isVisible = formState.isEditing
                             )
                         }

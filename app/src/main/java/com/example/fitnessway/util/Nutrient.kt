@@ -98,19 +98,6 @@ object Nutrient {
         }
     }
 
-    fun getNutrientsAsMap(
-        nutrients: NutrientsByType<NutrientAmountData>
-    ): Map<Int, String> {
-        return (getAllNutrients(nutrients)).associate {
-            it.nutrient.id to doubleFormatter(it.amount)
-        }
-        // Result: {1="10.5", 2="20.3", 3="15"}
-        //
-        // If `.map` where to be used instead it would result in:
-        // [(1, "10.5"), (2, "20.3"), (3, "15")]
-        // which is a `List` but we need a map
-    }
-
     object Ui {
         @Composable
         fun NutrientsBoxUi(

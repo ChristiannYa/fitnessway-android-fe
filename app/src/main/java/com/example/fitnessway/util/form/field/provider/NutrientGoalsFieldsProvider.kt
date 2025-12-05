@@ -4,10 +4,11 @@ import androidx.compose.runtime.Composable
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.form.NutrientGoalEditionField
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
+import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 
 class NutrientGoalsFieldsProvider(
-    private val formState: FormStates.NutrientGoals,
+    private val formState: FormState<FormStates.NutrientGoals>,
     private val onFieldUpdate: (FormFieldName.NutrientGoalData, String) -> Unit
 ) {
     // @TODO: Make the label a Text Composable instead of just a String
@@ -18,7 +19,7 @@ class NutrientGoalsFieldsProvider(
         return NutrientGoalEditionField(
             name = FormFieldName.NutrientGoalData(nutrientData),
             label = "${nutrient.name} ${nutrient.unit}",
-            value = formState.goals[nutrient.id] ?: "",
+            value = formState.data.goals[nutrient.id] ?: "~",
             updateState = { value ->
                 onFieldUpdate(
                     FormFieldName.NutrientGoalData(nutrientData),

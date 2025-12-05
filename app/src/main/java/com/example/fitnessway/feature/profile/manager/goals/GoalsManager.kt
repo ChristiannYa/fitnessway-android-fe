@@ -1,6 +1,10 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
 import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
+import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Nutrient.getAllNutrients
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +17,20 @@ class GoalsManager : IGoalsManager {
 
     private val _modifiedGoals = MutableStateFlow<List<Int>>(emptyList())
     override val modifiedGoals: StateFlow<List<Int>> = _modifiedGoals
+
+    override fun initNutrientGoalsForm(
+        goalsData: NutrientsByType<NutrientAmountData>
+    ) {
+        val goals = (getAllNutrients(goalsData)).associate {
+            it.nutrient.id to if (it.goal != null) {
+                doubleFormatter(it.goal)
+            } else "~"
+        }
+
+        _goalsEditionState.value = FormState(
+            data = FormStates.NutrientGoals(goals)
+        )
+    }
 
     override fun updateGoalEditionFormField(
         fieldName: FormFieldName.NutrientGoalData,
@@ -28,18 +46,6 @@ class GoalsManager : IGoalsManager {
 
             _goalsEditionState.value = state.copy(data = updatedValues())
         }
-    }
-
-    override fun addGoalToModifiedList(nutrientId: Int) {
-        val currentList = _modifiedGoals.value
-
-        if (nutrientId !in currentList) {
-            _modifiedGoals.value = currentList + nutrientId
-        }
-    }
-
-    override fun removeGoalFromModifierList(nutrientId: Int) {
-        TODO("Not yet implemented")
     }
 
     override fun startFormEdition() {

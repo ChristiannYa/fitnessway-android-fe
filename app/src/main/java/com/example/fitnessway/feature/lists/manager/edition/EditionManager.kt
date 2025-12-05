@@ -5,7 +5,7 @@ import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
-import com.example.fitnessway.util.Nutrient.getNutrientsAsMap
+import com.example.fitnessway.util.Nutrient.getAllNutrients
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
@@ -104,7 +104,14 @@ class EditionManager : IEditionManager {
     }
 
     override fun initializeFoodForm(food: FoodInformation) {
-        val nutrients = getNutrientsAsMap(food.nutrients)
+        val nutrients = (getAllNutrients(food.nutrients)).associate {
+            it.nutrient.id to doubleFormatter(it.amount)
+        }
+        // Result: {1="10.5", 2="20.3", 3="15"}
+        //
+        // If `.map` where to be used instead it would result in:
+        // [(1, "10.5"), (2, "20.3"), (3, "15")]
+        // which is a `List` but we need a map
 
         _foodEditionFormState.value = FormState(
             data = FormStates.FoodEdition(

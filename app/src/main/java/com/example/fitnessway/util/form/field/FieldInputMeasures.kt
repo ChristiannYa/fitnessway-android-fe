@@ -14,6 +14,38 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
+fun rememberFieldInputMeasures(
+    inputValue: String,
+    inputPadding: Dp = 16.dp,
+    customTextStyle: TextStyle? = null
+): FieldInputMeasures {
+    val textStyle = customTextStyle ?: getDefaultStyle()
+
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val measuredWidth = remember(inputValue, textStyle) {
+        val textLayoutResult = textMeasurer.measure(
+            text = inputValue.ifEmpty { "~" },
+            style = textStyle
+        )
+
+        // Convert pixels to dp using density
+        with(density) {
+            textLayoutResult.size.width.toDp() + (inputPadding * 2)
+        }
+    }
+
+    return FieldInputMeasures(textStyle, textMeasurer, density, measuredWidth)
+}
+
+data class FieldInputMeasures(
+    val textStyle: TextStyle,
+    val textMeasurer: TextMeasurer,
+    val density: Density,
+    val measuredWidth: Dp
+)
+
+@Composable
 private fun getDefaultStyle(): TextStyle {
     return TextStyle(
         fontSize = MaterialTheme.typography.bodyMedium.fontSize,
@@ -23,29 +55,4 @@ private fun getDefaultStyle(): TextStyle {
         color = MaterialTheme.colorScheme.primary,
         textAlign = TextAlign.Center
     )
-}
-
-@Composable
-fun rememberFieldInputMeasures(
-    fieldValue: String,
-    customTextStyle: TextStyle? = null
-): Triple<TextMeasurer, Density, Dp> {
-    val textStyle = customTextStyle ?: getDefaultStyle()
-
-    val textMeasurer = rememberTextMeasurer()
-    val density = LocalDensity.current
-    val measuredWidth = remember(fieldValue, textStyle) {
-        val textLayoutResult = textMeasurer.measure(
-            text = fieldValue.ifEmpty { "~" },
-            style = textStyle
-        )
-
-        // Convert pixels to dp using density
-        // The 16.dp pixels might be the font size that is being used
-        with(density) {
-            textLayoutResult.size.width.toDp() + 16.dp
-        }
-    }
-
-    return Triple(textMeasurer, density, measuredWidth)
 }

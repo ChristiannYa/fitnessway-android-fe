@@ -18,18 +18,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.form.field.rememberFieldInputMeasures
 
 @Composable
 fun <T : FormFieldName.IFoodEdition> EditableField(
@@ -38,32 +33,13 @@ fun <T : FormFieldName.IFoodEdition> EditableField(
     enabled: Boolean = true,
     onRemoveNutrient: ((nutrientId: Int) -> Unit)? = null
 ) {
-    val textStyle = TextStyle(
-        fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-        fontFamily = FontFamily.Default,
-        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
-        letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
-        color = MaterialTheme.colorScheme.primary,
-        textAlign = TextAlign.Center
-    )
-
-    val textMeasurer = rememberTextMeasurer()
-    val density = LocalDensity.current
-
-    val padding = 10.dp
+    val padding = 12.dp
     val shape = 12.dp
 
-    val measuredWidth = remember(field.value, textStyle) {
-        val textLayoutResult = textMeasurer.measure(
-            text = field.value.ifEmpty { "0" },
-            style = textStyle
-        )
-
-        // Convert pixels to dp using density
-        with(density) {
-            textLayoutResult.size.width.toDp() + (padding * 2)
-        }
-    }
+    val inputMeasures = rememberFieldInputMeasures(
+        inputValue = field.value,
+        inputPadding = padding
+    )
 
     val isNutrient = field.name is FormFieldName.FoodEdition.NutrientField
 
@@ -111,10 +87,10 @@ fun <T : FormFieldName.IFoodEdition> EditableField(
                 value = field.value,
                 onValueChange = field.updateState,
                 enabled = enabled,
-                textStyle = textStyle,
+                textStyle = inputMeasures.textStyle,
                 singleLine = true,
                 modifier = modifier
-                    .width(measuredWidth)
+                    .width(inputMeasures.measuredWidth)
                     .clip(RoundedCornerShape(shape))
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,

@@ -1,6 +1,7 @@
 package com.example.fitnessway.data.model.form
 
 import com.example.fitnessway.data.model.nutrient.Nutrient
+import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 
 sealed interface FormFieldName {
     enum class Login : FormFieldName {
@@ -51,4 +52,6 @@ sealed interface FormFieldName {
 
         data class NutrientField(val nutrient: Nutrient) : IFoodEdition
     }
+
+    data class NutrientGoalData(val nutrientData: NutrientAmountData) : FormFieldName
 }

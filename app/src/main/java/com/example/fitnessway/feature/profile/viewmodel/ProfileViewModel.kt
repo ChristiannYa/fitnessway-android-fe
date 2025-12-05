@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
+import com.example.fitnessway.feature.profile.manager.IProfileManagers
+import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,8 +16,10 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val authRepo: IAuthRepository,
     private val nutrientRepo: INutrientRepository,
+    private val managers: IProfileManagers,
     userStateHolder: IUserStateHolder
-) : ViewModel() {
+) : ViewModel(),
+    IGoalsManager by managers.goals {
     val user = userStateHolder.userState.value.user
 
     private val _uiState = MutableStateFlow(ProfileUiState())

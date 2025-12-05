@@ -42,6 +42,7 @@ val viewModelModule = module {
         ProfileViewModel(
             authRepo = get(),
             nutrientRepo = get(),
+            managers = get(),
             userStateHolder = get()
         )
     }

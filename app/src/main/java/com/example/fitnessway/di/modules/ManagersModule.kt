@@ -10,6 +10,9 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.ListsManagersImpl
 import com.example.fitnessway.feature.lists.manager.edition.EditionManager
 import com.example.fitnessway.feature.lists.manager.toggle.SelectionManager
+import com.example.fitnessway.feature.profile.manager.IProfileManagers
+import com.example.fitnessway.feature.profile.manager.ProfileManagersImpl
+import com.example.fitnessway.feature.profile.manager.goals.GoalsManager
 import org.koin.dsl.module
 
 val managersModule = module {
@@ -26,6 +29,12 @@ val managersModule = module {
         ListsManagersImpl(
             selection = SelectionManager(),
             edition = EditionManager()
+        )
+    }
+
+    single<IProfileManagers> {
+        ProfileManagersImpl(
+            goals = GoalsManager()
         )
     }
 }

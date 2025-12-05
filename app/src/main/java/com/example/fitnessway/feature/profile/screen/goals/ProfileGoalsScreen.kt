@@ -1,10 +1,10 @@
 package com.example.fitnessway.feature.profile.screen.goals
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientGoalsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
@@ -34,12 +34,10 @@ fun ProfileGoalsScreen(
         },
 
         content = {
-            when (uiState.nutrientsState) {
+            when (val state = uiState.nutrientsState) {
                 is UiState.Loading -> TextWithLoadingIndicator("Loading nutrients")
 
-                is UiState.Success -> {
-                    Text("Nutrients loaded")
-                }
+                is UiState.Success -> NutrientGoalsContent(nutrients = state.data)
 
                 else -> NotFoundText(text = "Something went wrong")
             }

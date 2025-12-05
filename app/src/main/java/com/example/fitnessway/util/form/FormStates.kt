@@ -26,7 +26,11 @@ sealed interface FormStates {
     data class FoodLog(
         val servings: String,
         val amountPerServing: String,
-        val amountPerServingDb: Double, // Original value from the database
+        val amountPerServingDb: Double,
         val time: String,
+    ) : FormStates
+
+    data class NutrientGoals(
+        val goals: Map<Int, String> = emptyMap()
     ) : FormStates
 }

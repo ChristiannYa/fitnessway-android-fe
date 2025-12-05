@@ -40,9 +40,9 @@ fun <T : FormFieldName.IFoodEdition> EditableField(
 ) {
     val textStyle = TextStyle(
         fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-        letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
-        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
         fontFamily = FontFamily.Default,
+        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
+        letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
         color = MaterialTheme.colorScheme.primary,
         textAlign = TextAlign.Center
     )
@@ -61,7 +61,7 @@ fun <T : FormFieldName.IFoodEdition> EditableField(
 
         // Convert pixels to dp using density
         with(density) {
-            textLayoutResult.size.width.toDp() + 16.dp
+            textLayoutResult.size.width.toDp() + (padding * 2)
         }
     }
 
@@ -114,13 +114,13 @@ fun <T : FormFieldName.IFoodEdition> EditableField(
                 textStyle = textStyle,
                 singleLine = true,
                 modifier = modifier
-                    .width(measuredWidth + padding)
+                    .width(measuredWidth)
                     .clip(RoundedCornerShape(shape))
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(shape)
                     )
-                    .padding(padding)
+                    .padding(vertical = padding)
             )
         }
     )

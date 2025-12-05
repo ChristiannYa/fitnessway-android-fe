@@ -1,7 +1,9 @@
 package com.example.fitnessway.feature.home.screen.create.food.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,10 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
@@ -35,8 +39,13 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     val textStyle = TextStyle(
         fontSize = MaterialTheme.typography.bodyMedium.fontSize,
         fontFamily = FontFamily.Default,
+        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
+        letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
         color = MaterialTheme.colorScheme.primary,
+        textAlign = TextAlign.Center
     )
+
+    val padding = 16.dp
 
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
@@ -49,27 +58,30 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
 
         // Convert pixels to dp using density
         with(density) {
-            textLayoutResult.size.width.toDp() + 16.dp
+            textLayoutResult.size.width.toDp() + (padding * 2)
         }
     }
-
-    val padding = 16.dp
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(10.dp)
             )
-            .padding(start = padding),
+            .padding(
+                PaddingValues(
+                    start = padding,
+                )
+            ),
         content = {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 content = {
                     if (!enabled) {
                         Icon(
@@ -83,7 +95,6 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                     Text(
                         text = field.label,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(end = padding)
                     )
                 }
@@ -96,8 +107,11 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 textStyle = textStyle,
                 singleLine = true,
                 modifier = Modifier
-                    .width(measuredWidth + padding)
-                    .padding(padding)
+                    .width(measuredWidth)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                    .padding(vertical = padding)
             )
         }
     )

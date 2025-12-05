@@ -41,6 +41,7 @@ fun rememberFieldInputMeasures(
         )
 
         // Convert pixels to dp using density
+        // The 16.dp pixels might be the font size that is being used
         with(density) {
             textLayoutResult.size.width.toDp() + 16.dp
         }

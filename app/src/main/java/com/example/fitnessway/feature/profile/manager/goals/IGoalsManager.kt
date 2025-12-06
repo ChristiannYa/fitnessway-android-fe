@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IGoalsManager {
     val goalsEditionFormState: StateFlow<FormState<FormStates.NutrientGoals>?>
-    val nutrientFields: StateFlow<Map<NutrientType, List<NutrientGoalEditionField>>?>
     val modifiedGoals: StateFlow<List<Int>>
 
     fun initNutrientGoalsForm(goalsData: NutrientsByType<NutrientApiFormat>)

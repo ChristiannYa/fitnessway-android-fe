@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,7 +24,7 @@ fun NutrientGoalsContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         content = {
             nutrientFields.forEach { (type, goalFields) ->
-                item {
+                item(key = type) {
                     Box(
                         modifier = Modifier.areaContainerLarge(
                             shape = RoundedCornerShape(10.dp)
@@ -50,7 +51,9 @@ fun NutrientGoalsContent(
                                         verticalArrangement = Arrangement.spacedBy(12.dp),
                                         content = {
                                             goalFields.forEach { field ->
-                                                GoalsEditionFormField(field = field)
+                                                key(field.name.nutrientData.nutrient.id) {
+                                                    GoalsEditionFormField(field)
+                                                }
                                             }
                                         }
                                     )

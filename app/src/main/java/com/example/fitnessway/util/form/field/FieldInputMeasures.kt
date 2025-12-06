@@ -3,6 +3,7 @@ package com.example.fitnessway.util.form.field
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -17,9 +18,10 @@ import androidx.compose.ui.unit.dp
 fun rememberFieldInputMeasures(
     inputValue: String,
     inputPadding: Dp = 16.dp,
+    inputColor: Color = MaterialTheme.colorScheme.primary,
     customTextStyle: TextStyle? = null
 ): FieldInputMeasures {
-    val textStyle = customTextStyle ?: getDefaultStyle()
+    val textStyle = customTextStyle ?: getDefaultStyle(color = inputColor)
 
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
@@ -46,13 +48,13 @@ data class FieldInputMeasures(
 )
 
 @Composable
-private fun getDefaultStyle(): TextStyle {
+private fun getDefaultStyle(color: Color): TextStyle {
     return TextStyle(
         fontSize = MaterialTheme.typography.bodyMedium.fontSize,
         letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
         lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
         fontFamily = FontFamily.Default,
-        color = MaterialTheme.colorScheme.primary,
+        color = color,
         textAlign = TextAlign.Center
     )
 }

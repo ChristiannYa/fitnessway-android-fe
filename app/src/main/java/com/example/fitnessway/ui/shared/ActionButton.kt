@@ -1,5 +1,6 @@
 package com.example.fitnessway.ui.shared
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,25 +9,36 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
+import com.example.fitnessway.util.Animation.colorSpec
 
 @Composable
 fun ActionButton(
     text: String,
     onClick: () -> Unit,
     backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    backgroundColorDisabled: Color = MaterialTheme.colorScheme.surfaceVariant,
     enabled: Boolean = true
 ) {
+    val bgColor by animateColorAsState(
+        targetValue = if (enabled) {
+            backgroundColor
+        } else backgroundColorDisabled,
+        animationSpec = colorSpec,
+        label = "actionButtonBackgroundColor"
+    )
+
     Box(
         modifier = Modifier
             .clip(CircleShape)
             .background(
-                color = backgroundColor,
+                color = bgColor,
                 shape = CircleShape
             )
             .clickable(

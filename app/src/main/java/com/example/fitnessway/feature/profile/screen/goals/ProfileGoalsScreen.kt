@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientGoalsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
+import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
@@ -41,9 +42,18 @@ fun ProfileGoalsScreen(
 
     Screen(
         header = {
+            val enabled = false
+
             Header(
                 onBackClick = onBackClick,
-                title = "My Goals"
+                title = "My Goals",
+                extraContent = {
+                    ActionButton(
+                        onClick = {},
+                        text = "Update",
+                        enabled = enabled
+                    )
+                }
             )
         },
 

@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodLogEditionField
-import com.example.fitnessway.ui.shared.ToggleEditButton
+import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.util.Animation.colorSpec
 
@@ -61,14 +61,14 @@ fun EditionMode(
                                         label = "logDetailsDoneButtonBackground"
                                     )
 
-                                    ToggleEditButton(
+                                    ActionButton(
                                         text = "Done",
                                         onClick = onDone,
                                         enabled = isDoneEnabled,
                                         backgroundColor = backgroundColor
                                     )
 
-                                    ToggleEditButton(
+                                    ActionButton(
                                         text = "Cancel",
                                         onClick = onCancel,
                                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant

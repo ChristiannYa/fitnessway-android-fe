@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.ui.shared.ToggleEditButton
+import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 import com.example.fitnessway.util.Animation.colorSpec
@@ -75,24 +75,17 @@ fun EditionMode(
                                         label = "FoodEditionFinishButtonBackground"
                                     )
 
-                                    /*
-                                    val backgroundColor = if (enabled) {
-                                        MaterialTheme.colorScheme.primary
-                                    } else MaterialTheme.colorScheme.surfaceVariant
-
-                                     */
-
                                     Row(
                                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                                         content = {
-                                            ToggleEditButton(
+                                            ActionButton(
                                                 text = "Done",
                                                 onClick = onDone,
                                                 enabled = enabled,
                                                 backgroundColor = backgroundColor
                                             )
 
-                                            ToggleEditButton(
+                                            ActionButton(
                                                 text = "Cancel",
                                                 onClick = onCancel,
                                                 backgroundColor = MaterialTheme.colorScheme.surfaceVariant

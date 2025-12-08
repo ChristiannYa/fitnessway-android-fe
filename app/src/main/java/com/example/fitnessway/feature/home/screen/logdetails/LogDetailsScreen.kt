@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.home.screen.logdetails.composables.EditionMode
 import com.example.fitnessway.feature.home.screen.logdetails.composables.LogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
+import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
-import com.example.fitnessway.ui.shared.EditButton
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
@@ -82,8 +82,9 @@ fun LogDetailsScreen(
                                 isOnBackEnabled = !formState.isEditing,
                                 title = "Log Details",
                                 extraContent = {
-                                    EditButton(
-                                        onClick = { viewModel.startFormEdit(formState.data) }
+                                    ActionButton(
+                                        onClick = { viewModel.startFormEdit(formState.data) },
+                                        text = "Edit"
                                     )
                                 }
                             )

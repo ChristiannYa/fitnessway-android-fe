@@ -16,21 +16,34 @@ class GoalsManager : IGoalsManager {
     override val goalsEditionFormState: StateFlow<FormState<FormStates.NutrientGoals>?> =
         _goalsEditionFormState
 
+    private val _originalGoalValues = MutableStateFlow<Map<Int, String>?>(null)
+
     private val _modifiedGoals = MutableStateFlow<List<Int>>(emptyList())
     override val modifiedGoals: StateFlow<List<Int>> = _modifiedGoals
+
+    override val isGoalsFormValid: Boolean
+        get() = _goalsEditionFormState.value?.let { formState ->
+            val formGoals = formState.data.goals
+            val originalGoals = _originalGoalValues.value
+
+            formGoals.any { (nutrientId, goal) ->
+                originalGoals?.let {
+                    it[nutrientId] != goal
+                } ?: false
+            }
+
+        } ?: false
 
     override fun initNutrientGoalsForm(
         goalsData: NutrientsByType<NutrientApiFormat>
     ) {
-        val goals = (getAllNutrients(goalsData)).associate {
-            it.nutrient.id to if (it.goal != null) {
-                doubleFormatter(it.goal)
-            } else "~"
-        }
+        val goals = formatGoalsAsMap(goalsData)
 
         _goalsEditionFormState.value = FormState(
             data = FormStates.NutrientGoals(goals)
         )
+
+        _originalGoalValues.value = goals
     }
 
     override fun updateGoalEditionFormField(
@@ -51,5 +64,15 @@ class GoalsManager : IGoalsManager {
 
     override fun startFormEdition() {
         _goalsEditionFormState.value = _goalsEditionFormState.value?.edit()
+    }
+
+    private fun formatGoalsAsMap(
+        goalsData: NutrientsByType<NutrientApiFormat>
+    ): Map<Int, String> {
+        return getAllNutrients(goalsData).associate {
+            it.nutrient.id to if (it.goal != null) {
+                doubleFormatter(it.goal)
+            } else "~"
+        }
     }
 }

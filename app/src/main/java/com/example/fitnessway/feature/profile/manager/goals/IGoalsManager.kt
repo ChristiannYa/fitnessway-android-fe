@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface IGoalsManager {
     val goalsEditionFormState: StateFlow<FormState<FormStates.NutrientGoals>?>
     val modifiedGoals: StateFlow<List<Int>>
+    val isGoalsFormValid: Boolean
 
     fun initNutrientGoalsForm(goalsData: NutrientsByType<NutrientApiFormat>)
     fun updateGoalEditionFormField(fieldName: FormFieldName.NutrientGoalData, input: String)

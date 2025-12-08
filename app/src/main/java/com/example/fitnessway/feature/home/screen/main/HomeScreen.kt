@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -28,18 +27,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
-import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.feature.home.screen.main.composables.CreateOptions
 import com.example.fitnessway.feature.home.screen.main.composables.DatePicker
 import com.example.fitnessway.feature.home.screen.main.composables.FoodLogs
 import com.example.fitnessway.feature.home.screen.main.composables.HomeHeader
 import com.example.fitnessway.feature.home.screen.main.composables.OtherNutrientIntakes
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
-import com.example.fitnessway.ui.shared.ApiErrorBanner
+import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.util.UiState
-import kotlinx.coroutines.delay
+import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -67,18 +65,10 @@ fun HomeScreen(
         }
     }
 
-    val deleteFoodLogErrMsg = when (val state = uiState.foodLogDeleteState) {
-        is UiState.Error -> {
-            LaunchedEffect(state) {
-                delay(10000)
-                viewModel.resetFoodLogDeleteState()
-            }
-
-            state.message
-        }
-
-        else -> null
-    }
+    val deleteFoodLogErrMsg = handleErrStateTempMsg(
+        uiState = uiState.foodLogDeleteState,
+        onTimeOut = viewModel::resetFoodLogDeleteState
+    )
 
     Screen(
         isMainScreen = true,
@@ -105,9 +95,8 @@ fun HomeScreen(
                                         },
                                     content = {
                                         HomeHeader(
-                                            onToggleCreateMenuVisibility = {
-                                                viewModel.toggleCreateMenuVisibility()
-                                            }
+                                            onToggleCreateMenuVisibility = viewModel::toggleCreateMenuVisibility
+
                                         )
                                         CreateOptions(
                                             onCreateFood = onNavigateToFoodForm,
@@ -177,14 +166,13 @@ fun HomeScreen(
 
                     BlurOverlay(
                         isVisible = isCreateMenuVisible,
-                        onClick = { viewModel.toggleCreateMenuVisibility() },
+                        onClick = viewModel::toggleCreateMenuVisibility,
                         modifier = Modifier.padding(top = headerHeight),
                     )
 
-                    ApiErrorBanner(
-                        message = deleteFoodLogErrMsg,
-                        onDismiss = { viewModel.resetFoodLogDeleteState() },
-                        modifier = Modifier.align(Alignment.TopCenter)
+                    ApiErrorMessageAnimated(
+                        isVisible = deleteFoodLogErrMsg != "",
+                        errorMessage = deleteFoodLogErrMsg
                     )
                 }
             )

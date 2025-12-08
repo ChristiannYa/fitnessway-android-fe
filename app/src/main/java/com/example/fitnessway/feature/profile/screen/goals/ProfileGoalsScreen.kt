@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.profile.screen.goals
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -14,7 +13,6 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientGoalsFieldsProvider
@@ -52,12 +50,10 @@ fun ProfileGoalsScreen(
         content = {
             when (nutrientsState) {
                 is UiState.Loading -> {
-                    Log.d(Constants.DEBUG_TAG, "Loading nutrients")
                     TextWithLoadingIndicator("Loading nutrients")
                 }
 
                 is UiState.Success -> {
-                    Log.d(Constants.DEBUG_TAG, "Loaded nutrients")
                     goalsEditionFormState?.let { formState ->
                         val nutrientFields = remember(nutrientsState.data, formState) {
                             val fieldsProvider = NutrientGoalsFieldsProvider(
@@ -84,7 +80,6 @@ fun ProfileGoalsScreen(
 
                         NutrientGoalsContent(nutrientFields = nutrientFields)
                     } ?: @Composable {
-                        Log.d(Constants.DEBUG_TAG, "form data not found")
                         NotFoundText(text = "Form data not found")
                     }
                 }

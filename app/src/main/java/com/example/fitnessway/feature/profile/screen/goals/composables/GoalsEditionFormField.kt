@@ -2,10 +2,12 @@ package com.example.fitnessway.feature.profile.screen.goals.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +21,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
@@ -38,8 +39,6 @@ fun GoalsEditionFormField(
     val goalTextColor = getNutrientColor(nutrient.hexColor)
         ?: MaterialTheme.colorScheme.primary
 
-    val padding = 12.dp
-
     val shape = RoundedCornerShape(10.dp)
 
     val textStyle = TextStyle(
@@ -47,8 +46,7 @@ fun GoalsEditionFormField(
         letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
         lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
         fontFamily = FontFamily.Default,
-        color = goalTextColor,
-        textAlign = TextAlign.Center
+        color = goalTextColor
     )
 
     Row(
@@ -78,7 +76,12 @@ fun GoalsEditionFormField(
                         block = { append(text = nutrient.unit) }
                     )
                 },
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(
+                    PaddingValues(
+                        end = 16.dp
+                    )
+                )
             )
 
             BasicTextField(
@@ -86,15 +89,15 @@ fun GoalsEditionFormField(
                 onValueChange = field.updateState,
                 enabled = enabled,
                 textStyle = textStyle,
-                singleLine = true,
+                maxLines = 1,
                 modifier = Modifier
                     .clip(shape)
-                    .widthIn(min = 60.dp, max = 120.dp)
+                    .width(IntrinsicSize.Max)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = shape
                     )
-                    .padding(vertical = padding),
+                    .padding(12.dp)
             )
         }
     )

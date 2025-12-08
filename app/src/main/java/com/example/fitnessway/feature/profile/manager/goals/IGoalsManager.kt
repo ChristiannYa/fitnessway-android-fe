@@ -7,14 +7,16 @@ import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
 interface IGoalsManager {
     val goalsEditionFormState: StateFlow<FormState<FormStates.NutrientGoals>?>
     val modifiedGoals: StateFlow<List<Int>>
-    val isGoalsFormValid: Boolean
+    val isGoalsFormValid: StateFlow<Boolean>
 
     fun initNutrientGoalsForm(goalsData: NutrientsByType<NutrientApiFormat>)
     fun updateGoalEditionFormField(fieldName: FormFieldName.NutrientGoalData, input: String)
     fun startFormEdition()
+    fun init(scope: CoroutineScope)
 }

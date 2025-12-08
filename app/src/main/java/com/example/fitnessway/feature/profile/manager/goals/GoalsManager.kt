@@ -7,10 +7,16 @@ import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.getAllNutrients
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 class GoalsManager : IGoalsManager {
+    private lateinit var scope: CoroutineScope
+
     private val _goalsEditionFormState =
         MutableStateFlow<FormState<FormStates.NutrientGoals>?>(null)
     override val goalsEditionFormState: StateFlow<FormState<FormStates.NutrientGoals>?> =
@@ -21,18 +27,25 @@ class GoalsManager : IGoalsManager {
     private val _modifiedGoals = MutableStateFlow<List<Int>>(emptyList())
     override val modifiedGoals: StateFlow<List<Int>> = _modifiedGoals
 
-    override val isGoalsFormValid: Boolean
-        get() = _goalsEditionFormState.value?.let { formState ->
-            val formGoals = formState.data.goals
-            val originalGoals = _originalGoalValues.value
+    override val isGoalsFormValid: StateFlow<Boolean> by lazy {
+        combine(
+            _goalsEditionFormState,
+            _originalGoalValues
+        ) { formState, originalGoals ->
+            formState?.let {
+                val formGoals = it.data.goals
 
-            formGoals.any { (nutrientId, goal) ->
-                originalGoals?.let {
-                    it[nutrientId] != goal
-                } ?: false
-            }
+                formGoals.any { (id, goal) ->
+                    originalGoals?.get(id) != goal
+                }
 
-        } ?: false
+            } ?: false
+        }.stateIn(
+            scope = scope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+    }
 
     override fun initNutrientGoalsForm(
         goalsData: NutrientsByType<NutrientApiFormat>
@@ -74,5 +87,9 @@ class GoalsManager : IGoalsManager {
                 doubleFormatter(it.goal)
             } else "~"
         }
+    }
+
+    override fun init(scope: CoroutineScope) {
+        this.scope = scope
     }
 }

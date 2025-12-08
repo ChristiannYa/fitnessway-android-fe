@@ -20,6 +20,11 @@ class ProfileViewModel(
     userStateHolder: IUserStateHolder
 ) : ViewModel(),
     IGoalsManager by managers.goals {
+
+    init {
+        managers.goals.init(viewModelScope)
+    }
+
     val user = userStateHolder.userState.value.user
 
     private val _uiState = MutableStateFlow(ProfileUiState())

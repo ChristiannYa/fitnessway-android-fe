@@ -9,7 +9,6 @@ import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientGoalsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.ActionButton
-import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
@@ -26,6 +25,7 @@ fun ProfileGoalsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val goalsEditionFormState by viewModel.goalsEditionFormState.collectAsState()
+    val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
     val nutrientsState = uiState.nutrientsState
 
     LaunchedEffect(nutrientsState) {
@@ -42,8 +42,6 @@ fun ProfileGoalsScreen(
 
     Screen(
         header = {
-            val enabled = false
-
             Header(
                 onBackClick = onBackClick,
                 title = "My Goals",
@@ -51,7 +49,7 @@ fun ProfileGoalsScreen(
                     ActionButton(
                         onClick = {},
                         text = "Update",
-                        enabled = enabled
+                        enabled = isGoalsFormValid
                     )
                 }
             )
@@ -96,13 +94,6 @@ fun ProfileGoalsScreen(
 
                 else -> NotFoundText(text = "Something went wrong")
             }
-
-            val nutrientsFetchErrMsg = (uiState.nutrientsState as? UiState.Error)?.message
-
-            ApiErrorMessageAnimated(
-                isVisible = nutrientsFetchErrMsg != null,
-                errorMessage = nutrientsFetchErrMsg ?: ""
-            )
         }
     )
 }

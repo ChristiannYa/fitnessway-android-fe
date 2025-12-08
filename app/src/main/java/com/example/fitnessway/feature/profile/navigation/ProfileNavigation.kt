@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.profile.navigation
 
+import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -9,8 +10,10 @@ import com.example.fitnessway.feature.profile.screen.colors.ProfileColorsScreen
 import com.example.fitnessway.feature.profile.screen.goals.ProfileGoalsScreen
 import com.example.fitnessway.feature.profile.screen.main.ProfileScreen
 import com.example.fitnessway.feature.profile.screen.settings.ProfileSettingsScreen
+import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.navigation.ProfileGraph
 import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
 
 @Serializable
 object ProfileMain
@@ -29,8 +32,15 @@ private object ProfileSettingsDest
 
 fun NavGraphBuilder.profileNavigationGraph(navController: NavController) {
     navigation<ProfileGraph>(startDestination = ProfileMain) {
-        composable<ProfileMain> {
+        composable<ProfileMain> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<ProfileGraph>()
+            }
+
+            val viewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
             ProfileScreen(
+                viewModel = viewModel,
                 onNavigateToGoals = { navController.navigate(ProfileGoalsDest) },
                 onNavigateToColors = { navController.navigate(ProfileColorsDest) },
                 onNavigateToAccInfo = { navController.navigate(ProfileAccountInformationDest) },
@@ -38,8 +48,15 @@ fun NavGraphBuilder.profileNavigationGraph(navController: NavController) {
             )
         }
 
-        composable<ProfileGoalsDest> {
+        composable<ProfileGoalsDest> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<ProfileGraph>()
+            }
+
+            val viewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
             ProfileGoalsScreen(
+                viewModel = viewModel,
                 onBackClick = navController::popBackStack
             )
         }

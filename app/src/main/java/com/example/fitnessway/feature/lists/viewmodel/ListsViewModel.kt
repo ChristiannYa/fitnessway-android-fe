@@ -76,24 +76,23 @@ class ListsViewModel(
         val originalNutrients = (selectedFood.nutrients.basic +
                 selectedFood.nutrients.vitamin +
                 selectedFood.nutrients.mineral)
-            .associateBy { it.nutrient.id }
+            .associateBy { it.nutrientWithPreferences.nutrient.id }
 
         // Insert updated nutrient data to the food
         val updatedFoodNutrientsData = upsertedNutrients.mapNotNull { upsertedNutrient ->
             originalNutrients[upsertedNutrient.nutrientId]?.let { originalNutrient ->
                 NutrientAmountData(
-                    nutrient = originalNutrient.nutrient, // Preserve original metadata
-                    amount = upsertedNutrient.amount, // Update amount
-                    goal = originalNutrient.goal // Preserve original goal
+                    nutrientWithPreferences = originalNutrient.nutrientWithPreferences,
+                    amount = upsertedNutrient.amount // Update amount
                 )
             }
         }
 
         // Filter updated nutrients by type
         val filteredUpdatedFoodNutrientsData = NutrientsByType(
-            basic = updatedFoodNutrientsData.filter { it.nutrient.type == NutrientType.BASIC },
-            vitamin = updatedFoodNutrientsData.filter { it.nutrient.type == NutrientType.VITAMIN },
-            mineral = updatedFoodNutrientsData.filter { it.nutrient.type == NutrientType.MINERAL }
+            basic = updatedFoodNutrientsData.filter { it.nutrientWithPreferences.nutrient.type == NutrientType.BASIC },
+            vitamin = updatedFoodNutrientsData.filter { it.nutrientWithPreferences.nutrient.type == NutrientType.VITAMIN },
+            mineral = updatedFoodNutrientsData.filter { it.nutrientWithPreferences.nutrient.type == NutrientType.MINERAL }
         )
 
         // Create the new food

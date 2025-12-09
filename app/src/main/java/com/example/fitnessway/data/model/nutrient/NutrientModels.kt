@@ -31,29 +31,35 @@ data class Nutrient(
     val unit: String,
     val type: NutrientType,
 
-    @SerialName("hex_color")
-    val hexColor: String?,
-
     @SerialName("is_premium")
     val isPremium: Boolean
 )
 
 @Serializable
-data class NutrientApiFormat(
+data class NutrientPreferences(
+    val goal: Double?,
+
+    @SerialName("hex_color")
+    val hexColor: String?
+)
+
+@Serializable
+data class NutrientWithPreferences(
     val nutrient: Nutrient,
-    val goal: Double?
+    val preferences: NutrientPreferences
 )
 
 @Serializable
 data class NutrientAmountData(
-    val nutrient: Nutrient,
-    val amount: Double,
-    val goal: Double?
+    @SerialName("nutrient_with_preferences")
+    val nutrientWithPreferences: NutrientWithPreferences,
+
+    val amount: Double
 )
 
 @Serializable
 data class NutrientsByTypeApiResponse(
-    val nutrients: NutrientsByType<NutrientApiFormat>
+    val nutrients: NutrientsByType<NutrientWithPreferences>
 )
 
 typealias NutrientsByTypeFetchResponse = ApiResponseWithContent<NutrientsByTypeApiResponse>

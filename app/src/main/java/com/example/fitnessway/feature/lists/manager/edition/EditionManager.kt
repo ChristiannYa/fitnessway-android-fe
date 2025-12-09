@@ -75,8 +75,8 @@ class EditionManager : IEditionManager {
             val formNutrientIds = _foodEditionFormState.value?.data?.nutrients?.keys ?: return false
             val basicNutrients = _selectedFood.value?.nutrients?.basic ?: return false
 
-            return basicNutrients.any { basicNutrient ->
-                basicNutrient.nutrient.id in formNutrientIds
+            return basicNutrients.any { basicNutrientData ->
+                basicNutrientData.nutrientWithPreferences.nutrient.id in formNutrientIds
             }
         }
 
@@ -105,7 +105,7 @@ class EditionManager : IEditionManager {
 
     override fun initializeFoodForm(food: FoodInformation) {
         val nutrients = (getAllNutrients(food.nutrients)).associate {
-            it.nutrient.id to doubleFormatter(it.amount)
+            it.nutrientWithPreferences.nutrient.id to doubleFormatter(it.amount)
         }
         // Result: {1="10.5", 2="20.3", 3="15"}
         //

@@ -33,10 +33,10 @@ fun GoalsEditionFormField(
     field: FormField<FormFieldName.NutrientGoalData>,
     enabled: Boolean = true,
 ) {
-    val goalData = field.name.nutrientData
-    val nutrient = goalData.nutrient
+    val nutrient = field.name.nutrientData.nutrient
+    val preferences = field.name.nutrientData.preferences
 
-    val goalTextColor = getNutrientColor(nutrient.hexColor)
+    val goalTextColor = getNutrientColor(preferences.hexColor)
         ?: MaterialTheme.colorScheme.primary
 
     val shape = RoundedCornerShape(10.dp)

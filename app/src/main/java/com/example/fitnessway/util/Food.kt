@@ -1,6 +1,5 @@
 package com.example.fitnessway.util
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,7 +48,7 @@ object Food {
             nutrientId: Int
         ): NutrientAmountData {
             val foodNutrient = getAllNutrients(foodLog.food.nutrients).find {
-                it.nutrient.id == nutrientId
+                it.nutrientWithPreferences.nutrient.id == nutrientId
             }
 
             return if (foodNutrient != null) {
@@ -61,19 +60,19 @@ object Food {
             basic = currentIntakes.basic.map {
                 updateIntake(
                     intakeAmountData = it,
-                    nutrientId = it.nutrient.id
+                    nutrientId = it.nutrientWithPreferences.nutrient.id
                 )
             },
             vitamin = currentIntakes.vitamin.map {
                 updateIntake(
                     intakeAmountData = it,
-                    nutrientId = it.nutrient.id
+                    nutrientId = it.nutrientWithPreferences.nutrient.id
                 )
             },
             mineral = currentIntakes.mineral.map {
                 updateIntake(
                     intakeAmountData = it,
-                    nutrientId = it.nutrient.id
+                    nutrientId = it.nutrientWithPreferences.nutrient.id
                 )
             }
         )
@@ -90,25 +89,25 @@ object Food {
         newServings: Double
     ): NutrientsByType<NutrientAmountData> {
         // Log.d(Constants.DEBUG_TAG, "current servings: $currentServings")
-            // Log.d(Constants.DEBUG_TAG, "new servings: $newServings")
+        // Log.d(Constants.DEBUG_TAG, "new servings: $newServings")
 
         fun updateNutrientAmount(
             nutrientAmountData: NutrientAmountData,
             nutrientId: Int
         ): NutrientAmountData {
             val foodNutrient = getAllNutrients(currentNutrients).find {
-                it.nutrient.id == nutrientId
+                it.nutrientWithPreferences.nutrient.id == nutrientId
             }
             return if (foodNutrient != null) {
                 // Log.d(Constants.DEBUG_TAG, "")
-                    // Log.d(Constants.DEBUG_TAG, "nutrient: ${foodNutrient.nutrient.name}")
-                    // Log.d(Constants.DEBUG_TAG, "amount: ${foodNutrient.amount}")
+                // Log.d(Constants.DEBUG_TAG, "nutrient: ${foodNutrient.nutrient.name}")
+                // Log.d(Constants.DEBUG_TAG, "amount: ${foodNutrient.amount}")
 
                 val originalAmount = foodNutrient.amount / currentServings
-                    // Log.d(Constants.DEBUG_TAG, "original amount: $originalAmount")
+                // Log.d(Constants.DEBUG_TAG, "original amount: $originalAmount")
 
                 val newAmount = (originalAmount) * newServings
-                    // Log.d(Constants.DEBUG_TAG, "new amount: $newAmount")
+                // Log.d(Constants.DEBUG_TAG, "new amount: $newAmount")
 
                 nutrientAmountData.copy(amount = newAmount)
             } else nutrientAmountData
@@ -118,19 +117,19 @@ object Food {
             basic = currentNutrients.basic.map {
                 updateNutrientAmount(
                     nutrientAmountData = it,
-                    nutrientId = it.nutrient.id
+                    nutrientId = it.nutrientWithPreferences.nutrient.id
                 )
             },
             vitamin = currentNutrients.vitamin.map {
                 updateNutrientAmount(
                     nutrientAmountData = it,
-                    nutrientId = it.nutrient.id
+                    nutrientId = it.nutrientWithPreferences.nutrient.id
                 )
             },
             mineral = currentNutrients.mineral.map {
                 updateNutrientAmount(
                     nutrientAmountData = it,
-                    nutrientId = it.nutrient.id
+                    nutrientId = it.nutrientWithPreferences.nutrient.id
                 )
             }
         )
@@ -231,9 +230,12 @@ object Food {
                         modifier = Modifier.fillMaxWidth(),
                         content = {
                             nutrients.basic.forEach { nutrientData ->
+                                val nutrient = nutrientData.nutrientWithPreferences.nutrient
+                                val preferences = nutrientData.nutrientWithPreferences.preferences
+
                                 val targetProgress =
-                                    if (nutrientData.goal != null) {
-                                        (nutrientData.amount / nutrientData.goal)
+                                    if (preferences.goal != null) {
+                                        (nutrientData.amount / preferences.goal)
                                     } else {
                                         0.0
                                     }
@@ -243,15 +245,15 @@ object Food {
                                     animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                                 )
 
-                                val percentage = if (nutrientData.goal != null) {
-                                    (nutrientData.amount / nutrientData.goal) * 100
+                                val percentage = if (preferences.goal != null) {
+                                    (nutrientData.amount / preferences.goal) * 100
                                 } else {
                                     0.0
                                 }
 
                                 val color =
-                                    if (nutrientData.nutrient.hexColor != null) {
-                                        Color(nutrientData.nutrient.hexColor.toColorInt())
+                                    if (preferences.hexColor != null) {
+                                        Color(preferences.hexColor.toColorInt())
                                     } else {
                                         MaterialTheme.colorScheme.surfaceVariant
                                     }
@@ -290,7 +292,7 @@ object Food {
                                                     fontFamily = FontFamily.Default
                                                 )
                                                 Text(
-                                                    text = nutrientData.nutrient.name,
+                                                    text = nutrient.name,
                                                     style = MaterialTheme.typography.labelLarge
                                                 )
                                             }
@@ -332,9 +334,14 @@ object Food {
                                         Spacer(modifier = Modifier.height(12.dp))
 
                                         ns.forEachIndexed { index, nutrientData ->
+                                            val nutrient =
+                                                nutrientData.nutrientWithPreferences.nutrient
+                                            val preferences =
+                                                nutrientData.nutrientWithPreferences.preferences
+
                                             val targetProgress =
-                                                if (nutrientData.goal != null) {
-                                                    ((nutrientData.amount / nutrientData.goal).toFloat())
+                                                if (preferences.goal != null) {
+                                                    ((nutrientData.amount / preferences.goal).toFloat())
                                                 } else {
                                                     0f
                                                 }
@@ -344,15 +351,15 @@ object Food {
                                                 animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                                             )
 
-                                            val percentage = if (nutrientData.goal != null) {
-                                                ((nutrientData.amount / nutrientData.goal) * 100).toFloat()
+                                            val percentage = if (preferences.goal != null) {
+                                                ((nutrientData.amount / preferences.goal) * 100).toFloat()
                                             } else {
                                                 0f
                                             }
 
                                             val color =
-                                                if (nutrientData.nutrient.hexColor != null) {
-                                                    Color(nutrientData.nutrient.hexColor.toColorInt())
+                                                if (preferences.hexColor != null) {
+                                                    Color(preferences.hexColor.toColorInt())
                                                 } else {
                                                     MaterialTheme.colorScheme.surfaceVariant
                                                 }
@@ -367,18 +374,18 @@ object Food {
                                                         modifier = Modifier.fillMaxWidth(),
                                                         content = {
                                                             // Left side: nutrient name and symbol
-                                                            if (nutrientData.nutrient.type == NutrientType.MINERAL) {
+                                                            if (nutrient.type == NutrientType.MINERAL) {
                                                                 Row(
                                                                     horizontalArrangement = Arrangement.spacedBy(
                                                                         2.dp
                                                                     ),
                                                                     content = {
                                                                         Text(
-                                                                            text = nutrientData.nutrient.name,
+                                                                            text = nutrient.name,
                                                                             style = MaterialTheme.typography.bodyMedium,
                                                                             fontWeight = FontWeight.Medium
                                                                         )
-                                                                        nutrientData.nutrient.symbol?.let {
+                                                                        nutrient.symbol?.let {
                                                                             Text(
                                                                                 text = it,
                                                                                 style = MaterialTheme.typography.bodyMedium,
@@ -392,7 +399,7 @@ object Food {
                                                                 )
                                                             } else {
                                                                 Text(
-                                                                    text = nutrientData.nutrient.name,
+                                                                    text = nutrient.name,
                                                                     style = MaterialTheme.typography.bodyMedium,
                                                                     fontWeight = FontWeight.Medium
                                                                 )
@@ -411,7 +418,7 @@ object Food {
                                                                         fontFamily = FontFamily.Default,
                                                                     )
                                                                     Text(
-                                                                        text = nutrientData.nutrient.unit,
+                                                                        text = nutrient.unit,
                                                                         style = MaterialTheme.typography.bodyMedium,
                                                                         color = MaterialTheme.colorScheme.onBackground.copy(
                                                                             0.5f

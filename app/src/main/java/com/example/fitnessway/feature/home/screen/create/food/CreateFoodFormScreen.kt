@@ -22,9 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.feature.home.screen.create.food.composables.FormProgressIndicator
 import com.example.fitnessway.feature.home.screen.create.food.composables.NextButton
 import com.example.fitnessway.feature.home.screen.create.food.composables.SetBasicData
@@ -113,7 +111,7 @@ fun CreateFoodFormScreen(
                 )
             },
             content = {
-                when (uiState.nutrientsState) {
+                when (val nutrientsState = uiState.nutrientsState) {
                     is UiState.Loading -> Text("Loading form")
 
                     is UiState.Success -> {
@@ -137,8 +135,7 @@ fun CreateFoodFormScreen(
                                 content = {
                                     val isPremiumUser = viewModel.user.isPremium
 
-                                    val nutrients =
-                                        (uiState.nutrientsState as UiState.Success<NutrientsByType<NutrientApiFormat>>).data
+                                    val nutrients = nutrientsState.data
 
                                     val basicNutrientFields = filterNutrientsByType(
                                         nutrients = nutrients,

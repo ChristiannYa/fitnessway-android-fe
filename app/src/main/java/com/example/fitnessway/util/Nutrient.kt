@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
-import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
 import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.WhiteFont
@@ -48,7 +48,7 @@ object Nutrient {
 
     fun calcNutrientIntakeData(intakeData: NutrientAmountData): NutrientData {
         val intake = intakeData.amount
-        val goal = intakeData.goal ?: 0.0
+        val goal = intakeData.nutrientWithPreferences.preferences.goal ?: 0.0
 
         val progress = if (goal > 0) ((intake / goal) * 100) else 0.0
 
@@ -82,9 +82,9 @@ object Nutrient {
         }
     }
 
-    fun List<NutrientApiFormat>.sortByPremiumStatus(
+    fun List<NutrientWithPreferences>.sortByPremiumStatus(
         isPremiumUser: Boolean
-    ): List<NutrientApiFormat> {
+    ): List<NutrientWithPreferences> {
         return if (!isPremiumUser) {
             this.sortedBy { it.nutrient.isPremium }
         } else {
@@ -122,14 +122,15 @@ object Nutrient {
         ) {
             val nutrientTypeName = nutrientType.name.lowercase().replaceFirstChar { it.uppercase() }
 
-            val allowedNutrients = filterNutrientsByType(
+            val allowedNutrientData = filterNutrientsByType(
                 nutrients = nutrients,
                 type = nutrientType
             ).filter {
-                it.goal != null && (!it.nutrient.isPremium || user.isPremium)
+                it.nutrientWithPreferences.preferences.goal != null &&
+                        (!it.nutrientWithPreferences.nutrient.isPremium || user.isPremium)
             }
 
-            if (allowedNutrients.isEmpty()) {
+            if (allowedNutrientData.isEmpty()) {
                 Text(
                     text = "Set your $nutrientTypeName goals in order to see their intake progress",
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
@@ -139,15 +140,19 @@ object Nutrient {
             } else {
                 val barShape = 16.dp
 
-                allowedNutrients.forEach { nutrient ->
-                    val nutrientColor =
-                        getNutrientColor(nutrient.nutrient.hexColor) ?: Color(0xFFFFFFFF)
-                    val nutrientData = calcNutrientIntakeData(intakeData = nutrient)
+                allowedNutrientData.forEach { nutrientData ->
+                    val nutrient = nutrientData.nutrientWithPreferences.nutrient
+                    val preferences = nutrientData.nutrientWithPreferences.preferences
+
+                    val nutrientColor = getNutrientColor(
+                        preferences.hexColor
+                    ) ?: Color(0xFFFFFFFF)
+                    val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
 
                     val spacedBy = if (nutrientType == NutrientType.BASIC) 12.dp else 8.dp
 
                     val animatedProgress by animateFloatAsState(
-                        targetValue = (nutrientData.progress / 100f).toFloat(),
+                        targetValue = (calculatedNutrientData.progress / 100f).toFloat(),
                         animationSpec = tween(
                             durationMillis = 400,
                             easing = FastOutSlowInEasing
@@ -166,16 +171,18 @@ object Nutrient {
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     content = {
                                         Text(
-                                            text = if (nutrient.goal != null) doubleFormatter(
-                                                nutrient.goal
-                                            ) else "0",
+                                            text = if (preferences.goal != null) {
+                                                doubleFormatter(
+                                                    preferences.goal
+                                                )
+                                            } else "0",
                                             style = MaterialTheme.typography.labelLarge,
                                             fontFamily = FontFamily.Default,
                                             color = nutrientColor
                                         )
 
                                         Text(
-                                            text = nutrient.nutrient.unit,
+                                            text = nutrient.unit,
                                             style = MaterialTheme.typography.labelSmall,
                                             color = nutrientColor.copy(0.5f)
                                         )
@@ -215,7 +222,7 @@ object Nutrient {
                                     )
 
                                     Text(
-                                        text = doubleFormatter(nutrient.amount),
+                                        text = doubleFormatter(nutrientData.amount),
                                         style = MaterialTheme.typography.bodySmall,
                                         fontFamily = FontFamily.Default,
                                         color = WhiteFont,
@@ -225,11 +232,11 @@ object Nutrient {
                             )
 
                             // Bottom part: nutrient name
-                            val name = if (nutrient.nutrient.type == NutrientType.VITAMIN
-                                || nutrient.nutrient.type == NutrientType.MINERAL
+                            val name = if (nutrient.type == NutrientType.VITAMIN
+                                || nutrient.type == NutrientType.MINERAL
                             ) {
-                                nutrient.nutrient.symbol ?: nutrient.nutrient.name
-                            } else nutrient.nutrient.name
+                                nutrient.symbol ?: nutrient.name
+                            } else nutrient.name
 
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -237,7 +244,7 @@ object Nutrient {
                                 content = {
                                     if (!isDataMinimal) {
                                         Text(
-                                            text = "${nutrientData.progress.roundToInt()}%",
+                                            text = "${calculatedNutrientData.progress.roundToInt()}%",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontFamily = FontFamily.Default,
                                             color = nutrientColor.copy(0.5f)

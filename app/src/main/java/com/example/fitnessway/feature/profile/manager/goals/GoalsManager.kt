@@ -1,7 +1,7 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
+import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
@@ -82,7 +82,7 @@ class GoalsManager : IGoalsManager {
     }
 
     override fun initNutrientGoalsForm(
-        goalsData: NutrientsByType<NutrientApiFormat>
+        goalsData: NutrientsByType<NutrientWithPreferences>
     ) {
         val goals = formatGoalsAsMap(goalsData)
 
@@ -126,11 +126,11 @@ class GoalsManager : IGoalsManager {
 }
 
 private fun formatGoalsAsMap(
-    goalsData: NutrientsByType<NutrientApiFormat>
+    goalsData: NutrientsByType<NutrientWithPreferences>
 ): Map<Int, String> {
     return getAllNutrients(goalsData).associate {
-        it.nutrient.id to if (it.goal != null) {
-            doubleFormatter(it.goal)
+        it.nutrient.id to if (it.preferences.goal != null) {
+            doubleFormatter(it.preferences.goal)
         } else "~"
     }
 }

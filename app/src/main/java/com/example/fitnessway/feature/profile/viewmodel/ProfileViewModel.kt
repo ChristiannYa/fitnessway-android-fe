@@ -2,9 +2,10 @@ package com.example.fitnessway.feature.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
+import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
+import com.example.fitnessway.data.model.nutrient.NutrientPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
@@ -114,14 +115,17 @@ class ProfileViewModel(
 }
 
 private fun updateNutrientGoals(
-    nutrients: List<NutrientApiFormat>,
+    nutrients: List<NutrientWithPreferences>,
     modifiedGoals: Map<Int, String>
-): List<NutrientApiFormat> {
+): List<NutrientWithPreferences> {
     return nutrients.map { nutrientData ->
         // Only update if this nutrient was modified
         modifiedGoals[nutrientData.nutrient.id]?.let { newGoal ->
             nutrientData.copy(
-                goal = newGoal.toDouble()
+                preferences = NutrientPreferences(
+                    hexColor = nutrientData.preferences.hexColor,
+                    goal = newGoal.toDouble()
+                )
             )
         } ?: nutrientData
     }

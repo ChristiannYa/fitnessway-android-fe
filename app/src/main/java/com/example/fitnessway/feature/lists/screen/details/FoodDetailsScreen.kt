@@ -177,8 +177,8 @@ fun FoodDetailsScreen(
 
                     val nutrientFields = nutrients.map { (type, ns, title) ->
                         val fields = ns
-                            .filter { it.nutrient.id !in deletedNutrients }
-                            .map { fieldsProvider.nutrient(it.nutrient) }
+                            .filter { it.nutrientWithPreferences.nutrient.id !in deletedNutrients }
+                            .map { fieldsProvider.nutrient(it.nutrientWithPreferences.nutrient) }
 
                         Triple(type, fields, title)
                     }

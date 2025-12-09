@@ -102,8 +102,8 @@ fun Food(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 content = {
-                    food.nutrients.basic.forEach { (nutrient, amount) ->
-                        val nutrientColor = getNutrientColor(nutrient.hexColor) ?: Color(0xFFFFFFFF)
+                    food.nutrients.basic.forEach { (nutrientData, amount) ->
+                        val nutrientColor = getNutrientColor(nutrientData.preferences.hexColor) ?: Color(0xFFFFFFFF)
 
                         Text(
                             text = doubleFormatter(amount),

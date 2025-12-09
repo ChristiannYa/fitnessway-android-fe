@@ -33,7 +33,7 @@ class FoodRepositoryImpl(
             extractData = { it.foodCreated },
             errMsg = "Failed to add food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.GET_FOODS
+                ApiUrls.Food.FOODS
             )
         )
     }
@@ -46,7 +46,7 @@ class FoodRepositoryImpl(
             extractData = { it.updatedFood },
             errMsg = "Failed to update food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.GET_FOODS,
+                ApiUrls.Food.FOODS,
                 ApiUrls.Food.ALL_LOGS
             )
         )
@@ -60,7 +60,7 @@ class FoodRepositoryImpl(
             extractData = { it.foodDeleted },
             errMsg = "Failed to delete food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.GET_FOODS,
+                ApiUrls.Food.FOODS,
                 ApiUrls.Food.ALL_LOGS
             )
         )

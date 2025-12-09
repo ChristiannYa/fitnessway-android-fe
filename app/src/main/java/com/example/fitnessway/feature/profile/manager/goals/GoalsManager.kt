@@ -1,10 +1,8 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
-import android.util.Log
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.Nutrient.getAllNutrients
@@ -42,7 +40,6 @@ class GoalsManager : IGoalsManager {
             _goalsEditionFormState,
             _originalGoalValues
         ) { formState, originalGoals ->
-
             formState?.let {
                 val formGoals = it.data.goals
 
@@ -83,6 +80,7 @@ class GoalsManager : IGoalsManager {
             initialValue = false
         )
     }
+
     override fun initNutrientGoalsForm(
         goalsData: NutrientsByType<NutrientApiFormat>
     ) {
@@ -120,8 +118,6 @@ class GoalsManager : IGoalsManager {
         _modifiedGoals.value = goalsEditionFormState.data.goals.filter {
             it.value != originalGoalValues[it.key]
         }
-
-        Log.d(Constants.DEBUG_TAG, "modified goals: ${modifiedGoals.value}")
     }
 
     override fun init(scope: CoroutineScope) {

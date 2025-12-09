@@ -50,7 +50,7 @@ fun ProfileGoalsScreen(
                     ActionButton(
                         onClick = {
                             viewModel.setGoalsThatChanged()
-                            // viewModel.setNutrientGoals()
+                            viewModel.setNutrientGoals()
                         },
                         text = "Update",
                         enabled = isGoalsFormValid

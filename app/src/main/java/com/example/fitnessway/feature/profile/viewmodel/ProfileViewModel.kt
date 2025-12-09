@@ -2,17 +2,19 @@ package com.example.fitnessway.feature.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
 import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
+import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
+import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -43,11 +45,25 @@ class ProfileViewModel(
 
     fun setNutrientGoals() {
         val user = user ?: return
-        val goals = managers.goals.modifiedGoals.value
+
+        // Get current goals data to update it optimistically
+        val currentGoalsData = _uiState.value.nutrientsState
+
+        // Only proceed if there are nutrient goals data
+        if (currentGoalsData !is UiState.Success) return
+
+        val modifiedGoals = managers.goals.modifiedGoals.value
+
+        // Store updated nutrient goal data
+        val optimisticNutrientData = NutrientsByType(
+            basic = updateNutrientGoals(currentGoalsData.data.basic, modifiedGoals),
+            vitamin = updateNutrientGoals(currentGoalsData.data.vitamin, modifiedGoals),
+            mineral = updateNutrientGoals(currentGoalsData.data.mineral, modifiedGoals)
+        )
 
         val request = NutrientGoalsPostRequest(
             userId = user.id,
-            goals = goals.map {
+            goals = modifiedGoals.map {
                 NutrientIdWithGoal(
                     nutrientId = it.key,
                     goal = it.value.toDouble()
@@ -55,9 +71,31 @@ class ProfileViewModel(
             }
         )
 
+        // Update UI immediately
+        _uiState.update {
+            it.copy(
+                nutrientsState = UiState.Success(optimisticNutrientData)
+            )
+        }
+
         viewModelScope.launch {
             nutrientRepo.setNutrientGoals(request).collect { state ->
-                _uiState.update { it.copy(nutrientGoalsPostState = state) }
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(nutrientGoalsPostState = state) }
+                    }
+
+                    is UiState.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                nutrientsState = currentGoalsData,
+                                nutrientGoalsPostState = state
+                            )
+                        }
+                    }
+
+                    else -> {}
+                }
             }
         }
     }
@@ -68,5 +106,19 @@ class ProfileViewModel(
                 _uiState.update { it.copy(logoutState = state) }
             }
         }
+    }
+}
+
+private fun updateNutrientGoals(
+    nutrients: List<NutrientApiFormat>,
+    modifiedGoals: Map<Int, String>
+): List<NutrientApiFormat> {
+    return nutrients.map { nutrientData ->
+        // Only update if this nutrient was modified
+        modifiedGoals[nutrientData.nutrient.id]?.let { newGoal ->
+            nutrientData.copy(
+                goal = newGoal.toDouble()
+            )
+        } ?: nutrientData
     }
 }

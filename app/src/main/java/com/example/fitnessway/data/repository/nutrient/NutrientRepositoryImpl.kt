@@ -1,6 +1,8 @@
 package com.example.fitnessway.data.repository.nutrient
 
 import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
+import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
+import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.network.HttpClient
@@ -23,9 +25,19 @@ class NutrientRepositoryImpl(
 
     override suspend fun getNutrients(): Flow<UiState<NutrientsByType<NutrientApiFormat>>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.getNutrients() },
+            apiCall = apiService::getNutrients,
             extractData = { it.nutrients },
             errMsg = "Failed to get nutrients"
+        )
+    }
+
+    override suspend fun setNutrientGoals(
+        request: NutrientGoalsPostRequest
+    ): Flow<UiState<List<NutrientIdWithGoal>>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.setNutrientGoals(request) },
+            extractData = { it.upsertedGoals },
+            errMsg = "Failed to set nutrient goals"
         )
     }
 }

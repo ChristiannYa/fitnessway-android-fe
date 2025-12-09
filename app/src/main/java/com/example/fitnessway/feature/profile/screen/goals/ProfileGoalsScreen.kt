@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientGoalsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
@@ -47,7 +48,10 @@ fun ProfileGoalsScreen(
                 title = "My Goals",
                 extraContent = {
                     ActionButton(
-                        onClick = viewModel::setGoalsThatChanged,
+                        onClick = {
+                            viewModel.setGoalsThatChanged()
+                            // viewModel.setNutrientGoals()
+                        },
                         text = "Update",
                         enabled = isGoalsFormValid
                     )

@@ -1,9 +1,12 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
+import android.util.Log
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.NutrientApiFormat
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.Nutrient.getAllNutrients
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
@@ -39,21 +42,47 @@ class GoalsManager : IGoalsManager {
             _goalsEditionFormState,
             _originalGoalValues
         ) { formState, originalGoals ->
+
             formState?.let {
                 val formGoals = it.data.goals
 
-                formGoals.any { (id, goal) ->
-                    originalGoals?.get(id) != goal
+                val hasChanges = formGoals.any { (id, value) ->
+                    originalGoals?.get(id) != value
                 }
 
+                val validationErrors = formGoals.mapNotNull { (id, goal) ->
+                    val originalValue = originalGoals?.get(id)
+
+                    // Error when original was not "~" and current is "~"
+                    if (originalValue != null && originalValue != "~" && goal == "~") {
+                        return@mapNotNull "Nutrient (id: $id) goal cannot be cleared"
+                    }
+
+                    // Error when current value is empty (but not "~")
+                    if (goal.isEmpty()) {
+                        return@mapNotNull "Nutrient (id: $id) goal cannot be empty"
+                    }
+
+                    // Skip validation for default "~"
+                    if (goal == "~") {
+                        null
+                    } else {
+                        validateDoubleAsString(
+                            doubleAsString = goal,
+                            itemToBeValidated = "nutrient (id: $id) goal"
+                        )
+                    }
+                }
+
+                hasChanges && validationErrors.isEmpty()
             } ?: false
+
         }.stateIn(
             scope = scope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = false
         )
     }
-
     override fun initNutrientGoalsForm(
         goalsData: NutrientsByType<NutrientApiFormat>
     ) {
@@ -91,6 +120,8 @@ class GoalsManager : IGoalsManager {
         _modifiedGoals.value = goalsEditionFormState.data.goals.filter {
             it.value != originalGoalValues[it.key]
         }
+
+        Log.d(Constants.DEBUG_TAG, "modified goals: ${modifiedGoals.value}")
     }
 
     override fun init(scope: CoroutineScope) {

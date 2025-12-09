@@ -46,8 +46,7 @@ class FoodLogManager : IFoodLogManager {
 
     override val fleFormServsError: String?
         get() = _foodLogEditionFormState.value?.let { formState ->
-            formState.data.servings.let { value ->
-                validateDoubleAsString(
+            formState.data.servings.let { value -> validateDoubleAsString(
                     doubleAsString = value,
                     itemToBeValidated = "Servings"
                 )

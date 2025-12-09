@@ -67,3 +67,27 @@ data class NutrientIntakesByTypeApiResponse(
 )
 
 typealias NutrientIntakesByTypeFetchResponse = ApiResponseWithContent<NutrientIntakesByTypeApiResponse>
+
+@Serializable
+data class NutrientIdWithGoal(
+    @SerialName("nutrient_id")
+    val nutrientId: Int,
+
+    val goal: Double
+)
+
+@Serializable
+data class NutrientGoalsPostRequest(
+    @SerialName("user_id")
+    val userId: String,
+
+    val goals: List<NutrientIdWithGoal>
+)
+
+@Serializable
+data class NutrientGoalsApiPostResponse(
+    @SerialName("upserted_goals")
+    val upsertedGoals: List<NutrientIdWithGoal>
+)
+
+typealias NutrientGoalsPostResponse = ApiResponseWithContent<NutrientGoalsApiPostResponse>

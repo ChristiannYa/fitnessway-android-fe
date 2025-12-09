@@ -45,7 +45,7 @@ fun ApiErrorMessage(
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ApiErrorMessagePreview() {
+private fun ApiErrorMessagePreview() {
     FitnesswayTheme {
         ApiErrorMessage("An error occurred")
     }

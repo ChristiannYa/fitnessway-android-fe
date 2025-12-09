@@ -1,20 +1,28 @@
 package com.example.fitnessway.feature.profile.screen.goals
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientGoalsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.ActionButton
+import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
+import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientGoalsFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -28,6 +36,11 @@ fun ProfileGoalsScreen(
     val goalsEditionFormState by viewModel.goalsEditionFormState.collectAsState()
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
     val nutrientsState = uiState.nutrientsState
+
+    val nutrientGoalsUpdateErrMsg = handleErrStateTempMsg(
+        uiState = uiState.nutrientGoalsPostState,
+        onTimeOut = viewModel::resetNutrientGoalsUpdateState
+    )
 
     LaunchedEffect(nutrientsState) {
         if (nutrientsState is UiState.Success) {
@@ -62,7 +75,13 @@ fun ProfileGoalsScreen(
         content = {
             when (nutrientsState) {
                 is UiState.Loading -> {
-                    TextWithLoadingIndicator("Loading nutrients")
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize(),
+                        content = {
+                            TextWithLoadingIndicator("Loading nutrients")
+                        }
+                    )
                 }
 
                 is UiState.Success -> {
@@ -90,7 +109,17 @@ fun ProfileGoalsScreen(
                             }
                         }
 
-                        NutrientGoalsContent(nutrientFields = nutrientFields)
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            content = {
+                                ApiErrorMessageAnimated(
+                                    isVisible = nutrientGoalsUpdateErrMsg != "",
+                                    errorMessage = nutrientGoalsUpdateErrMsg
+                                )
+
+                                NutrientGoalsContent(nutrientFields = nutrientFields)
+                            }
+                        )
                     } ?: @Composable {
                         NotFoundText(text = "Form data not found")
                     }

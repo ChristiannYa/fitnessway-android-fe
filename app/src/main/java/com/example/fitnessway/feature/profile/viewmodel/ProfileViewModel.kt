@@ -107,6 +107,10 @@ class ProfileViewModel(
             }
         }
     }
+
+    fun resetNutrientGoalsUpdateState() {
+        _uiState.update { it.copy(nutrientGoalsPostState = UiState.Idle) }
+    }
 }
 
 private fun updateNutrientGoals(

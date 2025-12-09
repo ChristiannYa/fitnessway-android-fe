@@ -2,7 +2,9 @@ package com.example.fitnessway.feature.lists.screen.main.composables
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
@@ -17,14 +19,25 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
 import com.example.fitnessway.util.UiState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
 import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 
 fun LazyListScope.foodsList(
     state: UiState<List<FoodInformation>>,
     onViewDetails: (FoodInformation) -> Unit
 ) {
     when (state) {
-        is UiState.Loading -> item { Text(text = "Loading foods") }
+        is UiState.Loading -> item {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize(),
+                content = {
+                    TextWithLoadingIndicator("Loading Foods")
+                }
+            )
+        }
+
         is UiState.Success -> {
             val foods = state.data
 
@@ -50,6 +63,7 @@ fun LazyListScope.foodsList(
                 }
             }
         }
+
         is UiState.Error -> item { ApiErrorMessage(state.message) }
         is UiState.Idle -> {}
     }

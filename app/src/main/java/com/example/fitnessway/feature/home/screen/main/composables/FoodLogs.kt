@@ -51,6 +51,7 @@ import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 import com.example.fitnessway.ui.theme.OrangeWarning
@@ -148,13 +149,7 @@ fun FoodLogCategory(
                 verticalArrangement = Arrangement.spacedBy(18.dp),
                 content = {
                     if (foodLogs.isEmpty()) {
-                        Text(
-                            text = "No $categoryFormatted logged yet",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        NotFoundText(text = "No $categoryFormatted logged yet")
                     } else {
                         foodLogs.forEach { log ->
                             key(log.id) {

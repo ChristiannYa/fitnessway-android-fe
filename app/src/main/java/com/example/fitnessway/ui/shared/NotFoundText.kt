@@ -11,8 +11,9 @@ import androidx.compose.ui.text.style.TextAlign
 fun NotFoundText(text: String = "Data not found") {
     Text(
         text = text,
+        style = MaterialTheme.typography.bodyMedium,
         textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.onBackground.copy(0.6f),
+        color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
         modifier = Modifier.fillMaxWidth(),
     )
 }

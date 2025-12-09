@@ -32,6 +32,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
+import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import kotlin.math.roundToInt
@@ -131,11 +132,8 @@ object Nutrient {
             }
 
             if (allowedNutrientData.isEmpty()) {
-                Text(
-                    text = "Set your $nutrientTypeName goals in order to see their intake progress",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
+                NotFoundText(
+                    text = "Set your $nutrientTypeName goals in order to see their intake progress"
                 )
             } else {
                 val barShape = 16.dp

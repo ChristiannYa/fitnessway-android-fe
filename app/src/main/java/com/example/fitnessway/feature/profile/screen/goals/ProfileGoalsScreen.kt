@@ -47,7 +47,7 @@ fun ProfileGoalsScreen(
                 title = "My Goals",
                 extraContent = {
                     ActionButton(
-                        onClick = {},
+                        onClick = viewModel::setGoalsThatChanged,
                         text = "Update",
                         enabled = isGoalsFormValid
                     )

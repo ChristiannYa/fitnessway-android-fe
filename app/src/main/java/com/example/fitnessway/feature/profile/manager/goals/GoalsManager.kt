@@ -24,9 +24,16 @@ class GoalsManager : IGoalsManager {
 
     private val _originalGoalValues = MutableStateFlow<Map<Int, String>?>(null)
 
-    private val _modifiedGoals = MutableStateFlow<List<Int>>(emptyList())
-    override val modifiedGoals: StateFlow<List<Int>> = _modifiedGoals
+    private val _modifiedGoals = MutableStateFlow<Map<Int, String>>(emptyMap())
+    override val modifiedGoals: StateFlow<Map<Int, String>> = _modifiedGoals
 
+    // @NOTE:
+    //  `isGoalsFormValid` is a StateFlow because if it were a regular Boolean property,
+    //  the ProfileGoalsScreen composable would not automatically recompose when the
+    //  underlying form state changes.
+    //  By using `StateFlow` + `combine` + `stateIn`, its value gets recalculated
+    //  automatically whenever `_goalsEditionFormState` or `_originalGoalValues` change,
+    //  and the UI observes these changes via `collectAsState()`.
     override val isGoalsFormValid: StateFlow<Boolean> by lazy {
         combine(
             _goalsEditionFormState,
@@ -64,32 +71,39 @@ class GoalsManager : IGoalsManager {
         input: String
     ) {
         _goalsEditionFormState.value?.let { state ->
-            val updatedValues = {
+            val updatedValues = run {
                 val goals = state.data.goals.toMutableMap()
 
                 goals[fieldName.nutrientData.nutrient.id] = input
                 state.data.copy(goals = goals)
             }
 
-            _goalsEditionFormState.value = state.copy(data = updatedValues())
+            _goalsEditionFormState.value = state.copy(data = updatedValues)
         }
     }
 
-    override fun startFormEdition() {
-        _goalsEditionFormState.value = _goalsEditionFormState.value?.edit()
-    }
+    override fun setGoalsThatChanged() {
+        val goalsEditionFormState = _goalsEditionFormState.value
+        val originalGoalValues = _originalGoalValues.value
 
-    private fun formatGoalsAsMap(
-        goalsData: NutrientsByType<NutrientApiFormat>
-    ): Map<Int, String> {
-        return getAllNutrients(goalsData).associate {
-            it.nutrient.id to if (it.goal != null) {
-                doubleFormatter(it.goal)
-            } else "~"
+        if (goalsEditionFormState == null || originalGoalValues == null) return
+
+        _modifiedGoals.value = goalsEditionFormState.data.goals.filter {
+            it.value != originalGoalValues[it.key]
         }
     }
 
     override fun init(scope: CoroutineScope) {
         this.scope = scope
+    }
+}
+
+private fun formatGoalsAsMap(
+    goalsData: NutrientsByType<NutrientApiFormat>
+): Map<Int, String> {
+    return getAllNutrients(goalsData).associate {
+        it.nutrient.id to if (it.goal != null) {
+            doubleFormatter(it.goal)
+        } else "~"
     }
 }

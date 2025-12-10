@@ -27,7 +27,6 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
-import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.EditionButtons
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformationList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -37,6 +36,7 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsBoxUi
+import com.example.fitnessway.util.Nutrient.getAllNutrients
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import kotlinx.coroutines.delay
@@ -157,7 +157,7 @@ fun FoodLogScreen(
                     CompositionLocalProvider(
                         values = arrayOf(LocalOverscrollFactory provides null),
                         content = {
-                            LazyColumn (
+                            LazyColumn(
                                 verticalArrangement = Arrangement.spacedBy(20.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 content = {
@@ -169,7 +169,7 @@ fun FoodLogScreen(
                                             onEdit = { viewModel.startFormEdit(formState.data) },
                                             onSave = { viewModel.saveFormEdit(formState.data) },
                                             onCancel = { viewModel.cancelFormEdit(formState.data) },
-                                            onSubmit = { viewModel.addFoodLog() },
+                                            onSubmit = viewModel::addFoodLog,
 
                                             onSubmitText = "Log"
                                         )
@@ -197,9 +197,8 @@ fun FoodLogScreen(
                                             item {
                                                 NutrientSection(
                                                     title = config.title,
-                                                    nutrients = nutrients,
+                                                    nutrients = getAllNutrients(nutrients),
                                                     nutrientType = config.nutrientType,
-                                                    user = user,
                                                     progressBarHeight = config.progressBarHeight,
                                                     contentWidth = config.contentWidth
                                                 )
@@ -219,9 +218,8 @@ fun FoodLogScreen(
 @Composable
 private fun NutrientSection(
     title: String,
-    nutrients: NutrientsByType<NutrientAmountData>,
+    nutrients: List<NutrientAmountData>,
     nutrientType: NutrientType,
-    user: User,
     progressBarHeight: Dp,
     contentWidth: Dp,
 ) {
@@ -242,7 +240,6 @@ private fun NutrientSection(
                     NutrientsBoxUi(
                         nutrients = nutrients,
                         nutrientType = nutrientType,
-                        user = user,
                         isDataMinimal = true,
                         contentWidth = contentWidth,
                         progressBarHeight = progressBarHeight

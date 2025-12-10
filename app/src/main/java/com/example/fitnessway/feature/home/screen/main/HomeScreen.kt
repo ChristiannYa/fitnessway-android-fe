@@ -45,6 +45,7 @@ fun HomeScreen(
     onViewFoodsList: () -> Unit,
     onViewFoodLogDetails: () -> Unit,
     onNavigateToFoodForm: () -> Unit,
+    onNavigateToGoals: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -122,14 +123,19 @@ fun HomeScreen(
                                 val user = viewModel.user
 
                                 item {
-                                    BasicNutrientIntakes(nutrientsState, user)
+                                    BasicNutrientIntakes(
+                                        state = nutrientsState,
+                                        user = user,
+                                        onNavigateToGoals = onNavigateToGoals
+                                    )
                                 }
 
                                 item {
                                     OtherNutrientIntakes(
                                         state = nutrientsState,
                                         nutrientType = NutrientType.VITAMIN,
-                                        user = user
+                                        user = user,
+                                        onNavigateToGoals = onNavigateToGoals
                                     )
                                 }
 
@@ -137,7 +143,8 @@ fun HomeScreen(
                                     OtherNutrientIntakes(
                                         state = nutrientsState,
                                         nutrientType = NutrientType.MINERAL,
-                                        user = user
+                                        user = user,
+                                        onNavigateToGoals = onNavigateToGoals
                                     )
                                 }
 
@@ -187,7 +194,8 @@ fun HomeScreenPreview() {
         HomeScreen(
             onViewFoodsList = {},
             onViewFoodLogDetails = {},
-            onNavigateToFoodForm = {}
+            onNavigateToFoodForm = {},
+            onNavigateToGoals = {}
         )
     }
 }

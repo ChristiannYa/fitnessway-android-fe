@@ -11,6 +11,7 @@ import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoodLogS
 import com.example.fitnessway.feature.home.screen.logdetails.LogDetailsScreen
 import com.example.fitnessway.feature.home.screen.main.HomeScreen
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
+import com.example.fitnessway.feature.profile.navigation.ProfileGoalsDest
 import com.example.fitnessway.navigation.HomeGraph
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -43,7 +44,8 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
                 viewModel = viewModel,
                 onViewFoodsList = { navController.navigate(FoodSelection) },
                 onViewFoodLogDetails = { navController.navigate(FoodLogDetails) },
-                onNavigateToFoodForm = { navController.navigate(FoodCreation) }
+                onNavigateToFoodForm = { navController.navigate(FoodCreation) },
+                onNavigateToGoals = { navController.navigate(ProfileGoalsDest) }
             )
         }
 

@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.profile.screen.goals
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
@@ -75,6 +77,8 @@ fun ProfileGoalsScreen(
         content = {
             when (nutrientsState) {
                 is UiState.Loading -> {
+                    Log.d(Constants.DEBUG_TAG, "loading goals")
+
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize(),

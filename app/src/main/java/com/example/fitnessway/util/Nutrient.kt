@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,8 +30,6 @@ import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
-import com.example.fitnessway.data.model.user.User
-import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import kotlin.math.roundToInt
@@ -102,9 +99,8 @@ object Nutrient {
     object Ui {
         @Composable
         fun NutrientsBoxUi(
-            nutrients: NutrientsByType<NutrientAmountData>,
+            nutrients: List<NutrientAmountData>,
             nutrientType: NutrientType,
-            user: User,
             isDataMinimal: Boolean = false,
             /**
              * Represents the width of the **entire** nutrient UI (everything throughout
@@ -121,145 +117,129 @@ object Nutrient {
              */
             progressBarHeight: Dp = 115.2.dp,
         ) {
-            val nutrientTypeName = nutrientType.name.lowercase().replaceFirstChar { it.uppercase() }
+            val barShape = 16.dp
 
-            val allowedNutrientData = filterNutrientsByType(
-                nutrients = nutrients,
-                type = nutrientType
-            ).filter {
-                it.nutrientWithPreferences.preferences.goal != null &&
-                        (!it.nutrientWithPreferences.nutrient.isPremium || user.isPremium)
-            }
+            nutrients.forEach { nutrientData ->
+                val nutrient = nutrientData.nutrientWithPreferences.nutrient
+                val preferences = nutrientData.nutrientWithPreferences.preferences
 
-            if (allowedNutrientData.isEmpty()) {
-                NotFoundText(
-                    text = "Set your $nutrientTypeName goals in order to see their intake progress"
+                val nutrientColor = getNutrientColor(
+                    preferences.hexColor
+                ) ?: Color(0xFFFFFFFF)
+                val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
+
+                val spacedBy = if (nutrientType == NutrientType.BASIC) 12.dp else 8.dp
+
+                val animatedProgress by animateFloatAsState(
+                    targetValue = (calculatedNutrientData.progress / 100f).toFloat(),
+                    animationSpec = tween(
+                        durationMillis = 400,
+                        easing = FastOutSlowInEasing
+                    ),
+                    label = "intake_progress_animation"
                 )
-            } else {
-                val barShape = 16.dp
 
-                allowedNutrientData.forEach { nutrientData ->
-                    val nutrient = nutrientData.nutrientWithPreferences.nutrient
-                    val preferences = nutrientData.nutrientWithPreferences.preferences
-
-                    val nutrientColor = getNutrientColor(
-                        preferences.hexColor
-                    ) ?: Color(0xFFFFFFFF)
-                    val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
-
-                    val spacedBy = if (nutrientType == NutrientType.BASIC) 12.dp else 8.dp
-
-                    val animatedProgress by animateFloatAsState(
-                        targetValue = (calculatedNutrientData.progress / 100f).toFloat(),
-                        animationSpec = tween(
-                            durationMillis = 400,
-                            easing = FastOutSlowInEasing
-                        ),
-                        label = "intake_progress_animation"
-                    )
-
-                    Column(
-                        modifier = Modifier.width(contentWidth),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        content = {
-                            // Top part: Goal
-                            if (!isDataMinimal) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    content = {
-                                        Text(
-                                            text = if (preferences.goal != null) {
-                                                doubleFormatter(
-                                                    preferences.goal
-                                                )
-                                            } else "0",
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontFamily = FontFamily.Default,
-                                            color = nutrientColor
-                                        )
-
-                                        Text(
-                                            text = nutrient.unit,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = nutrientColor.copy(0.5f)
-                                        )
-                                    }
-                                )
-                            }
-
-                            // Middle part: progress bar
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth(0.8f)
-                                    .height(progressBarHeight)
-                                    .clip(RoundedCornerShape(barShape))
-                                    .background(
-                                        color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
-                                        shape = RoundedCornerShape(barShape)
-                                    ),
-                                content = {
-                                    val progressModifier = if (nutrientType == NutrientType.BASIC) {
-                                        Modifier
-                                            .align(Alignment.BottomCenter)
-                                            .offset(y = -(spacedBy * 2))
-                                    } else Modifier.align(Alignment.Center)
-
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .fillMaxHeight(animatedProgress)
-                                            .background(
-                                                color = nutrientColor,
-                                                shape = RoundedCornerShape(
-                                                    bottomStart = barShape,
-                                                    bottomEnd = barShape
-                                                )
-                                            )
-                                            .align(Alignment.BottomCenter)
-                                    )
-
-                                    Text(
-                                        text = doubleFormatter(nutrientData.amount),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontFamily = FontFamily.Default,
-                                        color = WhiteFont,
-                                        modifier = progressModifier
-                                    )
-                                }
-                            )
-
-                            // Bottom part: nutrient name
-                            val name = if (nutrient.type == NutrientType.VITAMIN
-                                || nutrient.type == NutrientType.MINERAL
-                            ) {
-                                nutrient.symbol ?: nutrient.name
-                            } else nutrient.name
-
+                Column(
+                    modifier = Modifier.width(contentWidth),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    content = {
+                        // Top part: Goal
+                        if (!isDataMinimal) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(2.dp),
                                 content = {
-                                    if (!isDataMinimal) {
-                                        Text(
-                                            text = "${calculatedNutrientData.progress.roundToInt()}%",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontFamily = FontFamily.Default,
-                                            color = nutrientColor.copy(0.5f)
-                                        )
-                                    }
+                                    Text(
+                                        text = if (preferences.goal != null) {
+                                            doubleFormatter(
+                                                preferences.goal
+                                            )
+                                        } else "0",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        fontFamily = FontFamily.Default,
+                                        color = nutrientColor
+                                    )
 
                                     Text(
-                                        text = name,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        overflow = TextOverflow.Ellipsis,
-                                        maxLines = 1
+                                        text = nutrient.unit,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = nutrientColor.copy(0.5f)
                                     )
                                 }
                             )
                         }
-                    )
-                }
+
+                        // Middle part: progress bar
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.8f)
+                                .height(progressBarHeight)
+                                .clip(RoundedCornerShape(barShape))
+                                .background(
+                                    color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
+                                    shape = RoundedCornerShape(barShape)
+                                ),
+                            content = {
+                                val progressModifier = if (nutrientType == NutrientType.BASIC) {
+                                    Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .offset(y = -(spacedBy * 2))
+                                } else Modifier.align(Alignment.Center)
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .fillMaxHeight(animatedProgress)
+                                        .background(
+                                            color = nutrientColor,
+                                            shape = RoundedCornerShape(
+                                                bottomStart = barShape,
+                                                bottomEnd = barShape
+                                            )
+                                        )
+                                        .align(Alignment.BottomCenter)
+                                )
+
+                                Text(
+                                    text = doubleFormatter(nutrientData.amount),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontFamily = FontFamily.Default,
+                                    color = WhiteFont,
+                                    modifier = progressModifier
+                                )
+                            }
+                        )
+
+                        // Bottom part: nutrient name
+                        val name = if (nutrient.type == NutrientType.VITAMIN
+                            || nutrient.type == NutrientType.MINERAL
+                        ) {
+                            nutrient.symbol ?: nutrient.name
+                        } else nutrient.name
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            content = {
+                                if (!isDataMinimal) {
+                                    Text(
+                                        text = "${calculatedNutrientData.progress.roundToInt()}%",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontFamily = FontFamily.Default,
+                                        color = nutrientColor.copy(0.5f)
+                                    )
+                                }
+
+                                Text(
+                                    text = name,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
+                                )
+                            }
+                        )
+                    }
+                )
             }
         }
     }

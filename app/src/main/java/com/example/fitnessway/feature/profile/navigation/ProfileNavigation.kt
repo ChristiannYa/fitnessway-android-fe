@@ -19,7 +19,7 @@ import org.koin.androidx.compose.koinViewModel
 object ProfileMain
 
 @Serializable
-private object ProfileGoalsDest
+object ProfileGoalsDest
 
 @Serializable
 private object ProfileColorsDest

@@ -20,7 +20,24 @@ object AppModifiers {
     fun Modifier.areaContainerLarge(
         areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
         shape: RoundedCornerShape = RoundedCornerShape(16.dp),
+        showsIndication: Boolean = false,
+        onClickEnabled: Boolean = true,
+        onClick: (() -> Unit)? = null
     ) = this
+        .then(
+            if (onClick != null) {
+                Modifier
+                    .clip(shape)
+                    .clickable(
+                        interactionSource = if (showsIndication) null else {
+                            remember { MutableInteractionSource() }
+                        },
+                        indication = if (showsIndication) LocalIndication.current else null,
+                        onClick = onClick,
+                        enabled = onClickEnabled
+                    )
+            } else Modifier
+        )
         .fillMaxWidth()
         .background(
             color = areaColor,

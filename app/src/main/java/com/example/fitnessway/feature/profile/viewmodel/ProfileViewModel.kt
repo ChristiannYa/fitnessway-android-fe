@@ -2,10 +2,10 @@ package com.example.fitnessway.feature.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
 import com.example.fitnessway.data.model.nutrient.NutrientPreferences
+import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
@@ -36,19 +36,17 @@ class ProfileViewModel(
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
+    val nutrientRepoUiState = nutrientRepo.uiState
+
     fun getNutrients() {
-        viewModelScope.launch {
-            nutrientRepo.getNutrients().collect { state ->
-                _uiState.update { it.copy(nutrientsState = state) }
-            }
-        }
+        nutrientRepo.loadNutrients()
     }
 
     fun setNutrientGoals() {
         val user = user ?: return
 
         // Get current goals data to update it optimistically
-        val currentGoalsData = _uiState.value.nutrientsState
+        val currentGoalsData = nutrientRepo.uiState.value.nutrientsState
 
         // Only proceed if there are nutrient goals data
         if (currentGoalsData !is UiState.Success) return
@@ -73,32 +71,11 @@ class ProfileViewModel(
         )
 
         // Update UI immediately
-        _uiState.update {
-            it.copy(
-                nutrientsState = UiState.Success(optimisticNutrientData)
-            )
+        nutrientRepo.updateState {
+            it.copy(nutrientsState = UiState.Success(optimisticNutrientData))
         }
 
-        viewModelScope.launch {
-            nutrientRepo.setNutrientGoals(request).collect { state ->
-                when (state) {
-                    is UiState.Success -> {
-                        _uiState.update { it.copy(nutrientGoalsPostState = state) }
-                    }
-
-                    is UiState.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                nutrientsState = currentGoalsData,
-                                nutrientGoalsPostState = state
-                            )
-                        }
-                    }
-
-                    else -> {}
-                }
-            }
-        }
+        nutrientRepo.setNutrientGoals(request, currentGoalsData.data)
     }
 
     fun logout() {
@@ -110,7 +87,9 @@ class ProfileViewModel(
     }
 
     fun resetNutrientGoalsUpdateState() {
-        _uiState.update { it.copy(nutrientGoalsPostState = UiState.Idle) }
+        nutrientRepo.updateState {
+            it.copy(nutrientGoalsSetState = UiState.Idle)
+        }
     }
 }
 

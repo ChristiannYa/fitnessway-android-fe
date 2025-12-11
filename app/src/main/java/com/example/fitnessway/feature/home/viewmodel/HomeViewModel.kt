@@ -40,24 +40,17 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
+    val nutrientRepoUiState = nutrientRepo.uiState
+
     val user = userStateHolder.userState.value.user
 
     fun getNutrients() {
-        viewModelScope.launch {
-            nutrientRepo.getNutrients().collect { state ->
-                _uiState.update { it.copy(nutrientsState = state) }
-            }
-        }
+        nutrientRepo.loadNutrients()
     }
 
     fun getNutrientIntakes() {
-        val apiDate = managers.date.getApiFormattedDate()
-
-        viewModelScope.launch {
-            nutrientRepo.getNutrientIntakes(apiDate).collect { state ->
-                _uiState.update { it.copy(nutrientIntakesState = state) }
-            }
-        }
+        val date = managers.date.getApiFormattedDate()
+        nutrientRepo.loadNutrientIntakes(date)
     }
 
     fun getFoods() {
@@ -216,7 +209,7 @@ class HomeViewModel(
 
         // Get current data to update optimistically
         val currentFoodLogState = _uiState.value.foodLogsState
-        val currentNutrientIntakesState = _uiState.value.nutrientIntakesState
+        val currentNutrientIntakesState = nutrientRepo.uiState.value.nutrientIntakesState
 
         // Only proceed if we have data
         if (currentFoodLogState !is UiState.Success ||
@@ -242,9 +235,12 @@ class HomeViewModel(
         // Update UI immediately
         _uiState.update {
             it.copy(
-                foodLogsState = UiState.Success(optimisticFoodLogs),
-                nutrientIntakesState = UiState.Success(optimisticNutrientIntakes)
+                foodLogsState = UiState.Success(optimisticFoodLogs)
             )
+        }
+
+        nutrientRepo.updateState {
+            it.copy(nutrientIntakesState = UiState.Success(optimisticNutrientIntakes))
         }
 
         viewModelScope.launch {
@@ -264,8 +260,11 @@ class HomeViewModel(
                             it.copy(
                                 foodLogsState = UiState.Success(currentFoodLogs),
                                 foodLogDeleteState = state,
-                                nutrientIntakesState = currentNutrientIntakesState
                             )
+                        }
+
+                        nutrientRepo.updateState {
+                            it.copy(nutrientIntakesState = UiState.Success(currentNutrientIntakes))
                         }
                     }
 

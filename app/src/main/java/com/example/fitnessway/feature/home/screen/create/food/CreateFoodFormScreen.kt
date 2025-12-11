@@ -49,8 +49,11 @@ fun CreateFoodFormScreen(
     onBackClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val currentStep by viewModel.currentStep.collectAsState()
     val foodCreationFormState by viewModel.foodCreationFormState.collectAsState()
+
+    val nutrientsUiState = nutrientRepoUiState.nutrientsState
 
     val fieldsProvider = FoodCreationFieldsProvider(
         formState = foodCreationFormState,
@@ -111,7 +114,7 @@ fun CreateFoodFormScreen(
                 )
             },
             content = {
-                when (val nutrientsState = uiState.nutrientsState) {
+                when (nutrientsUiState) {
                     is UiState.Loading -> Text("Loading form")
 
                     is UiState.Success -> {
@@ -135,7 +138,7 @@ fun CreateFoodFormScreen(
                                 content = {
                                     val isPremiumUser = viewModel.user.isPremium
 
-                                    val nutrients = nutrientsState.data
+                                    val nutrients = nutrientsUiState.data
 
                                     val basicNutrientFields = filterNutrientsByType(
                                         nutrients = nutrients,
@@ -261,7 +264,7 @@ fun CreateFoodFormScreen(
                     }
 
                     is UiState.Error -> ApiErrorMessage(
-                        errMsg = (uiState.nutrientsState as UiState.Error).message
+                        errMsg = nutrientsUiState.message
                     )
 
                     is UiState.Idle -> {}

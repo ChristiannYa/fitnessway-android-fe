@@ -49,6 +49,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     val isCreateMenuVisible by viewModel.isCreateMenuVisible.collectAsState()
 
@@ -119,7 +120,7 @@ fun HomeScreen(
                             if (viewModel.user == null) {
                                 item { Text("No user found") }
                             } else {
-                                val nutrientsState = uiState.nutrientIntakesState
+                                val nutrientsState = nutrientRepoUiState.nutrientIntakesState
                                 val user = viewModel.user
 
                                 item {

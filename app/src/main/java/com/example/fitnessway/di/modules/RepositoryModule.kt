@@ -8,6 +8,7 @@ import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.nutrient.NutrientRepositoryImpl
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.repository.user.UserRepositoryImpl
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val repositoryModule = module {
@@ -26,7 +27,8 @@ val repositoryModule = module {
     single<INutrientRepository> {
         NutrientRepositoryImpl(
             httpClient = get(),
-            apiService = get()
+            apiService = get(),
+            repositoryScope = get(named("repositoryScope"))
         )
     }
 

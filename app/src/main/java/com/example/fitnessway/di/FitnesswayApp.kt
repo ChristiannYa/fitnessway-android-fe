@@ -7,6 +7,7 @@ import com.example.fitnessway.di.modules.dataStoreModule
 import com.example.fitnessway.di.modules.managersModule
 import com.example.fitnessway.di.modules.networkModule
 import com.example.fitnessway.di.modules.repositoryModule
+import com.example.fitnessway.di.modules.scopeModule
 import com.example.fitnessway.di.modules.stateModule
 import com.example.fitnessway.di.modules.viewModelModule
 import org.koin.android.ext.android.inject
@@ -33,6 +34,7 @@ class FitnesswayApp : Application() {
                 repositoryModule,
                 dataStoreModule,
                 managersModule,
+                scopeModule
             )
         }
 

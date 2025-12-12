@@ -37,7 +37,7 @@ sealed interface FormFieldName {
             SERVING_UNIT
         }
 
-        data class NutrientField(val nutrient: Nutrient) : IFoodCreation
+        data class NutrientField(val nutrientWithPreferences: NutrientWithPreferences) : IFoodCreation
     }
 
     sealed interface IFoodEdition : FormFieldName

@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.form.FoodCreationBaseField
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.Nutrient
+import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.util.form.FormStates
 
 class FoodCreationFieldsProvider(
@@ -72,14 +73,16 @@ class FoodCreationFieldsProvider(
     }
 
     @Composable
-    fun nutrient(nutrient: Nutrient): FoodCreationNutrientField {
+    fun nutrient(nutrientWithPreferences: NutrientWithPreferences): FoodCreationNutrientField {
+        val n = nutrientWithPreferences.nutrient
+
         return FoodCreationNutrientField(
-            name = FormFieldName.FoodCreation.NutrientField(nutrient),
-            label = "${nutrient.name} (${nutrient.unit})",
-            value = formState.nutrients[nutrient.id] ?: "",
+            name = FormFieldName.FoodCreation.NutrientField(nutrientWithPreferences),
+            label = "${n.name} (${n.unit})",
+            value = formState.nutrients[n.id] ?: "",
             updateState = { newValue ->
                 onFieldUpdate(
-                    FormFieldName.FoodCreation.NutrientField(nutrient),
+                    FormFieldName.FoodCreation.NutrientField(nutrientWithPreferences),
                     newValue
                 )
             }

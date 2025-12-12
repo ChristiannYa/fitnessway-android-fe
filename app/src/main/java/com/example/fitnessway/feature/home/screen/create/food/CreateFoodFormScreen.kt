@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,39 +135,12 @@ fun CreateFoodFormScreen(
                             )
                         } else {
                             Column(
-                                verticalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxHeight(),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier
+                                    .fillMaxHeight(),
                                 content = {
                                     val isPremiumUser = viewModel.user.isPremium
-
                                     val nutrients = nutrientsUiState.data
-
-                                    val basicNutrientFields = filterNutrientsByType(
-                                        nutrients = nutrients,
-                                        type = NutrientType.BASIC
-                                    )
-                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
-                                        .map { (nutrient, _) ->
-                                            fieldsProvider.nutrient(nutrient)
-                                        }
-
-                                    val vitaminFields = filterNutrientsByType(
-                                        nutrients = nutrients,
-                                        type = NutrientType.VITAMIN
-                                    )
-                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
-                                        .map { (nutrient, _) ->
-                                            fieldsProvider.nutrient(nutrient = nutrient)
-                                        }
-
-                                    val mineralFields = filterNutrientsByType(
-                                        nutrients = nutrients,
-                                        type = NutrientType.MINERAL
-                                    )
-                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
-                                        .map { (nutrient, _) ->
-                                            fieldsProvider.nutrient(nutrient = nutrient)
-                                        }
 
                                     val foodBaseFields = listOf(
                                         fieldsProvider.name(),
@@ -173,6 +148,45 @@ fun CreateFoodFormScreen(
                                         fieldsProvider.amountPerServing(),
                                         fieldsProvider.servingUnit(),
                                     )
+
+                                    val basicNutrients = filterNutrientsByType(
+                                        nutrients = nutrients,
+                                        type = NutrientType.BASIC
+                                    )
+
+                                    val basicNutrientFields = basicNutrients
+                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
+                                        .map { fieldsProvider.nutrient(it) }
+
+                                    val basicNutrientsWithoutGoal = basicNutrients.filterNot {
+                                        it.preferences.goal != null
+                                    }.map { it.nutrient }
+
+                                    val vitamins = filterNutrientsByType(
+                                        nutrients = nutrients,
+                                        type = NutrientType.VITAMIN
+                                    )
+
+                                    val vitaminFields = vitamins
+                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
+                                        .map { fieldsProvider.nutrient(it) }
+
+                                    val vitaminsWithoutGoal = vitamins.filterNot {
+                                        it.preferences.goal != null
+                                    }.map { it.nutrient }
+
+                                    val minerals = filterNutrientsByType(
+                                        nutrients = nutrients,
+                                        type = NutrientType.MINERAL
+                                    )
+
+                                    val mineralFields = minerals
+                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
+                                        .map { fieldsProvider.nutrient(it) }
+
+                                    val mineralsWithoutGoal = minerals.filterNot {
+                                        it.preferences.goal != null
+                                    }.map { it.nutrient }
 
                                     val areBasicNutrientsValid = viewModel.areNutrientsValid(
                                         nutrients = filterNutrientsByType(
@@ -189,7 +203,10 @@ fun CreateFoodFormScreen(
                                     }
 
                                     Column(
-                                        verticalArrangement = Arrangement.spacedBy(26.dp),
+                                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .verticalScroll(rememberScrollState()),
                                         content = {
                                             ApiErrorMessageAnimated(
                                                 isVisible = foodAddErrMsg != "",
@@ -202,45 +219,53 @@ fun CreateFoodFormScreen(
                                                 isStepTwoValid = viewModel.areBasicNutrientsValid
                                             )
 
-                                            AnimatedContent(
-                                                targetState = currentStep,
-                                                transitionSpec = {
-                                                    val isForward = targetState > initialState
+                                            Column(
+                                                content = {
+                                                    AnimatedContent(
+                                                        targetState = currentStep,
+                                                        transitionSpec = {
+                                                            val isForward =
+                                                                targetState > initialState
 
-                                                    if (isForward)
-                                                        slideInHorizontally { it } + fadeIn() + scaleIn(
-                                                            initialScale = 0.7f
-                                                        ) togetherWith
-                                                                slideOutHorizontally { -it } + fadeOut() + scaleOut(
-                                                            targetScale = 0.7f
-                                                        )
-                                                    else
-                                                        slideInHorizontally { -it } + fadeIn() + scaleIn(
-                                                            initialScale = 0.7f
-                                                        ) togetherWith
-                                                                slideOutHorizontally { it } + fadeOut() + scaleOut(
-                                                            targetScale = 0.7f
-                                                        )
-                                                },
-                                                content = { step ->
-                                                    when (step) {
-                                                        1 -> SetBasicData(foodBaseFields)
+                                                            if (isForward)
+                                                                slideInHorizontally { it } + fadeIn() + scaleIn(
+                                                                    initialScale = 0.7f
+                                                                ) togetherWith
+                                                                        slideOutHorizontally { -it } + fadeOut() + scaleOut(
+                                                                    targetScale = 0.7f
+                                                                )
+                                                            else
+                                                                slideInHorizontally { -it } + fadeIn() + scaleIn(
+                                                                    initialScale = 0.7f
+                                                                ) togetherWith
+                                                                        slideOutHorizontally { it } + fadeOut() + scaleOut(
+                                                                    targetScale = 0.7f
+                                                                )
+                                                        },
+                                                        content = { step ->
+                                                            when (step) {
+                                                                1 -> SetBasicData(foodBaseFields)
 
-                                                        2 -> SetNutrients(
-                                                            fields = basicNutrientFields,
-                                                            isPremiumUser = isPremiumUser
-                                                        )
+                                                                2 -> SetNutrients(
+                                                                    fields = basicNutrientFields,
+                                                                    nutrientsWithoutGoal = basicNutrientsWithoutGoal,
+                                                                    isPremiumUser = isPremiumUser
+                                                                )
 
-                                                        3 -> SetNutrients(
-                                                            fields = vitaminFields,
-                                                            isPremiumUser = isPremiumUser
-                                                        )
+                                                                3 -> SetNutrients(
+                                                                    fields = vitaminFields,
+                                                                    nutrientsWithoutGoal = vitaminsWithoutGoal,
+                                                                    isPremiumUser = isPremiumUser,
+                                                                )
 
-                                                        4 -> SetNutrients(
-                                                            fields = mineralFields,
-                                                            isPremiumUser = isPremiumUser
-                                                        )
-                                                    }
+                                                                4 -> SetNutrients(
+                                                                    fields = mineralFields,
+                                                                    nutrientsWithoutGoal = mineralsWithoutGoal,
+                                                                    isPremiumUser = isPremiumUser
+                                                                )
+                                                            }
+                                                        }
+                                                    )
                                                 }
                                             )
                                         }

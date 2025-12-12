@@ -106,7 +106,7 @@ class FoodManager : IFoodManager {
 
             is FormFieldName.FoodCreation.NutrientField -> {
                 val updatedNutrients = _foodCreationFormState.value.nutrients.toMutableMap()
-                updatedNutrients[fieldName.nutrient.id] = input
+                updatedNutrients[fieldName.nutrientWithPreferences.nutrient.id] = input
                 _foodCreationFormState.value.copy(nutrients = updatedNutrients)
             }
         }

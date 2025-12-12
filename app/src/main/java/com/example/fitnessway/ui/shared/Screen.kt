@@ -28,26 +28,29 @@ fun Screen(
     Surface(
         modifier = Modifier.fillMaxSize(),
         content = {
-            Column {
-                val horizontalPadding = if (usesInnerHorizontalPadding) {
-                    UiMeasures.SCREEN_HORIZONTAL_PADDING
-                } else 0.dp
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                content = {
+                    val horizontalPadding = if (usesInnerHorizontalPadding) {
+                        UiMeasures.SCREEN_HORIZONTAL_PADDING
+                    } else 0.dp
 
+                    header?.let { it() }
 
-                header?.let { it() }
-                Box(
-                    modifier = Modifier
-                        .padding(
-                            start = horizontalPadding,
-                            end = horizontalPadding,
-                            top = if (hasPadding) 4.dp else 2.dp,
-                            bottom = bottomPaddingDynamic,
-                        ),
-                    content = {
-                        content()
-                    }
-                )
-            }
+                    Box(
+                        modifier = Modifier
+                            .padding(
+                                start = horizontalPadding,
+                                end = horizontalPadding,
+                                top = if (hasPadding) 4.dp else 2.dp,
+                                bottom = bottomPaddingDynamic,
+                            ),
+                        content = {
+                            content()
+                        }
+                    )
+                }
+            )
         }
     )
 }

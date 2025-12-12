@@ -1,19 +1,14 @@
 package com.example.fitnessway.feature.home.screen.create.food.composables
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,9 +73,6 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 singleLine = true,
                 modifier = Modifier
                     .width(inputMeasures.measuredWidth)
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                    )
                     .padding(vertical = padding)
             )
         }

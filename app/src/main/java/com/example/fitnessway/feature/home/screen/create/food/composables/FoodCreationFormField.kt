@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.util.form.field.rememberFieldInputMeasures
 
 @Composable
@@ -59,14 +60,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 content = {
-                    if (!enabled) {
-                        Icon(
-                            imageVector = Icons.Default.AutoAwesome,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
+                    if (!enabled) PremiumIcon()
 
                     Text(
                         text = field.label,

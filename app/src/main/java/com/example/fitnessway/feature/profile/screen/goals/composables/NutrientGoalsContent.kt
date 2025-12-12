@@ -10,15 +10,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.NutrientGoalEditionField
 import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
+import com.example.fitnessway.ui.theme.AppModifiers.blurPremiumItem
 
 @Composable
 fun NutrientGoalsContent(
     nutrientFields: Map<NutrientType, List<NutrientGoalEditionField>>,
+    user: User
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -51,8 +55,14 @@ fun NutrientGoalsContent(
                                         verticalArrangement = Arrangement.spacedBy(12.dp),
                                         content = {
                                             goalFields.forEach { field ->
+                                                val enabled = (!field.name.nutrientData.nutrient.isPremium || user.isPremium)
+
                                                 key(field.name.nutrientData.nutrient.id) {
-                                                    GoalsEditionFormField(field)
+                                                    GoalsEditionFormField(
+                                                        field = field,
+                                                        enabled = enabled,
+                                                        modifier = Modifier.blurPremiumItem(enabled)
+                                                    )
                                                 }
                                             }
                                         }

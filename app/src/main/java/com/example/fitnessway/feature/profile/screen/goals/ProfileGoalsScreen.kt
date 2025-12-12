@@ -22,6 +22,7 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
+import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientGoalsFieldsProvider
@@ -38,6 +39,7 @@ fun ProfileGoalsScreen(
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
 
     val nutrientsState = nutrientRepoUiState.nutrientsState
+    val user = viewModel.user
 
     val nutrientGoalsUpdateErrMsg = handleErrStateTempMsg(
         uiState = uiState.nutrientGoalsSetUiState,
@@ -75,59 +77,66 @@ fun ProfileGoalsScreen(
         },
 
         content = {
-            when (nutrientsState) {
-                is UiState.Loading -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize(),
-                        content = {
-                            TextWithLoadingIndicator("Loading nutrients")
-                        }
-                    )
-                }
+            if (user != null) {
+                when (nutrientsState) {
+                    is UiState.Loading -> {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize(),
+                            content = {
+                                TextWithLoadingIndicator("Loading nutrients")
+                            }
+                        )
+                    }
 
-                is UiState.Success -> {
-                    goalsEditionFormState?.let { formState ->
-                        val nutrientFields = remember(nutrientsState.data, formState) {
-                            val fieldsProvider = NutrientGoalsFieldsProvider(
-                                formState = formState,
-                                onFieldUpdate = { fieldName, value ->
-                                    viewModel.updateGoalEditionFormField(
-                                        fieldName = fieldName,
-                                        input = value
+                    is UiState.Success -> {
+                        goalsEditionFormState?.let { formState ->
+                            val nutrientFields = remember(nutrientsState.data, formState) {
+                                val fieldsProvider = NutrientGoalsFieldsProvider(
+                                    formState = formState,
+                                    onFieldUpdate = { fieldName, value ->
+                                        viewModel.updateGoalEditionFormField(
+                                            fieldName = fieldName,
+                                            input = value
+                                        )
+                                    }
+                                )
+
+                                NutrientType.entries.associateWith { type ->
+                                    val nutrientsByType = filterNutrientsByType(
+                                        nutrients = nutrientsState.data,
+                                        type = type
+                                    )
+
+                                    nutrientsByType.sortNutrientWithPreferencesByPremiumStatus(
+                                        user.isPremium
+                                    ).map { nutrientData ->
+                                        fieldsProvider.nutrientGoal(nutrientData)
+                                    }
+                                }
+                            }
+
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                content = {
+                                    ApiErrorMessageAnimated(
+                                        isVisible = nutrientGoalsUpdateErrMsg != "",
+                                        errorMessage = nutrientGoalsUpdateErrMsg
+                                    )
+
+                                    NutrientGoalsContent(
+                                        nutrientFields = nutrientFields,
+                                        user = user
                                     )
                                 }
                             )
-
-                            NutrientType.entries.associateWith { type ->
-                                val nutrientsByType = filterNutrientsByType(
-                                    nutrients = nutrientsState.data,
-                                    type = type
-                                )
-
-                                nutrientsByType.map { nutrientData ->
-                                    fieldsProvider.nutrientGoal(nutrientData)
-                                }
-                            }
+                        } ?: @Composable {
+                            NotFoundText(text = "Form data not found")
                         }
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            content = {
-                                ApiErrorMessageAnimated(
-                                    isVisible = nutrientGoalsUpdateErrMsg != "",
-                                    errorMessage = nutrientGoalsUpdateErrMsg
-                                )
-
-                                NutrientGoalsContent(nutrientFields = nutrientFields)
-                            }
-                        )
-                    } ?: @Composable {
-                        NotFoundText(text = "Form data not found")
                     }
-                }
 
-                else -> NotFoundText(text = "Something went wrong")
+                    else -> NotFoundText(text = "Something went wrong")
+                }
             }
         }
     )

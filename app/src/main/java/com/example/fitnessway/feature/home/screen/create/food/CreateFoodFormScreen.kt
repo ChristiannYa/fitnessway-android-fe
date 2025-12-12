@@ -34,7 +34,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
-import com.example.fitnessway.util.Nutrient.sortByPremiumStatus
+import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
@@ -144,7 +144,7 @@ fun CreateFoodFormScreen(
                                         nutrients = nutrients,
                                         type = NutrientType.BASIC
                                     )
-                                        .sortByPremiumStatus(isPremiumUser)
+                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
                                         .map { (nutrient, _) ->
                                             fieldsProvider.nutrient(nutrient)
                                         }
@@ -153,7 +153,7 @@ fun CreateFoodFormScreen(
                                         nutrients = nutrients,
                                         type = NutrientType.VITAMIN
                                     )
-                                        .sortByPremiumStatus(isPremiumUser)
+                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
                                         .map { (nutrient, _) ->
                                             fieldsProvider.nutrient(nutrient = nutrient)
                                         }
@@ -162,7 +162,7 @@ fun CreateFoodFormScreen(
                                         nutrients = nutrients,
                                         type = NutrientType.MINERAL
                                     )
-                                        .sortByPremiumStatus(isPremiumUser)
+                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
                                         .map { (nutrient, _) ->
                                             fieldsProvider.nutrient(nutrient = nutrient)
                                         }

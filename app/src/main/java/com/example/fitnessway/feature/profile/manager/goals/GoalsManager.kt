@@ -130,7 +130,7 @@ private fun formatGoalsAsMap(
 ): Map<Int, String> {
     return getAllNutrients(goalsData).associate {
         it.nutrient.id to if (it.preferences.goal != null) {
-            it.preferences.goal.toString()
+            doubleFormatter(it.preferences.goal, 2)
         } else "~"
     }
 }

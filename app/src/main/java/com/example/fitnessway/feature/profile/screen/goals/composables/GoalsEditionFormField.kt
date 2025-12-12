@@ -26,12 +26,14 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.util.Nutrient.getNutrientColor
 
 @Composable
 fun GoalsEditionFormField(
     field: FormField<FormFieldName.NutrientGoalData>,
     enabled: Boolean = true,
+    modifier: Modifier = Modifier
 ) {
     val nutrient = field.name.nutrientData.nutrient
     val preferences = field.name.nutrientData.preferences
@@ -50,42 +52,49 @@ fun GoalsEditionFormField(
     )
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         content = {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontWeight = FontWeight.Medium
-                        ),
-                        block = { append("${nutrient.name} ") }
-                    )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                content = {
+                    if (!enabled) PremiumIcon()
 
-                    if (nutrient.type == NutrientType.MINERAL) {
-                        append(text = "(${nutrient.symbol}) ")
-                    }
-
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.onBackground.copy(
-                                0.6f
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                block = { append("${nutrient.name} ") }
                             )
-                        ),
-                        block = { append(text = nutrient.unit) }
+
+                            if (nutrient.type == NutrientType.MINERAL) {
+                                append(text = "(${nutrient.symbol}) ")
+                            }
+
+                            withStyle(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colorScheme.onBackground.copy(
+                                        0.6f
+                                    )
+                                ),
+                                block = { append(text = nutrient.unit) }
+                            )
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(
+                            PaddingValues(
+                                end = 16.dp
+                            )
+                        )
                     )
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(
-                    PaddingValues(
-                        end = 16.dp
-                    )
-                )
+                }
             )
 
             BasicTextField(
-                value = field.value,
+                value = if (!enabled) "0" else field.value,
                 onValueChange = field.updateState,
                 enabled = enabled,
                 textStyle = textStyle,

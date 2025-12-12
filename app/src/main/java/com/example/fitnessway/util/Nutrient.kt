@@ -80,7 +80,7 @@ object Nutrient {
         }
     }
 
-    fun List<NutrientWithPreferences>.sortByPremiumStatus(
+    fun List<NutrientWithPreferences>.sortNutrientWithPreferencesByPremiumStatus(
         isPremiumUser: Boolean
     ): List<NutrientWithPreferences> {
         return if (!isPremiumUser) {

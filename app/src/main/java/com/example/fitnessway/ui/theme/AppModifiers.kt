@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -85,5 +86,10 @@ object AppModifiers {
         )
         .padding(14.dp)
 
+    @Composable
+    fun Modifier.blurPremiumItem(
+        enabled: Boolean
+    ) = this
+        .blur(if (enabled) 0.dp else 2.dp)
 
 }

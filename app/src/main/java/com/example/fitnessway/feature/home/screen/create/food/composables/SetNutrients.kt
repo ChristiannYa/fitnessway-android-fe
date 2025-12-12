@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
+import com.example.fitnessway.ui.theme.AppModifiers.blurPremiumItem
 
 @Composable
 fun SetNutrients(
@@ -26,7 +27,7 @@ fun SetNutrients(
                             field = field,
                             enabled = enabled,
                             modifier = Modifier
-                                .blur(if (enabled) 0.dp else 3.dp),
+                                .blurPremiumItem(enabled),
                         )
                     }
                 }

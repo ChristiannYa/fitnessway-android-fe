@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import com.example.fitnessway.data.model.form.FoodCreationBaseField
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.util.form.FormStates
 

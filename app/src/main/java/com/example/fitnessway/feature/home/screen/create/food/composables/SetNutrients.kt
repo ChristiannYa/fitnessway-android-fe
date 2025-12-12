@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.nutrient.Nutrient
@@ -34,37 +36,46 @@ fun SetNutrients(
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .areaContainerSmall(
-                        areaColor = MaterialTheme.colorScheme.secondaryContainer
-                    ),
-                content = {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        content = {
-                            Text(
-                                text = "These nutrients do not have a goal. Please provide them to be able to add them to your food",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+            if (nutrientsWithoutGoal.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .areaContainerSmall(),
+                    content = {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            content = {
+                                val messageText = if (nutrientsWithoutGoal.size > 2) {
+                                    "These nutrients are missing goals. If you choose to set goals for them, " +
+                                            "they can be added to your food."
+                                } else "This nutrient is missing a goal. If you choose to set a goal for it, " +
+                                        "it can be added to your food."
 
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(4.dp),
-                                content = {
-                                    nutrientsWithoutGoal.forEach {
-                                        Text(
-                                            text = it.name,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.8f)
-                                        )
+                                Text(
+                                    text = messageText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    content = {
+                                        nutrientsWithoutGoal.forEach {
+                                            Text(
+                                                text = it.name,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
                                     }
-                                }
-                            )
-                        }
-                    )
-                }
-            )
+                                )
+                            }
+                        )
+                    }
+                )
+            }
         }
     )
 }

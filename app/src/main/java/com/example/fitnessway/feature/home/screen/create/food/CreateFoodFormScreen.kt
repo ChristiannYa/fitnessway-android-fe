@@ -36,6 +36,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
+import com.example.fitnessway.util.Nutrient.filterOutPremiumNutrients
 import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
@@ -43,7 +44,6 @@ import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvide
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-
 
 @Composable
 fun CreateFoodFormScreen(
@@ -149,44 +149,29 @@ fun CreateFoodFormScreen(
                                         fieldsProvider.servingUnit(),
                                     )
 
-                                    val basicNutrients = filterNutrientsByType(
-                                        nutrients = nutrients,
-                                        type = NutrientType.BASIC
-                                    )
+                                    val nutrientFieldsData = NutrientType.entries.associateWith { type ->
+                                            val nutrientsByType = filterNutrientsByType(
+                                                nutrients = nutrients,
+                                                type = type
+                                            )
 
-                                    val basicNutrientFields = basicNutrients
-                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
-                                        .map { fieldsProvider.nutrient(it) }
+                                            val fields = nutrientsByType
+                                                .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
+                                                .map { fieldsProvider.nutrient(it) }
+                                                .filterNot {
+                                                    val preferences = it.name.nutrientWithPreferences.preferences
+                                                    val nutrient = it.name.nutrientWithPreferences.nutrient
 
-                                    val basicNutrientsWithoutGoal = basicNutrients.filterNot {
-                                        it.preferences.goal != null
-                                    }.map { it.nutrient }
+                                                    preferences.goal == null && (!nutrient.isPremium || isPremiumUser)
+                                                }
 
-                                    val vitamins = filterNutrientsByType(
-                                        nutrients = nutrients,
-                                        type = NutrientType.VITAMIN
-                                    )
+                                            val withoutGoal = nutrientsByType
+                                                .filterNot { it.preferences.goal != null }
+                                                .map { it.nutrient }
+                                                .filterOutPremiumNutrients(isPremiumUser)
 
-                                    val vitaminFields = vitamins
-                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
-                                        .map { fieldsProvider.nutrient(it) }
-
-                                    val vitaminsWithoutGoal = vitamins.filterNot {
-                                        it.preferences.goal != null
-                                    }.map { it.nutrient }
-
-                                    val minerals = filterNutrientsByType(
-                                        nutrients = nutrients,
-                                        type = NutrientType.MINERAL
-                                    )
-
-                                    val mineralFields = minerals
-                                        .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
-                                        .map { fieldsProvider.nutrient(it) }
-
-                                    val mineralsWithoutGoal = minerals.filterNot {
-                                        it.preferences.goal != null
-                                    }.map { it.nutrient }
+                                            Pair(fields, withoutGoal)
+                                        }
 
                                     val areBasicNutrientsValid = viewModel.areNutrientsValid(
                                         nutrients = filterNutrientsByType(
@@ -247,20 +232,20 @@ fun CreateFoodFormScreen(
                                                                 1 -> SetBasicData(foodBaseFields)
 
                                                                 2 -> SetNutrients(
-                                                                    fields = basicNutrientFields,
-                                                                    nutrientsWithoutGoal = basicNutrientsWithoutGoal,
+                                                                    fields = nutrientFieldsData[NutrientType.BASIC]?.first.orEmpty(),
+                                                                    nutrientsWithoutGoal = nutrientFieldsData[NutrientType.BASIC]?.second.orEmpty(),
                                                                     isPremiumUser = isPremiumUser
                                                                 )
 
                                                                 3 -> SetNutrients(
-                                                                    fields = vitaminFields,
-                                                                    nutrientsWithoutGoal = vitaminsWithoutGoal,
+                                                                    fields = nutrientFieldsData[NutrientType.VITAMIN]?.first.orEmpty(),
+                                                                    nutrientsWithoutGoal = nutrientFieldsData[NutrientType.VITAMIN]?.second.orEmpty(),
                                                                     isPremiumUser = isPremiumUser,
                                                                 )
 
                                                                 4 -> SetNutrients(
-                                                                    fields = mineralFields,
-                                                                    nutrientsWithoutGoal = mineralsWithoutGoal,
+                                                                    fields = nutrientFieldsData[NutrientType.MINERAL]?.first.orEmpty(),
+                                                                    nutrientsWithoutGoal = nutrientFieldsData[NutrientType.MINERAL]?.second.orEmpty(),
                                                                     isPremiumUser = isPremiumUser
                                                                 )
                                                             }

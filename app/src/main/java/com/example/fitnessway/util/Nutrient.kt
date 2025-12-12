@@ -33,6 +33,8 @@ import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import kotlin.math.roundToInt
+import com.example.fitnessway.data.model.nutrient.Nutrient as NutrientM
+
 
 object Nutrient {
     data class NutrientData(
@@ -87,6 +89,14 @@ object Nutrient {
             this.sortedBy { it.nutrient.isPremium }
         } else {
             this
+        }
+    }
+
+    fun List<NutrientM>.filterOutPremiumNutrients(
+        isUserPremium: Boolean
+    ): List<NutrientM> {
+        return this.filter {
+            (!it.isPremium || isUserPremium)
         }
     }
 

@@ -32,6 +32,7 @@ fun ProfileGoalsScreen(
     onBackClick: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val goalsEditionFormState by viewModel.goalsEditionFormState.collectAsState()
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
@@ -39,7 +40,7 @@ fun ProfileGoalsScreen(
     val nutrientsState = nutrientRepoUiState.nutrientsState
 
     val nutrientGoalsUpdateErrMsg = handleErrStateTempMsg(
-        uiState = nutrientRepoUiState.nutrientGoalsSetState,
+        uiState = uiState.nutrientGoalsSetUiState,
         onTimeOut = viewModel::resetNutrientGoalsUpdateState
     )
 

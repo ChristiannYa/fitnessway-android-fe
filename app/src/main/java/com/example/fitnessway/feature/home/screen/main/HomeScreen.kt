@@ -50,6 +50,8 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
+    val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
+
     val selectedDate by viewModel.selectedDate.collectAsState()
     val isCreateMenuVisible by viewModel.isCreateMenuVisible.collectAsState()
 
@@ -151,7 +153,7 @@ fun HomeScreen(
 
                                 item {
                                     FoodLogs(
-                                        foodLogsState = uiState.foodLogsState,
+                                        foodLogsState = foodRepoUiState.foodLogsUiState,
                                         foodLogDeleteState = uiState.foodLogDeleteState,
                                         onViewFoodsList = { foodLogCategories ->
                                             viewModel.setFoodLogCategory(foodLogCategories)

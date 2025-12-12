@@ -1,13 +1,13 @@
 package com.example.fitnessway.data.repository.nutrient
 
 import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.nutrient.INutrientApiService
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,40 +56,19 @@ class NutrientRepositoryImpl(
     }
 
     override fun setNutrientGoals(
-        request: NutrientGoalsPostRequest,
-        originalData: NutrientsByType<NutrientWithPreferences>
-    ) {
-        repositoryScope.launch {
-            httpClient.makeRequest(
-                apiCall = { apiService.setNutrientGoals(request) },
-                extractData = { it.upsertedGoals },
-                errMsg = "Failed to set nutrient goals",
-                invalidatedUrls = listOf(
-                    ApiUrls.Nutrient.ALL_INTAKES,
-                    ApiUrls.Nutrient.NUTRIENTS,
-                    ApiUrls.Food.ALL_LOGS,
-                    ApiUrls.Food.FOODS
-                )
-            ).collect { state ->
-                when (state) {
-                    is UiState.Success -> {
-                        _uiState.update { it.copy(nutrientGoalsSetState = state) }
-                        loadNutrients()
-                    }
-
-                    is UiState.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                nutrientsState = UiState.Success(originalData),
-                                nutrientGoalsSetState = state
-                            )
-                        }
-                    }
-
-                    else -> {}
-                }
-            }
-        }
+        request: NutrientGoalsPostRequest
+    ): Flow<UiState<List<NutrientIdWithGoal>>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.setNutrientGoals(request) },
+            extractData = { it.upsertedGoals },
+            errMsg = "Failed to set nutrient goals",
+            invalidatedUrls = listOf(
+                ApiUrls.Nutrient.ALL_INTAKES,
+                ApiUrls.Nutrient.NUTRIENTS,
+                ApiUrls.Food.ALL_LOGS,
+                ApiUrls.Food.FOODS
+            )
+        )
     }
 
     override fun updateState(update: (NutrientRepositoryUiState) -> NutrientRepositoryUiState) {

@@ -15,6 +15,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UiState
@@ -27,8 +29,14 @@ fun Foods(
     onSelectedFoodToLog: () -> Unit
 ) {
     when (state) {
-        is UiState.Loading -> Text("Loading foods")
-        is UiState.Success -> Foods(state.data, setSelectedFoodToLog, onSelectedFoodToLog)
+        is UiState.Loading -> {
+            TextWithLoadingIndicator(
+                loadingText = "Loading Foods"
+            )
+        }
+        is UiState.Success -> {
+            Foods(state.data, setSelectedFoodToLog, onSelectedFoodToLog)
+        }
         is UiState.Error -> ApiErrorMessage(state.message)
         is UiState.Idle -> {}
     }
@@ -41,13 +49,7 @@ fun Foods(
     onSelectedFoodToLog: () -> Unit
 ) {
     if (foods.isEmpty()) {
-        Text(
-            text = "Foods that you add to your list will appear here.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(0.8f),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+        NotFoundText("Foods that you add to your list will appear here")
     } else {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),

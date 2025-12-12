@@ -33,14 +33,12 @@ class ListsViewModel(
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
 
+    val foodRepoUiState = foodRepo.uiState
+
     val user = userStateHolder.userState.value.user
 
     fun getFoods() {
-        viewModelScope.launch {
-            foodRepo.getFoods().collect { state ->
-                _uiState.update { it.copy(foodsState = state) }
-            }
-        }
+        foodRepo.loadFoods()
     }
 
     fun updateFood() {
@@ -49,7 +47,7 @@ class ListsViewModel(
         val selectedFood = managers.edition.selectedFood.value ?: return
 
         // Get current data to update optimistically
-        val currentFoodsState = _uiState.value.foodsState
+        val currentFoodsState = foodRepo.uiState.value.foodsUiState
 
         // Only proceed if there is data
         if (currentFoodsState !is UiState.Success) return
@@ -114,10 +112,8 @@ class ListsViewModel(
         val optimisticFoods = optimisticFoodsWithoutUpdatedFood + optimisticFood
 
         // Update UI immediately
-        _uiState.update {
-            it.copy(
-                foodsState = UiState.Success(optimisticFoods)
-            )
+        foodRepo.updateState {
+            it.copy(foodsUiState = UiState.Success(optimisticFoods))
         }
 
         val request = FoodUpdateRequest(
@@ -143,13 +139,8 @@ class ListsViewModel(
 
                     is UiState.Error -> {
                         // Revert back to original state on error
-                        _uiState.update {
-                            it.copy(
-                                foodsState = UiState.Success(currentFoods),
-                                foodUpdateState = state
-                            )
-                        }
-
+                        _uiState.update { it.copy(foodUpdateState = state) }
+                        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(currentFoods)) }
                         managers.edition.setSelectedFood(selectedFood)
                     }
 

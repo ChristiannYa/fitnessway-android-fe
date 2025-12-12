@@ -20,7 +20,7 @@ fun FoodSelectionScreen(
     onBackClick: () -> Unit,
     onSelectedFoodToLog: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val foodUiState by viewModel.foodRepoUiState.collectAsState()
     val foodCategory by viewModel.foodLogCategory.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -37,7 +37,7 @@ fun FoodSelectionScreen(
         content = {
             Column {
                 Foods(
-                    state = uiState.foodsState,
+                    state = foodUiState.foodsUiState,
                     setSelectedFoodToLog = viewModel::setSelectedFoodToLog,
                     onSelectedFoodToLog
                 )

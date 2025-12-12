@@ -46,7 +46,7 @@ class ProfileViewModel(
         val user = user ?: return
 
         // Get current goals data to update it optimistically
-        val currentGoalsData = nutrientRepo.uiState.value.nutrientsState
+        val currentGoalsData = nutrientRepoUiState.value.nutrientsState
 
         // Only proceed if there are nutrient goals data
         if (currentGoalsData !is UiState.Success) return
@@ -75,7 +75,27 @@ class ProfileViewModel(
             it.copy(nutrientsState = UiState.Success(optimisticNutrientData))
         }
 
-        nutrientRepo.setNutrientGoals(request, currentGoalsData.data)
+        viewModelScope.launch {
+            nutrientRepo.setNutrientGoals(request).collect { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(nutrientGoalsSetUiState = state) }
+                    }
+
+                    is UiState.Error -> {
+                        _uiState.update {
+                            it.copy(nutrientGoalsSetUiState = state)
+                        }
+
+                        nutrientRepo.updateState {
+                            it.copy(nutrientsState = currentGoalsData)
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
     }
 
     fun logout() {
@@ -87,8 +107,8 @@ class ProfileViewModel(
     }
 
     fun resetNutrientGoalsUpdateState() {
-        nutrientRepo.updateState {
-            it.copy(nutrientGoalsSetState = UiState.Idle)
+        _uiState.update {
+            it.copy(nutrientGoalsSetUiState = UiState.Idle)
         }
     }
 }

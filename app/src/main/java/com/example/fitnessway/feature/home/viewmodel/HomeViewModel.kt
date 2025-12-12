@@ -41,6 +41,7 @@ class HomeViewModel(
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
     val nutrientRepoUiState = nutrientRepo.uiState
+    val foodRepoUiState = foodRepo.uiState
 
     val user = userStateHolder.userState.value.user
 
@@ -54,11 +55,7 @@ class HomeViewModel(
     }
 
     fun getFoods() {
-        viewModelScope.launch {
-            foodRepo.getFoods().collect { state ->
-                _uiState.update { it.copy(foodsState = state) }
-            }
-        }
+        foodRepo.loadFoods()
     }
 
     fun addFood() {
@@ -97,13 +94,8 @@ class HomeViewModel(
     }
 
     fun getFoodLogs() {
-        val apiDate = managers.date.getApiFormattedDate()
-
-        viewModelScope.launch {
-            foodRepo.getFoodLogs(apiDate).collect { state ->
-                _uiState.update { it.copy(foodLogsState = state) }
-            }
-        }
+        val date = managers.date.getApiFormattedDate()
+        foodRepo.loadFoodLogs(date)
     }
 
     fun addFoodLog() {
@@ -139,7 +131,8 @@ class HomeViewModel(
         val selectedFoodLog = managers.foodLog.selectedFoodLog.value ?: return
 
         // Get current food logs data to update optimistically
-        val currentFoodLogsData = _uiState.value.foodLogsState
+        val currentFoodLogsData = foodRepo.uiState.value.foodLogsUiState
+
 
         // Only proceed if there are food logs
         if (currentFoodLogsData !is UiState.Success) return
@@ -208,7 +201,7 @@ class HomeViewModel(
         val formattedDate = managers.date.getApiFormattedDate()
 
         // Get current data to update optimistically
-        val currentFoodLogState = _uiState.value.foodLogsState
+        val currentFoodLogState = foodRepo.uiState.value.foodLogsUiState
         val currentNutrientIntakesState = nutrientRepo.uiState.value.nutrientIntakesState
 
         // Only proceed if we have data
@@ -233,10 +226,8 @@ class HomeViewModel(
         )
 
         // Update UI immediately
-        _uiState.update {
-            it.copy(
-                foodLogsState = UiState.Success(optimisticFoodLogs)
-            )
+        foodRepo.updateState {
+            it.copy(foodLogsUiState = UiState.Success(optimisticFoodLogs))
         }
 
         nutrientRepo.updateState {
@@ -257,10 +248,11 @@ class HomeViewModel(
                     is UiState.Error -> {
                         // Revert back to original state on error
                         _uiState.update {
-                            it.copy(
-                                foodLogsState = UiState.Success(currentFoodLogs),
-                                foodLogDeleteState = state,
-                            )
+                            it.copy(foodLogDeleteState = state)
+                        }
+
+                        foodRepo.updateState {
+                            it.copy(foodLogsUiState = UiState.Success(currentFoodLogs))
                         }
 
                         nutrientRepo.updateState {

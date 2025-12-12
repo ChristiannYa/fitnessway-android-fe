@@ -1,11 +1,9 @@
 package com.example.fitnessway.feature.lists.screen.main
 
 import androidx.compose.foundation.LocalOverscrollFactory
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -26,7 +24,7 @@ fun ListsScreen(
     viewModel: ListsViewModel = koinViewModel(),
     onViewDetails: () -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -53,7 +51,7 @@ fun ListsScreen(
                         when (selectedList) {
                             ListOption.Food -> {
                                 foodsList(
-                                    state = uiState.foodsState,
+                                    state = foodRepoUiState.foodsUiState,
                                     onViewDetails = { food ->
                                         viewModel.setSelectedFood(food)
                                         onViewDetails()

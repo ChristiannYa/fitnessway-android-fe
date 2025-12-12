@@ -35,7 +35,8 @@ val repositoryModule = module {
     single<IFoodRepository> {
         FoodRepositoryImpl(
             apiService = get(),
-            httpClient = get()
+            httpClient = get(),
+            repositoryScope = get(named("repositoryScope"))
         )
     }
 }

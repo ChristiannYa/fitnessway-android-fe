@@ -95,7 +95,6 @@ class FoodRepositoryImpl(
         )
     }
 
-
     private fun fetchFoodLogs(date: String): Flow<UiState<FoodLogsByCategory>> {
         return httpClient.makeRequest(
             apiCall = { apiService.getFoodLogs(date) },

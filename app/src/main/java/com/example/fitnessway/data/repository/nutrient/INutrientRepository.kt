@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 interface INutrientRepository {
     val uiState: StateFlow<NutrientRepositoryUiState>
 
+    fun refreshNutrientIntakes(date: String)
     fun loadNutrientIntakes(date: String)
 
+    fun refreshNutrients()
     fun loadNutrients()
     fun setNutrientGoals(request: NutrientGoalsPostRequest): Flow<UiState<List<NutrientIdWithGoal>>>
 

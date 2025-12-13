@@ -2,6 +2,9 @@ package com.example.fitnessway.data.repository.nutrient
 
 import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
+import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
+import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
+import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.nutrient.INutrientApiService
@@ -24,35 +27,48 @@ class NutrientRepositoryImpl(
     private val _uiState = MutableStateFlow(NutrientRepositoryUiState())
     override val uiState: StateFlow<NutrientRepositoryUiState> = _uiState.asStateFlow()
 
-    override fun loadNutrients() {
-        val nutrientsUiState = _uiState.value.nutrientsState
+    private fun fetchNutrientIntakes(date: String): Flow<UiState<NutrientIntakesByType>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.getNutrientIntakes(date) },
+            extractData = { it.nutrientIntakes },
+            errMsg = "Failed to get nutrient intakes"
+        )
+    }
 
-        // Skip if we have successful data
-        if (nutrientsUiState is UiState.Success) {
-            return
-        }
-
+    override fun refreshNutrientIntakes(date: String) {
         repositoryScope.launch {
-            httpClient.makeRequest(
-                apiCall = apiService::getNutrients,
-                extractData = { it.nutrients },
-                errMsg = "Failed to get nutrients"
-            ).collect { state ->
-                _uiState.update { it.copy(nutrientsState = state) }
+            fetchNutrientIntakes(date).collect { state ->
+                _uiState.update { it.copy(nutrientIntakesState = state) }
             }
         }
     }
 
     override fun loadNutrientIntakes(date: String) {
+        val nutrientIntakesUiState = _uiState.value.nutrientIntakesState
+        if (nutrientIntakesUiState is UiState.Success) return
+        refreshNutrientIntakes(date)
+    }
+
+    private fun fetchNutrients(): Flow<UiState<NutrientsByType<NutrientWithPreferences>>> {
+        return httpClient.makeRequest(
+            apiCall = apiService::getNutrients,
+            extractData = { it.nutrients },
+            errMsg = "Failed to fetch nutrients"
+        )
+    }
+
+    override fun refreshNutrients() {
         repositoryScope.launch {
-            httpClient.makeRequest(
-                apiCall = { apiService.getNutrientIntakes(date) },
-                extractData = { it.nutrientIntakes },
-                errMsg = "Failed to get nutrient intakes"
-            ).collect { state ->
-                _uiState.update { it.copy(nutrientIntakesState = state) }
+            fetchNutrients().collect { state ->
+                _uiState.update { it.copy(nutrientsState = state) }
             }
         }
+    }
+
+    override fun loadNutrients() {
+        val nutrientsUiState = _uiState.value.nutrientsState
+        if (nutrientsUiState is UiState.Success) return
+        refreshNutrients()
     }
 
     override fun setNutrientGoals(

@@ -149,18 +149,23 @@ fun CreateFoodFormScreen(
                                         fieldsProvider.servingUnit(),
                                     )
 
-                                    val nutrientFieldsData = NutrientType.entries.associateWith { type ->
+                                    val nutrientFieldsData =
+                                        NutrientType.entries.associateWith { type ->
                                             val nutrientsByType = filterNutrientsByType(
                                                 nutrients = nutrients,
                                                 type = type
                                             )
 
                                             val fields = nutrientsByType
-                                                .sortNutrientWithPreferencesByPremiumStatus(isPremiumUser)
+                                                .sortNutrientWithPreferencesByPremiumStatus(
+                                                    isPremiumUser
+                                                )
                                                 .map { fieldsProvider.nutrient(it) }
                                                 .filterNot {
-                                                    val preferences = it.name.nutrientWithPreferences.preferences
-                                                    val nutrient = it.name.nutrientWithPreferences.nutrient
+                                                    val preferences =
+                                                        it.name.nutrientWithPreferences.preferences
+                                                    val nutrient =
+                                                        it.name.nutrientWithPreferences.nutrient
 
                                                     preferences.goal == null && (!nutrient.isPremium || isPremiumUser)
                                                 }
@@ -173,17 +178,22 @@ fun CreateFoodFormScreen(
                                             Pair(fields, withoutGoal)
                                         }
 
-                                    val areBasicNutrientsValid = viewModel.areNutrientsValid(
-                                        nutrients = filterNutrientsByType(
-                                            nutrients = nutrients, type = NutrientType.BASIC
-                                        ).map { it.nutrient.id }.toSet()
-                                    )
+                                    val areNsValid =
+                                        viewModel.areBasicNutrientsValid && currentStep >= 2
+
+                                    val areVsValid = viewModel.validateFoodNonBaseNutrients(
+                                        nutrients = nutrients.vitamin.map { it.nutrient }
+                                    ) && currentStep >= 3
+
+                                    val areMsValid = viewModel.validateFoodNonBaseNutrients(
+                                        nutrients = nutrients.mineral.map { it.nutrient }
+                                    ) && currentStep >= 4
 
                                     val isCurrentStepValid = when (currentStep) {
                                         1 -> viewModel.isBasicDataValid
-                                        2 -> areBasicNutrientsValid
-                                        3 -> true
-                                        4 -> true
+                                        2 -> areNsValid
+                                        3 -> areVsValid
+                                        4 -> areMsValid
                                         else -> false
                                     }
 
@@ -201,7 +211,9 @@ fun CreateFoodFormScreen(
                                             FormProgressIndicator(
                                                 currentStep = currentStep,
                                                 isStepOneValid = viewModel.isBasicDataValid,
-                                                isStepTwoValid = viewModel.areBasicNutrientsValid
+                                                isStepTwoValid = areNsValid,
+                                                isStepThreeValid = areVsValid,
+                                                isStepFourValid = areMsValid
                                             )
 
                                             Column(

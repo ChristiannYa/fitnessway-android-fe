@@ -33,4 +33,33 @@ object Formatters {
             }
         }
     }
+
+    /**
+     * Converts a user input string to a Double, with stricter validation than [toDoubleOrNull].
+     *
+     * This function is designed for validating numeric user input and rejects Kotlin/Java
+     * Double literal suffixes (like 'd', 'f') and scientific notation that [toDoubleOrNull]
+     * would accept.
+     *
+     * Accepted formats:
+     * - Positive integers: "123"
+     * - Negative integers: "-123"
+     * - Positive decimals: "123.45" or ".5"
+     * - Negative decimals: "-123.45"
+     *
+     * Rejected formats:
+     * - Decimal-only with minus: "-.5"
+     * - Double/Float literals: "123d", "123f"
+     * - Scientific notation: "1.23e5"
+     * - Invalid characters: "123abc"
+     *
+     * @return The parsed Double value, or null if the string doesn't match the expected format
+     */
+    fun String.toInputDouble(): Double? {
+        return if (this.matches(Regex("^-?\\d+(\\.\\d+)?$|^\\.\\d+$"))) {
+            this.toDoubleOrNull()
+        } else {
+            null
+        }
+    }
 }

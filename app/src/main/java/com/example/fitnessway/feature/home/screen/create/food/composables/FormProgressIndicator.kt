@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.dp
 fun FormProgressIndicator(
     currentStep: Int,
     isStepOneValid: Boolean,
-    isStepTwoValid: Boolean
+    isStepTwoValid: Boolean,
+    isStepThreeValid: Boolean,
+    isStepFourValid: Boolean
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -43,12 +45,12 @@ fun FormProgressIndicator(
             )
             ProgressIndicator(
                 isCurrentStep = currentStep == 3,
-                isValid = isStepTwoValid,
+                isValid = isStepThreeValid,
                 activeColor = MaterialTheme.colorScheme.tertiary
             )
             ProgressIndicator(
                 isCurrentStep = currentStep == 4,
-                isValid = isStepTwoValid,
+                isValid = isStepFourValid,
                 activeColor = MaterialTheme.colorScheme.primary
             )
         }

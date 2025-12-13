@@ -2,6 +2,9 @@ package com.example.fitnessway.feature.home.manager.food
 
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.data.model.nutrient.Nutrient
+import com.example.fitnessway.util.Formatters.toInputDouble
+import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
@@ -42,11 +45,10 @@ class FoodManager : IFoodManager {
 
     override val formAmountPerServingError: String?
         get() = _foodCreationFormState.value.amountPerServing.let { value ->
-            if (value.isEmpty()) null else {
-                val amount = value.toInt()
-
-                if (amount > 0) null else "Must be greater than 0"
-            }
+            validateDoubleAsString(
+                doubleAsString = value,
+                itemToBeValidated = "Amount Per Servings"
+            )
         }
 
     override val formServingUnitError: String?
@@ -71,13 +73,6 @@ class FoodManager : IFoodManager {
         get() = _foodCreationFormState.value.nutrients.values.any {
             (it.toDoubleOrNull() ?: 0.0) > 0
         }
-
-    override fun areNutrientsValid(nutrients: Set<Int>): Boolean {
-        return _foodCreationFormState.value.nutrients
-            .filter { (id, _) -> id in nutrients }
-            .values
-            .any { (it.toDoubleOrNull() ?: 0.0) > 0 }
-    }
 
     override fun updateFoodCreationFormField(
         fieldName: FormFieldName.IFoodCreation,
@@ -139,5 +134,22 @@ class FoodManager : IFoodManager {
                 onSubmit?.invoke()
             }
         }
+    }
+
+    override fun validateFoodNonBaseNutrients(nutrients: List<Nutrient>): Boolean {
+        val formState = _foodCreationFormState.value
+        val targetNutrientIds = nutrients.map { it.id }.toSet()
+
+        val isAnyTargetNutrientInvalid = targetNutrientIds.any { id ->
+            val value = formState.nutrients[id]
+
+            if (value.isNullOrEmpty()) return@any false
+
+            val amount = value.toInputDouble()
+            val isInvalid = amount == null || amount <= 0.0
+            isInvalid
+        }
+
+        return !isAnyTargetNutrientInvalid
     }
 }

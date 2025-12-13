@@ -42,18 +42,23 @@ fun FoodLogInformationList(
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
+                    val brand =
+                        if (food.information.brand == null || food.information.brand.isEmpty()) {
+                            "~"
+                        } else food.information.brand
+
                     Text(
                         text = category.replaceFirstChar { it.uppercase() },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
                     )
-                    if (food.information.brand != null) {
-                        Text(
-                            text = food.information.brand,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                    }
+
+                    Text(
+                        text = brand,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+
                     Text(
                         text = food.information.name,
                         style = MaterialTheme.typography.titleSmall,

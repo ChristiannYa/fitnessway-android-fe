@@ -13,11 +13,13 @@ import kotlinx.coroutines.flow.StateFlow
 interface IFoodRepository {
     val uiState: StateFlow<FoodRepositoryUiState>
 
+    fun refreshFoods()
     fun loadFoods()
     suspend fun deleteFood(foodId: Int): Flow<UiState<FoodInformation>>
     suspend fun addFood(request: FoodAddRequest): Flow<UiState<FoodInformation>>
     suspend fun updateFood(request: FoodUpdateRequest): Flow<UiState<FoodInformation>>
 
+    fun refreshFoodLogs(date: String)
     fun loadFoodLogs(date: String)
     suspend fun addFoodLog(request: FoodLogAddRequest, date: String): Flow<UiState<FoodLogData>>
     suspend fun updateFoodLog(request: FoodLogUpdateRequest, date: String): Flow<UiState<FoodLogData>>

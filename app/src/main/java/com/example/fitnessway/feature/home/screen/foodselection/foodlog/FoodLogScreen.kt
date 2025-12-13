@@ -32,6 +32,7 @@ import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composab
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
@@ -128,13 +129,7 @@ fun FoodLogScreen(
             val food = selectedFoodToLog
 
             if (food == null || user == null) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Food information not found",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
+                NotFoundText("Food information not found")
             } else {
                 foodLogFormState?.let { formState ->
                     val fieldsProvider = FoodLogFieldsProvider(

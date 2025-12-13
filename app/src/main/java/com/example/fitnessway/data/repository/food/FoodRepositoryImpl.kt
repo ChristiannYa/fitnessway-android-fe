@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
+import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.model.food.FoodUpdateRequest
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
@@ -14,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -26,20 +28,26 @@ class FoodRepositoryImpl(
     private val _uiState = MutableStateFlow(FoodRepositoryUiState())
     override val uiState: StateFlow<FoodRepositoryUiState> = _uiState
 
-    override fun loadFoods() {
-        val foodsUiState = _uiState.value.foodsUiState
+    private fun fetchFoods(): Flow<UiState<List<FoodInformation>>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.getFoods() },
+            extractData = { it.foods ?: emptyList() },
+            errMsg = "Failed to fetch foods"
+        )
+    }
 
-        if (foodsUiState is UiState.Success) return
-
+    override fun refreshFoods() {
         repositoryScope.launch {
-            httpClient.makeRequest(
-                apiCall = { apiService.getFoods() },
-                extractData = { it.foods ?: emptyList() },
-                errMsg = "Failed to load foods"
-            ).collect { state ->
+            fetchFoods().collect { state ->
                 _uiState.update { it.copy(foodsUiState = state) }
             }
         }
+    }
+
+    override fun loadFoods() {
+        val foodsUiState = _uiState.value.foodsUiState
+        if (foodsUiState is UiState.Success) return
+        refreshFoods()
     }
 
     override suspend fun addFood(
@@ -52,7 +60,11 @@ class FoodRepositoryImpl(
             invalidatedUrls = listOf(
                 ApiUrls.Food.FOODS
             )
-        )
+        ).onEach { state ->
+            if (state is UiState.Success) {
+                refreshFoods()
+            }
+        }
     }
 
     override suspend fun updateFood(
@@ -83,20 +95,27 @@ class FoodRepositoryImpl(
         )
     }
 
-    override fun loadFoodLogs(date: String) {
-        val foodLogsUiState = _uiState.value.foodLogsUiState
 
-        if (foodLogsUiState is UiState.Success) return
+    private fun fetchFoodLogs(date: String): Flow<UiState<FoodLogsByCategory>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.getFoodLogs(date) },
+            extractData = { it.foodLogs },
+            errMsg = "Failed to fetch food logs"
+        )
+    }
 
+    override fun refreshFoodLogs(date: String) {
         repositoryScope.launch {
-            httpClient.makeRequest(
-                apiCall = { apiService.getFoodLogs(date) },
-                extractData = { it.foodLogs },
-                errMsg = "Failed to load food logs",
-            ).collect { state ->
+            fetchFoodLogs(date).collect { state ->
                 _uiState.update { it.copy(foodLogsUiState = state) }
             }
         }
+    }
+
+    override fun loadFoodLogs(date: String) {
+        val foodLogsUiState = _uiState.value.foodLogsUiState
+        if (foodLogsUiState is UiState.Success) return
+        refreshFoodLogs(date)
     }
 
     override suspend fun addFoodLog(
@@ -111,7 +130,11 @@ class FoodRepositoryImpl(
                 ApiUrls.Nutrient.getIntakes(date),
                 ApiUrls.Food.getLogs(date)
             )
-        )
+        ).onEach { state ->
+            if (state is UiState.Success) {
+                refreshFoodLogs(date)
+            }
+        }
     }
 
     override suspend fun updateFoodLog(

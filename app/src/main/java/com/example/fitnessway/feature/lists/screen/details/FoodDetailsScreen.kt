@@ -30,6 +30,7 @@ import com.example.fitnessway.feature.lists.screen.details.composables.MoreOptio
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
@@ -81,13 +82,7 @@ fun FoodDetailsScreen(
     if (food == null) {
         Screen(
             header = { Header(onBackClick = onBackClick, title = title) },
-            content = {
-                Text(
-                    text = "No food selected",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            content = { NotFoundText("Food not found") }
         )
     } else {
         foodEditionFormState?.let { formState ->

@@ -255,7 +255,7 @@ object Food {
                                     if (preferences.hexColor != null) {
                                         Color(preferences.hexColor.toColorInt())
                                     } else {
-                                        MaterialTheme.colorScheme.surfaceVariant
+                                        MaterialTheme.colorScheme.primary
                                     }
 
                                 Column(

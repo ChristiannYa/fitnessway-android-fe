@@ -135,7 +135,8 @@ object Nutrient {
 
                 val nutrientColor = getNutrientColor(
                     preferences.hexColor
-                ) ?: Color(0xFFFFFFFF)
+                ) ?: MaterialTheme.colorScheme.primary
+
                 val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
 
                 val spacedBy = if (nutrientType == NutrientType.BASIC) 12.dp else 8.dp

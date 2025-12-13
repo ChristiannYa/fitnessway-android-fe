@@ -35,6 +35,7 @@ import com.example.fitnessway.feature.home.screen.main.composables.OtherNutrient
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.BlurOverlay
+import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
@@ -120,7 +121,7 @@ fun HomeScreen(
                             }
 
                             if (viewModel.user == null) {
-                                item { Text("No user found") }
+                                item { NotFoundText("No user found") }
                             } else {
                                 val nutrientsState = nutrientRepoUiState.nutrientIntakesState
                                 val user = viewModel.user

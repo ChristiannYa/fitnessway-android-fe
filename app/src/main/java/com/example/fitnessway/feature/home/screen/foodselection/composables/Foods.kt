@@ -9,8 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
@@ -19,8 +17,8 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.Nutrient.getNutrientColor
+import com.example.fitnessway.util.UiState
 
 @Composable
 fun Foods(
@@ -90,14 +88,12 @@ fun Food(
             Text(
                 text = food.information.name,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = if (missingBrand) "~" else food.information.brand,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -105,13 +101,15 @@ fun Food(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 content = {
                     food.nutrients.basic.forEach { (nutrientData, amount) ->
-                        val nutrientColor = getNutrientColor(nutrientData.preferences.hexColor) ?: Color(0xFFFFFFFF)
+                        val nutrientColor = getNutrientColor(nutrientData.preferences.hexColor)
 
-                        Text(
-                            text = doubleFormatter(amount),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = nutrientColor
-                        )
+                        if (nutrientColor != null) {
+                            Text(
+                                text = doubleFormatter(amount),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = nutrientColor
+                            )
+                        }
                     }
                 }
             )

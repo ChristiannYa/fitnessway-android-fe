@@ -10,6 +10,7 @@ import com.example.fitnessway.data.model.food.FoodUpdateRequest
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.food.IFoodApiService
+import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
 class FoodRepositoryImpl(
     private val apiService: IFoodApiService,
     private val httpClient: HttpClient,
-    private val repositoryScope: CoroutineScope
+    private val repositoryScope: CoroutineScope,
+    private val nutrientRepo: INutrientRepository,
 ) : IFoodRepository {
 
     private val _uiState = MutableStateFlow(FoodRepositoryUiState())
@@ -106,14 +108,16 @@ class FoodRepositoryImpl(
     override fun refreshFoodLogs(date: String) {
         repositoryScope.launch {
             fetchFoodLogs(date).collect { state ->
-                _uiState.update { it.copy(foodLogsUiState = state) }
+                _uiState.update { it.copy(foodLogsCache = it.foodLogsCache + (date to state)) }
             }
         }
     }
 
     override fun loadFoodLogs(date: String) {
-        val foodLogsUiState = _uiState.value.foodLogsUiState
-        if (foodLogsUiState is UiState.Success) return
+        val cachedData = _uiState.value.foodLogsCache[date]
+        if (cachedData is UiState.Success) {
+            return
+        }
         refreshFoodLogs(date)
     }
 
@@ -132,6 +136,7 @@ class FoodRepositoryImpl(
         ).onEach { state ->
             if (state is UiState.Success) {
                 refreshFoodLogs(date)
+                nutrientRepo.refreshNutrientIntakes(date)
             }
         }
     }

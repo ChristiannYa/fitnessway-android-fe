@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +38,7 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
+import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -75,6 +75,19 @@ fun HomeScreen(
         onTimeOut = viewModel::resetFoodLogDeleteState
     )
 
+    val currentDate = remember(selectedDate) {
+        viewModel.getApiFormattedDate()
+    }
+
+    // Recompose when either nutrientRepoUiState OR currentDate changes
+    val nutrientIntakesState = remember(nutrientRepoUiState, currentDate) {
+        nutrientRepoUiState.nutrientIntakesCache[currentDate] ?: UiState.Loading
+    }
+
+    val foodLogsState = remember(foodRepoUiState, currentDate) {
+        foodRepoUiState.foodLogsCache[currentDate] ?: UiState.Loading
+    }
+
     Screen(
         isMainScreen = true,
         content = {
@@ -101,7 +114,6 @@ fun HomeScreen(
                                     content = {
                                         HomeHeader(
                                             onToggleCreateMenuVisibility = viewModel::toggleCreateMenuVisibility
-
                                         )
                                         CreateOptions(
                                             onCreateFood = onNavigateToFoodForm,
@@ -123,12 +135,11 @@ fun HomeScreen(
                             if (viewModel.user == null) {
                                 item { NotFoundText("No user found") }
                             } else {
-                                val nutrientsState = nutrientRepoUiState.nutrientIntakesState
                                 val user = viewModel.user
 
                                 item {
                                     BasicNutrientIntakes(
-                                        state = nutrientsState,
+                                        state = nutrientIntakesState,
                                         user = user,
                                         onNavigateToGoals = onNavigateToGoals
                                     )
@@ -136,7 +147,7 @@ fun HomeScreen(
 
                                 item {
                                     OtherNutrientIntakes(
-                                        state = nutrientsState,
+                                        state = nutrientIntakesState,
                                         nutrientType = NutrientType.VITAMIN,
                                         user = user,
                                         onNavigateToGoals = onNavigateToGoals
@@ -145,7 +156,7 @@ fun HomeScreen(
 
                                 item {
                                     OtherNutrientIntakes(
-                                        state = nutrientsState,
+                                        state = nutrientIntakesState,
                                         nutrientType = NutrientType.MINERAL,
                                         user = user,
                                         onNavigateToGoals = onNavigateToGoals
@@ -154,7 +165,7 @@ fun HomeScreen(
 
                                 item {
                                     FoodLogs(
-                                        foodLogsState = foodRepoUiState.foodLogsUiState,
+                                        foodLogsState = foodLogsState,
                                         foodLogDeleteState = uiState.foodLogDeleteState,
                                         onViewFoodsList = { foodLogCategories ->
                                             viewModel.setFoodLogCategory(foodLogCategories)

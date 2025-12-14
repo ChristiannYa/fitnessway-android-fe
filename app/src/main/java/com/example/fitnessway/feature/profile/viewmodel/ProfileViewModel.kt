@@ -46,7 +46,7 @@ class ProfileViewModel(
         val user = user ?: return
 
         // Get current goals data to update it optimistically
-        val currentGoalsData = nutrientRepoUiState.value.nutrientsState
+        val currentGoalsData = nutrientRepoUiState.value.nutrientsUiState
 
         // Only proceed if there are nutrient goals data
         if (currentGoalsData !is UiState.Success) return
@@ -72,7 +72,7 @@ class ProfileViewModel(
 
         // Update UI immediately
         nutrientRepo.updateState {
-            it.copy(nutrientsState = UiState.Success(optimisticNutrientData))
+            it.copy(nutrientsUiState = UiState.Success(optimisticNutrientData))
         }
 
         viewModelScope.launch {
@@ -88,7 +88,7 @@ class ProfileViewModel(
                         }
 
                         nutrientRepo.updateState {
-                            it.copy(nutrientsState = currentGoalsData)
+                            it.copy(nutrientsUiState = currentGoalsData)
                         }
                     }
 

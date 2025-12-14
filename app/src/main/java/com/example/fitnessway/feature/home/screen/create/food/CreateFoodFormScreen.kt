@@ -55,7 +55,7 @@ fun CreateFoodFormScreen(
     val currentStep by viewModel.currentStep.collectAsState()
     val foodCreationFormState by viewModel.foodCreationFormState.collectAsState()
 
-    val nutrientsUiState = nutrientRepoUiState.nutrientsState
+    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
     val fieldsProvider = FoodCreationFieldsProvider(
         formState = foodCreationFormState,

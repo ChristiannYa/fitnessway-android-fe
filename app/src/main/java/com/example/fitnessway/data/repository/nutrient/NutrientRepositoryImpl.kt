@@ -38,14 +38,16 @@ class NutrientRepositoryImpl(
     override fun refreshNutrientIntakes(date: String) {
         repositoryScope.launch {
             fetchNutrientIntakes(date).collect { state ->
-                _uiState.update { it.copy(nutrientIntakesState = state) }
+                _uiState.update { it.copy(nutrientIntakesCache = it.nutrientIntakesCache + (date to state)) }
             }
         }
     }
 
     override fun loadNutrientIntakes(date: String) {
-        val nutrientIntakesUiState = _uiState.value.nutrientIntakesState
-        if (nutrientIntakesUiState is UiState.Success) return
+        val cachedData = _uiState.value.nutrientIntakesCache[date]
+        if (cachedData is UiState.Success) {
+            return
+        }
         refreshNutrientIntakes(date)
     }
 
@@ -60,13 +62,13 @@ class NutrientRepositoryImpl(
     override fun refreshNutrients() {
         repositoryScope.launch {
             fetchNutrients().collect { state ->
-                _uiState.update { it.copy(nutrientsState = state) }
+                _uiState.update { it.copy(nutrientsUiState = state) }
             }
         }
     }
 
     override fun loadNutrients() {
-        val nutrientsUiState = _uiState.value.nutrientsState
+        val nutrientsUiState = _uiState.value.nutrientsUiState
         if (nutrientsUiState is UiState.Success) return
         refreshNutrients()
     }

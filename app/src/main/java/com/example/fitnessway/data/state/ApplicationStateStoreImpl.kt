@@ -5,5 +5,5 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 
 class ApplicationStateStoreImpl(
     override val authStateHolder: ITokensStateHolder,
-    override val userStateHolder: IUserStateHolder
+    override val userStateHolder: IUserStateHolder,
 ) : IApplicationStateStore

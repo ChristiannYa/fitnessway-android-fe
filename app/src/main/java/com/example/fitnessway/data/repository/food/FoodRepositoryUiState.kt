@@ -6,5 +6,5 @@ import com.example.fitnessway.util.UiState
 
 data class FoodRepositoryUiState(
     val foodsUiState: UiState<List<FoodInformation>> = UiState.Loading,
-    val foodLogsUiState: UiState<FoodLogsByCategory> = UiState.Loading,
+    val foodLogsCache: Map<String, UiState<FoodLogsByCategory>> = emptyMap(),
 )

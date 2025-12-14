@@ -38,7 +38,7 @@ fun ProfileGoalsScreen(
     val goalsEditionFormState by viewModel.goalsEditionFormState.collectAsState()
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
 
-    val nutrientsState = nutrientRepoUiState.nutrientsState
+    val nutrientsState = nutrientRepoUiState.nutrientsUiState
     val user = viewModel.user
 
     val nutrientGoalsUpdateErrMsg = handleErrStateTempMsg(

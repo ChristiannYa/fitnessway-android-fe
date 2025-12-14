@@ -24,6 +24,8 @@ fun BasicNutrientIntakes(
     user: User,
     onNavigateToGoals: () -> Unit
 ) {
+    // @TODO: Figure out why when this composable enters the screen it recomposes
+
     when (state) {
         is UiState.Loading -> Text("Loading basic nutrient intakes")
 

@@ -36,7 +36,8 @@ val repositoryModule = module {
         FoodRepositoryImpl(
             apiService = get(),
             httpClient = get(),
-            repositoryScope = get(named("repositoryScope"))
+            repositoryScope = get(named("repositoryScope")),
+            nutrientRepo = get()
         )
     }
 }

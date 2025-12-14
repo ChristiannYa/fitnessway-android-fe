@@ -6,6 +6,6 @@ import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.util.UiState
 
 data class NutrientRepositoryUiState(
-    val nutrientsState: UiState<NutrientsByType<NutrientWithPreferences>> = UiState.Loading,
-    val nutrientIntakesState: UiState<NutrientIntakesByType> = UiState.Loading,
+    val nutrientsUiState: UiState<NutrientsByType<NutrientWithPreferences>> = UiState.Loading,
+    val nutrientIntakesCache: Map<String, UiState<NutrientIntakesByType>> = emptyMap(),
 )

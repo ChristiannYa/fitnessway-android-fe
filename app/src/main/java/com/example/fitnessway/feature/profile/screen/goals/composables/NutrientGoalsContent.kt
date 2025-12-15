@@ -38,9 +38,10 @@ fun NutrientGoalsContent(
                                 verticalArrangement = Arrangement.spacedBy(20.dp),
                                 content = {
                                     val title = when (type) {
-                                        NutrientType.BASIC -> "Base nutrients"
+                                        NutrientType.BASIC -> "Nutrients"
                                         else -> "${
-                                            type.name.lowercase()
+                                            type.name
+                                                .lowercase()
                                                 .replaceFirstChar { it.uppercase() }
                                         }s"
                                     }
@@ -55,7 +56,8 @@ fun NutrientGoalsContent(
                                         verticalArrangement = Arrangement.spacedBy(12.dp),
                                         content = {
                                             goalFields.forEach { field ->
-                                                val enabled = (!field.name.nutrientData.nutrient.isPremium || user.isPremium)
+                                                val enabled =
+                                                    (!field.name.nutrientData.nutrient.isPremium || user.isPremium)
 
                                                 key(field.name.nutrientData.nutrient.id) {
                                                     GoalsEditionFormField(

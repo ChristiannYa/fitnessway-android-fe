@@ -12,8 +12,7 @@ import androidx.compose.ui.draw.clip
 
 @Composable
 fun FoodMoreOptionsButton(
-    onClick: () -> Unit,
-    enabled: Boolean
+    onClick: () -> Unit
 ) {
     Box(
         content = {
@@ -22,7 +21,6 @@ fun FoodMoreOptionsButton(
                     .clip(CircleShape)
                     .clickable(
                         onClick = onClick,
-                        enabled = enabled
                     ),
                 content = {
                     Icon(

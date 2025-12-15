@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -124,10 +123,20 @@ fun FoodDetailsScreen(
                                 extraContent = {
                                     FoodMoreOptionsButton(
                                         onClick = {
-                                            isMoreOptionsPopupDisplayed =
-                                                !isMoreOptionsPopupDisplayed
-                                        },
-                                        enabled = !shouldOverlayAppear
+                                            if (!isMoreOptionsPopupDisplayed && !isConfirmDeletionPopupDisplayed) {
+                                                isMoreOptionsPopupDisplayed = true
+                                                return@FoodMoreOptionsButton
+                                            }
+
+                                            if (isMoreOptionsPopupDisplayed && !isConfirmDeletionPopupDisplayed) {
+                                                isMoreOptionsPopupDisplayed = false
+                                                return@FoodMoreOptionsButton
+                                            }
+
+                                            if (isConfirmDeletionPopupDisplayed && !isMoreOptionsPopupDisplayed) {
+                                                onCancelFoodDeletion()
+                                            }
+                                        }
                                     )
                                 }
                             )

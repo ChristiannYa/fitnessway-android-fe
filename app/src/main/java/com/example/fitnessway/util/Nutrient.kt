@@ -234,7 +234,7 @@ object Nutrient {
                             content = {
                                 if (!isDataMinimal) {
                                     Text(
-                                        text = "${calculatedNutrientData.progress.roundToInt()}%",
+                                        text = "${doubleFormatter(calculatedNutrientData.progress)}%",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontFamily = FontFamily.Default,
                                         color = nutrientColor.copy(0.5f)

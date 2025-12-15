@@ -59,9 +59,7 @@ fun BasicNutrientIntakes(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth(),
                             content = {
-                                NutrientsBoxUi(
-                                    nutrients = nutrients,
-                                )
+                                NutrientsBoxUi(nutrients)
                             }
                         )
                     }

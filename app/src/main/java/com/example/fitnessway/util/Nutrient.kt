@@ -110,7 +110,6 @@ object Nutrient {
         @Composable
         fun NutrientsBoxUi(
             nutrients: List<NutrientAmountData>,
-            nutrientType: NutrientType,
             isDataMinimal: Boolean = false,
             /**
              * Represents the width of the **entire** nutrient UI (everything throughout
@@ -131,6 +130,7 @@ object Nutrient {
 
             nutrients.forEach { nutrientData ->
                 val nutrient = nutrientData.nutrientWithPreferences.nutrient
+                val nutrientType = nutrient.type
                 val preferences = nutrientData.nutrientWithPreferences.preferences
 
                 val nutrientColor = getNutrientColor(

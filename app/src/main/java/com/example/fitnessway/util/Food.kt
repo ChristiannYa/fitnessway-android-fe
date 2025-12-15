@@ -84,7 +84,7 @@ object Food {
      * new serving sizes are asked for instead
      */
     fun calcNutrientsBasedOnFoodLogServings(
-        currentNutrients: NutrientsByType<NutrientAmountData>,
+        nutrients: NutrientsByType<NutrientAmountData>,
         currentServings: Double,
         newServings: Double
     ): NutrientsByType<NutrientAmountData> {
@@ -95,9 +95,10 @@ object Food {
             nutrientAmountData: NutrientAmountData,
             nutrientId: Int
         ): NutrientAmountData {
-            val foodNutrient = getAllNutrients(currentNutrients).find {
+            val foodNutrient = getAllNutrients(nutrients).find {
                 it.nutrientWithPreferences.nutrient.id == nutrientId
             }
+
             return if (foodNutrient != null) {
                 // Log.d(Constants.DEBUG_TAG, "")
                 // Log.d(Constants.DEBUG_TAG, "nutrient: ${foodNutrient.nutrient.name}")
@@ -114,19 +115,19 @@ object Food {
         }
 
         return NutrientsByType(
-            basic = currentNutrients.basic.map {
+            basic = nutrients.basic.map {
                 updateNutrientAmount(
                     nutrientAmountData = it,
                     nutrientId = it.nutrientWithPreferences.nutrient.id
                 )
             },
-            vitamin = currentNutrients.vitamin.map {
+            vitamin = nutrients.vitamin.map {
                 updateNutrientAmount(
                     nutrientAmountData = it,
                     nutrientId = it.nutrientWithPreferences.nutrient.id
                 )
             },
-            mineral = currentNutrients.mineral.map {
+            mineral = nutrients.mineral.map {
                 updateNutrientAmount(
                     nutrientAmountData = it,
                     nutrientId = it.nutrientWithPreferences.nutrient.id
@@ -361,7 +362,7 @@ object Food {
                                                 if (preferences.hexColor != null) {
                                                     Color(preferences.hexColor.toColorInt())
                                                 } else {
-                                                    MaterialTheme.colorScheme.surfaceVariant
+                                                    MaterialTheme.colorScheme.primary
                                                 }
 
                                             Column(

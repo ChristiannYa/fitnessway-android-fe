@@ -61,7 +61,6 @@ fun BasicNutrientIntakes(
                             content = {
                                 NutrientsBoxUi(
                                     nutrients = nutrients,
-                                    nutrientType = NutrientType.BASIC
                                 )
                             }
                         )

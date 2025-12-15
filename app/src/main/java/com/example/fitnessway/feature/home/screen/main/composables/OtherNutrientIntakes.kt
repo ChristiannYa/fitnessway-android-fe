@@ -64,7 +64,6 @@ fun OtherNutrientIntakes(
                             content = {
                                 NutrientsBoxUi(
                                     nutrients = nutrients,
-                                    nutrientType = nutrientType,
                                     progressBarHeight = (115.2 / 2).dp
                                 )
                             }

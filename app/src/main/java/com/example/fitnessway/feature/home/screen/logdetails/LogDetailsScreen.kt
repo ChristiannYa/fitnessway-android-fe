@@ -125,7 +125,7 @@ fun LogDetailsScreen(
                                             formState.data.servings.toDoubleOrNull() ?: 0.0
 
                                         calcNutrientsBasedOnFoodLogServings(
-                                            currentNutrients = foodLog.food.nutrients,
+                                            nutrients = foodLog.food.nutrients,
                                             currentServings = foodLog.servings,
                                             newServings = servings
                                         )

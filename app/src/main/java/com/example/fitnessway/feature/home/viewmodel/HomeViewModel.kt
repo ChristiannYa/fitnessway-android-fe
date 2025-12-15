@@ -139,7 +139,7 @@ class HomeViewModel(
 
         // Gather new nutrient data based on amount per servings
         val newNutrientData = calcNutrientsBasedOnFoodLogServings(
-            currentNutrients = selectedFoodLog.food.nutrients,
+            nutrients = selectedFoodLog.food.nutrients,
             currentServings = selectedFoodLog.servings,
             newServings = formState.data.servings.toDouble()
         )

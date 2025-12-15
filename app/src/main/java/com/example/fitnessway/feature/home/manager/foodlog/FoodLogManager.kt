@@ -95,7 +95,7 @@ class FoodLogManager : IFoodLogManager {
 
         _foodLogEditionFormState.value = FormState(
             data = FormStates.FoodLogEdition(
-                servings = doubleFormatter(foodLog.servings),
+                servings = foodLog.servings.toString(),
                 amountPerServing = doubleFormatter(amPerSer),
                 amountPerServingDb = foodLog.food.information.amountPerServing
             )

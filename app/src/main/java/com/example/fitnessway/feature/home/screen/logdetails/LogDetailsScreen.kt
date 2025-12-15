@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.screen.logdetails
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
@@ -123,6 +125,8 @@ fun LogDetailsScreen(
                                     ) {
                                         val servings =
                                             formState.data.servings.toDoubleOrNull() ?: 0.0
+
+                                        Log.d(Constants.DEBUG_TAG, "servings: $servings")
 
                                         calcNutrientsBasedOnFoodLogServings(
                                             nutrients = foodLog.food.nutrients,

@@ -18,6 +18,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
 import com.example.fitnessway.util.UiState
@@ -57,7 +58,7 @@ fun ProfileColorsScreen(
                     ActionButton(
                         onClick = {
                             viewModel.setColorsThatChanged()
-                            // applog("modified colors: ${viewModel.modifiedColors.value}")
+                            logcat("modified colors: ${viewModel.modifiedColors.value}")
                         },
                         text = "Update",
                         enabled = isColorsFormValid

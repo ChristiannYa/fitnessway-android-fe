@@ -64,7 +64,7 @@ object Formatters {
         }
     }
 
-    fun applog(message: String) {
+    fun logcat(message: String) {
         Log.d(Constants.DEBUG_TAG, message)
     }
 }

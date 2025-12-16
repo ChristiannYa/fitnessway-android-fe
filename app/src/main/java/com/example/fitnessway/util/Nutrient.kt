@@ -160,6 +160,7 @@ object Nutrient {
              * - * 2 because ideally we want the height to be double from the other nutrients
              */
             progressBarHeight: Dp = 115.2.dp,
+            modifier: Modifier = Modifier
         ) {
             val barShape = 16.dp
 
@@ -186,7 +187,7 @@ object Nutrient {
                 )
 
                 Column(
-                    modifier = Modifier.width(contentWidth),
+                    modifier = modifier.width(contentWidth),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     content = {
@@ -222,7 +223,7 @@ object Nutrient {
                                 .height(progressBarHeight)
                                 .clip(RoundedCornerShape(barShape))
                                 .background(
-                                    color = MaterialTheme.colorScheme.inverseSurface.copy(0.03f),
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(barShape)
                                 ),
                             content = {

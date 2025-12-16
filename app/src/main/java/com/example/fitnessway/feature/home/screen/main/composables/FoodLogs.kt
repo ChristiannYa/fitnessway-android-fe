@@ -86,7 +86,7 @@ fun FoodLogs(
 
 
 @Composable
-fun FoodLogsCategorized(
+private fun FoodLogsCategorized(
     foodLogs: FoodLogsByCategory,
     foodLogDeleteState: UiState<FoodLogData>,
     onViewFoodsList: (FoodLogCategories) -> Unit,
@@ -119,7 +119,7 @@ fun FoodLogsCategorized(
 }
 
 @Composable
-fun FoodLogCategory(
+private fun FoodLogCategory(
     foodLogs: List<FoodLogData>,
     foodLogDeleteState: UiState<FoodLogData>,
     category: FoodLogCategories,
@@ -189,7 +189,7 @@ fun FoodLogCategory(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FoodLog(
+private fun FoodLog(
     foodLog: FoodLogData,
     foodLogDeleteState: UiState<FoodLogData>,
     onViewFoodLogDetails: (FoodLogData) -> Unit,

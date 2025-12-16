@@ -11,11 +11,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PremiumIcon(size: Dp = 14.dp) {
+fun PremiumIcon(
+    modifier: Modifier = Modifier,
+    size: Dp = 14.dp,
+) {
     Icon(
         imageVector = Icons.Default.AutoAwesome,
         contentDescription = null,
-        modifier = Modifier.size(size),
+        modifier = modifier.size(size),
         tint = MaterialTheme.colorScheme.primary
     )
 }

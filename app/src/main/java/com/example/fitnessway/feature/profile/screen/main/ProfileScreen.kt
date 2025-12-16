@@ -9,10 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.UiMeasures
@@ -48,6 +48,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val user = viewModel.user
+
 
     if (user == null) {
         Screen(
@@ -66,27 +67,61 @@ fun ProfileScreen(
                         // Profile image
                         Box(
                             modifier = Modifier
-                                .clip(CircleShape)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = CircleShape
-                                )
-                                .width(126.dp)
-                                .height(126.dp),
+                                .size(126.dp),
                             content = {
-                                Image(
-                                    painter = painterResource(R.drawable.user_img),
-                                    contentDescription = "User profile image",
-                                    modifier = Modifier.fillMaxSize()
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.primaryContainer,
+                                            shape = CircleShape
+                                        ),
+                                    content = {
+                                        Image(
+                                            painter = painterResource(R.drawable.user_img),
+                                            contentDescription = "User profile image",
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
                                 )
+
+                                if (user.isPremium) {
+                                    PremiumIcon(
+                                        size = 18.dp,
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .offset(x = (-4).dp, y = 2.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                color = MaterialTheme.colorScheme.background,
+                                                shape = CircleShape
+                                            )
+                                            .padding(5.dp)
+                                    )
+                                }
                             }
                         )
 
 
                         // User information
-                        Text(
-                            text = user.name,
-                            style = MaterialTheme.typography.bodyMedium
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            content = {
+                                Text(
+                                    text = user.name,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+
+                                val premiumStatusText =
+                                    if (user.isPremium) "Premium Account" else "Free Account"
+
+                                Text(
+                                    text = premiumStatusText,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         )
 
                         // Buttons

@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.profile.screen.colors
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +18,6 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
 import com.example.fitnessway.util.UiState
@@ -33,6 +31,7 @@ fun ProfileColorsScreen(
 ) {
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val colorsEditionFormState by viewModel.colorsEditionFormState.collectAsState()
+    val isColorsFormValid by viewModel.isColorsFormValid.collectAsState()
 
     val nutrientsState = nutrientRepoUiState.nutrientsUiState
     val user = viewModel.user
@@ -60,7 +59,7 @@ fun ProfileColorsScreen(
                             viewModel.setColorsThatChanged()
                         },
                         text = "Update",
-                        enabled = true
+                        enabled = isColorsFormValid
                     )
                 }
             )
@@ -92,16 +91,13 @@ fun ProfileColorsScreen(
                                     }
                                 )
 
-                                NutrientType.entries.associateWith { type ->
-                                    val nutrientsByType = filterNutrientsByType(
-                                        nutrients = nutrientsState.data,
-                                        type = type
-                                    )
-
-                                    nutrientsByType.sortNutrientWithPreferencesByPremiumStatus(
-                                        user.isPremium
-                                    ).map { fieldsProvider.nutrientColor(it) }
+                                val fieldsByTypeMap = NutrientType.entries.associateWith { type ->
+                                    filterNutrientsByType(nutrientsState.data, type)
+                                        .sortNutrientWithPreferencesByPremiumStatus(user.isPremium)
+                                        .map { fieldsProvider.nutrientColor(it) }
                                 }
+
+                                fieldsByTypeMap
                             }
 
                             Column(

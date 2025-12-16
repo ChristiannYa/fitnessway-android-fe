@@ -102,8 +102,12 @@ object Nutrient {
     }
 
     fun getNutrientColor(hexColor: String?): Color? {
-        return hexColor?.let {
-            Color(it.toColorInt())
+        if (hexColor.isNullOrEmpty()) return null
+
+        return try {
+            Color(hexColor.toColorInt())
+        } catch (e: IllegalArgumentException) {
+            null
         }
     }
 

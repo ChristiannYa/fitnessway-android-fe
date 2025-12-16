@@ -31,6 +31,7 @@ class ProfileViewModel(
 
     init {
         managers.goals.init(viewModelScope)
+        managers.colors.init(viewModelScope)
     }
 
     val user = userStateHolder.userState.value.user

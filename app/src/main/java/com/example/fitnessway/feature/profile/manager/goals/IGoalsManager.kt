@@ -5,7 +5,6 @@ import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
 interface IGoalsManager {
@@ -16,6 +15,4 @@ interface IGoalsManager {
     fun initNutrientGoalsForm(nutrientsData: NutrientsByType<NutrientWithPreferences>)
     fun updateGoalEditionFormField(fieldName: FormFieldName.NutrientGoalData, input: String)
     fun setGoalsThatChanged()
-
-    fun init(scope: CoroutineScope)
 }

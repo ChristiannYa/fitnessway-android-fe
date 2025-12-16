@@ -1,5 +1,7 @@
 package com.example.fitnessway.data.network.nutrient
 
+import com.example.fitnessway.data.model.nutrient.NutrientColorsPostRequest
+import com.example.fitnessway.data.model.nutrient.NutrientColorsPostResponse
 import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostResponse
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByTypeFetchResponse
@@ -23,4 +25,9 @@ interface INutrientApiService {
     suspend fun setNutrientGoals(
         @Body request: NutrientGoalsPostRequest
     ): Response<NutrientGoalsPostResponse>
+
+    @POST("nutrient/set-color")
+    suspend fun setNutrientColors(
+        @Body request: NutrientColorsPostRequest
+    ): Response<NutrientColorsPostResponse>
 }

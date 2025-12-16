@@ -1,6 +1,8 @@
 package com.example.fitnessway.data.repository.nutrient
 
+import com.example.fitnessway.data.model.nutrient.NutrientColorsPostRequest
 import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
+import com.example.fitnessway.data.model.nutrient.NutrientIdWithColor
 import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -82,6 +85,23 @@ class NutrientRepositoryImpl(
             apiCall = { apiService.setNutrientGoals(request) },
             extractData = { it.upsertedGoals },
             errMsg = "Failed to set nutrient goals",
+            invalidatedUrls = listOf(
+                ApiUrls.Nutrient.ALL_INTAKES,
+                ApiUrls.Nutrient.NUTRIENTS,
+                ApiUrls.Food.ALL_LOGS,
+                ApiUrls.Food.FOODS
+            )
+        )
+    }
+
+    // @TODO: Re-fetch all nutrient related data when updating the colors
+    override fun setNutrientColors(
+        request: NutrientColorsPostRequest
+    ): Flow<UiState<List<NutrientIdWithColor>>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.setNutrientColors(request) },
+            extractData = { it.updatedColors },
+            errMsg = "Failed to update nutrient colors",
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.ALL_INTAKES,
                 ApiUrls.Nutrient.NUTRIENTS,

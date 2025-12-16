@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IColorsManager {
     val colorsEditionFormState: StateFlow<FormState<FormStates.NutrientColors>?>
+    val modifiedColors: StateFlow<Map<Int, String>>
 
     fun initNutrientColorsForm(nutrientsData: NutrientsByType<NutrientWithPreferences>)
     fun updateColorsEditionFormField(fieldName: FormFieldName.NutrientColorUpdate, input: String)
-
+    fun setColorsThatChanged()
 }

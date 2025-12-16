@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.profile.screen.colors
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
 import com.example.fitnessway.util.UiState
@@ -54,9 +56,11 @@ fun ProfileColorsScreen(
                 title = "Color Palette",
                 extraContent = {
                     ActionButton(
-                        onClick = {},
+                        onClick = {
+                            viewModel.setColorsThatChanged()
+                        },
                         text = "Update",
-                        enabled = false
+                        enabled = true
                     )
                 }
             )

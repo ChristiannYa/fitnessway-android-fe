@@ -50,28 +50,25 @@ data class NutrientWithPreferences(
 )
 
 @Serializable
-data class NutrientAmountData(
-    @SerialName("nutrient_with_preferences")
-    val nutrientWithPreferences: NutrientWithPreferences,
-
-    val amount: Double
-)
-
-@Serializable
 data class NutrientsByTypeApiResponse(
     val nutrients: NutrientsByType<NutrientWithPreferences>
 )
 
 typealias NutrientsByTypeFetchResponse = ApiResponseWithContent<NutrientsByTypeApiResponse>
 
-typealias NutrientIntakesByType = NutrientsByType<NutrientAmountData>
+@Serializable
+data class NutrientAmountData(
+    @SerialName("nutrient_with_preferences")
+    val nutrientWithPreferences: NutrientWithPreferences,
 
+    val amount: Double
+)
+typealias NutrientIntakesByType = NutrientsByType<NutrientAmountData>
 @Serializable
 data class NutrientIntakesByTypeApiResponse(
     @SerialName("nutrient_intakes")
     val nutrientIntakes: NutrientIntakesByType
 )
-
 typealias NutrientIntakesByTypeFetchResponse = ApiResponseWithContent<NutrientIntakesByTypeApiResponse>
 
 @Serializable
@@ -81,7 +78,6 @@ data class NutrientIdWithGoal(
 
     val goal: Double
 )
-
 @Serializable
 data class NutrientGoalsPostRequest(
     @SerialName("user_id")
@@ -89,11 +85,31 @@ data class NutrientGoalsPostRequest(
 
     val goals: List<NutrientIdWithGoal>
 )
-
 @Serializable
 data class NutrientGoalsApiPostResponse(
     @SerialName("upserted_goals")
     val upsertedGoals: List<NutrientIdWithGoal>
 )
-
 typealias NutrientGoalsPostResponse = ApiResponseWithContent<NutrientGoalsApiPostResponse>
+
+@Serializable
+data class NutrientIdWithColor(
+    @SerialName("nutrient_id")
+    val nutrientId: String,
+
+    @SerialName("hex_color")
+    val hexColor: String
+)
+@Serializable
+data class NutrientColorsPostRequest(
+    @SerialName("user_id")
+    val userId: String,
+
+    val colors: List<NutrientIdWithColor>
+)
+@Serializable
+data class NutrientColorsApiPostResponse(
+    @SerialName("updated_colors")
+    val updatedColors: List<NutrientIdWithColor>
+)
+typealias NutrientColorsPostResponse = ApiResponseWithContent<NutrientColorsApiPostResponse>

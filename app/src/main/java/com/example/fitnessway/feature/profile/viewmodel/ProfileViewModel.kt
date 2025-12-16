@@ -11,6 +11,7 @@ import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
+import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,8 @@ class ProfileViewModel(
     private val managers: IProfileManagers,
     userStateHolder: IUserStateHolder
 ) : ViewModel(),
-    IGoalsManager by managers.goals {
+    IGoalsManager by managers.goals,
+    IColorsManager by managers.colors {
 
     init {
         managers.goals.init(viewModelScope)

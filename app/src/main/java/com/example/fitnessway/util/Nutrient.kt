@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
+import com.example.fitnessway.data.model.nutrient.NutrientPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
@@ -106,7 +107,37 @@ object Nutrient {
         }
     }
 
+    fun formatNutrientsDataAsMap(
+        nutrientsData: NutrientsByType<NutrientWithPreferences>,
+        propertySelector: (NutrientPreferences) -> String
+    ): Map<Int, String> {
+        return getAllNutrients(nutrientsData).associate {
+            val value = propertySelector(it.preferences)
+            it.nutrient.id to value
+        }
+    }
+
     object Ui {
+        @Composable
+        fun NutrientCategoryTitle(
+            type: NutrientType
+        ) {
+            val title = when (type) {
+                NutrientType.BASIC -> "Nutrients"
+                else -> "${
+                    type.name
+                        .lowercase()
+                        .replaceFirstChar { it.uppercase() }
+                }s"
+            }
+
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
         @Composable
         fun NutrientsBoxUi(
             nutrients: List<NutrientAmountData>,
@@ -252,26 +283,6 @@ object Nutrient {
                     }
                 )
             }
-        }
-
-        @Composable
-        fun NutrientCategoryTitle(
-            type: NutrientType
-        ) {
-            val title = when (type) {
-                NutrientType.BASIC -> "Nutrients"
-                else -> "${
-                    type.name
-                        .lowercase()
-                        .replaceFirstChar { it.uppercase() }
-                }s"
-            }
-
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold
-            )
         }
     }
 }

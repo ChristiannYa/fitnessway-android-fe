@@ -12,6 +12,7 @@ import com.example.fitnessway.feature.lists.manager.edition.EditionManager
 import com.example.fitnessway.feature.lists.manager.toggle.SelectionManager
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.ProfileManagersImpl
+import com.example.fitnessway.feature.profile.manager.colors.ColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.GoalsManager
 import org.koin.dsl.module
 
@@ -34,7 +35,8 @@ val managersModule = module {
 
     single<IProfileManagers> {
         ProfileManagersImpl(
-            goals = GoalsManager()
+            goals = GoalsManager(),
+            colors = ColorsManager()
         )
     }
 }

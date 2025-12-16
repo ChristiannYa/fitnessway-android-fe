@@ -21,7 +21,7 @@ class ColorsManager : IColorsManager {
     override val colorsEditionFormState: StateFlow<FormState<FormStates.NutrientColors>?> =
         _colorsEditionFormState
 
-    private val _originalColorValues = MutableStateFlow<Map<Int, String>?>(null)
+    private val _originalColors = MutableStateFlow<Map<Int, String>?>(null)
 
     private val _modifiedColors = MutableStateFlow<Map<Int, String>>(emptyMap())
     override val modifiedColors: StateFlow<Map<Int, String>> = _modifiedColors
@@ -29,7 +29,7 @@ class ColorsManager : IColorsManager {
     override val isColorsFormValid: StateFlow<Boolean> by lazy {
         combine(
             _colorsEditionFormState,
-            _originalColorValues
+            _originalColors
         ) { formState, originalColors ->
             formState?.let {
                 val formColors = it.data.colors
@@ -75,7 +75,7 @@ class ColorsManager : IColorsManager {
         )
 
         _colorsEditionFormState.value = FormState(FormStates.NutrientColors(colors))
-        _originalColorValues.value = colors
+        _originalColors.value = colors
     }
 
     override fun updateColorsEditionFormField(
@@ -95,7 +95,7 @@ class ColorsManager : IColorsManager {
 
     override fun setColorsThatChanged() {
         val colorsEditionFormState = _colorsEditionFormState.value
-        val originalColorValues = _originalColorValues.value
+        val originalColorValues = _originalColors.value
 
         if (colorsEditionFormState == null || originalColorValues == null) return
 

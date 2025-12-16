@@ -61,8 +61,14 @@ fun NavGraphBuilder.profileNavigationGraph(navController: NavController) {
             )
         }
 
-        composable<ProfileColorsDest> {
+        composable<ProfileColorsDest> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<ProfileGraph>()
+            }
+            val viewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
             ProfileColorsScreen(
+                viewModel = viewModel,
                 onBackClick = navController::popBackStack
             )
         }

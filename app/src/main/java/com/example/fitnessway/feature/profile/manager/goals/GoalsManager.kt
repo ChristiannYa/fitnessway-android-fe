@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-class GoalsManager : IGoalsManager {
+class GoalsManager() : IGoalsManager {
     private lateinit var scope: CoroutineScope
 
     private val _goalsEditionFormState =
@@ -23,7 +23,7 @@ class GoalsManager : IGoalsManager {
     override val goalsEditionFormState: StateFlow<FormState<FormStates.NutrientGoals>?> =
         _goalsEditionFormState
 
-    private val _originalGoalValues = MutableStateFlow<Map<Int, String>?>(null)
+    private val _originalGoals = MutableStateFlow<Map<Int, String>?>(null)
 
     private val _modifiedGoals = MutableStateFlow<Map<Int, String>>(emptyMap())
     override val modifiedGoals: StateFlow<Map<Int, String>> = _modifiedGoals
@@ -33,12 +33,12 @@ class GoalsManager : IGoalsManager {
     //  the ProfileGoalsScreen composable would not automatically recompose when the
     //  underlying form state changes.
     //  By using `StateFlow` + `combine` + `stateIn`, its value gets recalculated
-    //  automatically whenever `_goalsEditionFormState` or `_originalGoalValues` change,
+    //  automatically whenever `_goalsEditionFormState` or `_originalGoals` change,
     //  and the UI observes these changes via `collectAsState()`.
     override val isGoalsFormValid: StateFlow<Boolean> by lazy {
         combine(
             _goalsEditionFormState,
-            _originalGoalValues
+            _originalGoals
         ) { formState, originalGoals ->
             formState?.let {
                 val formGoals = it.data.goals
@@ -70,6 +70,12 @@ class GoalsManager : IGoalsManager {
                         )
                     }
                 }
+                /*
+                .also { errors ->
+                logcat("validation errors: $errors")
+            }
+
+                 */
 
                 hasChanges && validationErrors.isEmpty()
             } ?: false
@@ -94,7 +100,7 @@ class GoalsManager : IGoalsManager {
         )
 
         _goalsEditionFormState.value = FormState(FormStates.NutrientGoals(goals))
-        _originalGoalValues.value = goals
+        _originalGoals.value = goals
     }
 
     override fun updateGoalEditionFormField(
@@ -114,7 +120,7 @@ class GoalsManager : IGoalsManager {
 
     override fun setGoalsThatChanged() {
         val goalsEditionFormState = _goalsEditionFormState.value
-        val originalGoalValues = _originalGoalValues.value
+        val originalGoalValues = _originalGoals.value
 
         if (goalsEditionFormState == null || originalGoalValues == null) return
 

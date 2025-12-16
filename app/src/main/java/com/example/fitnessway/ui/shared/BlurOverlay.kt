@@ -31,7 +31,7 @@ fun BlurOverlay(
                 modifier = modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
                     .clickable(
                         onClick = { onClick?.invoke() },
                         indication = null,

@@ -18,7 +18,7 @@ class NutrientColorsFieldsProvider(
             label = "${nutrient.name} ${nutrient.unit}",
             value = formState.data.colors[nutrient.id] ?: "~",
             updateState = { value ->
-                val truncatedValue = value.take(6)
+                val truncatedValue = value.take(6).uppercase()
 
                 onFieldUpdate(
                     FormFieldName.NutrientColorUpdate(nutrientData),

@@ -1,6 +1,7 @@
 package com.example.fitnessway.feature.profile.screen.colors.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.NutrientColorUpdateField
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -24,54 +26,61 @@ import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
 import com.example.fitnessway.util.Nutrient.getNutrientColor
 
 @Composable
-fun NutrientColorsContent(
-    fields: Map<NutrientType, List<NutrientColorUpdateField>>
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+fun NutrientColorsContent(fields: Map<NutrientType, List<NutrientColorUpdateField>>) {
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "e.g. #87CEEB",
-            style = MaterialTheme.typography.titleSmall
-        )
+        item {
+            Text(
+                text = "B43757",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            fields.forEach { (type, colorFields) ->
-                item(key = type) {
-                    Box(modifier = Modifier.areaContainerLarge()) {
-                        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                            NutrientCategoryTitle(type)
+        fields.forEach { (type, colorFields) ->
+            item(key = type) {
+                Box(modifier = Modifier.areaContainerLarge()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        NutrientCategoryTitle(type)
 
-                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                colorFields.forEach { field ->
-                                    val color = getNutrientColor("#" + field.value)
-                                        ?: MaterialTheme.colorScheme.primary
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            colorFields.forEach { field ->
+                                val color = getNutrientColor("#" + field.value)
 
-                                    key(field.name.nutrientData.nutrient.id) {
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            val colorPreviewShape = RoundedCornerShape(5.dp)
+                                val borderColor = if (color == null) {
+                                    MaterialTheme.colorScheme.primary
+                                } else Color.Transparent
 
-                                            NutrientColorUpdateFormField(
-                                                field = field,
-                                                modifier = Modifier
-                                                    .weight(1f)
-                                            )
+                                key(field.name.nutrientData.nutrient.id) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        val colorPreviewShape = RoundedCornerShape(5.dp)
 
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(colorPreviewShape)
-                                                    .size(18.dp)
-                                                    .background(
-                                                        color = color,
-                                                        shape = colorPreviewShape
-                                                    )
-                                            )
-                                        }
+                                        NutrientColorUpdateFormField(
+                                            field = field,
+                                            modifier = Modifier
+                                                .weight(1f)
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(colorPreviewShape)
+                                                .size(21.dp)
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = borderColor,
+                                                    shape = colorPreviewShape
+                                                )
+                                                .background(
+                                                    color = color ?: Color.Transparent,
+                                                    shape = colorPreviewShape
+                                                )
+                                        )
                                     }
                                 }
                             }

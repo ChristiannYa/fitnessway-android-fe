@@ -95,7 +95,7 @@ typealias NutrientGoalsPostResponse = ApiResponseWithContent<NutrientGoalsApiPos
 @Serializable
 data class NutrientIdWithColor(
     @SerialName("nutrient_id")
-    val nutrientId: String,
+    val nutrientId: Int,
 
     @SerialName("hex_color")
     val hexColor: String

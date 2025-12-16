@@ -57,6 +57,7 @@ fun ProfileColorsScreen(
                     ActionButton(
                         onClick = {
                             viewModel.setColorsThatChanged()
+                            viewModel.setNutrientColors()
                         },
                         text = "Update",
                         enabled = isColorsFormValid

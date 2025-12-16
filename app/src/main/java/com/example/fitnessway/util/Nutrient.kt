@@ -83,6 +83,16 @@ object Nutrient {
         }
     }
 
+    fun <T> NutrientsByType<T>.mapNutrients(
+        transform: (List<T>) -> List<T>
+    ): NutrientsByType<T> {
+        return NutrientsByType(
+            basic = transform(basic),
+            vitamin = transform(vitamin),
+            mineral = transform(mineral)
+        )
+    }
+
     fun List<NutrientWithPreferences>.sortNutrientWithPreferencesByPremiumStatus(
         isPremiumUser: Boolean
     ): List<NutrientWithPreferences> {

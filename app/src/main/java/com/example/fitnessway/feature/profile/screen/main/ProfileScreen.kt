@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -203,17 +205,30 @@ private fun ProfileScreenMainButton(
                 modifier = Modifier
                     .fillMaxWidth(),
                 content = {
-                    Text(
-                        text = text,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontFamily = robotoSerifFamily,
-                        fontWeight = FontWeight.Medium,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        content = {
+                            Icon(
+                                imageVector = imageVector,
+                                contentDescription = text,
+                                modifier = Modifier.size(18.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Text(
+                                text = text,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontFamily = robotoSerifFamily,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
                     )
 
                     Icon(
-                        imageVector = imageVector,
-                        contentDescription = null,
+                        imageVector = Icons.AutoMirrored.Filled.NavigateNext,
+                        contentDescription = "Go to $text",
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onBackground
                     )

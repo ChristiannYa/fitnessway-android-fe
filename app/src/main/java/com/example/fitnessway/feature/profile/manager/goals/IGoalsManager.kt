@@ -12,9 +12,14 @@ interface IGoalsManager {
     val goalsEditionFormState: StateFlow<FormState<FormStates.NutrientGoals>?>
     val modifiedGoals: StateFlow<Map<Int, String>>
     val isGoalsFormValid: StateFlow<Boolean>
+    val colorsEditionFormState: StateFlow<FormState<FormStates.NutrientColors>?>
 
-    fun initNutrientGoalsForm(goalsData: NutrientsByType<NutrientWithPreferences>)
+    fun initNutrientGoalsForm(nutrientsData: NutrientsByType<NutrientWithPreferences>)
     fun updateGoalEditionFormField(fieldName: FormFieldName.NutrientGoalData, input: String)
     fun setGoalsThatChanged()
+    fun initNutrientColorsForm(nutrientsData: NutrientsByType<NutrientWithPreferences>)
+    fun updateColorsEditionFormField(fieldName: FormFieldName.NutrientColorUpdate, input: String)
+
+
     fun init(scope: CoroutineScope)
 }

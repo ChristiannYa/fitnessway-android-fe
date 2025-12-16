@@ -1,6 +1,7 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
 import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.data.model.nutrient.NutrientPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.util.Formatters.doubleFormatter
@@ -27,6 +28,11 @@ class GoalsManager : IGoalsManager {
 
     private val _modifiedGoals = MutableStateFlow<Map<Int, String>>(emptyMap())
     override val modifiedGoals: StateFlow<Map<Int, String>> = _modifiedGoals
+
+    private val _colorsEditionFormState =
+        MutableStateFlow<FormState<FormStates.NutrientColors>?>(null)
+    override val colorsEditionFormState: StateFlow<FormState<FormStates.NutrientColors>?> =
+        _colorsEditionFormState
 
     // @NOTE:
     //  `isGoalsFormValid` is a StateFlow because if it were a regular Boolean property,
@@ -82,14 +88,18 @@ class GoalsManager : IGoalsManager {
     }
 
     override fun initNutrientGoalsForm(
-        goalsData: NutrientsByType<NutrientWithPreferences>
+        nutrientsData: NutrientsByType<NutrientWithPreferences>
     ) {
-        val goals = formatGoalsAsMap(goalsData)
-
-        _goalsEditionFormState.value = FormState(
-            data = FormStates.NutrientGoals(goals)
+        val goals = formatNutrientsDataAsMap(
+            nutrientsData = nutrientsData,
+            propertySelector = {
+                if (it.goal != null) {
+                    doubleFormatter(it.goal, 2)
+                } else "~"
+            }
         )
 
+        _goalsEditionFormState.value = FormState(FormStates.NutrientGoals(goals))
         _originalGoalValues.value = goals
     }
 
@@ -100,7 +110,6 @@ class GoalsManager : IGoalsManager {
         _goalsEditionFormState.value?.let { state ->
             val updatedValues = run {
                 val goals = state.data.goals.toMutableMap()
-
                 goals[fieldName.nutrientData.nutrient.id] = input
                 state.data.copy(goals = goals)
             }
@@ -120,17 +129,43 @@ class GoalsManager : IGoalsManager {
         }
     }
 
+    override fun initNutrientColorsForm(
+        nutrientsData: NutrientsByType<NutrientWithPreferences>
+    ) {
+        val colors = formatNutrientsDataAsMap(
+            nutrientsData = nutrientsData,
+            propertySelector = { it.hexColor ?: "" }
+        )
+
+        _colorsEditionFormState.value = FormState(FormStates.NutrientColors(colors))
+    }
+
+    override fun updateColorsEditionFormField(
+        fieldName: FormFieldName.NutrientColorUpdate,
+        input: String
+    ) {
+        _colorsEditionFormState.value?.let { formState ->
+            val updatedValues = run {
+                val colors = formState.data.colors.toMutableMap()
+                colors[fieldName.nutrientData.nutrient.id] = input
+                formState.data.copy(colors = colors)
+            }
+
+            _colorsEditionFormState.value = formState.copy(data = updatedValues)
+        }
+    }
+
     override fun init(scope: CoroutineScope) {
         this.scope = scope
     }
 }
 
-private fun formatGoalsAsMap(
-    goalsData: NutrientsByType<NutrientWithPreferences>
+private fun formatNutrientsDataAsMap(
+    nutrientsData: NutrientsByType<NutrientWithPreferences>,
+    propertySelector: (NutrientPreferences) -> String
 ): Map<Int, String> {
-    return getAllNutrients(goalsData).associate {
-        it.nutrient.id to if (it.preferences.goal != null) {
-            doubleFormatter(it.preferences.goal, 2)
-        } else "~"
+    return getAllNutrients(nutrientsData).associate {
+        val value = propertySelector(it.preferences)
+        it.nutrient.id to value
     }
 }

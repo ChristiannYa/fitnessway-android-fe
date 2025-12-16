@@ -54,4 +54,6 @@ sealed interface FormFieldName {
     }
 
     data class NutrientGoalData(val nutrientData: NutrientWithPreferences) : FormFieldName
+
+    data class NutrientColorUpdate(val nutrientData: NutrientWithPreferences) : FormFieldName
 }

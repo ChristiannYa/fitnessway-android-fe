@@ -27,3 +27,5 @@ typealias FoodEditionDetailField = FormField<FormFieldName.FoodEdition.DetailFie
 typealias FoodEditionNutrientField = FormField<FormFieldName.FoodEdition.NutrientField>
 
 typealias NutrientGoalEditionField = FormField<FormFieldName.NutrientGoalData>
+
+typealias NutrientColorUpdateField = FormField<FormFieldName.NutrientColorUpdate>

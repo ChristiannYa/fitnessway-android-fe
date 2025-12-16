@@ -33,4 +33,8 @@ sealed interface FormStates {
     data class NutrientGoals(
         val goals: Map<Int, String> = emptyMap()
     ) : FormStates
+
+    data class NutrientColors(
+        val colors: Map<Int, String> = emptyMap()
+    ) : FormStates
 }

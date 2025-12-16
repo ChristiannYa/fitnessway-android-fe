@@ -69,6 +69,7 @@ class FoodRepositoryImpl(
         }
     }
 
+    // @TODO: Re-fetch food logs data when updating food data
     override suspend fun updateFood(
         request: FoodUpdateRequest
     ): Flow<UiState<FoodInformation>> {
@@ -83,6 +84,7 @@ class FoodRepositoryImpl(
         )
     }
 
+    // @TODO: Re-fetch food logs data when deleting the food
     override suspend fun deleteFood(
         foodId: Int
     ): Flow<UiState<FoodInformation>> {

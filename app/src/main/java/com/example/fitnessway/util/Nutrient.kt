@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -32,7 +33,6 @@ import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import kotlin.math.roundToInt
 import com.example.fitnessway.data.model.nutrient.Nutrient as NutrientM
 
 
@@ -252,6 +252,26 @@ object Nutrient {
                     }
                 )
             }
+        }
+
+        @Composable
+        fun NutrientCategoryTitle(
+            type: NutrientType
+        ) {
+            val title = when (type) {
+                NutrientType.BASIC -> "Nutrients"
+                else -> "${
+                    type.name
+                        .lowercase()
+                        .replaceFirstChar { it.uppercase() }
+                }s"
+            }
+
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
         }
     }
 }

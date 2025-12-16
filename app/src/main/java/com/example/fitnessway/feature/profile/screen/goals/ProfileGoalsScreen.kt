@@ -49,7 +49,7 @@ fun ProfileGoalsScreen(
     LaunchedEffect(nutrientsState) {
         if (nutrientsState is UiState.Success) {
             viewModel.initNutrientGoalsForm(
-                goalsData = nutrientsState.data
+                nutrientsData = nutrientsState.data
             )
         }
     }
@@ -84,14 +84,14 @@ fun ProfileGoalsScreen(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize(),
                             content = {
-                                TextWithLoadingIndicator("Loading nutrients")
+                                TextWithLoadingIndicator("Loading nutrients data")
                             }
                         )
                     }
 
                     is UiState.Success -> {
                         goalsEditionFormState?.let { formState ->
-                            val nutrientFields = remember(nutrientsState.data, formState) {
+                            val goalFields = remember(nutrientsState.data, formState) {
                                 val fieldsProvider = NutrientGoalsFieldsProvider(
                                     formState = formState,
                                     onFieldUpdate = { fieldName, value ->
@@ -110,9 +110,7 @@ fun ProfileGoalsScreen(
 
                                     nutrientsByType.sortNutrientWithPreferencesByPremiumStatus(
                                         user.isPremium
-                                    ).map { nutrientData ->
-                                        fieldsProvider.nutrientGoal(nutrientData)
-                                    }
+                                    ).map { fieldsProvider.nutrientGoal(it) }
                                 }
                             }
 
@@ -125,18 +123,18 @@ fun ProfileGoalsScreen(
                                     )
 
                                     NutrientGoalsContent(
-                                        nutrientFields = nutrientFields,
+                                        nutrientFields = goalFields,
                                         user = user
                                     )
                                 }
                             )
-                        } ?: @Composable {
-                            NotFoundText(text = "Form data not found")
-                        }
+                        } ?: NotFoundText(text = "Form data not found")
                     }
 
                     else -> NotFoundText(text = "Something went wrong")
                 }
+            } else {
+                NotFoundText("User not found")
             }
         }
     )

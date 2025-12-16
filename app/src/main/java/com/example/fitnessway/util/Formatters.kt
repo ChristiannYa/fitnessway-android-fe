@@ -1,5 +1,6 @@
 package com.example.fitnessway.util
 
+import android.util.Log
 import java.text.DecimalFormat
 import kotlin.math.floor
 import kotlin.math.pow
@@ -61,5 +62,9 @@ object Formatters {
         } else {
             null
         }
+    }
+
+    fun log(message: String) {
+        Log.d(Constants.DEBUG_TAG, message)
     }
 }

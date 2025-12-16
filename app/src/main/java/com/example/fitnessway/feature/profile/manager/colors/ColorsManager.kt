@@ -46,7 +46,7 @@ class ColorsManager : IColorsManager {
 
                     // Only validate if the value has changed
                     if (originalValue != color) {
-                        val isColorValid = isValidHexColor(color)
+                        val isColorValid = color.matches(Regex("^[0-9A-Fa-f]{6}$"))
 
                         if (!isColorValid) {
                             return@mapNotNull "Color (id: $id) must be in #RRGGBB format"
@@ -56,7 +56,7 @@ class ColorsManager : IColorsManager {
                     null
                 }
 
-                hasChanges && validationErrors.isNotEmpty()
+                hasChanges && validationErrors.isEmpty()
             } ?: false
 
         }.stateIn(
@@ -107,26 +107,4 @@ class ColorsManager : IColorsManager {
     fun init(scope: CoroutineScope) {
         this.scope = scope
     }
-}
-
-private fun isValidHexColor(color: String): Boolean {
-    // Check if the string has exactly 7 characters (# + 6 hex digits)
-    if (color.length != 7) {
-        return false
-    }
-
-    // Check if it starts with '#'
-    if (color[0] != '#') {
-        return false
-    }
-
-    // Check if the remaining 6 characters are valid hex digits (0-9, A-F, a-f)
-    for (i in 1..6) {
-        val char = color[i]
-        if (!char.isDigit() && char !in 'A'..'F' && char !in 'a'..'f') {
-            return false
-        }
-    }
-
-    return true
 }

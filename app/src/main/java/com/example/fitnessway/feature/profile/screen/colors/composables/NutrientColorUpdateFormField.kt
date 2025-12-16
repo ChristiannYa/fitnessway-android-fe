@@ -43,7 +43,7 @@ fun NutrientColorUpdateFormField(
                 textStyle = textStyle,
                 singleLine = true,
                 modifier = Modifier
-                    .width(128.dp)
+                    .width(100.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = InputUi.shape

@@ -30,68 +30,55 @@ fun NutrientColorsContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        content = {
-            Text(
-                text = "e.g. #87CEEB",
-                style = MaterialTheme.typography.titleSmall
-            )
+    ) {
+        Text(
+            text = "e.g. #87CEEB",
+            style = MaterialTheme.typography.titleSmall
+        )
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                content = {
-                    fields.forEach { (type, colorFields) ->
-                        item(key = type) {
-                            Box(
-                                modifier = Modifier.areaContainerLarge(),
-                                content = {
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                                        content = {
-                                            NutrientCategoryTitle(type)
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            fields.forEach { (type, colorFields) ->
+                item(key = type) {
+                    Box(modifier = Modifier.areaContainerLarge()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                            NutrientCategoryTitle(type)
 
-                                            Column(
-                                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                                content = {
-                                                    colorFields.forEach { field ->
-                                                        val color = getNutrientColor(field.value) ?: MaterialTheme.colorScheme.primary
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                colorFields.forEach { field ->
+                                    val color = getNutrientColor("#" + field.value)
+                                        ?: MaterialTheme.colorScheme.primary
 
-                                                        key(field.name.nutrientData.nutrient.id) {
-                                                            Row(
-                                                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                                                verticalAlignment = Alignment.CenterVertically,
-                                                                modifier = Modifier.fillMaxWidth(),
-                                                                content = {
-                                                                    val colorPreviewShape = RoundedCornerShape(5.dp)
+                                    key(field.name.nutrientData.nutrient.id) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            val colorPreviewShape = RoundedCornerShape(5.dp)
 
-                                                                    NutrientColorUpdateFormField(
-                                                                        field = field,
-                                                                        modifier = Modifier
-                                                                            .weight(1f)
-                                                                    )
+                                            NutrientColorUpdateFormField(
+                                                field = field,
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                            )
 
-                                                                    Box(
-                                                                        modifier = Modifier
-                                                                            .clip(colorPreviewShape)
-                                                                            .size(18.dp)
-                                                                            .background(
-                                                                                color = color,
-                                                                                shape = colorPreviewShape
-                                                                            )
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                }
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(colorPreviewShape)
+                                                    .size(18.dp)
+                                                    .background(
+                                                        color = color,
+                                                        shape = colorPreviewShape
+                                                    )
                                             )
                                         }
-                                    )
+                                    }
                                 }
-                            )
+                            }
                         }
                     }
                 }
-            )
+            }
         }
-    )
+    }
 }

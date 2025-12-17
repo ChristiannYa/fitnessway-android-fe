@@ -43,7 +43,6 @@ import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.data.model.nutrient.Nutrient as NutrientM
 
 
 object Nutrient {
@@ -102,7 +101,7 @@ object Nutrient {
         )
     }
 
-    fun List<NutrientWithPreferences>.sortNutrientWithPreferencesByPremiumStatus(
+    fun List<NutrientWithPreferences>.sortPremiumNutrients(
         isPremiumUser: Boolean
     ): List<NutrientWithPreferences> {
         return if (!isPremiumUser) {
@@ -112,13 +111,34 @@ object Nutrient {
         }
     }
 
-    fun List<NutrientM>.filterOutPremiumNutrients(
+    fun List<NutrientWithPreferences>.filterOutPremiumNutrients(
         isUserPremium: Boolean
-    ): List<NutrientM> {
-        return this.filter {
-            (!it.isPremium || isUserPremium)
+    ): List<NutrientWithPreferences> {
+        return if (!isUserPremium) {
+            this.filter { !it.nutrient.isPremium }
+        } else {
+            this
         }
     }
+
+    fun List<NutrientWithPreferences>.filterOutNonPremiumNutrients(
+        isUserPremium: Boolean
+    ): List<NutrientWithPreferences> {
+        return if (!isUserPremium) {
+            this.filter { it.nutrient.isPremium }
+        } else {
+            this
+        }
+    }
+
+    fun List<NutrientWithPreferences>.filterOutNutrientsWithoutGoal(): List<NutrientWithPreferences> {
+        return this.filter { it.preferences.goal != null }
+    }
+
+    fun List<NutrientWithPreferences>.filterOutNutrientsWithGoal(): List<NutrientWithPreferences> {
+        return this.filter { it.preferences.goal == null }
+    }
+
 
     fun getColor(color: String?): Color? {
         if (color.isNullOrEmpty()) return null
@@ -148,19 +168,23 @@ object Nutrient {
         }
     }
 
+    fun getNutrientCategoryTitle(type: NutrientType): String {
+        return when (type) {
+            NutrientType.BASIC -> "Nutrients"
+            else -> "${
+                type.name
+                    .lowercase()
+                    .replaceFirstChar { it.uppercase() }
+            }s"
+        }
+    }
+
     object Ui {
         @Composable
         fun NutrientCategoryTitle(
             type: NutrientType
         ) {
-            val title = when (type) {
-                NutrientType.BASIC -> "Nutrients"
-                else -> "${
-                    type.name
-                        .lowercase()
-                        .replaceFirstChar { it.uppercase() }
-                }s"
-            }
+            val title = getNutrientCategoryTitle(type)
 
             Text(
                 text = title,

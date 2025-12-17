@@ -85,7 +85,11 @@ fun ProfileScreen(
                                 ) {
                                     val buttons = getProfileScreenButtons(
                                         onNavigateToGoals = onNavigateToGoals,
-                                        onNavigateToColors = onNavigateToColors,
+                                        onNavigateToColors = {
+                                            if (user.isPremium) onNavigateToColors() else {
+                                                isUpgradePromptDialogDisplayed = true
+                                            }
+                                        },
                                         onNavigateToAccInfo = onNavigateToAccInfo,
                                         onNavigateToSettings = onNavigateToSettings
                                     )

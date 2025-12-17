@@ -24,6 +24,11 @@ object Ui {
         val shape = RoundedCornerShape(roundedSize)
 
         @Composable
+        fun getMaterialBackground(): Color {
+            return MaterialTheme.colorScheme.surfaceVariant
+        }
+
+        @Composable
         fun getTextStyle(
             textColor: Color = MaterialTheme.colorScheme.primary,
             textAlign: TextAlign = TextAlign.Start

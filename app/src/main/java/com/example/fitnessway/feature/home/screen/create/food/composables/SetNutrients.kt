@@ -13,27 +13,19 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
-import com.example.fitnessway.ui.theme.AppModifiers.blurPremiumItem
 
 @Composable
 fun SetNutrients(
     fields: List<FoodCreationNutrientField>,
-    nutrientsWithoutGoal: List<Nutrient>,
-    isPremiumUser: Boolean,
+    nutrientsWithoutGoal: List<Nutrient>
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         content = {
             fields.forEach { field ->
                 val nutrient = field.name.nutrientWithPreferences.nutrient
-                val enabled = (!nutrient.isPremium || isPremiumUser)
 
-                FoodCreationFormField(
-                    field = field,
-                    enabled = enabled,
-                    modifier = Modifier
-                        .blurPremiumItem(enabled),
-                )
+                FoodCreationFormField(field)
             }
 
             if (nutrientsWithoutGoal.isNotEmpty()) {

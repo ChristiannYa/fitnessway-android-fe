@@ -84,7 +84,7 @@ class FoodRepositoryImpl(
         )
     }
 
-    // @TODO: Re-fetch food logs data when deleting the food
+    // @TODO: Re-fetch food logs data when deleting the food, and make the request optimistic
     override suspend fun deleteFood(
         foodId: Int
     ): Flow<UiState<FoodInformation>> {

@@ -36,8 +36,9 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
+import com.example.fitnessway.util.Nutrient.filterOutNutrientsWithGoal
+import com.example.fitnessway.util.Nutrient.filterOutNutrientsWithoutGoal
 import com.example.fitnessway.util.Nutrient.filterOutPremiumNutrients
-import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
@@ -114,184 +115,169 @@ fun CreateFoodFormScreen(
                     },
                     title = title
                 )
-            },
-            content = {
-                when (nutrientsUiState) {
-                    is UiState.Loading -> Text("Loading form")
+            }
+        ) {
+            when (nutrientsUiState) {
+                is UiState.Loading -> Text("Loading form")
 
-                    is UiState.Success -> {
-                        if (uiState.foodAddState is UiState.Success) {
+                is UiState.Success -> {
+                    if (uiState.foodAddState is UiState.Success) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            content = {
+                                SuccessIcon()
+                                Text(
+                                    text = "Food Added Successfully!",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        )
+                    } else {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier
+                                .fillMaxHeight(),
+                        ) {
+                            val isUserPremium = viewModel.user.isPremium
+                            val nutrients = nutrientsUiState.data
+
+                            val foodBaseFields = listOf(
+                                fieldsProvider.name(),
+                                fieldsProvider.brand(),
+                                fieldsProvider.amountPerServing(),
+                                fieldsProvider.servingUnit(),
+                            )
+
+                            val nutrientFieldsData = NutrientType.entries.associateWith { type ->
+                                val nutrientsByType = filterNutrientsByType(
+                                    nutrients = nutrients,
+                                    type = type
+                                )
+
+                                val fields = nutrientsByType
+                                    .filterOutPremiumNutrients(isUserPremium)
+                                    .filterOutNutrientsWithoutGoal()
+                                    .map { fieldsProvider.nutrient(it) }
+
+                                val withoutGoal = nutrientsByType
+                                    .filterOutPremiumNutrients(isUserPremium)
+                                    .filterOutNutrientsWithGoal()
+                                    .map { it.nutrient }
+
+                                Pair(fields, withoutGoal)
+                            }
+
+                            val areNsValid =
+                                viewModel.areBasicNutrientsValid && currentStep >= 2
+
+                            val areVsValid = viewModel.validateFoodNonBaseNutrients(
+                                nutrients = nutrients.vitamin.map { it.nutrient }
+                            ) && currentStep >= 3
+
+                            val areMsValid = viewModel.validateFoodNonBaseNutrients(
+                                nutrients = nutrients.mineral.map { it.nutrient }
+                            ) && currentStep >= 4
+
+                            val isCurrentStepValid = when (currentStep) {
+                                1 -> viewModel.isBasicDataValid
+                                2 -> areNsValid
+                                3 -> areVsValid
+                                4 -> areMsValid
+                                else -> false
+                            }
+
                             Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(24.dp),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .verticalScroll(rememberScrollState()),
                                 content = {
-                                    SuccessIcon()
-                                    Text(
-                                        text = "Food Added Successfully!",
-                                        style = MaterialTheme.typography.bodyMedium
+                                    ApiErrorMessageAnimated(
+                                        isVisible = foodAddErrMsg != "",
+                                        errorMessage = foodAddErrMsg
+                                    )
+
+                                    FormProgressIndicator(
+                                        currentStep = currentStep,
+                                        isStepOneValid = viewModel.isBasicDataValid,
+                                        isStepTwoValid = areNsValid,
+                                        isStepThreeValid = areVsValid,
+                                        isStepFourValid = areMsValid
+                                    )
+
+                                    Column(
+                                        content = {
+                                            AnimatedContent(
+                                                targetState = currentStep,
+                                                transitionSpec = {
+                                                    val isForward =
+                                                        targetState > initialState
+
+                                                    if (isForward)
+                                                        slideInHorizontally { it } + fadeIn() + scaleIn(
+                                                            initialScale = 0.7f
+                                                        ) togetherWith
+                                                                slideOutHorizontally { -it } + fadeOut() + scaleOut(
+                                                            targetScale = 0.7f
+                                                        )
+                                                    else
+                                                        slideInHorizontally { -it } + fadeIn() + scaleIn(
+                                                            initialScale = 0.7f
+                                                        ) togetherWith
+                                                                slideOutHorizontally { it } + fadeOut() + scaleOut(
+                                                            targetScale = 0.7f
+                                                        )
+                                                },
+                                                content = { step ->
+                                                    when (step) {
+                                                        1 -> SetBasicData(foodBaseFields)
+
+                                                        2 -> SetNutrients(
+                                                            fields = nutrientFieldsData[NutrientType.BASIC]?.first.orEmpty(),
+                                                            nutrientsWithoutGoal = nutrientFieldsData[NutrientType.BASIC]?.second.orEmpty()
+                                                        )
+
+                                                        3 -> SetNutrients(
+                                                            fields = nutrientFieldsData[NutrientType.VITAMIN]?.first.orEmpty(),
+                                                            nutrientsWithoutGoal = nutrientFieldsData[NutrientType.VITAMIN]?.second.orEmpty()
+                                                        )
+
+                                                        4 -> SetNutrients(
+                                                            fields = nutrientFieldsData[NutrientType.MINERAL]?.first.orEmpty(),
+                                                            nutrientsWithoutGoal = nutrientFieldsData[NutrientType.MINERAL]?.second.orEmpty()
+                                                        )
+                                                    }
+                                                }
+                                            )
+                                        }
                                     )
                                 }
                             )
-                        } else {
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier
-                                    .fillMaxHeight(),
-                                content = {
-                                    val isPremiumUser = viewModel.user.isPremium
-                                    val nutrients = nutrientsUiState.data
 
-                                    val foodBaseFields = listOf(
-                                        fieldsProvider.name(),
-                                        fieldsProvider.brand(),
-                                        fieldsProvider.amountPerServing(),
-                                        fieldsProvider.servingUnit(),
+                            NextButton(
+                                onClick = {
+                                    viewModel.updateStep(
+                                        step = currentStep,
+                                        goesBack = false,
+                                        onSubmit = viewModel::addFood
                                     )
-
-                                    val nutrientFieldsData =
-                                        NutrientType.entries.associateWith { type ->
-                                            val nutrientsByType = filterNutrientsByType(
-                                                nutrients = nutrients,
-                                                type = type
-                                            )
-
-                                            val fields = nutrientsByType
-                                                .sortNutrientWithPreferencesByPremiumStatus(
-                                                    isPremiumUser
-                                                )
-                                                .map { fieldsProvider.nutrient(it) }
-                                                .filterNot {
-                                                    val preferences =
-                                                        it.name.nutrientWithPreferences.preferences
-                                                    val nutrient =
-                                                        it.name.nutrientWithPreferences.nutrient
-
-                                                    preferences.goal == null && (!nutrient.isPremium || isPremiumUser)
-                                                }
-
-                                            val withoutGoal = nutrientsByType
-                                                .filterNot { it.preferences.goal != null }
-                                                .map { it.nutrient }
-                                                .filterOutPremiumNutrients(isPremiumUser)
-
-                                            Pair(fields, withoutGoal)
-                                        }
-
-                                    val areNsValid =
-                                        viewModel.areBasicNutrientsValid && currentStep >= 2
-
-                                    val areVsValid = viewModel.validateFoodNonBaseNutrients(
-                                        nutrients = nutrients.vitamin.map { it.nutrient }
-                                    ) && currentStep >= 3
-
-                                    val areMsValid = viewModel.validateFoodNonBaseNutrients(
-                                        nutrients = nutrients.mineral.map { it.nutrient }
-                                    ) && currentStep >= 4
-
-                                    val isCurrentStepValid = when (currentStep) {
-                                        1 -> viewModel.isBasicDataValid
-                                        2 -> areNsValid
-                                        3 -> areVsValid
-                                        4 -> areMsValid
-                                        else -> false
-                                    }
-
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(24.dp),
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .verticalScroll(rememberScrollState()),
-                                        content = {
-                                            ApiErrorMessageAnimated(
-                                                isVisible = foodAddErrMsg != "",
-                                                errorMessage = foodAddErrMsg
-                                            )
-
-                                            FormProgressIndicator(
-                                                currentStep = currentStep,
-                                                isStepOneValid = viewModel.isBasicDataValid,
-                                                isStepTwoValid = areNsValid,
-                                                isStepThreeValid = areVsValid,
-                                                isStepFourValid = areMsValid
-                                            )
-
-                                            Column(
-                                                content = {
-                                                    AnimatedContent(
-                                                        targetState = currentStep,
-                                                        transitionSpec = {
-                                                            val isForward =
-                                                                targetState > initialState
-
-                                                            if (isForward)
-                                                                slideInHorizontally { it } + fadeIn() + scaleIn(
-                                                                    initialScale = 0.7f
-                                                                ) togetherWith
-                                                                        slideOutHorizontally { -it } + fadeOut() + scaleOut(
-                                                                    targetScale = 0.7f
-                                                                )
-                                                            else
-                                                                slideInHorizontally { -it } + fadeIn() + scaleIn(
-                                                                    initialScale = 0.7f
-                                                                ) togetherWith
-                                                                        slideOutHorizontally { it } + fadeOut() + scaleOut(
-                                                                    targetScale = 0.7f
-                                                                )
-                                                        },
-                                                        content = { step ->
-                                                            when (step) {
-                                                                1 -> SetBasicData(foodBaseFields)
-
-                                                                2 -> SetNutrients(
-                                                                    fields = nutrientFieldsData[NutrientType.BASIC]?.first.orEmpty(),
-                                                                    nutrientsWithoutGoal = nutrientFieldsData[NutrientType.BASIC]?.second.orEmpty(),
-                                                                    isPremiumUser = isPremiumUser
-                                                                )
-
-                                                                3 -> SetNutrients(
-                                                                    fields = nutrientFieldsData[NutrientType.VITAMIN]?.first.orEmpty(),
-                                                                    nutrientsWithoutGoal = nutrientFieldsData[NutrientType.VITAMIN]?.second.orEmpty(),
-                                                                    isPremiumUser = isPremiumUser,
-                                                                )
-
-                                                                4 -> SetNutrients(
-                                                                    fields = nutrientFieldsData[NutrientType.MINERAL]?.first.orEmpty(),
-                                                                    nutrientsWithoutGoal = nutrientFieldsData[NutrientType.MINERAL]?.second.orEmpty(),
-                                                                    isPremiumUser = isPremiumUser
-                                                                )
-                                                            }
-                                                        }
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
-
-                                    NextButton(
-                                        onClick = {
-                                            viewModel.updateStep(
-                                                step = currentStep,
-                                                goesBack = false,
-                                                onSubmit = viewModel::addFood
-                                            )
-                                        },
-                                        enabled = isCurrentStepValid,
-                                        isSubmitting = uiState.foodAddState is UiState.Loading,
-                                        text = nextButtonText
-                                    )
-                                }
+                                },
+                                enabled = isCurrentStepValid,
+                                isSubmitting = uiState.foodAddState is UiState.Loading,
+                                text = nextButtonText
                             )
                         }
                     }
-
-                    is UiState.Error -> ApiErrorMessage(
-                        errMsg = nutrientsUiState.message
-                    )
-
-                    is UiState.Idle -> {}
                 }
+
+                is UiState.Error -> ApiErrorMessage(
+                    errMsg = nutrientsUiState.message
+                )
+
+                is UiState.Idle -> {}
             }
-        )
+        }
     }
 }

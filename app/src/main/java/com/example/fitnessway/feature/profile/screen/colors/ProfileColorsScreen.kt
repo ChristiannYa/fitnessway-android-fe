@@ -19,7 +19,7 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
-import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
+import com.example.fitnessway.util.Nutrient.filterOutPremiumNutrients
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientColorsFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -94,7 +94,6 @@ fun ProfileColorsScreen(
 
                                 val fieldsByTypeMap = NutrientType.entries.associateWith { type ->
                                     filterNutrientsByType(nutrientsState.data, type)
-                                        .sortNutrientWithPreferencesByPremiumStatus(user.isPremium)
                                         .map { fieldsProvider.nutrientColor(it) }
                                 }
 

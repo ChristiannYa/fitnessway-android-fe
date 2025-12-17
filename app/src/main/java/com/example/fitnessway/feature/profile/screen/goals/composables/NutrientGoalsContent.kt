@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.NutrientGoalEditionField
 import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.ui.theme.AppModifiers.blurPremiumItem
@@ -19,6 +19,7 @@ import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
 @Composable
 fun NutrientGoalsContent(
     nutrientFields: Map<NutrientType, List<NutrientGoalEditionField>>,
+    premiumNutrientsMap: Map<NutrientType, List<NutrientWithPreferences>>,
     user: User
 ) {
     LazyColumn(
@@ -54,6 +55,14 @@ fun NutrientGoalsContent(
                                 }
                             )
                         }
+                    )
+                }
+            }
+
+            if (!user.isPremium) {
+                item {
+                    UpgradePromptSection(
+                        premiumNutrientsMap = premiumNutrientsMap
                     )
                 }
             }

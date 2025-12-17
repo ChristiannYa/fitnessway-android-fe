@@ -22,7 +22,9 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
-import com.example.fitnessway.util.Nutrient.sortNutrientWithPreferencesByPremiumStatus
+import com.example.fitnessway.util.Nutrient.filterOutNonPremiumNutrients
+import com.example.fitnessway.util.Nutrient.filterOutPremiumNutrients
+import com.example.fitnessway.util.Nutrient.mapNutrients
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientGoalsFieldsProvider
@@ -102,16 +104,22 @@ fun ProfileGoalsScreen(
                                     }
                                 )
 
-                                NutrientType.entries.associateWith { type ->
-                                    val nutrientsByType = filterNutrientsByType(
-                                        nutrients = nutrientsState.data,
-                                        type = type
-                                    )
-
-                                    nutrientsByType.sortNutrientWithPreferencesByPremiumStatus(
-                                        user.isPremium
-                                    ).map { fieldsProvider.nutrientGoal(it) }
+                                val fieldsByTypeMap = NutrientType.entries.associateWith { type ->
+                                    filterNutrientsByType(nutrientsState.data, type)
+                                        .filterOutPremiumNutrients(user.isPremium)
+                                        .map { fieldsProvider.nutrientGoal(it) }
                                 }
+
+                                fieldsByTypeMap
+                            }
+
+                            val premiumNutrientsMap = NutrientType.entries.associateWith { type ->
+                                filterNutrientsByType(
+                                    nutrients = nutrientsState.data.mapNutrients {
+                                        it.filterOutNonPremiumNutrients(user.isPremium)
+                                    },
+                                    type = type
+                                )
                             }
 
                             Column(
@@ -124,6 +132,7 @@ fun ProfileGoalsScreen(
 
                                     NutrientGoalsContent(
                                         nutrientFields = goalFields,
+                                        premiumNutrientsMap = premiumNutrientsMap,
                                         user = user
                                     )
                                 }

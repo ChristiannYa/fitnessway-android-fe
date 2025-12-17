@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
+import com.example.fitnessway.util.Formatters.logcat
+import com.example.fitnessway.util.Nutrient.Ui.NutrientLabelsFlowRow
 
 @Composable
 fun SetNutrients(
@@ -23,8 +25,6 @@ fun SetNutrients(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         content = {
             fields.forEach { field ->
-                val nutrient = field.name.nutrientWithPreferences.nutrient
-
                 FoodCreationFormField(field)
             }
 
@@ -37,7 +37,9 @@ fun SetNutrients(
                             verticalArrangement = Arrangement.spacedBy(10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             content = {
-                                val messageText = if (nutrientsWithoutGoal.size > 2) {
+                                logcat("nutrients without goal size: ${nutrientsWithoutGoal.size}")
+
+                                val messageText = if (nutrientsWithoutGoal.size > 1) {
                                     "These nutrients are missing goals. If you choose to set goals for them, " +
                                             "they can be added to your food."
                                 } else "This nutrient is missing a goal. If you choose to set a goal for it, " +
@@ -49,19 +51,9 @@ fun SetNutrients(
                                     textAlign = TextAlign.Center
                                 )
 
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(5.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    content = {
-                                        nutrientsWithoutGoal.forEach {
-                                            Text(
-                                                text = it.name,
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        }
-                                    }
+                                NutrientLabelsFlowRow(
+                                    nutrients = nutrientsWithoutGoal,
+                                    textStyle = MaterialTheme.typography.labelLarge
                                 )
                             }
                         )

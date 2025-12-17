@@ -9,6 +9,7 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.NutrientGoalEditionField
+import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.user.User
@@ -19,7 +20,7 @@ import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
 @Composable
 fun NutrientGoalsContent(
     nutrientFields: Map<NutrientType, List<NutrientGoalEditionField>>,
-    premiumNutrientsMap: Map<NutrientType, List<NutrientWithPreferences>>,
+    premiumNutrientsMap: Map<NutrientType, List<Nutrient>>,
     user: User
 ) {
     LazyColumn(

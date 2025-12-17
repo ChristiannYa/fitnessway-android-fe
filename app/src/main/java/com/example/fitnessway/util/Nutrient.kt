@@ -7,12 +7,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,6 +47,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.data.model.nutrient.Nutrient as NutrientModel
 
 
 object Nutrient {
@@ -180,6 +185,39 @@ object Nutrient {
     }
 
     object Ui {
+        @Composable
+        fun NutrientLabel(
+            nutrient: NutrientModel,
+            textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+            color: Color = MaterialTheme.colorScheme.surfaceVariant
+        ) {
+            Surface(
+                shape = RoundedCornerShape(50),
+                color = color
+            ) {
+                Text(
+                    text = nutrient.name,
+                    style = textStyle,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                    color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+                )
+            }
+        }
+
+        @Composable
+        fun NutrientLabelsFlowRow(
+            nutrients: List<NutrientModel>,
+            textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+            color: Color = MaterialTheme.colorScheme.surfaceVariant
+        ) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                nutrients.forEach { NutrientLabel(it, textStyle, color) }
+            }
+        }
+
         @Composable
         fun NutrientCategoryTitle(
             type: NutrientType

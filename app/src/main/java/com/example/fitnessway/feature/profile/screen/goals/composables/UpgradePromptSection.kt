@@ -2,30 +2,26 @@ package com.example.fitnessway.feature.profile.screen.goals.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.util.Nutrient.Ui.NutrientLabelsFlowRow
 import com.example.fitnessway.util.Nutrient.getNutrientCategoryTitle
 import com.example.fitnessway.util.Ui.Measurements.TEXT_ICON_HORIZONTAL_SPACE
 
 @Composable
 fun UpgradePromptSection(
-    premiumNutrientsMap: Map<NutrientType, List<NutrientWithPreferences>>,
+    premiumNutrientsMap: Map<NutrientType, List<Nutrient>>,
     modifier: Modifier = Modifier
 ) {
     val sectionAccent = MaterialTheme.colorScheme.surfaceVariant
@@ -60,40 +56,14 @@ fun UpgradePromptSection(
 
         Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
             premiumNutrientsMap.forEach { (type, nutrients) ->
-                PremiumNutrientsGroup(type, nutrients, sectionAccent)
-            }
-        }
-    }
-}
-
-@Composable
-private fun PremiumNutrientsGroup(
-    type: NutrientType,
-    nutrients: List<NutrientWithPreferences>,
-    sectionAccent: Color
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(
-            text = getNutrientCategoryTitle(type),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            nutrients.forEach { item ->
-                Surface(
-                    shape = RoundedCornerShape(50),
-                    color = sectionAccent
-                ) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(
-                        text = item.nutrient.name,
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+                        text = getNutrientCategoryTitle(type),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
+
+                    NutrientLabelsFlowRow(nutrients, color = sectionAccent)
                 }
             }
         }

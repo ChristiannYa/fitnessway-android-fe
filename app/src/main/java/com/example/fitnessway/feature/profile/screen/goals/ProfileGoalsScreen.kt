@@ -120,6 +120,7 @@ fun ProfileGoalsScreen(
                                     },
                                     type = type
                                 )
+                                    .map { it.nutrient }
                             }
 
                             Column(

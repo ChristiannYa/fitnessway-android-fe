@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.fitnessway.feature.home.screen.foodselection.composables.Foods
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import org.koin.compose.viewmodel.koinViewModel
@@ -23,6 +24,8 @@ fun FoodSelectionScreen(
     val foodUiState by viewModel.foodRepoUiState.collectAsState()
     val foodCategory by viewModel.foodLogCategory.collectAsState()
 
+    val user = viewModel.user
+
     LaunchedEffect(Unit) {
         viewModel.getFoods()
     }
@@ -35,12 +38,17 @@ fun FoodSelectionScreen(
             )
         },
         content = {
-            Column {
-                Foods(
-                    state = foodUiState.foodsUiState,
-                    setSelectedFoodToLog = viewModel::setSelectedFoodToLog,
-                    onSelectedFoodToLog
-                )
+            if (user != null) {
+                Column {
+                    Foods(
+                        state = foodUiState.foodsUiState,
+                        setSelectedFoodToLog = viewModel::setSelectedFoodToLog,
+                        onSelectedFoodToLog,
+                        user = user
+                    )
+                }
+            } else {
+                NotFoundText("User not found")
             }
         }
     )

@@ -32,6 +32,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.data.model.nutrient.Nutrient as NutrientM
@@ -155,6 +156,7 @@ object Nutrient {
         @Composable
         fun NutrientsBoxUi(
             nutrients: List<NutrientAmountData>,
+            user: User,
             isDataMinimal: Boolean = false,
             /**
              * Represents the width of the **entire** nutrient UI (everything throughout
@@ -179,9 +181,11 @@ object Nutrient {
                 val nutrientType = nutrient.type
                 val preferences = nutrientData.nutrientWithPreferences.preferences
 
-                val nutrientColor = getNutrientColor(
-                    preferences.hexColor
-                ) ?: MaterialTheme.colorScheme.primary
+                val nutrientColor = if (user.isPremium) {
+                    getNutrientColor(
+                        preferences.hexColor
+                    ) ?: MaterialTheme.colorScheme.primary
+                } else MaterialTheme.colorScheme.primary
 
                 val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
 

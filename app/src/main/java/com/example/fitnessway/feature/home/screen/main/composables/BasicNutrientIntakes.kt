@@ -80,7 +80,7 @@ fun BasicNutrientIntakes(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    NutrientsBoxUi(chunkedNutrients[page])
+                                    NutrientsBoxUi(chunkedNutrients[page], user)
                                 }
                             }
 

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.EditionButtons
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformationList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -163,7 +164,8 @@ fun FoodLogScreen(
                                                     title = section.title,
                                                     nutrients = section.nutrients,
                                                     progressBarHeight = section.progressBarHeight,
-                                                    contentWidth = section.contentWidth
+                                                    contentWidth = section.contentWidth,
+                                                    user = user
                                                 )
                                             }
                                         }
@@ -184,6 +186,7 @@ private fun NutrientSection(
     nutrients: List<NutrientAmountData>,
     progressBarHeight: Dp,
     contentWidth: Dp,
+    user: User
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -203,7 +206,8 @@ private fun NutrientSection(
                         nutrients = nutrients,
                         isDataMinimal = true,
                         contentWidth = contentWidth,
-                        progressBarHeight = progressBarHeight
+                        progressBarHeight = progressBarHeight,
+                        user = user
                     )
                 }
             )

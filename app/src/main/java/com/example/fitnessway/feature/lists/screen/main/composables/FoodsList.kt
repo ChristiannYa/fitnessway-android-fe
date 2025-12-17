@@ -63,7 +63,7 @@ fun LazyListScope.foodsList(
 }
 
 @Composable
-fun Food(
+private fun Food(
     food: FoodInformation,
     onViewDetails: () -> Unit,
 ) {

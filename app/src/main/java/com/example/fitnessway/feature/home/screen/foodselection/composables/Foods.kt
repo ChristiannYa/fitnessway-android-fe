@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
@@ -24,7 +25,8 @@ import com.example.fitnessway.util.UiState
 fun Foods(
     state: UiState<List<FoodInformation>>,
     setSelectedFoodToLog: (FoodInformation) -> Unit,
-    onSelectedFoodToLog: () -> Unit
+    onSelectedFoodToLog: () -> Unit,
+    user: User
 ) {
     when (state) {
         is UiState.Loading -> {
@@ -33,7 +35,7 @@ fun Foods(
             )
         }
         is UiState.Success -> {
-            Foods(state.data, setSelectedFoodToLog, onSelectedFoodToLog)
+            Foods(state.data, setSelectedFoodToLog, onSelectedFoodToLog, user)
         }
         is UiState.Error -> ApiErrorMessage(state.message)
         is UiState.Idle -> {}
@@ -41,10 +43,11 @@ fun Foods(
 }
 
 @Composable
-fun Foods(
+private fun Foods(
     foods: List<FoodInformation>,
     setSelectedFoodToLog: (FoodInformation) -> Unit,
-    onSelectedFoodToLog: () -> Unit
+    onSelectedFoodToLog: () -> Unit,
+    user: User
 ) {
     if (foods.isEmpty()) {
         NotFoundText("Foods that you add to your list will appear here")
@@ -56,8 +59,9 @@ fun Foods(
                     item {
                         Food(
                             food = it,
-                            setSelectedFoodToLog,
-                            onSelectedFoodToLog
+                            setSelectedFood = setSelectedFoodToLog,
+                            onSelectedFood = onSelectedFoodToLog,
+                            user = user
                         )
                     }
                 }
@@ -67,10 +71,11 @@ fun Foods(
 }
 
 @Composable
-fun Food(
+private fun Food(
     food: FoodInformation,
     setSelectedFood: (FoodInformation) -> Unit,
-    onSelectedFood: () -> Unit
+    onSelectedFood: () -> Unit,
+    user: User
 ) {
     val missingBrand = food.information.brand == null || food.information.brand == ""
 
@@ -95,24 +100,28 @@ fun Food(
                 text = if (missingBrand) "~" else food.information.brand,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
             )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                content = {
-                    food.nutrients.basic.forEach { (nutrientData, amount) ->
-                        val nutrientColor = getNutrientColor(nutrientData.preferences.hexColor)
 
-                        if (nutrientColor != null) {
-                            Text(
-                                text = doubleFormatter(amount),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = nutrientColor
-                            )
+            if (user.isPremium) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    content = {
+                        food.nutrients.basic.forEach { (nutrientData, amount) ->
+                            val nutrientColor = getNutrientColor(nutrientData.preferences.hexColor)
+
+                            if (nutrientColor != null) {
+                                Text(
+                                    text = doubleFormatter(amount),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = nutrientColor
+                                )
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     )
 }

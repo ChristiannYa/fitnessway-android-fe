@@ -8,10 +8,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 object Ui {
+    object Measurements {
+        val SCREEN_HORIZONTAL_PADDING = 16.dp
+        val TEXT_ICON_HORIZONTAL_SPACE = 10.dp
+    }
+
     object InputUi {
         val padding = 12.dp
         val roundedSize = 10.dp

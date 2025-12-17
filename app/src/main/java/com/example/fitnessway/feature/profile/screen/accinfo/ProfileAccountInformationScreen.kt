@@ -30,7 +30,7 @@ fun ProfileAccountInformationScreen(
         header = {
             Header(
                 onBackClick = onBackClick,
-                title = "Account Information"
+                title = "Account"
             )
         },
 

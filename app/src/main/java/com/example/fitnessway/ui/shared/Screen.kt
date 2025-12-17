@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.util.UiMeasures
+import com.example.fitnessway.util.Ui.Measurements.SCREEN_HORIZONTAL_PADDING
 
 @Composable
 fun Screen(
@@ -32,7 +32,7 @@ fun Screen(
                 modifier = Modifier.fillMaxSize(),
                 content = {
                     val horizontalPadding = if (usesInnerHorizontalPadding) {
-                        UiMeasures.SCREEN_HORIZONTAL_PADDING
+                        SCREEN_HORIZONTAL_PADDING
                     } else 0.dp
 
                     header?.let { it() }

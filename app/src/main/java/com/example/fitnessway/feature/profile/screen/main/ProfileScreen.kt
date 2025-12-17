@@ -16,11 +16,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
-import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.NavigateNext
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.ColorLens
+import androidx.compose.material.icons.outlined.FitnessCenter
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,18 +31,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.feature.profile.screen.main.composables.UpgradePromptDialog
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.robotoSerifFamily
-import com.example.fitnessway.util.UiMeasures
+import com.example.fitnessway.util.Ui.Measurements.SCREEN_HORIZONTAL_PADDING
+import com.example.fitnessway.util.Ui.Measurements.TEXT_ICON_HORIZONTAL_SPACE
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -56,14 +58,7 @@ fun ProfileScreen(
 ) {
     val user = viewModel.user
 
-
-    if (user == null) {
-        Screen(
-            content = {
-                NotFoundText(text = "No user found")
-            }
-        )
-    } else {
+    if (user != null) {
         var isUpgradePromptDialogDisplayed by remember { mutableStateOf(false) }
 
         Screen(
@@ -76,99 +71,33 @@ fun ProfileScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             modifier = Modifier.fillMaxWidth(),
                             content = {
-                                // Profile image
-                                Box(
-                                    modifier = Modifier
-                                        .size(126.dp),
-                                    content = {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .clip(CircleShape)
-                                                .background(
-                                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                                    shape = CircleShape
-                                                ),
-                                            content = {
-                                                Image(
-                                                    painter = painterResource(R.drawable.user_img),
-                                                    contentDescription = "User profile image",
-                                                    modifier = Modifier.fillMaxSize()
-                                                )
-                                            }
-                                        )
-
-                                        if (user.isPremium) {
-                                            PremiumIcon(
-                                                size = 18.dp,
-                                                modifier = Modifier
-                                                    .align(Alignment.TopEnd)
-                                                    .offset(x = (-4).dp, y = 2.dp)
-                                                    .clip(CircleShape)
-                                                    .background(
-                                                        color = MaterialTheme.colorScheme.background,
-                                                        shape = CircleShape
-                                                    )
-                                                    .padding(5.dp)
-                                            )
-                                        }
-                                    }
+                                ProfileImage(
+                                    user = user,
+                                    imagePainter = painterResource(R.drawable.user_img)
                                 )
 
-                                // User information
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    content = {
-                                        Text(
-                                            text = user.name,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
+                                ProfileInformation(user)
 
-                                        val premiumStatusText =
-                                            if (user.isPremium) "Premium Account" else "Free Account"
-
-                                        Text(
-                                            text = premiumStatusText,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                )
-
-                                // Buttons
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(4.dp),
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp)),
-                                    content = {
-                                        ProfileScreenMainButton(
-                                            onClick = onNavigateToGoals,
-                                            imageVector = Icons.Default.FitnessCenter,
-                                            text = "My Goals"
-                                        )
+                                ) {
+                                    val buttons = getProfileScreenButtons(
+                                        onNavigateToGoals = onNavigateToGoals,
+                                        onNavigateToColors = onNavigateToColors,
+                                        onNavigateToAccInfo = onNavigateToAccInfo,
+                                        onNavigateToSettings = onNavigateToSettings
+                                    )
 
+                                    buttons.forEach { button ->
                                         ProfileScreenMainButton(
-                                            onClick = {
-                                                if (user.isPremium) onNavigateToColors() else isUpgradePromptDialogDisplayed =
-                                                    true
-                                            },
-                                            imageVector = Icons.Default.ColorLens,
-                                            text = "Color Palette"
-                                        )
-
-                                        ProfileScreenMainButton(
-                                            onClick = onNavigateToAccInfo,
-                                            imageVector = Icons.Default.Person,
-                                            text = "Account Information"
-                                        )
-
-                                        ProfileScreenMainButton(
-                                            onClick = onNavigateToSettings,
-                                            imageVector = Icons.Default.Settings,
-                                            text = "Settings"
+                                            text = button.text,
+                                            imageVector = button.imageVector,
+                                            onClick = button.onClick
                                         )
                                     }
-                                )
+                                }
 
                                 if (isUpgradePromptDialogDisplayed) {
                                     UpgradePromptDialog(
@@ -182,7 +111,44 @@ fun ProfileScreen(
                 )
             }
         )
-    }
+    } else Screen { NotFoundText(text = "No user found") }
+
+}
+
+private data class ProfileButtonSettings(
+    val onClick: () -> Unit,
+    val imageVector: ImageVector,
+    val text: String
+)
+
+private fun getProfileScreenButtons(
+    onNavigateToGoals: () -> Unit,
+    onNavigateToColors: () -> Unit,
+    onNavigateToAccInfo: () -> Unit,
+    onNavigateToSettings: () -> Unit
+): List<ProfileButtonSettings> {
+    return listOf(
+        ProfileButtonSettings(
+            onClick = onNavigateToGoals,
+            imageVector = Icons.Outlined.FitnessCenter,
+            text = "My goals"
+        ),
+        ProfileButtonSettings(
+            onClick = onNavigateToColors,
+            imageVector = Icons.Outlined.ColorLens,
+            text = "Color Palette"
+        ),
+        ProfileButtonSettings(
+            onClick = onNavigateToAccInfo,
+            imageVector = Icons.Outlined.AccountCircle,
+            text = "Account"
+        ),
+        ProfileButtonSettings(
+            onClick = onNavigateToSettings,
+            imageVector = Icons.Outlined.Settings,
+            text = "Settings"
+        ),
+    )
 }
 
 @Composable
@@ -197,43 +163,102 @@ private fun ProfileScreenMainButton(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(UiMeasures.SCREEN_HORIZONTAL_PADDING),
-        content = {
+            .padding(SCREEN_HORIZONTAL_PADDING)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
+            ) {
+                Icon(
+                    imageVector = imageVector,
+                    contentDescription = text,
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = text,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontFamily = robotoSerifFamily,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.NavigateNext,
+                contentDescription = "Go to $text",
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProfileInformation(user: User) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = user.name,
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        val premiumStatusText = if (user.isPremium) "Premium Account" else "Free Account"
+
+        Text(
+            text = premiumStatusText,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun ProfileImage(
+    user: User,
+    imagePainter: Painter
+) {
+    Box(
+        modifier = Modifier
+            .size(120.dp),
+        content = {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = CircleShape
+                    ),
                 content = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        content = {
-                            Icon(
-                                imageVector = imageVector,
-                                contentDescription = text,
-                                modifier = Modifier.size(18.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-
-                            Text(
-                                text = text,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontFamily = robotoSerifFamily,
-                                fontWeight = FontWeight.Medium,
-                            )
-                        }
-                    )
-
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.NavigateNext,
-                        contentDescription = "Go to $text",
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.onBackground
+                    Image(
+                        painter = imagePainter,
+                        contentDescription = "User profile image",
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             )
+
+            if (user.isPremium) {
+                PremiumIcon(
+                    size = 18.dp,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = (-4).dp, y = 2.dp)
+                        .clip(CircleShape)
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = CircleShape
+                        )
+                        .padding(5.dp)
+                )
+            }
         }
     )
 }

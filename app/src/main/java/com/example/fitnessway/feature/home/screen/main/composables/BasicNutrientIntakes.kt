@@ -22,7 +22,8 @@ import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.NotFoundText
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsBox
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
@@ -52,7 +53,8 @@ fun BasicNutrientIntakes(
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .areaContainerLarge(
+                    .areaContainer(
+                        size = AreaContainerSize.LARGE,
                         showsIndication = true,
                         onClickEnabled = isEmpty,
                         onClick = onNavigateToGoals

@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Nutrient.Ui.NutrientLabelsFlowRow
 
 @Composable
@@ -37,8 +36,6 @@ fun SetNutrients(
                             verticalArrangement = Arrangement.spacedBy(10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             content = {
-                                logcat("nutrients without goal size: ${nutrientsWithoutGoal.size}")
-
                                 val messageText = if (nutrientsWithoutGoal.size > 1) {
                                     "These nutrients are missing goals. If you choose to set goals for them, " +
                                             "they can be added to your food."

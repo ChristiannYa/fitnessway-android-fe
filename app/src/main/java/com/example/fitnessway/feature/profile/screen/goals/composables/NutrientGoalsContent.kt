@@ -11,9 +11,8 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.NutrientGoalEditionField
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.user.User
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.blurPremiumItem
 import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
 
@@ -29,7 +28,7 @@ fun NutrientGoalsContent(
             nutrientFields.forEach { (type, goalFields) ->
                 item(key = type) {
                     Box(
-                        modifier = Modifier.areaContainerLarge(),
+                        modifier = Modifier.areaContainer(),
                         content = {
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(20.dp),

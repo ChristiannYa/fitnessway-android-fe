@@ -28,8 +28,8 @@ import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.shared.ActionButton
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.util.Animation.colorSpec
 
 @Composable
@@ -59,7 +59,7 @@ fun EditionMode(
                 content = {
                     Box(
                         modifier = Modifier
-                            .areaContainerLarge(
+                            .areaContainer(
                                 areaColor = MaterialTheme.colorScheme.primaryContainer
                             ),
                         content = {
@@ -142,7 +142,8 @@ private fun <T> LazyListScope.fieldSection(
                         width = 4.dp,
                         shape = RoundedCornerShape(14.dp)
                     )
-                    .areaContainerMedium(
+                    .areaContainer(
+                        size = AreaContainerSize.MEDIUM,
                         areaColor = Color.Transparent
                     ),
                 content = {

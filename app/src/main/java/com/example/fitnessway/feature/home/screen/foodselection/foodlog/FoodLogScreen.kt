@@ -31,7 +31,8 @@ import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsBox
 import com.example.fitnessway.util.UiState
@@ -96,16 +97,6 @@ fun FoodLogScreen(
                             viewModel.updateFoodLogFormField(fieldName, value)
                         }
                     )
-
-                    val nutrients = remember(formState.data.servings) {
-                        val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
-
-                        calcNutrientsBasedOnFoodLogServings(
-                            nutrients = food.nutrients,
-                            currentServings = 1.0,
-                            newServings = servings
-                        )
-                    }
 
                     CompositionLocalProvider(
                         values = arrayOf(LocalOverscrollFactory provides null),
@@ -191,7 +182,8 @@ private fun NutrientSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(18.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.areaContainerLarge(),
+        modifier = Modifier
+            .areaContainer(AreaContainerSize.LARGE),
         content = {
             Text(
                 text = title,

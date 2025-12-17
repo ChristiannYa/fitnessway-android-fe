@@ -52,8 +52,8 @@ import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.NotFoundText
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.ui.theme.WhiteBackground
 import com.example.fitnessway.ui.theme.robotoSerifFamily
@@ -101,7 +101,7 @@ private fun FoodLogsCategorized(
     )
 
     Column(
-        modifier = Modifier.areaContainerLarge(),
+        modifier = Modifier.areaContainer(),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         content = {
             categoriesWithLogs.forEach { (category, logs) ->
@@ -142,7 +142,8 @@ private fun FoodLogCategory(
             )
             Column(
                 modifier = Modifier
-                    .areaContainerMedium(
+                    .areaContainer(
+                        size = AreaContainerSize.MEDIUM,
                         areaColor = MaterialTheme.colorScheme.secondaryContainer
                     )
                     .graphicsLayer(clip = true),

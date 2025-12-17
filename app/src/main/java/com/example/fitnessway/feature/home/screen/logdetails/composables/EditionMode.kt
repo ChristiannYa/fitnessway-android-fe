@@ -17,7 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodLogEditionField
 import com.example.fitnessway.ui.shared.ActionButton
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 
 @Composable
 fun EditionMode(
@@ -67,7 +68,8 @@ fun EditionMode(
                             // Fields
                             Box(
                                 modifier = Modifier
-                                    .areaContainerLarge(
+                                    .areaContainer(
+                                        size = AreaContainerSize.LARGE,
                                         areaColor = MaterialTheme.colorScheme.primaryContainer
                                     ),
                                 content = {

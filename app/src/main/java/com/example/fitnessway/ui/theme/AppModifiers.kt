@@ -30,7 +30,7 @@ object AppModifiers {
 
     @Composable
     fun Modifier.areaContainer(
-        size: AreaContainerSize = AreaContainerSize.MEDIUM,
+        size: AreaContainerSize = AreaContainerSize.LARGE,
         areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
         shape: RoundedCornerShape = RoundedCornerShape(size.cornerRadius),
         showsIndication: Boolean = false,
@@ -65,36 +65,6 @@ object AppModifiers {
             shape = shape
         )
         .padding(size.padding)
-
-
-    @Composable
-    fun Modifier.areaContainerLarge(
-        areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
-        shape: RoundedCornerShape = RoundedCornerShape(16.dp),
-        showsIndication: Boolean = false,
-        onClickEnabled: Boolean = true,
-        onClick: (() -> Unit)? = null
-    ) = this
-        .then(
-            if (onClick != null) {
-                Modifier
-                    .clip(shape)
-                    .clickable(
-                        interactionSource = if (showsIndication) null else {
-                            remember { MutableInteractionSource() }
-                        },
-                        indication = if (showsIndication) LocalIndication.current else null,
-                        onClick = onClick,
-                        enabled = onClickEnabled
-                    )
-            } else Modifier
-        )
-        .fillMaxWidth()
-        .background(
-            color = areaColor,
-            shape = shape
-        )
-        .padding(18.dp)
 
     @Composable
     fun Modifier.areaContainerMedium(

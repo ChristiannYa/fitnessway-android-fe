@@ -41,6 +41,10 @@ class ColorsManager : IColorsManager {
                 val validationErrors = formColors.mapNotNull { (id, color) ->
                     val originalValue = originalColors?.get(id)
 
+                    if (originalValue != null && originalValue.isNotEmpty() && color.isEmpty()) {
+                        return@mapNotNull "Nutrient (id: $id) color cannot be empty"
+                    }
+
                     // Skip validation for empty values
                     if (color.isEmpty()) return@mapNotNull null
 
@@ -55,6 +59,7 @@ class ColorsManager : IColorsManager {
 
                     null
                 }
+                // .also { errors -> }
 
                 hasChanges && validationErrors.isEmpty()
             } ?: false

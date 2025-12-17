@@ -71,7 +71,7 @@ class ColorsManager : IColorsManager {
     ) {
         val colors = formatNutrientsDataAsMap(
             nutrientsData = nutrientsData,
-            propertySelector = { it.hexColor ?: "" }
+            propertySelector = { it.hexColor?.removePrefix("#") ?: "" }
         )
 
         _colorsEditionFormState.value = FormState(FormStates.NutrientColors(colors))

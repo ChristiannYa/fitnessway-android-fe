@@ -96,6 +96,7 @@ fun ProfileScreen(
 
                                     buttons.forEach { button ->
                                         ProfileScreenMainButton(
+                                            isButtonPremium = button.isButtonPremium,
                                             text = button.text,
                                             imageVector = button.imageVector,
                                             onClick = button.onClick
@@ -120,9 +121,10 @@ fun ProfileScreen(
 }
 
 private data class ProfileButtonSettings(
+    val isButtonPremium: Boolean,
     val onClick: () -> Unit,
     val imageVector: ImageVector,
-    val text: String
+    val text: String,
 )
 
 private fun getProfileScreenButtons(
@@ -133,21 +135,25 @@ private fun getProfileScreenButtons(
 ): List<ProfileButtonSettings> {
     return listOf(
         ProfileButtonSettings(
+            isButtonPremium = false,
             onClick = onNavigateToGoals,
             imageVector = Icons.Outlined.FitnessCenter,
-            text = "My goals"
+            text = "My goals",
         ),
         ProfileButtonSettings(
+            isButtonPremium = true,
             onClick = onNavigateToColors,
             imageVector = Icons.Outlined.ColorLens,
             text = "Color Palette"
         ),
         ProfileButtonSettings(
+            isButtonPremium = false,
             onClick = onNavigateToAccInfo,
             imageVector = Icons.Outlined.AccountCircle,
             text = "Account"
         ),
         ProfileButtonSettings(
+            isButtonPremium = false,
             onClick = onNavigateToSettings,
             imageVector = Icons.Outlined.Settings,
             text = "Settings"
@@ -160,6 +166,7 @@ private fun ProfileScreenMainButton(
     text: String,
     imageVector: ImageVector,
     onClick: () -> Unit,
+    isButtonPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -195,12 +202,19 @@ private fun ProfileScreenMainButton(
                 )
             }
 
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.NavigateNext,
-                contentDescription = "Go to $text",
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isButtonPremium) PremiumIcon()
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.NavigateNext,
+                    contentDescription = "Go to $text",
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }

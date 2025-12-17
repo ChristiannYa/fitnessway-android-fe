@@ -14,7 +14,8 @@ import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import org.koin.androidx.compose.koinViewModel
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -41,7 +42,7 @@ fun ProfileAccountInformationScreen(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier
-                        .areaContainerSmall(),
+                        .areaContainer(size = AreaContainerSize.SMALL),
                     content = {
                         val userInformation = getUserAccountInformation(user)
 

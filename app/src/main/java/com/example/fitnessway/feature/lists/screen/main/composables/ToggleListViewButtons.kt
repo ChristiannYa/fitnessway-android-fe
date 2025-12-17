@@ -4,7 +4,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
 import com.example.fitnessway.data.model.food.ListOption
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.util.Animation.colorSpec
 
 @Composable
@@ -99,7 +99,8 @@ fun ListOptionButton(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .areaContainerSmall(
+            .areaContainer(
+                size = AreaContainerSize.SMALL,
                 onClick = onClick,
                 showsIndication = false,
                 areaColor = areaColor

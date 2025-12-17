@@ -19,7 +19,8 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.util.UiState
 
 fun LazyListScope.foodsList(
@@ -76,7 +77,8 @@ private fun Food(
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(12.dp)
             )
-            .areaContainerSmall(
+            .areaContainer(
+                size = AreaContainerSize.SMALL,
                 onClick = onViewDetails,
                 areaColor = MaterialTheme.colorScheme.primaryContainer
             ),

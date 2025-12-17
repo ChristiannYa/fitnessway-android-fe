@@ -67,46 +67,6 @@ object AppModifiers {
         .padding(size.padding)
 
     @Composable
-    fun Modifier.areaContainerMedium(
-        areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
-        shape: RoundedCornerShape = RoundedCornerShape(14.dp)
-    ) = this
-        .fillMaxWidth()
-        .background(
-            color = areaColor,
-            shape = shape
-        )
-        .padding(16.dp)
-
-    @Composable
-    fun Modifier.areaContainerSmall(
-        areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
-        shape: RoundedCornerShape = RoundedCornerShape(12.dp),
-        showsIndication: Boolean = true,
-        hugsContent: Boolean = false,
-        onClick: (() -> Unit)? = null,
-    ) = this
-        .then(
-            if (onClick != null) {
-                Modifier
-                    .clip(shape)
-                    .clickable(
-                        interactionSource = if (showsIndication) null else {
-                            remember { MutableInteractionSource() }
-                        },
-                        indication = if (showsIndication) LocalIndication.current else null,
-                        onClick = onClick
-                    )
-            } else Modifier
-        )
-        .then(if (!hugsContent) Modifier.fillMaxWidth() else Modifier)
-        .background(
-            color = areaColor,
-            shape = shape
-        )
-        .padding(14.dp)
-
-    @Composable
     fun Modifier.blurPremiumItem(
         shouldBlur: Boolean
     ) = this

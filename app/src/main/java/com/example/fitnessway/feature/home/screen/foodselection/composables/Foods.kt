@@ -16,7 +16,8 @@ import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.getColor
 import com.example.fitnessway.util.UiState
@@ -82,7 +83,8 @@ private fun Food(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .areaContainerSmall(
+            .areaContainer(
+                size = AreaContainerSize.SMALL,
                 onClick = {
                     setSelectedFood(food)
                     onSelectedFood()

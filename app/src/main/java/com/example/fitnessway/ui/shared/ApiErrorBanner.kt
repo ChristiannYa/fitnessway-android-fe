@@ -21,7 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 
 @Composable
@@ -51,7 +52,8 @@ fun ErrorBanner(
 ) {
     Box(
         modifier = modifier
-            .areaContainerMedium(
+            .areaContainer(
+                size = AreaContainerSize.MEDIUM,
                 areaColor = MaterialTheme.colorScheme.errorContainer
             ),
         content = {

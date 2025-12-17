@@ -12,7 +12,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.nutrient.Nutrient
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.util.Nutrient.Ui.NutrientLabelsFlowRow
 
 @Composable
@@ -30,7 +31,7 @@ fun SetNutrients(
             if (nutrientsWithoutGoal.isNotEmpty()) {
                 Box(
                     modifier = Modifier
-                        .areaContainerSmall(),
+                        .areaContainer(size = AreaContainerSize.SMALL),
                     content = {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(10.dp),

@@ -23,7 +23,8 @@ import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsCircle
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsLine
@@ -209,7 +210,7 @@ object Food {
         @Composable
         fun NutrientSummary() {
             Column(
-                modifier = Modifier.areaContainerMedium(),
+                modifier = Modifier.areaContainer(size = AreaContainerSize.MEDIUM),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
@@ -233,7 +234,7 @@ object Food {
 
             if (remainingNutrients.any { it.second.isNotEmpty() }) {
                 Column(
-                    modifier = Modifier.areaContainerMedium(),
+                    modifier = Modifier.areaContainer(size = AreaContainerSize.MEDIUM),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     content = {
                         remainingNutrients.forEachIndexed { index, (type, ns) ->

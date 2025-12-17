@@ -48,6 +48,8 @@ fun FoodDetailsScreen(
     val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
     val deletedNutrients by viewModel.deletedNutrients.collectAsState()
 
+    val user = viewModel.user
+
     LaunchedEffect(selectedFood) {
         selectedFood?.let { food ->
             viewModel.initializeFoodForm(food)
@@ -78,10 +80,10 @@ fun FoodDetailsScreen(
     val food = selectedFood
     val title = "Food Details"
 
-    if (food == null) {
+    if (food == null || user == null) {
         Screen(
             header = { Header(onBackClick = onBackClick, title = title) },
-            content = { NotFoundText("Food not found") }
+            content = { NotFoundText("Food data not found") }
         )
     } else {
         foodEditionFormState?.let { formState ->
@@ -142,129 +144,126 @@ fun FoodDetailsScreen(
                             )
                         }
                     )
-                },
-                content = {
-                    val fieldsProvider = FoodEditionFieldsProvider(
-                        formState = formState,
-                        onFieldUpdate = { fieldName, value ->
-                            viewModel.updateFoodEditionFormField(
-                                fieldName = fieldName,
-                                input = value
-                            )
-                        }
-                    )
-
-                    val detailFields = listOf(
-                        fieldsProvider.name(),
-                        fieldsProvider.brand(),
-                        fieldsProvider.amountPerServing(),
-                        fieldsProvider.servingUnit()
-                    )
-
-                    val nutrients = listOf(
-                        Triple(
-                            NutrientType.BASIC,
-                            food.nutrients.basic,
-                            "Summary"
-                        ),
-                        Triple(
-                            NutrientType.VITAMIN,
-                            food.nutrients.vitamin,
-                            "Vitamins"
-                        ),
-                        Triple(
-                            NutrientType.MINERAL,
-                            food.nutrients.mineral,
-                            "Minerals"
+                }
+            ) {
+                val fieldsProvider = FoodEditionFieldsProvider(
+                    formState = formState,
+                    onFieldUpdate = { fieldName, value ->
+                        viewModel.updateFoodEditionFormField(
+                            fieldName = fieldName,
+                            input = value
                         )
-                    )
-
-                    val nutrientFields = nutrients.map { (type, ns, title) ->
-                        val fields = ns
-                            .filter { it.nutrientWithPreferences.nutrient.id !in deletedNutrients }
-                            .map { fieldsProvider.nutrient(it.nutrientWithPreferences.nutrient) }
-
-                        Triple(type, fields, title)
                     }
+                )
 
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        content = {
-                            if (uiState.foodDeleteState is UiState.Success) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    content = {
-                                        Text(
-                                            text = "Food deleted successfully",
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
+                val detailFields = listOf(
+                    fieldsProvider.name(),
+                    fieldsProvider.brand(),
+                    fieldsProvider.amountPerServing(),
+                    fieldsProvider.servingUnit()
+                )
 
-                                        SuccessIcon()
-                                    }
-                                )
-                            } else {
-                                MoreOptionsPopup(
-                                    isVisible = isMoreOptionsPopupDisplayed,
-                                    onEdit = {
-                                        isMoreOptionsPopupDisplayed = false
-                                        viewModel.startEditionMode()
-                                    },
-                                    onDelete = {
-                                        isConfirmDeletionPopupDisplayed = true
-                                        isMoreOptionsPopupDisplayed = false
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .zIndex(2f)
-                                )
+                val nutrients = listOf(
+                    Triple(
+                        NutrientType.BASIC,
+                        food.nutrients.basic,
+                        "Summary"
+                    ),
+                    Triple(
+                        NutrientType.VITAMIN,
+                        food.nutrients.vitamin,
+                        "Vitamins"
+                    ),
+                    Triple(
+                        NutrientType.MINERAL,
+                        food.nutrients.mineral,
+                        "Minerals"
+                    )
+                )
 
-                                ConfirmFoodDeletionPopup(
-                                    isVisible = isConfirmDeletionPopupDisplayed,
-                                    onCancel = { onCancelFoodDeletion() },
-                                    onConfirm = { viewModel.deleteFood() }
-                                )
+                val nutrientFields = nutrients.map { (type, ns, title) ->
+                    val fields = ns
+                        .filter { it.nutrientWithPreferences.nutrient.id !in deletedNutrients }
+                        .map { fieldsProvider.nutrient(it.nutrientWithPreferences.nutrient) }
 
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(18.dp),
-                                    modifier = Modifier.offset(y = headerOffset),
-                                    content = {
-                                        ApiErrorMessageAnimated(
-                                            isVisible = foodUpdateErrMsg != "",
-                                            errorMessage = foodUpdateErrMsg
-                                        )
+                    Triple(type, fields, title)
+                }
 
-                                        FoodInformation(
-                                            food = food,
-                                            shouldOverlayAppear = shouldOverlayAppear,
-                                            onOverlayClick = onOverlayClick
-                                        )
-                                    }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (uiState.foodDeleteState is UiState.Success) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth(),
+                            content = {
+                                Text(
+                                    text = "Food deleted successfully",
+                                    style = MaterialTheme.typography.bodyLarge
                                 )
 
-                                EditionMode(
-                                    foodDetailFields = detailFields,
-                                    nutrientFields = nutrientFields,
-                                    enabled = viewModel.isFormValid,
-                                    onDone = {
-                                        viewModel.simpleFormCancel()
-                                        viewModel.updateFood()
-                                        viewModel.resetDeletedNutrients()
-                                    },
-                                    onCancel = {
-                                        viewModel.cancelEditionMode()
-                                    },
-                                    onRemoveNutrient = { nutrientId ->
-                                        viewModel.filterNutrientFromForm(nutrientId)
-                                    },
-                                    isVisible = formState.isEditing
+                                SuccessIcon()
+                            }
+                        )
+                    } else {
+                        MoreOptionsPopup(
+                            isVisible = isMoreOptionsPopupDisplayed,
+                            onEdit = {
+                                isMoreOptionsPopupDisplayed = false
+                                viewModel.startEditionMode()
+                            },
+                            onDelete = {
+                                isConfirmDeletionPopupDisplayed = true
+                                isMoreOptionsPopupDisplayed = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .zIndex(2f)
+                        )
+
+                        ConfirmFoodDeletionPopup(
+                            isVisible = isConfirmDeletionPopupDisplayed,
+                            onCancel = { onCancelFoodDeletion() },
+                            onConfirm = { viewModel.deleteFood() }
+                        )
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(18.dp),
+                            modifier = Modifier.offset(y = headerOffset),
+                            content = {
+                                ApiErrorMessageAnimated(
+                                    isVisible = foodUpdateErrMsg != "",
+                                    errorMessage = foodUpdateErrMsg
+                                )
+
+                                FoodInformation(
+                                    food = food,
+                                    shouldOverlayAppear = shouldOverlayAppear,
+                                    onOverlayClick = onOverlayClick,
+                                    user = user
                                 )
                             }
-                        }
-                    )
+                        )
+
+                        EditionMode(
+                            foodDetailFields = detailFields,
+                            nutrientFields = nutrientFields,
+                            enabled = viewModel.isFormValid,
+                            onDone = {
+                                viewModel.simpleFormCancel()
+                                viewModel.updateFood()
+                                viewModel.resetDeletedNutrients()
+                            },
+                            onCancel = {
+                                viewModel.cancelEditionMode()
+                            },
+                            onRemoveNutrient = { nutrientId ->
+                                viewModel.filterNutrientFromForm(nutrientId)
+                            },
+                            isVisible = formState.isEditing
+                        )
+                    }
                 }
-            )
+            }
         }
     }
 }

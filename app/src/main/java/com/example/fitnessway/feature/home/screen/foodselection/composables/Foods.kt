@@ -18,7 +18,7 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerSmall
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Nutrient.getNutrientColor
+import com.example.fitnessway.util.Nutrient.getColor
 import com.example.fitnessway.util.UiState
 
 @Composable
@@ -109,7 +109,7 @@ private fun Food(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     content = {
                         food.nutrients.basic.forEach { (nutrientData, amount) ->
-                            val nutrientColor = getNutrientColor(nutrientData.preferences.hexColor)
+                            val nutrientColor = getColor(nutrientData.preferences.hexColor)
 
                             if (nutrientColor != null) {
                                 Text(

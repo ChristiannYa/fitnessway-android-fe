@@ -21,6 +21,7 @@ import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
@@ -36,6 +37,8 @@ fun LogDetailsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val selectedFoodLog by viewModel.selectedFoodLog.collectAsState()
     val foodLogDetailsFormState by viewModel.foodLogEditionFormState.collectAsState()
+
+    val user = viewModel.user
 
     LaunchedEffect(selectedFoodLog) {
         selectedFoodLog?.let { foodLog ->
@@ -91,8 +94,8 @@ fun LogDetailsScreen(
                         }
                     )
                 },
-
-                content = {
+            ) {
+                if (user != null) {
                     val fieldsProvider = FoodLogEditionFieldsProvider(
                         formState = formState,
                         onFieldUpdate = { fieldName, value ->
@@ -139,7 +142,8 @@ fun LogDetailsScreen(
                                     LogDetails(
                                         foodLog = foodLog,
                                         isBlurredOverlayVisible = formState.isEditing,
-                                        nutrients = nutrients
+                                        nutrients = nutrients,
+                                        user = user
                                     )
                                 }
                             )
@@ -156,8 +160,10 @@ fun LogDetailsScreen(
                             )
                         }
                     )
+                } else {
+                    NotFoundText("User not found")
                 }
-            )
+            }
         }
     }
 }

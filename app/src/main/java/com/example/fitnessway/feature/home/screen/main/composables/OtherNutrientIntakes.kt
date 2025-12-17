@@ -15,7 +15,7 @@ import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
-import com.example.fitnessway.util.Nutrient.Ui.NutrientsBoxUi
+import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsBox
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 
@@ -62,7 +62,7 @@ fun OtherNutrientIntakes(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth(),
                             content = {
-                                NutrientsBoxUi(
+                                NutrientsAsBox(
                                     nutrients = nutrients,
                                     progressBarHeight = (115.2 / 2).dp,
                                     user = user

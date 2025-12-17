@@ -21,6 +21,7 @@ import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.util.Food.FoodComposables
@@ -32,12 +33,13 @@ private const val updatedFoodMessage = "You have updated this food format"
 fun LogDetails(
     foodLog: FoodLogData,
     isBlurredOverlayVisible: Boolean,
-    nutrients: NutrientsByType<NutrientAmountData>
+    nutrients: NutrientsByType<NutrientAmountData>,
+    user: User
 ) {
     val foodComposables = remember(
         key1 = foodLog.food,
         key2 = nutrients
-    ) { FoodComposables(foodLog.food, nutrients) }
+    ) { FoodComposables(foodLog.food, nutrients, user) }
 
     Box(
         modifier = Modifier.fillMaxWidth(),

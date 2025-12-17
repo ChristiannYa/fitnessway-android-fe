@@ -1,41 +1,32 @@
 package com.example.fitnessway.util
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerMedium
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsCircle
+import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.Nutrient.getAllNutrients
 
 object Food {
@@ -138,7 +129,8 @@ object Food {
 
     data class FoodComposables(
         val food: FoodInformation,
-        val nutrients: NutrientsByType<NutrientAmountData> = food.nutrients
+        val nutrients: NutrientsByType<NutrientAmountData> = food.nutrients,
+        val user: User
     ) {
         @Composable
         fun BaseInformation(
@@ -226,83 +218,8 @@ object Food {
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold
                     )
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier.fillMaxWidth(),
-                        content = {
-                            nutrients.basic.forEach { nutrientData ->
-                                val nutrient = nutrientData.nutrientWithPreferences.nutrient
-                                val preferences = nutrientData.nutrientWithPreferences.preferences
 
-                                val targetProgress =
-                                    if (preferences.goal != null) {
-                                        (nutrientData.amount / preferences.goal)
-                                    } else {
-                                        0.0
-                                    }
-
-                                val animatedProgress by animateFloatAsState(
-                                    targetValue = targetProgress.toFloat(),
-                                    animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-                                )
-
-                                val percentage = if (preferences.goal != null) {
-                                    (nutrientData.amount / preferences.goal) * 100
-                                } else {
-                                    0.0
-                                }
-
-                                val color =
-                                    if (preferences.hexColor != null) {
-                                        Color(preferences.hexColor.toColorInt())
-                                    } else {
-                                        MaterialTheme.colorScheme.primary
-                                    }
-
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                                    content = {
-                                        Box(
-                                            contentAlignment = Alignment.Center,
-                                            modifier = Modifier.size(68.dp),
-                                            content = {
-                                                CircularProgressIndicator(
-                                                    progress = { animatedProgress },
-                                                    color = color,
-                                                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                                    strokeCap = StrokeCap.Round,
-                                                    strokeWidth = 5.dp,
-                                                    modifier = Modifier.fillMaxSize()
-                                                )
-                                                Text(
-                                                    text = doubleFormatter(nutrientData.amount),
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    fontFamily = FontFamily.Default
-                                                )
-                                            }
-                                        )
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.spacedBy(2.dp),
-                                            content = {
-                                                Text(
-                                                    text = "${doubleFormatter(percentage)}%",
-                                                    style = MaterialTheme.typography.labelLarge,
-                                                    color = color.copy(0.8f),
-                                                    fontFamily = FontFamily.Default
-                                                )
-                                                Text(
-                                                    text = nutrient.name,
-                                                    style = MaterialTheme.typography.labelLarge
-                                                )
-                                            }
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    )
+                    NutrientsAsCircle(nutrients.basic, user)
                 }
             )
         }
@@ -324,6 +241,7 @@ object Food {
 
                             Column(
                                 modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
                                 content = {
                                     if (ns.isNotEmpty()) {
                                         Text(
@@ -332,134 +250,7 @@ object Food {
                                             fontWeight = FontWeight.SemiBold
                                         )
 
-                                        Spacer(modifier = Modifier.height(12.dp))
-
-                                        ns.forEachIndexed { index, nutrientData ->
-                                            val nutrient =
-                                                nutrientData.nutrientWithPreferences.nutrient
-                                            val preferences =
-                                                nutrientData.nutrientWithPreferences.preferences
-
-                                            val targetProgress =
-                                                if (preferences.goal != null) {
-                                                    ((nutrientData.amount / preferences.goal).toFloat())
-                                                } else {
-                                                    0f
-                                                }
-
-                                            val animatedProgress by animateFloatAsState(
-                                                targetValue = targetProgress,
-                                                animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-                                            )
-
-                                            val percentage = if (preferences.goal != null) {
-                                                ((nutrientData.amount / preferences.goal) * 100).toFloat()
-                                            } else {
-                                                0f
-                                            }
-
-                                            val color =
-                                                if (preferences.hexColor != null) {
-                                                    Color(preferences.hexColor.toColorInt())
-                                                } else {
-                                                    MaterialTheme.colorScheme.primary
-                                                }
-
-                                            Column(
-                                                // Space between the nutrient left-right pair and bar
-                                                verticalArrangement = Arrangement.spacedBy(6.dp),
-
-                                                content = {
-                                                    Row(
-                                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                                        modifier = Modifier.fillMaxWidth(),
-                                                        content = {
-                                                            // Left side: nutrient name and symbol
-                                                            if (nutrient.type == NutrientType.MINERAL) {
-                                                                Row(
-                                                                    horizontalArrangement = Arrangement.spacedBy(
-                                                                        2.dp
-                                                                    ),
-                                                                    content = {
-                                                                        Text(
-                                                                            text = nutrient.name,
-                                                                            style = MaterialTheme.typography.bodyMedium,
-                                                                            fontWeight = FontWeight.Medium
-                                                                        )
-                                                                        nutrient.symbol?.let {
-                                                                            Text(
-                                                                                text = it,
-                                                                                style = MaterialTheme.typography.bodyMedium,
-                                                                                fontWeight = FontWeight.Medium,
-                                                                                color = MaterialTheme.colorScheme.onBackground.copy(
-                                                                                    0.5f
-                                                                                )
-                                                                            )
-                                                                        }
-                                                                    }
-                                                                )
-                                                            } else {
-                                                                Text(
-                                                                    text = nutrient.name,
-                                                                    style = MaterialTheme.typography.bodyMedium,
-                                                                    fontWeight = FontWeight.Medium
-                                                                )
-                                                            }
-
-                                                            Row(
-                                                                horizontalArrangement = Arrangement.spacedBy(
-                                                                    2.dp
-                                                                ),
-                                                                content = {
-                                                                    Text(
-                                                                        text = doubleFormatter(
-                                                                            nutrientData.amount
-                                                                        ),
-                                                                        style = MaterialTheme.typography.bodyMedium,
-                                                                        fontFamily = FontFamily.Default,
-                                                                    )
-                                                                    Text(
-                                                                        text = nutrient.unit,
-                                                                        style = MaterialTheme.typography.bodyMedium,
-                                                                        color = MaterialTheme.colorScheme.onBackground.copy(
-                                                                            0.5f
-                                                                        )
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                    )
-
-                                                    Row(
-                                                        verticalAlignment = Alignment.CenterVertically,
-                                                        modifier = Modifier.fillMaxWidth(),
-                                                        content = {
-                                                            LinearProgressIndicator(
-                                                                progress = { animatedProgress },
-                                                                color = color,
-                                                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                                                strokeCap = StrokeCap.Round,
-                                                                modifier = Modifier
-                                                                    .weight(1f),
-                                                            )
-                                                            Text(
-                                                                text = "${doubleFormatter(percentage.toDouble())}%",
-                                                                style = MaterialTheme.typography.bodyMedium,
-                                                                fontFamily = FontFamily.Default,
-                                                                color = color,
-                                                                textAlign = TextAlign.End,
-                                                                modifier = Modifier.width(68.dp)
-                                                            )
-                                                        }
-                                                    )
-                                                }
-                                            )
-
-                                            // Space between each nutrient
-                                            if (index < ns.lastIndex && ns.isNotEmpty()) {
-                                                Spacer(modifier = Modifier.height(14.dp))
-                                            }
-                                        }
+                                        NutrientsAsLine(ns)
                                     }
                                 }
                             )

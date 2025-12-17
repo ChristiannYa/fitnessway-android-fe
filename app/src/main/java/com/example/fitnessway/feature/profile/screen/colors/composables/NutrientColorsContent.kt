@@ -23,7 +23,7 @@ import com.example.fitnessway.data.model.form.NutrientColorUpdateField
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
-import com.example.fitnessway.util.Nutrient.getNutrientColor
+import com.example.fitnessway.util.Nutrient.getColor
 
 @Composable
 fun NutrientColorsContent(fields: Map<NutrientType, List<NutrientColorUpdateField>>) {
@@ -47,7 +47,7 @@ fun NutrientColorsContent(fields: Map<NutrientType, List<NutrientColorUpdateFiel
 
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             colorFields.forEach { field ->
-                                val color = getNutrientColor("#" + field.value)
+                                val color = getColor("#" + field.value)
 
                                 val borderColor = if (color == null) {
                                     MaterialTheme.colorScheme.primary

@@ -33,7 +33,7 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainerLarge
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
-import com.example.fitnessway.util.Nutrient.Ui.NutrientsBoxUi
+import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsBox
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import kotlinx.coroutines.delay
@@ -202,7 +202,7 @@ private fun NutrientSection(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 content = {
-                    NutrientsBoxUi(
+                    NutrientsAsBox(
                         nutrients = nutrients,
                         isDataMinimal = true,
                         contentWidth = contentWidth,

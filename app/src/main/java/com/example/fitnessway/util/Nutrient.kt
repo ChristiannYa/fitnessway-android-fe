@@ -7,13 +7,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,8 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -112,14 +120,22 @@ object Nutrient {
         }
     }
 
-    fun getNutrientColor(hexColor: String?): Color? {
-        if (hexColor.isNullOrEmpty()) return null
+    fun getColor(color: String?): Color? {
+        if (color.isNullOrEmpty()) return null
 
         return try {
-            Color(hexColor.toColorInt())
-        } catch (e: IllegalArgumentException) {
+            Color(color.toColorInt())
+        } catch (_: IllegalArgumentException) {
             null
         }
+    }
+
+
+    @Composable
+    fun getUserNutrientColor(color: String?, user: User): Color {
+        return if (user.isPremium) {
+            getColor(color) ?: MaterialTheme.colorScheme.primary
+        } else MaterialTheme.colorScheme.primary
     }
 
     fun formatNutrientsDataAsMap(
@@ -154,7 +170,7 @@ object Nutrient {
         }
 
         @Composable
-        fun NutrientsBoxUi(
+        fun NutrientsAsBox(
             nutrients: List<NutrientAmountData>,
             user: User,
             isDataMinimal: Boolean = false,
@@ -181,11 +197,10 @@ object Nutrient {
                 val nutrientType = nutrient.type
                 val preferences = nutrientData.nutrientWithPreferences.preferences
 
-                val nutrientColor = if (user.isPremium) {
-                    getNutrientColor(
-                        preferences.hexColor
-                    ) ?: MaterialTheme.colorScheme.primary
-                } else MaterialTheme.colorScheme.primary
+                val nutrientColor = getUserNutrientColor(
+                    color = preferences.hexColor,
+                    user = user
+                )
 
                 val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
 
@@ -301,6 +316,197 @@ object Nutrient {
                         )
                     }
                 )
+            }
+        }
+
+        @Composable
+        fun NutrientsAsCircle(
+            nutrients: List<NutrientAmountData>,
+            user: User
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier.fillMaxWidth(),
+                content = {
+                    nutrients.forEach { nutrientData ->
+                        val nutrient = nutrientData.nutrientWithPreferences.nutrient
+                        val preferences = nutrientData.nutrientWithPreferences.preferences
+
+                        val nutrientColor = getUserNutrientColor(
+                            color = preferences.hexColor,
+                            user = user
+                        )
+
+                        val targetProgress =
+                            if (preferences.goal != null) {
+                                (nutrientData.amount / preferences.goal)
+                            } else {
+                                0.0
+                            }
+
+                        val animatedProgress by animateFloatAsState(
+                            targetValue = targetProgress.toFloat(),
+                            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+                        )
+
+                        val percentage = if (preferences.goal != null) {
+                            (nutrientData.amount / preferences.goal) * 100
+                        } else {
+                            0.0
+                        }
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.size(68.dp),
+                            ) {
+                                CircularProgressIndicator(
+                                    progress = { animatedProgress },
+                                    color = nutrientColor,
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    strokeCap = StrokeCap.Round,
+                                    strokeWidth = 5.dp,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                                Text(
+                                    text = doubleFormatter(nutrientData.amount),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontFamily = FontFamily.Default
+                                )
+                            }
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(2.dp),
+                            ) {
+                                Text(
+                                    text = "${doubleFormatter(percentage)}%",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = nutrientColor.copy(0.8f),
+                                    fontFamily = FontFamily.Default
+                                )
+                                Text(
+                                    text = nutrient.name,
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
+                        }
+                    }
+                }
+            )
+        }
+
+        @Composable
+        fun NutrientsAsLine(
+            nutrients: List<NutrientAmountData>
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                nutrients.forEach { nutrientData ->
+                    val nutrient = nutrientData.nutrientWithPreferences.nutrient
+                    val preferences = nutrientData.nutrientWithPreferences.preferences
+
+                    val targetProgress = if (preferences.goal != null) {
+                        ((nutrientData.amount / preferences.goal).toFloat())
+                    } else {
+                        0f
+                    }
+
+                    val animatedProgress by animateFloatAsState(
+                        targetValue = targetProgress,
+                        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+                    )
+
+                    val percentage = if (preferences.goal != null) {
+                        ((nutrientData.amount / preferences.goal) * 100).toFloat()
+                    } else {
+                        0f
+                    }
+
+                    val color = if (preferences.hexColor != null) {
+                        Color(preferences.hexColor.toColorInt())
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    }
+
+                    Column(
+                        // Space between the nutrient left-right pair and bar
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            // Left side: nutrient name and symbol
+                            if (nutrient.type == NutrientType.MINERAL) {
+                                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text(
+                                        text = nutrient.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    nutrient.symbol?.let {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onBackground.copy(
+                                                0.5f
+                                            )
+                                        )
+                                    }
+                                }
+                            } else {
+                                Text(
+                                    text = nutrient.name,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Text(
+                                    text = doubleFormatter(
+                                        nutrientData.amount
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontFamily = FontFamily.Default,
+                                )
+                                Text(
+                                    text = nutrient.unit,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onBackground.copy(
+                                        0.5f
+                                    )
+                                )
+                            }
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                            content = {
+                                LinearProgressIndicator(
+                                    progress = { animatedProgress },
+                                    color = color,
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    strokeCap = StrokeCap.Round,
+                                    modifier = Modifier
+                                        .weight(1f),
+                                )
+                                Text(
+                                    text = "${doubleFormatter(percentage.toDouble())}%",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontFamily = FontFamily.Default,
+                                    color = color,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.width(68.dp)
+                                )
+                            }
+                        )
+                    }
+                }
             }
         }
     }

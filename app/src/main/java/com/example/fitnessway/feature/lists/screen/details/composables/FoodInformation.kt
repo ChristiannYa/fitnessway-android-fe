@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.util.Food.FoodComposables
 
@@ -17,10 +18,11 @@ import com.example.fitnessway.util.Food.FoodComposables
 fun FoodInformation(
     food: FoodInformation,
     shouldOverlayAppear: Boolean,
-    onOverlayClick: () -> Unit
+    onOverlayClick: () -> Unit,
+    user: User
 ) {
     val foodComposables = remember(food) {
-        FoodComposables(food)
+        FoodComposables(food = food, user = user)
     }
 
     Box(

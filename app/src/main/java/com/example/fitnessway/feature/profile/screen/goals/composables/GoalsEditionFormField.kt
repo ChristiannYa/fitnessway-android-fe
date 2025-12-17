@@ -24,7 +24,7 @@ import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.shared.PremiumIcon
-import com.example.fitnessway.util.Nutrient.getNutrientColor
+import com.example.fitnessway.util.Nutrient.getColor
 import com.example.fitnessway.util.Ui.InputUi
 
 @Composable
@@ -35,7 +35,7 @@ fun GoalsEditionFormField(
 ) {
     val nutrient = field.name.nutrientData.nutrient
     val preferences = field.name.nutrientData.preferences
-    val goalTextColor = getNutrientColor(preferences.hexColor) ?: MaterialTheme.colorScheme.primary
+    val goalTextColor = getColor(preferences.hexColor) ?: MaterialTheme.colorScheme.primary
     val textStyle = InputUi.getTextStyle(goalTextColor)
 
     Row(

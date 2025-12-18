@@ -99,7 +99,8 @@ fun ProfileScreen(
                                             isButtonPremium = button.isButtonPremium,
                                             text = button.text,
                                             imageVector = button.imageVector,
-                                            onClick = button.onClick
+                                            onClick = button.onClick,
+                                            isUserPremium = user.isPremium
                                         )
                                     }
                                 }
@@ -167,6 +168,7 @@ private fun ProfileScreenMainButton(
     imageVector: ImageVector,
     onClick: () -> Unit,
     isButtonPremium: Boolean,
+    isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -206,7 +208,7 @@ private fun ProfileScreenMainButton(
                 horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (isButtonPremium) PremiumIcon()
+                if (isButtonPremium && !isUserPremium) PremiumIcon()
 
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.NavigateNext,

@@ -142,6 +142,10 @@ class ProfileViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(nutrientColorsSetUiState = state) }
+
+                        nutrientRepo.clearNutrientIntakesUiCache()
+                        foodRepo.refreshFoods()
+                        foodRepo.clearFoodLogsUiCache()
                     }
 
                     is UiState.Error -> {
@@ -189,7 +193,7 @@ private fun updateNutrientColors(
     modifiedColors: Map<Int, String>
 ): List<NutrientWithPreferences> {
     return updateNutrientPreferences(nutrients, modifiedColors) { prefs, newColor ->
-        prefs.copy(hexColor = newColor)
+        prefs.copy(hexColor = "#$newColor")
     }
 }
 

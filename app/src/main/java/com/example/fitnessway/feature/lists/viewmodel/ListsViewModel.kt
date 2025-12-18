@@ -152,15 +152,45 @@ class ListsViewModel(
         }
     }
 
-    // @TODO: make request optimistic
     fun deleteFood() {
         val selectedFood = managers.edition.selectedFood.value ?: return
+        val selectedFoodId = selectedFood.information.id
 
-        val foodId = selectedFood.information.id
+        // Get current foods state to update optimistically
+        val currentFoodsState = foodRepo.uiState.value.foodsUiState
+
+        // Only proceed if there is data
+        if (currentFoodsState !is UiState.Success) return
+
+        // Extract current foods data from the state
+        val currentFoods = currentFoodsState.data
+
+        // Filter out optimistically the deleted food
+        val optimisticFoods = currentFoods.filter {
+            it.information.id != selectedFoodId
+        }
+
+        // Update UI immediately
+        foodRepo.updateState {
+            it.copy(foodsUiState = UiState.Success(optimisticFoods))
+        }
 
         viewModelScope.launch {
-            foodRepo.deleteFood(foodId).collect { state ->
-                _uiState.update { it.copy(foodDeleteState = state) }
+            foodRepo.deleteFood(selectedFoodId).collect { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(foodDeleteState = state) }
+
+                        foodRepo.clearFoodLogsUiCache()
+                    }
+
+                    is UiState.Error -> {
+                        _uiState.update { it.copy(foodDeleteState = state) }
+                        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(currentFoods)) }
+                    }
+
+                    else -> {}
+                }
             }
         }
     }

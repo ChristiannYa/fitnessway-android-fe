@@ -8,9 +8,9 @@ import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.model.food.FoodUpdateRequest
 import com.example.fitnessway.data.network.ApiUrls
+import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.food.IFoodApiService
-import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +24,7 @@ class FoodRepositoryImpl(
     private val apiService: IFoodApiService,
     private val httpClient: HttpClient,
     private val repositoryScope: CoroutineScope,
-    private val nutrientRepo: INutrientRepository,
+    private val cacheManager: CacheManager
 ) : IFoodRepository {
 
     private val _uiState = MutableStateFlow(FoodRepositoryUiState())
@@ -39,6 +39,9 @@ class FoodRepositoryImpl(
     }
 
     override fun refreshFoods() {
+        cacheManager.evictUrl(ApiUrls.Food.FOODS)
+        _uiState.update { it.copy(foodsUiState = UiState.Loading) }
+
         repositoryScope.launch {
             fetchFoods().collect { state ->
                 _uiState.update { it.copy(foodsUiState = state) }
@@ -107,7 +110,13 @@ class FoodRepositoryImpl(
         )
     }
 
+    override fun clearFoodLogsUiCache() {
+        _uiState.update { it.copy(foodLogsCache = emptyMap()) }
+    }
+
     override fun refreshFoodLogs(date: String) {
+        cacheManager.evictUrl(ApiUrls.Food.getLogs(date))
+
         repositoryScope.launch {
             fetchFoodLogs(date).collect { state ->
                 _uiState.update { it.copy(foodLogsCache = it.foodLogsCache + (date to state)) }
@@ -135,12 +144,7 @@ class FoodRepositoryImpl(
                 ApiUrls.Nutrient.getIntakes(date),
                 ApiUrls.Food.getLogs(date)
             )
-        ).onEach { state ->
-            if (state is UiState.Success) {
-                refreshFoodLogs(date)
-                nutrientRepo.refreshNutrientIntakes(date)
-            }
-        }
+        )
     }
 
     override suspend fun updateFoodLog(

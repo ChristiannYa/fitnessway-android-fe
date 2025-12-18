@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface INutrientRepository {
     val uiState: StateFlow<NutrientRepositoryUiState>
 
+    fun clearNutrientIntakesUiCache()
     fun refreshNutrientIntakes(date: String)
     fun loadNutrientIntakes(date: String)
 

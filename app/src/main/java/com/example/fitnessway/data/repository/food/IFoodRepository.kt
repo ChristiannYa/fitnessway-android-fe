@@ -19,6 +19,7 @@ interface IFoodRepository {
     suspend fun addFood(request: FoodAddRequest): Flow<UiState<FoodInformation>>
     suspend fun updateFood(request: FoodUpdateRequest): Flow<UiState<FoodInformation>>
 
+    fun clearFoodLogsUiCache()
     fun refreshFoodLogs(date: String)
     fun loadFoodLogs(date: String)
     suspend fun addFoodLog(request: FoodLogAddRequest, date: String): Flow<UiState<FoodLogData>>

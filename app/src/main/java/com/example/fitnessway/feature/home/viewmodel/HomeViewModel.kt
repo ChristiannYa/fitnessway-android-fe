@@ -19,6 +19,7 @@ import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Food.subtractNutrientsFromIntakes
+import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -103,22 +104,37 @@ class HomeViewModel(
         val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
         val selectedFood = managers.foodLog.selectedFoodToLog.value ?: return
 
-        val formatedDate = managers.date.getApiFormattedDate()
+        val date = managers.date.getApiFormattedDate()
 
         val request = FoodLogAddRequest(
             userId = user.id,
             foodId = selectedFood.information.id,
             servings = foodLogFormState.data.servings.toDouble(),
             category = managers.foodLog.foodLogCategory.value,
-            time = "$formatedDate ${foodLogFormState.data.time}"
+            time = "$date ${foodLogFormState.data.time}"
         )
 
         viewModelScope.launch {
-            foodRepo.addFoodLog(
-                request = request,
-                date = formatedDate
-            ).collect { state ->
-                _uiState.update { it.copy(foodLogAddState = state) }
+            foodRepo.addFoodLog(request, date).collect { state ->
+
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(foodLogAddState = state) }
+
+                        foodRepo.refreshFoodLogs(date)
+                        nutrientRepo.refreshNutrientIntakes(date)
+                    }
+
+                    is UiState.Error -> {
+                        _uiState.update { it.copy(foodLogAddState = state) }
+                    }
+
+                    is UiState.Loading -> {
+                        _uiState.update { it.copy(foodLogAddState = state) }
+                    }
+
+                    else -> {}
+                }
             }
         }
     }
@@ -193,12 +209,13 @@ class HomeViewModel(
 
         // Get current data to update optimistically
         val currentFoodLogsState = foodRepo.uiState.value.foodLogsCache[formattedDate]
-        val currentNutrientIntakesState = nutrientRepo.uiState.value.nutrientIntakesCache[formattedDate]
+        val currentNutrientIntakesState =
+            nutrientRepo.uiState.value.nutrientIntakesCache[formattedDate]
 
         // Only proceed if we have data
         if (currentFoodLogsState !is UiState.Success ||
             currentNutrientIntakesState !is UiState.Success
-            ) return
+        ) return
 
         val currentFoodLogs = currentFoodLogsState.data
         val currentNutrientIntakes = currentNutrientIntakesState.data
@@ -218,9 +235,11 @@ class HomeViewModel(
 
         // Update UI immediately
         foodRepo.updateState {
-            it.copy(foodLogsCache = it.foodLogsCache + (formattedDate to UiState.Success(
-                optimisticFoodLogs
-            )))
+            it.copy(
+                foodLogsCache = it.foodLogsCache + (formattedDate to UiState.Success(
+                    optimisticFoodLogs
+                ))
+            )
         }
 
         nutrientRepo.updateState {

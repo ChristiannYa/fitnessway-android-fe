@@ -9,6 +9,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
 import com.example.fitnessway.data.model.nutrient.NutrientPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.repository.auth.IAuthRepository
+import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val authRepo: IAuthRepository,
     private val nutrientRepo: INutrientRepository,
+    private val foodRepo: IFoodRepository,
     private val managers: IProfileManagers,
     userStateHolder: IUserStateHolder
 ) : ViewModel(),
@@ -83,6 +85,10 @@ class ProfileViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(nutrientGoalsSetUiState = state) }
+
+                        nutrientRepo.clearNutrientIntakesUiCache()
+                        foodRepo.refreshFoods()
+                        foodRepo.clearFoodLogsUiCache()
                     }
 
                     is UiState.Error -> {

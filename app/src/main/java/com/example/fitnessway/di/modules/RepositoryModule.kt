@@ -28,7 +28,8 @@ val repositoryModule = module {
         NutrientRepositoryImpl(
             httpClient = get(),
             apiService = get(),
-            repositoryScope = get(named("repositoryScope"))
+            repositoryScope = get(named("repositoryScope")),
+            cacheManager = get()
         )
     }
 
@@ -37,7 +38,7 @@ val repositoryModule = module {
             apiService = get(),
             httpClient = get(),
             repositoryScope = get(named("repositoryScope")),
-            nutrientRepo = get()
+            cacheManager = get()
         )
     }
 }

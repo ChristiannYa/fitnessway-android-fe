@@ -8,6 +8,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.network.ApiUrls
+import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.nutrient.INutrientApiService
 import com.example.fitnessway.util.UiState
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 class NutrientRepositoryImpl(
     private val apiService: INutrientApiService,
     private val httpClient: HttpClient,
-    private val repositoryScope: CoroutineScope
+    private val repositoryScope: CoroutineScope,
+    private val cacheManager: CacheManager
 ) : INutrientRepository {
 
     private val _uiState = MutableStateFlow(NutrientRepositoryUiState())
@@ -38,7 +39,13 @@ class NutrientRepositoryImpl(
         )
     }
 
+    override fun clearNutrientIntakesUiCache() {
+        _uiState.update { it.copy(nutrientIntakesCache = emptyMap()) }
+    }
+
     override fun refreshNutrientIntakes(date: String) {
+        cacheManager.evictUrl(ApiUrls.Nutrient.getIntakes(date))
+
         repositoryScope.launch {
             fetchNutrientIntakes(date).collect { state ->
                 _uiState.update { it.copy(nutrientIntakesCache = it.nutrientIntakesCache + (date to state)) }
@@ -48,9 +55,7 @@ class NutrientRepositoryImpl(
 
     override fun loadNutrientIntakes(date: String) {
         val cachedData = _uiState.value.nutrientIntakesCache[date]
-        if (cachedData is UiState.Success) {
-            return
-        }
+        if (cachedData is UiState.Success) return
         refreshNutrientIntakes(date)
     }
 
@@ -63,6 +68,9 @@ class NutrientRepositoryImpl(
     }
 
     override fun refreshNutrients() {
+        cacheManager.evictUrl(ApiUrls.Nutrient.NUTRIENTS)
+        _uiState.update { it.copy(nutrientsUiState = UiState.Loading) }
+
         repositoryScope.launch {
             fetchNutrients().collect { state ->
                 _uiState.update { it.copy(nutrientsUiState = state) }
@@ -76,8 +84,6 @@ class NutrientRepositoryImpl(
         refreshNutrients()
     }
 
-
-    // @TODO: update nutrient data when updating nutrient goals
     override fun setNutrientGoals(
         request: NutrientGoalsPostRequest
     ): Flow<UiState<List<NutrientIdWithGoal>>> {

@@ -3,7 +3,6 @@ package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,11 +18,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
-import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.EditionButtons
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformationList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -31,10 +28,10 @@ import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
-import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsBox
+import com.example.fitnessway.util.Nutrient
+import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import kotlinx.coroutines.delay
@@ -154,9 +151,8 @@ fun FoodLogScreen(
                                                 NutrientSection(
                                                     title = section.title,
                                                     nutrients = section.nutrients,
-                                                    progressBarHeight = section.progressBarHeight,
-                                                    contentWidth = section.contentWidth,
-                                                    user = user
+                                                    isUserPremium = user.isPremium,
+                                                    isBasicNutrient = section.isBasicNutrient
                                                 )
                                             }
                                         }
@@ -175,33 +171,27 @@ fun FoodLogScreen(
 private fun NutrientSection(
     title: String,
     nutrients: List<NutrientAmountData>,
-    progressBarHeight: Dp,
-    contentWidth: Dp,
-    user: User
+    isBasicNutrient: Boolean,
+    isUserPremium: Boolean
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(18.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .areaContainer(AreaContainerSize.LARGE),
+        modifier = Modifier.areaContainer(),
         content = {
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold
             )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                content = {
-                    NutrientsAsBox(
-                        nutrients = nutrients,
-                        isDataMinimal = true,
-                        contentWidth = contentWidth,
-                        progressBarHeight = progressBarHeight,
-                        user = user
-                    )
-                }
+
+            PagedNutrients(
+                nutrients = nutrients,
+                displayFormat = Nutrient.ScrollableNutrientsFormat.BOX,
+                isDataMinimal = true,
+                isBasicNutrient = isBasicNutrient,
+                isBaseSizeDisplay = false,
+                isUserPremium = isUserPremium
             )
         }
     )
@@ -210,36 +200,27 @@ private fun NutrientSection(
 private data class NutrientSectionConfig(
     val title: String,
     val nutrients: List<NutrientAmountData>,
-    val progressBarHeight: Dp,
-    val contentWidth: Dp,
-    val shouldShow: Boolean = true
+    val isBasicNutrient: Boolean = true,
+    val shouldShow: Boolean = true,
 )
 
 private fun getNutrientSectionsConfig(nutrients: NutrientsByType<NutrientAmountData>): List<NutrientSectionConfig> {
-    val generalContentWidth = 62.dp
-
-    val baseNutrientsBarHeight = (generalContentWidth * 0.8f) * 2
-    val otherNutrientsBarHeight = generalContentWidth * 0.8f
 
     return listOf(
         NutrientSectionConfig(
             title = "Nutrient Summary",
             nutrients = nutrients.basic,
-            progressBarHeight = baseNutrientsBarHeight,
-            contentWidth = generalContentWidth
         ),
         NutrientSectionConfig(
             title = "Vitamins",
             nutrients = nutrients.vitamin,
-            progressBarHeight = otherNutrientsBarHeight,
-            contentWidth = generalContentWidth,
-            shouldShow = nutrients.vitamin.isNotEmpty()
+            isBasicNutrient = false,
+            shouldShow = nutrients.vitamin.isNotEmpty(),
         ),
         NutrientSectionConfig(
             title = "Minerals",
             nutrients = nutrients.mineral,
-            progressBarHeight = otherNutrientsBarHeight,
-            contentWidth = generalContentWidth,
+            isBasicNutrient = false,
             shouldShow = nutrients.mineral.isNotEmpty()
         )
     )

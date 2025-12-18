@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
@@ -44,13 +47,17 @@ import com.example.fitnessway.data.model.nutrient.NutrientPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
-import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.data.model.nutrient.Nutrient as NutrientModel
 
 
 object Nutrient {
+    enum class ScrollableNutrientsFormat {
+        BOX,
+        CIRCLE
+    }
+
     data class NutrientData(
         val intake: Double,
         val progress: Double,
@@ -157,8 +164,8 @@ object Nutrient {
 
 
     @Composable
-    fun getUserNutrientColor(color: String?, user: User): Color {
-        return if (user.isPremium) {
+    fun getUserNutrientColor(color: String?, isUserPremium: Boolean): Color {
+        return if (isUserPremium) {
             getColor(color) ?: MaterialTheme.colorScheme.primary
         } else MaterialTheme.colorScheme.primary
     }
@@ -234,7 +241,7 @@ object Nutrient {
         @Composable
         fun NutrientsAsBox(
             nutrients: List<NutrientAmountData>,
-            user: User,
+            isUserPremium: Boolean,
             isDataMinimal: Boolean = false,
             /**
              * Represents the width of the **entire** nutrient UI (everything throughout
@@ -261,7 +268,7 @@ object Nutrient {
 
                 val nutrientColor = getUserNutrientColor(
                     color = preferences.hexColor,
-                    user = user
+                    isUserPremium = isUserPremium
                 )
 
                 val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
@@ -384,7 +391,7 @@ object Nutrient {
         @Composable
         fun NutrientsAsCircle(
             nutrients: List<NutrientAmountData>,
-            user: User
+            isUserPremium: Boolean
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -396,7 +403,7 @@ object Nutrient {
 
                         val nutrientColor = getUserNutrientColor(
                             color = preferences.hexColor,
-                            user = user
+                            isUserPremium = isUserPremium
                         )
 
                         val targetProgress =
@@ -567,6 +574,90 @@ object Nutrient {
                                 )
                             }
                         )
+                    }
+                }
+            }
+        }
+
+        @Composable
+        fun PagedNutrients(
+            nutrients: List<NutrientAmountData>,
+            displayFormat: ScrollableNutrientsFormat,
+            isDataMinimal: Boolean = false,
+            isBasicNutrient: Boolean = true,
+            isBaseSizeDisplay: Boolean = true,
+            isUserPremium: Boolean,
+            modifier: Modifier = Modifier
+        ) {
+            val chunkedNutrients = nutrients.chunked(4)
+            val pagerState = rememberPagerState(pageCount = { chunkedNutrients.size })
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = modifier.fillMaxWidth()
+                ) { page ->
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        when (displayFormat) {
+                            ScrollableNutrientsFormat.BOX -> {
+                                val contentWidth = if (isBaseSizeDisplay) 72.dp else 62.dp
+                                val progressBarHeight = if (isBaseSizeDisplay) {
+                                    if (isBasicNutrient) {
+                                        (115.2 / 1).dp
+                                    } else (115.2 / 2).dp
+                                } else {
+                                    if (isBasicNutrient) {
+                                        (contentWidth * 0.8f) * 2
+                                    } else {
+                                        contentWidth * 0.8f
+                                    }
+                                }
+
+                                NutrientsAsBox(
+                                    nutrients = chunkedNutrients[page],
+                                    isDataMinimal = isDataMinimal,
+                                    isUserPremium = isUserPremium,
+                                    progressBarHeight = progressBarHeight,
+                                    contentWidth = contentWidth
+                                )
+                            }
+
+                            ScrollableNutrientsFormat.CIRCLE -> {
+                                NutrientsAsCircle(
+                                    nutrients = chunkedNutrients[page],
+                                    isUserPremium = isUserPremium
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (chunkedNutrients.size > 1) {
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        repeat(chunkedNutrients.size) { index ->
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .background(
+                                        color = if (pagerState.currentPage == index)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = CircleShape
+                                    )
+                            )
+                        }
                     }
                 }
             }

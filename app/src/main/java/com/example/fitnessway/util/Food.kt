@@ -23,11 +23,11 @@ import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsCircle
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsLine
+import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.Nutrient.getAllNutrients
 
 object Food {
@@ -220,7 +220,11 @@ object Food {
                         fontWeight = FontWeight.SemiBold
                     )
 
-                    NutrientsAsCircle(nutrients.basic, user)
+                    PagedNutrients(
+                        nutrients = nutrients.basic,
+                        displayFormat = Nutrient.ScrollableNutrientsFormat.CIRCLE,
+                        isUserPremium = user.isPremium
+                    )
                 }
             )
         }

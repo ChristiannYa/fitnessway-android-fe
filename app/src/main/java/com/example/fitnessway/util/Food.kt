@@ -29,45 +29,27 @@ import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.Nutrient.getAllNutrients
+import com.example.fitnessway.util.Nutrient.mapNutrients
 
 object Food {
     fun subtractNutrientsFromIntakes(
         currentIntakes: NutrientIntakesByType,
         foodLog: FoodLogData
     ): NutrientIntakesByType {
-        fun updateIntake(
-            intakeAmountData: NutrientAmountData,
-            nutrientId: Int
-        ): NutrientAmountData {
-            val foodNutrient = getAllNutrients(foodLog.food.nutrients).find {
-                it.nutrientWithPreferences.nutrient.id == nutrientId
-            }
+        return currentIntakes.mapNutrients { intakes ->
+            intakes.map { intake ->
+                val foodNutrientAmountData = getAllNutrients(foodLog.food.nutrients).find {
+                    val nutrient = it.nutrientWithPreferences.nutrient
+                    nutrient.id == intake.nutrientWithPreferences.nutrient.id
+                }
 
-            return if (foodNutrient != null) {
-                intakeAmountData.copy(amount = (intakeAmountData.amount - foodNutrient.amount))
-            } else intakeAmountData
+                if (foodNutrientAmountData != null) {
+                    val newAmount = intake.amount - foodNutrientAmountData.amount
+
+                    intake.copy(amount = newAmount)
+                } else intake
+            }
         }
-
-        return NutrientIntakesByType(
-            basic = currentIntakes.basic.map {
-                updateIntake(
-                    intakeAmountData = it,
-                    nutrientId = it.nutrientWithPreferences.nutrient.id
-                )
-            },
-            vitamin = currentIntakes.vitamin.map {
-                updateIntake(
-                    intakeAmountData = it,
-                    nutrientId = it.nutrientWithPreferences.nutrient.id
-                )
-            },
-            mineral = currentIntakes.mineral.map {
-                updateIntake(
-                    intakeAmountData = it,
-                    nutrientId = it.nutrientWithPreferences.nutrient.id
-                )
-            }
-        )
     }
 
     /**

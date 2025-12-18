@@ -135,6 +135,8 @@ class ListsViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodUpdateState = state) }
+
+                        foodRepo.clearFoodLogsUiCache()
                     }
 
                     is UiState.Error -> {

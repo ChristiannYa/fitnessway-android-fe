@@ -45,7 +45,6 @@ object Food {
 
                 if (foodNutrientAmountData != null) {
                     val newAmount = intake.amount - foodNutrientAmountData.amount
-
                     intake.copy(amount = newAmount)
                 } else intake
             }
@@ -62,52 +61,20 @@ object Food {
         currentServings: Double,
         newServings: Double
     ): NutrientsByType<NutrientAmountData> {
-        // Log.d(Constants.DEBUG_TAG, "current servings: $currentServings")
-        // Log.d(Constants.DEBUG_TAG, "new servings: $newServings")
+        return nutrients.mapNutrients { nutrientsList ->
+            nutrientsList.map { nutrientData ->
+                val foodNutrientAmountData = getAllNutrients(nutrients).find {
+                    val nutrient = it.nutrientWithPreferences.nutrient
+                    nutrient.id == nutrientData.nutrientWithPreferences.nutrient.id
+                }
 
-        fun updateNutrientAmount(
-            nutrientAmountData: NutrientAmountData,
-            nutrientId: Int
-        ): NutrientAmountData {
-            val foodNutrient = getAllNutrients(nutrients).find {
-                it.nutrientWithPreferences.nutrient.id == nutrientId
+                if (foodNutrientAmountData != null) {
+                    val originalAmount = foodNutrientAmountData.amount / currentServings
+                    val newAmount = (originalAmount) * newServings
+                    nutrientData.copy(amount = newAmount)
+                } else nutrientData
             }
-
-            return if (foodNutrient != null) {
-                // Log.d(Constants.DEBUG_TAG, "")
-                // Log.d(Constants.DEBUG_TAG, "nutrient: ${foodNutrient.nutrient.name}")
-                // Log.d(Constants.DEBUG_TAG, "amount: ${foodNutrient.amount}")
-
-                val originalAmount = foodNutrient.amount / currentServings
-                // Log.d(Constants.DEBUG_TAG, "original amount: $originalAmount")
-
-                val newAmount = (originalAmount) * newServings
-                // Log.d(Constants.DEBUG_TAG, "new amount: $newAmount")
-
-                nutrientAmountData.copy(amount = newAmount)
-            } else nutrientAmountData
         }
-
-        return NutrientsByType(
-            basic = nutrients.basic.map {
-                updateNutrientAmount(
-                    nutrientAmountData = it,
-                    nutrientId = it.nutrientWithPreferences.nutrient.id
-                )
-            },
-            vitamin = nutrients.vitamin.map {
-                updateNutrientAmount(
-                    nutrientAmountData = it,
-                    nutrientId = it.nutrientWithPreferences.nutrient.id
-                )
-            },
-            mineral = nutrients.mineral.map {
-                updateNutrientAmount(
-                    nutrientAmountData = it,
-                    nutrientId = it.nutrientWithPreferences.nutrient.id
-                )
-            }
-        )
     }
 
     data class FoodComposables(

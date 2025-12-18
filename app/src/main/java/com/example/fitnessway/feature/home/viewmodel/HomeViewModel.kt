@@ -190,7 +190,12 @@ class HomeViewModel(
         viewModelScope.launch {
             foodRepo.updateFoodLog(request, date).collect { state ->
                 when (state) {
-                    is UiState.Success -> _uiState.update { it.copy(foodLogUpdateState = state) }
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(foodLogUpdateState = state) }
+
+                        nutrientRepo.refreshNutrientIntakes(date)
+                        foodRepo.refreshFoodLogs(date)
+                    }
 
                     is UiState.Error -> {
                         _uiState.update { it.copy(foodLogUpdateState = state) }

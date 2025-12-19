@@ -91,6 +91,9 @@ fun LoginScreen(onBackClick: () -> Unit) {
                     // Fields
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         fields.forEach { field ->
+                            val isPassword =
+                                field.keyboardOptions.keyboardType == KeyboardType.Password
+
                             OutlinedTextField(
                                 value = field.value,
                                 onValueChange = { field.updateState(it) },
@@ -105,7 +108,7 @@ fun LoginScreen(onBackClick: () -> Unit) {
                                     field.errorMessage?.let { Text(text = it) }
                                 },
                                 trailingIcon = {
-                                    if (field.keyboardType == KeyboardType.Password) {
+                                    if (isPassword) {
                                         IconButton(onClick = {
                                             passwordVisible = !passwordVisible
                                         }) {
@@ -127,16 +130,12 @@ fun LoginScreen(onBackClick: () -> Unit) {
                                         }
                                     }
                                 },
-                                visualTransformation = if (field.keyboardType == KeyboardType.Password
-                                    && !passwordVisible
+                                visualTransformation = if (isPassword && !passwordVisible
                                 )
                                     PasswordVisualTransformation()
                                 else
                                     VisualTransformation.None,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = field.keyboardType,
-                                    capitalization = field.autoCapitalize
-                                ),
+                                keyboardOptions = field.keyboardOptions,
                                 enabled = loginUiState !is UiState.Loading,
                                 isError = field.errorMessage != null,
                                 textStyle = TextStyle(
@@ -234,7 +233,9 @@ private fun getLoginFields(
                     FormFieldName.Login.EMAIL, it
                 )
             },
-            keyboardType = KeyboardType.Email,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+            ),
             errorMessage = viewModel.emailError
         ),
         LoginField(
@@ -247,7 +248,9 @@ private fun getLoginFields(
                 )
             },
             errorMessage = viewModel.passwordError,
-            keyboardType = KeyboardType.Password,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+            ),
         )
     )
 }

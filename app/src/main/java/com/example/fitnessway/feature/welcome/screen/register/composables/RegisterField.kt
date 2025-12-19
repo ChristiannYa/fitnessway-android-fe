@@ -42,6 +42,8 @@ fun RegisterTextField(
    Column(
       verticalArrangement = Arrangement.spacedBy(2.dp)
    ) {
+       val isPassword = field.keyboardOptions.keyboardType == KeyboardType.Password
+
       BasicTextField(
          value = field.value,
          onValueChange = field.updateState,
@@ -61,14 +63,11 @@ fun RegisterTextField(
             )
             .padding(14.dp)
             .fillMaxWidth(),
-         visualTransformation = if (field.keyboardType == KeyboardType.Password && !isPasswordVisible)
+         visualTransformation = if (isPassword && !isPasswordVisible)
             PasswordVisualTransformation()
          else
             VisualTransformation.None,
-         keyboardOptions = KeyboardOptions(
-            keyboardType = field.keyboardType,
-            capitalization = field.autoCapitalize
-         ),
+         keyboardOptions = field.keyboardOptions,
          singleLine = true,
          decorationBox = { innerTextField ->
             Box {
@@ -100,7 +99,7 @@ fun RegisterTextField(
                   innerTextField()
                }
 
-               if (field.keyboardType == KeyboardType.Password) {
+               if (isPassword) {
                   IconButton(
                      onClick = { onPasswordVisibilityToggle?.invoke() },
                      modifier = Modifier

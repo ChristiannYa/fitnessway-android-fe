@@ -1,14 +1,16 @@
 package com.example.fitnessway.data.model.form
 
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 
 data class FormField<T : FormFieldName>(
     val name: T,
     val label: String,
     val value: String,
     val updateState: (String) -> Unit,
-    val keyboardType: KeyboardType = KeyboardType.Text,
+    val keyboardOptions: KeyboardOptions = KeyboardOptions(),
+    val keyboardActions: KeyboardActions = KeyboardActions(),
     val autoCapitalize: KeyboardCapitalization = KeyboardCapitalization.None,
     val errorMessage: String? = null
 )

@@ -3,6 +3,7 @@ package com.example.fitnessway.feature.home.manager.food
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.Nutrient
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Formatters.toInputDouble
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormStates
@@ -15,10 +16,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 class FoodManager : IFoodManager {
     private val emptyFoodCreationFormState = FormStates.FoodCreation(
-        name = "Chicken",
+        name = "",
         brand = "",
-        amountPerServing = "40",
-        servingUnit = "g"
+        amountPerServing = "",
+        servingUnit = ""
     )
 
     private val _foodCreationFormState = MutableStateFlow(emptyFoodCreationFormState)
@@ -59,7 +60,9 @@ class FoodManager : IFoodManager {
                     else -> false
                 }
 
-                if (isValid) null else "Must be one of ${ServingUnits.units}"
+                val servingUnits = ServingUnits.units.joinToString(separator = ", ")
+
+                if (isValid) null else "Must be one of $servingUnits"
             }
         }
 

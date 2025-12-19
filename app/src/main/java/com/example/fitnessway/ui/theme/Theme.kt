@@ -35,6 +35,7 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = WhiteFont,
     inverseSurface = SilverMist,
     inverseOnSurface = StormCloud,
+    error = ErrorRed
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -54,7 +55,8 @@ private val LightColorScheme = lightColorScheme(
     onBackground = BlackFont,
     onSurface = BlackFont,
     inverseSurface = StormCloud,
-    inverseOnSurface = SilverMist
+    inverseOnSurface = SilverMist,
+    error = ErrorRed,
 )
 
 @Composable

@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.welcome.screen.register.composables
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.LocalTextStyle
@@ -16,100 +15,68 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.form.RegisterField
-import com.example.fitnessway.ui.theme.FitnesswayTheme
 
 @Composable
 fun StepThree(fields: List<RegisterField>) {
-   var passwordVisible by remember { mutableStateOf(false) }
-   var passwordConfirmVisible by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var passwordConfirmVisible by remember { mutableStateOf(false) }
 
-   Surface {
-      Column(
-         verticalArrangement = Arrangement.spacedBy(16.dp),
-      ) {
-         Text(
-            text = "Finally, provide a secure password for your account",
-            fontFamily = FontFamily.Serif,
-            fontSize = MaterialTheme.typography.titleMedium.fontSize,
-            fontWeight = FontWeight.Medium,
-            style = LocalTextStyle.current.merge(
-               TextStyle(
-                  lineHeight = 1.4.em,
-                  platformStyle = PlatformTextStyle(
-                     includeFontPadding = false
-                  ),
-                  lineHeightStyle = LineHeightStyle(
-                     alignment = LineHeightStyle.Alignment.Center,
-                     trim = LineHeightStyle.Trim.None
-                  )
-               )
+    Surface {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(
+                text = "Finally, provide a secure password for your account",
+                fontFamily = FontFamily.Serif,
+                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                fontWeight = FontWeight.Medium,
+                style = LocalTextStyle.current.merge(
+                    TextStyle(
+                        lineHeight = 1.4.em,
+                        platformStyle = PlatformTextStyle(
+                            includeFontPadding = false
+                        ),
+                        lineHeightStyle = LineHeightStyle(
+                            alignment = LineHeightStyle.Alignment.Center,
+                            trim = LineHeightStyle.Trim.None
+                        )
+                    )
+                )
             )
-         )
 
-         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-         ) {
-            fields.forEach { field ->
-               val isPasswordVisible = when (field.name) {
-                  FormFieldName.Register.PASSWORD -> passwordVisible
-                  FormFieldName.Register.CONFIRM_PASSWORD -> passwordConfirmVisible
-                  else -> false
-               }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                fields.forEach { field ->
+                    val isPasswordVisible = when (field.name) {
+                        FormFieldName.Register.PASSWORD -> passwordVisible
+                        FormFieldName.Register.CONFIRM_PASSWORD -> passwordConfirmVisible
+                        else -> false
+                    }
 
-               RegisterTextField(
-                  field,
-                  isPasswordVisible = isPasswordVisible,
-                  onPasswordVisibilityToggle = {
-                     when (field.name) {
-                        FormFieldName.Register.PASSWORD ->
-                           passwordVisible = !passwordVisible
+                    RegisterTextField(
+                        field,
+                        isPasswordVisible = isPasswordVisible,
+                        onPasswordVisibilityToggle = {
+                            when (field.name) {
+                                FormFieldName.Register.PASSWORD ->
+                                    passwordVisible = !passwordVisible
 
-                        FormFieldName.Register.CONFIRM_PASSWORD ->
-                           passwordConfirmVisible = !passwordConfirmVisible
+                                FormFieldName.Register.CONFIRM_PASSWORD ->
+                                    passwordConfirmVisible = !passwordConfirmVisible
 
-                        else -> { /* do nothing */ }
-                     }
-                  }
-               )
+                                else -> { /* do nothing */
+                                }
+                            }
+                        }
+                    )
+                }
             }
-         }
-      }
-   }
-}
-
-@Preview(
-   showBackground = true,
-   uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-fun PreviewStepThree() {
-   val fields: List<RegisterField> = listOf(
-      RegisterField(
-         name = FormFieldName.Register.PASSWORD,
-         label = "Password",
-         value = "Pasqwe!@#112",
-         updateState = { },
-         errorMessage = null,
-         keyboardType = KeyboardType.Password,
-      ),
-      RegisterField(
-         name = FormFieldName.Register.CONFIRM_PASSWORD,
-         label = "Confirm Password",
-         value = "idhfsa",
-         updateState = { },
-         errorMessage = "Passwords don't match",
-         keyboardType = KeyboardType.Password,
-      ),
-   )
-
-   FitnesswayTheme {
-      StepThree(fields)
-   }
+        }
+    }
 }

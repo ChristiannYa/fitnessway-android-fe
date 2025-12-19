@@ -1,5 +1,6 @@
 package com.example.fitnessway.util.form.field.provider
 
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.fitnessway.data.model.form.FormFieldName
@@ -34,7 +35,9 @@ class RegisterFieldsProvider(private val viewModel: RegisterViewModel) {
                     it
                 )
             },
-            keyboardType = KeyboardType.Email
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            ),
         )
     }
 
@@ -52,7 +55,9 @@ class RegisterFieldsProvider(private val viewModel: RegisterViewModel) {
                     )
                 },
                 errorMessage = viewModel.passwordError,
-                keyboardType = KeyboardType.Password,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
             ),
             RegisterField(
                 name = FormFieldName.Register.CONFIRM_PASSWORD,
@@ -65,7 +70,9 @@ class RegisterFieldsProvider(private val viewModel: RegisterViewModel) {
                     )
                 },
                 errorMessage = viewModel.confirmPasswordError,
-                keyboardType = KeyboardType.Password,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
             ),
         )
     }

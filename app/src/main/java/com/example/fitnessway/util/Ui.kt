@@ -40,7 +40,7 @@ object Ui {
         val shape = RoundedCornerShape(roundedSize)
 
         @Composable
-        fun getMaterialBackground(): Color {
+        fun getColor(): Color {
             return MaterialTheme.colorScheme.surfaceVariant
         }
 

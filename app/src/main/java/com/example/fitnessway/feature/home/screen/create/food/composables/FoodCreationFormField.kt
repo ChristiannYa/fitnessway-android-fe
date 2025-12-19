@@ -2,12 +2,10 @@ package com.example.fitnessway.feature.home.screen.create.food.composables
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
@@ -32,7 +31,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    val inputTextStyle = Ui.InputUi.getTextStyle()
+    val inputTextStyle = Ui.InputUi.getTextStyle(textAlign = TextAlign.End)
     val padding = 16.dp
     val isNutrient = field.name is FormFieldName.FoodCreation.NutrientField
 
@@ -91,7 +90,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 textStyle = inputTextStyle,
                 singleLine = true,
                 modifier = Modifier
-                    .width(IntrinsicSize.Max)
+                    .fillMaxWidth()
                     .padding(padding)
             )
         }

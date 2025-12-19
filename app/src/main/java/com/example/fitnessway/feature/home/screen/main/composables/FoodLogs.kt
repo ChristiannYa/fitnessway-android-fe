@@ -50,6 +50,7 @@ import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
@@ -72,7 +73,7 @@ fun FoodLogs(
     onRemoveFoodLog: (FoodLogData) -> Unit
 ) {
     when (foodLogsState) {
-        is UiState.Loading -> Text("Loading food logs")
+        is UiState.Loading -> LoadingArea(200.dp, "Food Logs")
 
         is UiState.Success -> FoodLogsCategorized(
             foodLogs = foodLogsState.data,

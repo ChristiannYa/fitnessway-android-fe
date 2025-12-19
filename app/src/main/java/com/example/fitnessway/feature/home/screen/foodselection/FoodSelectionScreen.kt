@@ -1,7 +1,6 @@
 package com.example.fitnessway.feature.home.screen.foodselection
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,14 +38,12 @@ fun FoodSelectionScreen(
         },
         content = {
             if (user != null) {
-                Column {
-                    Foods(
-                        state = foodUiState.foodsUiState,
-                        setSelectedFoodToLog = viewModel::setSelectedFoodToLog,
-                        onSelectedFoodToLog,
-                        user = user
-                    )
-                }
+                Foods(
+                    state = foodUiState.foodsUiState,
+                    setSelectedFoodToLog = viewModel::setSelectedFoodToLog,
+                    onSelectedFoodToLog,
+                    user = user
+                )
             } else {
                 NotFoundText("User not found")
             }

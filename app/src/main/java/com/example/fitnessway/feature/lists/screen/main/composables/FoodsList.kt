@@ -4,7 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,8 +19,8 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UiState
 
 fun LazyListScope.foodsList(
@@ -30,12 +30,13 @@ fun LazyListScope.foodsList(
     when (state) {
         is UiState.Loading -> item {
             Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize(),
-                content = {
-                    TextWithLoadingIndicator("Loading Foods")
-                }
-            )
+                modifier = Modifier
+                    .fillParentMaxHeight()
+                    .padding(bottom = 86.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                TextWithLoadingIndicator("Food List")
+            }
         }
 
         is UiState.Success -> {

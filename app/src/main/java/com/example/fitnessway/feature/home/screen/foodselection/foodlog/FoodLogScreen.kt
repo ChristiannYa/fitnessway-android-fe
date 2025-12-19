@@ -32,6 +32,8 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Nutrient
 import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
+import com.example.fitnessway.util.Ui
+import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import kotlinx.coroutines.delay
@@ -79,7 +81,13 @@ fun FoodLogScreen(
             Header(
                 onBackClick = onBackClick,
                 title = "Log Information"
-            )
+            ) {
+                AppLabel(
+                    text = foodCategory.replaceFirstChar { it.uppercase() },
+                    size = Ui.LabelSize.LARGE,
+                    textStyle = MaterialTheme.typography.bodyMedium
+                )
+            }
         },
         content = {
             val food = selectedFoodToLog

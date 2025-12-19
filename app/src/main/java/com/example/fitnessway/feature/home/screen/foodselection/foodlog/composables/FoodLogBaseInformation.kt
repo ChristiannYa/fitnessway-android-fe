@@ -18,6 +18,7 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.form.FoodLogField
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.util.Food
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 
 @Composable
@@ -40,36 +41,27 @@ fun FoodLogInformationList(
         content = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(5.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                content = {
-                    val brand =
-                        if (food.information.brand == null || food.information.brand.isEmpty()) {
-                            "~"
-                        } else food.information.brand
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val brand = Food.Ui.getFoodBrandText(food.information.brand)
+                val brandColor = Food.Ui.getFoodBrandColor()
 
-                    Text(
-                        text = category.replaceFirstChar { it.uppercase() },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
-                    )
+                Text(
+                    text = brand,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = brandColor,
+                )
 
-                    Text(
-                        text = brand,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
-
-                    Text(
-                        text = food.information.name,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            )
+                Text(
+                    text = food.information.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),

@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.ImperialRed
 import com.example.fitnessway.ui.theme.WhiteFont

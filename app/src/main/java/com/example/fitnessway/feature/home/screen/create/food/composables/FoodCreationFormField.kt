@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.home.screen.create.food.composables
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,11 +16,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.ui.shared.PremiumIcon
-import com.example.fitnessway.util.form.field.rememberFieldInputMeasures
+import com.example.fitnessway.util.Ui
 
 @Composable
 fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
@@ -27,12 +32,27 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
+    val inputTextStyle = Ui.InputUi.getTextStyle()
     val padding = 16.dp
+    val isNutrient = field.name is FormFieldName.FoodCreation.NutrientField
 
-    val inputMeasures = rememberFieldInputMeasures(
-        inputValue = field.value,
-        inputPadding = padding
-    )
+    val label = if (isNutrient) {
+        val nutrient = field.name.nutrientWithPreferences.nutrient
+
+        buildAnnotatedString {
+            append("${nutrient.name} ")
+
+            withStyle(
+                style = SpanStyle(
+                    color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                )
+            ) {
+                append(nutrient.unit)
+            }
+        }
+    } else {
+        AnnotatedString(field.label)
+    }
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -58,9 +78,8 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                     if (!enabled) PremiumIcon()
 
                     Text(
-                        text = field.label,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(end = padding)
+                        text = label,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             )
@@ -69,11 +88,11 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 value = field.value,
                 onValueChange = field.updateState,
                 enabled = enabled,
-                textStyle = inputMeasures.textStyle,
+                textStyle = inputTextStyle,
                 singleLine = true,
                 modifier = Modifier
-                    .width(inputMeasures.measuredWidth)
-                    .padding(vertical = padding)
+                    .width(IntrinsicSize.Max)
+                    .padding(padding)
             )
         }
     )

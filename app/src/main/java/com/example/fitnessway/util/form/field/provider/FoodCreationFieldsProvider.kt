@@ -77,7 +77,7 @@ class FoodCreationFieldsProvider(
 
         return FoodCreationNutrientField(
             name = FormFieldName.FoodCreation.NutrientField(nutrientWithPreferences),
-            label = "${n.name} (${n.unit})",
+            label = "${n.name} ${n.unit}",
             value = formState.nutrients[n.id] ?: "",
             updateState = { newValue ->
                 onFieldUpdate(

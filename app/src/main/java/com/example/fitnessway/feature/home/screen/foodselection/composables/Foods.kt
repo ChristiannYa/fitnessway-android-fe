@@ -18,6 +18,7 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.util.Food
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.getColor
 import com.example.fitnessway.util.UiState
@@ -78,7 +79,8 @@ private fun Food(
     onSelectedFood: () -> Unit,
     user: User
 ) {
-    val missingBrand = food.information.brand == null || food.information.brand == ""
+    val foodBrandText = Food.Ui.getFoodBrandText(food.information.brand)
+    val foodBrandColor = Food.Ui.getFoodBrandColor()
 
     Column(
         modifier = Modifier
@@ -99,11 +101,11 @@ private fun Food(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = if (missingBrand) "~" else food.information.brand,
+                text = foodBrandText,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                color = foodBrandColor
             )
 
             if (user.isPremium) {

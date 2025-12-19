@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -52,12 +51,16 @@ import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.NotFoundText
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.ui.theme.WhiteBackground
 import com.example.fitnessway.ui.theme.robotoSerifFamily
+import com.example.fitnessway.util.Food.Ui.getFoodBrandColor
+import com.example.fitnessway.util.Food.Ui.getFoodBrandText
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Ui
+import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
 
 @Composable
@@ -134,8 +137,7 @@ private fun FoodLogCategory(
         content = {
             Text(
                 text = categoryFormatted,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -275,74 +277,73 @@ private fun FoodLog(
                 content = {
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        content = {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                content = {
-                                    Text(
-                                        text = food.name,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val foodBrandColor = getFoodBrandColor()
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            content = {
+                                Text(
+                                    text = food.name,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                val dotInfoColor = when (foodLog.foodStatus) {
+                                    FoodLogFoodStatus.DELETED -> OrangeWarning
+                                    FoodLogFoodStatus.UPDATED -> MaterialTheme.colorScheme.secondary
+                                    else -> Color.Transparent
+                                }
+
+                                if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(5.dp)
+                                            .background(
+                                                color = dotInfoColor,
+                                                shape = CircleShape
+                                            )
                                     )
+                                }
+                            }
+                        )
 
-                                    val dotInfoColor = when (foodLog.foodStatus) {
-                                        FoodLogFoodStatus.DELETED -> OrangeWarning
-                                        FoodLogFoodStatus.UPDATED -> MaterialTheme.colorScheme.secondary
-                                        else -> Color.Transparent
-                                    }
+                        Text(
+                            text = getFoodBrandText(food.brand),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = foodBrandColor
+                        )
 
-                                    if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(5.dp)
-                                                .background(
-                                                    color = dotInfoColor,
-                                                    shape = CircleShape
-                                                )
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontFamily = FontFamily.Default
+                                    ),
+                                    block = {
+                                        append(
+                                            text = doubleFormatter(foodLog.servings)
                                         )
                                     }
-                                }
-                            )
-                            Text(
-                                text = if (food.brand == null || food.brand == "") "~" else food.brand,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
-                            )
-
-                            Text(
-                                text = buildAnnotatedString {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            fontFamily = FontFamily.Default
-                                        ),
-                                        block = {
-                                            append(
-                                                text = doubleFormatter(foodLog.servings)
-                                            )
-                                        }
-                                    )
-                                    append(
-                                        text = " Servings"
-                                    )
-                                },
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
-                            )
-                        }
-                    )
+                                )
+                                append(
+                                    text = " Servings"
+                                )
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = foodBrandColor
+                        )
+                    }
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
+                    AppLabel(
                         text = foodLog.time,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontFamily = FontFamily.Default,
-                        color = MaterialTheme.colorScheme.onBackground.copy(0.7f),
-                        modifier = Modifier.wrapContentWidth(unbounded = false)
+                        size = Ui.LabelSize.SMALL
                     )
                 }
             )

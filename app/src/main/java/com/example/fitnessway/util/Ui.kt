@@ -1,9 +1,15 @@
 package com.example.fitnessway.util
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -13,6 +19,16 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 object Ui {
+    enum class LabelSize(
+        val cornerRadius: Int,
+        val paddingX: Dp,
+        val paddingY: Dp
+    ) {
+        LARGE(60, 14.dp, 10.dp),
+        MEDIUM(50, 12.dp, 8.dp),
+        SMALL(40, 10.dp, 6.dp)
+    }
+
     object Measurements {
         val SCREEN_HORIZONTAL_PADDING = 16.dp
         val TEXT_ICON_HORIZONTAL_SPACE = 10.dp
@@ -60,6 +76,33 @@ object Ui {
             }
 
             else -> ""
+        }
+    }
+
+    @Composable
+    fun AppLabel(
+        text: String,
+        color: Color = MaterialTheme.colorScheme.surfaceVariant,
+        size: LabelSize = LabelSize.MEDIUM,
+        textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+        modifier: Modifier = Modifier
+    ) {
+        Surface(
+            shape = RoundedCornerShape(size.cornerRadius),
+            color = color,
+            modifier = modifier
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Text(
+                    text = text,
+                    style = textStyle,
+                    modifier = Modifier.padding(
+                        horizontal = size.paddingX,
+                        vertical = size.paddingY
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+                )
+            }
         }
     }
 

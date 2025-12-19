@@ -20,7 +20,6 @@ fun Screen(
     usesInnerHorizontalPadding: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val hasPadding = header != null && isMainScreen == false
     val localDensity = LocalDensity.current
     val bottomInsetPadding = WindowInsets.navigationBars.getBottom(localDensity) / 2
     val bottomPaddingDynamic = if (isMainScreen == true) 0.dp else bottomInsetPadding.dp
@@ -42,7 +41,7 @@ fun Screen(
                             .padding(
                                 start = horizontalPadding,
                                 end = horizontalPadding,
-                                top = if (hasPadding) 4.dp else 2.dp,
+                                top = 4.dp,
                                 bottom = bottomPaddingDynamic,
                             ),
                         content = {

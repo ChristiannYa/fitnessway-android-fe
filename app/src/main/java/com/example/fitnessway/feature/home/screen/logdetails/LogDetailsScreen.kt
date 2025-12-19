@@ -3,6 +3,7 @@ package com.example.fitnessway.feature.home.screen.logdetails
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -12,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,8 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
+import com.example.fitnessway.util.Ui
+import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -83,14 +87,27 @@ fun LogDetailsScreen(
                             Header(
                                 onBackClick = onBackClick,
                                 isOnBackEnabled = !formState.isEditing,
-                                title = "Log Details",
-                                extraContent = {
+                                title = "Log Details"
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    AppLabel(
+                                        text = foodLog.category.replaceFirstChar { it.uppercase() },
+                                        size = Ui.LabelSize.MEDIUM
+                                    )
+                                    AppLabel(
+                                        text = foodLog.time,
+                                        size = Ui.LabelSize.MEDIUM
+                                    )
+
                                     ActionButton(
                                         onClick = { viewModel.startFormEdit(formState.data) },
                                         text = "Edit"
                                     )
                                 }
-                            )
+                            }
                         }
                     )
                 },

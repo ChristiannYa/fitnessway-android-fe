@@ -25,7 +25,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +48,8 @@ import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Ui.AppLabel
+import com.example.fitnessway.util.Ui.LabelSize
 import com.example.fitnessway.data.model.nutrient.Nutrient as NutrientModel
 
 
@@ -193,25 +194,6 @@ object Nutrient {
 
     object Ui {
         @Composable
-        fun NutrientLabel(
-            nutrient: NutrientModel,
-            textStyle: TextStyle = MaterialTheme.typography.labelMedium,
-            color: Color = MaterialTheme.colorScheme.surfaceVariant
-        ) {
-            Surface(
-                shape = RoundedCornerShape(50),
-                color = color
-            ) {
-                Text(
-                    text = nutrient.name,
-                    style = textStyle,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
-                )
-            }
-        }
-
-        @Composable
         fun NutrientLabelsFlowRow(
             nutrients: List<NutrientModel>,
             textStyle: TextStyle = MaterialTheme.typography.labelMedium,
@@ -221,7 +203,14 @@ object Nutrient {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                nutrients.forEach { NutrientLabel(it, textStyle, color) }
+                nutrients.forEach {
+                    AppLabel(
+                        text = it.name,
+                        color = color,
+                        size = LabelSize.SMALL,
+                        textStyle = textStyle
+                    )
+                }
             }
         }
 
@@ -609,13 +598,14 @@ object Nutrient {
                         when (displayFormat) {
                             ScrollableNutrientsFormat.BOX -> {
                                 val contentWidth = if (isBaseSizeDisplay) 72.dp else 62.dp
+
                                 val progressBarHeight = if (isBaseSizeDisplay) {
                                     if (isBasicNutrient) {
                                         (115.2 / 1).dp
                                     } else (115.2 / 2).dp
                                 } else {
                                     if (isBasicNutrient) {
-                                        (contentWidth * 0.8f) * 2
+                                        (contentWidth * 0.7f) * 2
                                     } else {
                                         contentWidth * 0.8f
                                     }

@@ -3,7 +3,6 @@ package com.example.fitnessway.feature.home.screen.logdetails.composables
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +24,7 @@ import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.util.Food.FoodComposables
+import com.example.fitnessway.util.Formatters.doubleFormatter
 
 private const val deletedFoodMessage = "You have removed this food from your food list"
 private const val updatedFoodMessage = "You have updated this food format"
@@ -54,23 +54,49 @@ fun LogDetails(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
-                    val verticalSpace = 4.dp
-
                     item {
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(verticalSpace),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            content = {
-                                foodComposables.BaseInformation(
-                                    topHorizontalAlignment = Alignment.CenterHorizontally,
-                                    bottomHorizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalSpace = verticalSpace,
-                                    foodLogServings = foodLog.servings
-                                )
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            foodComposables.BaseInformation(
+                                topHorizontalAlignment = Alignment.CenterHorizontally,
+                                bottomHorizontalAlignment = Alignment.CenterHorizontally,
+                                verticalSpace = 2.dp,
+                                foodLogServings = foodLog.servings
+                            )
 
-                                CatAndTime(foodLog)
-                            }
-                        )
+                            val foodLogServings = doubleFormatter(foodLog.servings)
+                            val food = foodLog.food.information
+                            val foodAmountPerServing = doubleFormatter(food.amountPerServing)
+                            val foodServingUnit = food.servingUnit
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontWeight = FontWeight.SemiBold,
+                                        )
+                                    ) {
+                                        append("$foodLogServings ")
+                                    }
+
+                                    append("servings of ")
+
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    ) {
+                                        append("$foodAmountPerServing ")
+                                    }
+
+                                    append(foodServingUnit)
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+                            )
+                        }
                     }
 
                     item {
@@ -95,37 +121,7 @@ fun LogDetails(
                 }
             )
 
-            BlurOverlay(
-                isVisible = isBlurredOverlayVisible
-            )
-        }
-    )
-}
-
-@Composable
-fun CatAndTime(foodLog: FoodLogData) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        content = {
-            val category = foodLog.category.replaceFirstChar { it.uppercase() }
-
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        block = {
-                            append(category)
-                        }
-                    )
-                    append(
-                        text = " at "
-                    )
-                    append(text = foodLog.time)
-                },
-                style = MaterialTheme.typography.bodyMedium
-            )
+            BlurOverlay(isVisible = isBlurredOverlayVisible)
         }
     )
 }

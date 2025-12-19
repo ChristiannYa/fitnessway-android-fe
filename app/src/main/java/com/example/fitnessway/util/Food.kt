@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -77,6 +78,19 @@ object Food {
         }
     }
 
+    object Ui {
+        fun getFoodBrandText(brand: String?): String {
+            return if (brand == null || brand.isEmpty()) {
+                "~"
+            } else brand
+        }
+
+        @Composable
+        fun getFoodBrandColor(): Color {
+            return MaterialTheme.colorScheme.onBackground.copy(0.6f)
+        }
+    }
+
     data class FoodComposables(
         val food: FoodInformation,
         val nutrients: NutrientsByType<NutrientAmountData> = food.nutrients,
@@ -109,7 +123,7 @@ object Food {
                         horizontalAlignment = bottomHorizontalAlignment,
                         verticalArrangement = Arrangement.spacedBy(verticalSpace),
                         content = {
-                            val asideColor = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+                            val brandColor = Ui.getFoodBrandColor()
 
                             Column(
                                 horizontalAlignment = topHorizontalAlignment,
@@ -120,7 +134,7 @@ object Food {
                                     Text(
                                         text = foodBrand,
                                         style = MaterialTheme.typography.labelMedium,
-                                        color = asideColor
+                                        color = brandColor
                                     )
 
                                     Text(
@@ -141,12 +155,12 @@ object Food {
                                         text = amPerSer,
                                         style = MaterialTheme.typography.bodySmall,
                                         fontFamily = FontFamily.Default,
-                                        color = asideColor
+                                        color = brandColor
                                     )
                                     Text(
                                         text = food.information.servingUnit,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = asideColor
+                                        color = brandColor
                                     )
                                 }
                             )

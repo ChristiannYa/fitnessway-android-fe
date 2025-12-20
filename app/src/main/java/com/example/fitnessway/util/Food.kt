@@ -114,60 +114,58 @@ object Food {
              */
             verticalSpace: Dp = 0.dp,
 
-            foodLogServings: Double = 1.0
+            foodLogServings: Double? = 1.0
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                content = {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    horizontalAlignment = bottomHorizontalAlignment,
+                    verticalArrangement = Arrangement.spacedBy(verticalSpace)
+                ) {
+                    val brandColor = Ui.getFoodBrandColor()
+
                     Column(
-                        horizontalAlignment = bottomHorizontalAlignment,
-                        verticalArrangement = Arrangement.spacedBy(verticalSpace),
-                        content = {
-                            val brandColor = Ui.getFoodBrandColor()
+                        horizontalAlignment = topHorizontalAlignment,
+                        verticalArrangement = Arrangement.spacedBy(verticalSpace)
+                    ) {
+                        val foodBrand = food.information.brand?.ifEmpty { "~" } ?: "~"
 
-                            Column(
-                                horizontalAlignment = topHorizontalAlignment,
-                                verticalArrangement = Arrangement.spacedBy(verticalSpace),
-                                content = {
-                                    val foodBrand = food.information.brand?.ifEmpty { "~" } ?: "~"
+                        Text(
+                            text = foodBrand,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = brandColor
+                        )
 
-                                    Text(
-                                        text = foodBrand,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = brandColor
-                                    )
+                        Text(
+                            text = food.information.name,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
 
-                                    Text(
-                                        text = food.information.name,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                }
+
+
+                    if (foodLogServings != null) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                            val amPerSer = doubleFormatter(
+                                value = food.information.amountPerServing * foodLogServings
                             )
 
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                content = {
-                                    val amPerSer =
-                                        doubleFormatter(food.information.amountPerServing * foodLogServings)
+                            Text(
+                                text = amPerSer,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Default,
+                                color = brandColor
+                            )
 
-                                    Text(
-                                        text = amPerSer,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontFamily = FontFamily.Default,
-                                        color = brandColor
-                                    )
-                                    Text(
-                                        text = food.information.servingUnit,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = brandColor
-                                    )
-                                }
+                            Text(
+                                text = food.information.servingUnit,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = brandColor
                             )
                         }
-                    )
+                    }
                 }
-            )
+            }
         }
 
         @Composable

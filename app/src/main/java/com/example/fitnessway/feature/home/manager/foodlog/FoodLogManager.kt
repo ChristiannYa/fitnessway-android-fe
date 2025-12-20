@@ -46,7 +46,8 @@ class FoodLogManager : IFoodLogManager {
 
     override val fleFormServsError: String?
         get() = _foodLogEditionFormState.value?.let { formState ->
-            formState.data.servings.let { value -> validateDoubleAsString(
+            formState.data.servings.let { value ->
+                validateDoubleAsString(
                     doubleAsString = value,
                     itemToBeValidated = "Servings"
                 )
@@ -95,7 +96,7 @@ class FoodLogManager : IFoodLogManager {
 
         _foodLogEditionFormState.value = FormState(
             data = FormStates.FoodLogEdition(
-                servings = foodLog.servings.toString(),
+                servings = doubleFormatter(foodLog.servings),
                 amountPerServing = doubleFormatter(amPerSer),
                 amountPerServingDb = foodLog.food.information.amountPerServing
             )
@@ -125,7 +126,7 @@ class FoodLogManager : IFoodLogManager {
                     val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
                         val amount = formState.data.amountPerServingDb * newAmount
 
-                        doubleFormatter(amount, 2)
+                        doubleFormatter(amount, 3)
                     } else formState.data.amountPerServing
 
                     formState.data.copy(
@@ -139,7 +140,7 @@ class FoodLogManager : IFoodLogManager {
 
                     val dynServings = if (newAmount != null && newAmount > 0) {
                         val amount = newAmount / formState.data.amountPerServingDb
-                        doubleFormatter(amount, 2)
+                        doubleFormatter(amount, 3)
                     } else formState.data.servings
 
                     formState.data.copy(

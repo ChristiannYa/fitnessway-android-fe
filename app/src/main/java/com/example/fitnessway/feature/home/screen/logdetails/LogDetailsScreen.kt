@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -14,10 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.feature.home.screen.logdetails.composables.EditionMode
-import com.example.fitnessway.feature.home.screen.logdetails.composables.LogDetails
+import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
-import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
@@ -82,22 +84,31 @@ fun LogDetailsScreen(
                                 title = "Log Details"
                             ) {
                                 Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    val isValid = viewModel.isFleFormValid
+                                            && formState.data.servings.toDouble() != foodLog.servings
+
                                     AppLabel(
                                         text = foodLog.category.replaceFirstChar { it.uppercase() },
                                         size = Ui.LabelSize.MEDIUM
                                     )
+
                                     AppLabel(
                                         text = foodLog.time,
                                         size = Ui.LabelSize.MEDIUM
                                     )
 
-                                    ActionButton(
-                                        onClick = { viewModel.startFormEdit(formState.data) },
-                                        text = "Edit"
-                                    )
+                                    IconButton(
+                                        onClick = viewModel::updateFoodLog,
+                                        enabled = isValid
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Done,
+                                            contentDescription = null
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -113,13 +124,6 @@ fun LogDetailsScreen(
                                 input = value
                             )
                         }
-                    )
-
-                    val fields = listOf(
-                        fieldsProvider.servings(),
-                        fieldsProvider.amountPerServing(
-                            servingUnit = foodLog.food.information.servingUnit
-                        )
                     )
 
                     Box(
@@ -147,24 +151,17 @@ fun LogDetailsScreen(
                                 errorMessage = foodLogUpdateErrMsg
                             )
 
-                            LogDetails(
+                            FoodLogDetails(
                                 foodLog = foodLog,
                                 isBlurredOverlayVisible = formState.isEditing,
                                 nutrients = nutrients,
+                                servingField = fieldsProvider.servings(),
+                                amountPerServingField = fieldsProvider.amountPerServing(
+                                    servingUnit = foodLog.food.information.servingUnit
+                                ),
                                 user = user
                             )
                         }
-
-                        val isValid = viewModel.isFleFormValid
-                                && formState.data.servings.toDouble() != foodLog.servings
-
-                        EditionMode(
-                            fields = fields,
-                            isDoneEnabled = isValid,
-                            onDone = viewModel::updateFoodLog,
-                            onCancel = { viewModel.cancelFormEdit(formState.data) },
-                            isVisible = formState.isEditing
-                        )
                     }
                 } else {
                     NotFoundText("User not found")

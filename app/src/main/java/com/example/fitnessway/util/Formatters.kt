@@ -35,7 +35,7 @@ object Formatters {
         val finalValue = if (abs(result) < 1e-10) 0.0 else result
 
         val decimalFormat = formatCache.getOrPut(decimalPlaces) {
-            val pattern = if (decimalPlaces == 0) "#" else "#.${"#".repeat(decimalPlaces)}"
+            val pattern = if (decimalPlaces == 0) "0" else "0.${"#".repeat(decimalPlaces)}"
             DecimalFormat(pattern)
         }
 

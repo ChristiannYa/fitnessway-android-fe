@@ -25,7 +25,8 @@ object AppModifiers {
     ) {
         LARGE(16.dp, 18.dp),
         MEDIUM(14.dp, 16.dp),
-        SMALL(12.dp, 14.dp)
+        SMALL(12.dp, 14.dp),
+        EXTRA_SMALL(10.dp, 12.dp)
     }
 
     @Composable

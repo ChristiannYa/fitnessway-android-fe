@@ -4,10 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.home.screen.logdetails.composables.EditionMode
 import com.example.fitnessway.feature.home.screen.logdetails.composables.LogDetails
@@ -64,15 +61,10 @@ fun LogDetailsScreen(
 
     if (foodLog == null) {
         Screen(
-            header = { Header(onBackClick = onBackClick, title = title) },
-            content = {
-                Text(
-                    text = "Food log not found",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        )
+            header = { Header(onBackClick = onBackClick, title = title) }
+        ) {
+            NotFoundText("Food log not found")
+        }
     } else {
         foodLogDetailsFormState?.let { formState ->
             val (headerOffset, headerAnimationModifier) = rememberHeaderSlideUpAnimation(
@@ -131,52 +123,49 @@ fun LogDetailsScreen(
                     )
 
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        content = {
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.offset(y = headerOffset),
-                                content = {
-                                    val nutrients = remember(
-                                        key1 = foodLog.food.nutrients,
-                                        key2 = formState.data.servings
-                                    ) {
-                                        val servings =
-                                            formState.data.servings.toDoubleOrNull() ?: 0.0
+                        modifier = Modifier.imePadding()
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.offset(y = headerOffset)
+                        ) {
+                            val nutrients = remember(
+                                key1 = foodLog.food.nutrients,
+                                key2 = formState.data.servings
+                            ) {
+                                val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
 
-                                        calcNutrientsBasedOnFoodLogServings(
-                                            nutrients = foodLog.food.nutrients,
-                                            currentServings = foodLog.servings,
-                                            newServings = servings
-                                        )
-                                    }
+                                calcNutrientsBasedOnFoodLogServings(
+                                    nutrients = foodLog.food.nutrients,
+                                    currentServings = foodLog.servings,
+                                    newServings = servings
+                                )
+                            }
 
-                                    ApiErrorMessageAnimated(
-                                        isVisible = foodLogUpdateErrMsg != "",
-                                        errorMessage = foodLogUpdateErrMsg
-                                    )
-
-                                    LogDetails(
-                                        foodLog = foodLog,
-                                        isBlurredOverlayVisible = formState.isEditing,
-                                        nutrients = nutrients,
-                                        user = user
-                                    )
-                                }
+                            ApiErrorMessageAnimated(
+                                isVisible = foodLogUpdateErrMsg != "",
+                                errorMessage = foodLogUpdateErrMsg
                             )
 
-                            val isValid =
-                                viewModel.isFleFormValid && formState.data.servings.toDouble() != foodLog.servings
-
-                            EditionMode(
-                                fields = fields,
-                                isDoneEnabled = isValid,
-                                onDone = viewModel::updateFoodLog,
-                                onCancel = { viewModel.cancelFormEdit(formState.data) },
-                                isVisible = formState.isEditing
+                            LogDetails(
+                                foodLog = foodLog,
+                                isBlurredOverlayVisible = formState.isEditing,
+                                nutrients = nutrients,
+                                user = user
                             )
                         }
-                    )
+
+                        val isValid = viewModel.isFleFormValid
+                                && formState.data.servings.toDouble() != foodLog.servings
+
+                        EditionMode(
+                            fields = fields,
+                            isDoneEnabled = isValid,
+                            onDone = viewModel::updateFoodLog,
+                            onCancel = { viewModel.cancelFormEdit(formState.data) },
+                            isVisible = formState.isEditing
+                        )
+                    }
                 } else {
                     NotFoundText("User not found")
                 }

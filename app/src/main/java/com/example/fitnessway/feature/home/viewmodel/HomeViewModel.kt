@@ -45,11 +45,6 @@ class HomeViewModel(
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
 
-    fun getNutrientIntakes() {
-        val date = managers.date.getApiFormattedDate()
-        nutrientRepo.loadNutrientIntakes(date)
-    }
-
     fun getFoodLogs() {
         val date = managers.date.getApiFormattedDate()
         foodRepo.loadFoodLogs(date)
@@ -57,6 +52,11 @@ class HomeViewModel(
 
     fun getFoods() {
         foodRepo.loadFoods()
+    }
+
+    fun getNutrientIntakes() {
+        val date = managers.date.getApiFormattedDate()
+        nutrientRepo.loadNutrientIntakes(date)
     }
 
     fun getNutrients() {

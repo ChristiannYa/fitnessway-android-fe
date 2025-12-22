@@ -3,7 +3,6 @@ package com.example.fitnessway.feature.home.manager.food
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.Nutrient
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Formatters.toInputDouble
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormStates

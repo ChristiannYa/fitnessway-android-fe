@@ -54,10 +54,6 @@ fun LogDetailsScreen(
 
     val foodLogUpdateErrMsg = handleErrStateTempMsg(
         uiState = uiState.foodLogUpdateState,
-
-        // @NOTE: `onTimeout = { viewModel.resetFoodUpdateState() }` could
-        // be used, but since we are only calling 1 function, a function reference
-        // suffices
         onTimeOut = viewModel::resetFoodLogUpdateState
     )
 

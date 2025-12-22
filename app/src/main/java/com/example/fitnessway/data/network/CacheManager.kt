@@ -1,7 +1,7 @@
 package com.example.fitnessway.data.network
 
-import android.util.Log
 import com.example.fitnessway.util.Constants
+import com.example.fitnessway.util.Formatters.logcat
 import okhttp3.Cache
 
 class CacheManager(private val cache: Cache) {
@@ -23,7 +23,10 @@ class CacheManager(private val cache: Cache) {
         } catch (e: Exception) {
             // We will just log the error instead of showing it in the UI because a cache error
             // is independent of the app's functionality.
-            Log.e(Constants.DEBUG_TAG, "evictUrl -> Failed to evict cache for $url: ${e.message}")
+            logcat(
+                message = "evictUrl -> Failed to evict cache for $url: ${e.message}",
+                level = Constants.LogLevel.ERROR
+            )
         }
     }
 
@@ -32,7 +35,10 @@ class CacheManager(private val cache: Cache) {
         try {
             cache.evictAll()
         } catch (e: Exception) {
-            Log.e(Constants.DEBUG_TAG, "clearAll -> Failed to clear all cache: ${e.message}")
+            logcat(
+                message = "clearAll -> Failed to clear all cache: ${e.message}",
+                level = Constants.LogLevel.ERROR
+            )
         }
     }
 }

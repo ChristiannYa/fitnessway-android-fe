@@ -1,12 +1,12 @@
 package com.example.fitnessway.di.init
 
-import android.util.Log
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.util.Constants
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.launch
 
@@ -18,7 +18,7 @@ class AppInitializer(
     fun initialize() {
         ProcessLifecycleOwner.get().lifecycleScope.launch {
             tokensStetHolder.tokensState.collect { tokensState ->
-                Log.d(Constants.DEBUG_TAG, tokensState.accessToken.toString())
+                logcat(message = tokensState.accessToken.toString())
 
                 val userState = userStateHolder.userState.value
 
@@ -33,7 +33,10 @@ class AppInitializer(
                             is UiState.Loading -> {}
                             is UiState.Success -> userStateHolder.setUser(uiState.data)
                             is UiState.Error -> {
-                                Log.d(Constants.DEBUG_TAG, "error collecting token states")
+                                logcat(
+                                    message = "error collecting token states",
+                                    level = Constants.LogLevel.ERROR
+                                )
                                 tokensStetHolder.clearTokens()
                                 userStateHolder.clearUser()
                             }

@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.screen.logdetails
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,6 +26,7 @@ import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.Animation.colorSpec
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Ui
@@ -33,7 +36,7 @@ import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvi
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LogDetailsScreen(
+fun FoodLogDetailsScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onBackClick: () -> Unit
 ) {
@@ -43,12 +46,6 @@ fun LogDetailsScreen(
 
     val user = viewModel.user
 
-    LaunchedEffect(selectedFoodLog) {
-        selectedFoodLog?.let { foodLog ->
-            viewModel.initializeFoodLogEditionForm(foodLog)
-        }
-    }
-
     val foodLog = selectedFoodLog
     val title = "Food Log Details"
 
@@ -56,6 +53,12 @@ fun LogDetailsScreen(
         uiState = uiState.foodLogUpdateState,
         onTimeOut = viewModel::resetFoodLogUpdateState
     )
+
+    LaunchedEffect(selectedFoodLog) {
+        selectedFoodLog?.let { foodLog ->
+            viewModel.initializeFoodLogEditionForm(foodLog)
+        }
+    }
 
     if (foodLog == null) {
         Screen(
@@ -83,7 +86,7 @@ fun LogDetailsScreen(
                                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    val isValid = viewModel.isFleFormValid
+                                    val isFleValid = viewModel.isFleFormValid
                                             && formState.data.servings.toDouble() != foodLog.servings
 
                                     AppLabel(
@@ -98,11 +101,20 @@ fun LogDetailsScreen(
 
                                     IconButton(
                                         onClick = viewModel::updateFoodLog,
-                                        enabled = isValid
+                                        enabled = isFleValid,
                                     ) {
+                                        val tint by animateColorAsState(
+                                            targetValue = if (isFleValid) {
+                                                MaterialTheme.colorScheme.primary
+                                            } else MaterialTheme.colorScheme.surfaceVariant,
+                                            animationSpec = colorSpec,
+                                            label = "FodLogEditionDoneCheckMark"
+                                        )
+
                                         Icon(
                                             imageVector = Icons.Default.Done,
-                                            contentDescription = null
+                                            contentDescription = null,
+                                            tint = tint
                                         )
                                     }
                                 }

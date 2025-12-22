@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.material3)
 
     // Koin
     implementation(platform(libs.koin.bom))

@@ -19,7 +19,6 @@ import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
 import com.example.fitnessway.util.Food.subtractNutrientsFromIntakes
-import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,6 +43,17 @@ class HomeViewModel(
 
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
+
+    fun loadHomeData() {
+        getNutrientIntakes()
+        getFoodLogs()
+    }
+
+    fun refreshHomeData() {
+        val date = managers.date.getApiFormattedDate()
+        nutrientRepo.refreshNutrientIntakes(date)
+        foodRepo.refreshFoodLogs(date)
+    }
 
     fun getFoodLogs() {
         val date = managers.date.getApiFormattedDate()

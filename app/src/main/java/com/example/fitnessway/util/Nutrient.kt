@@ -429,6 +429,7 @@ object Nutrient {
                                     strokeWidth = 5.dp,
                                     modifier = Modifier.fillMaxSize()
                                 )
+
                                 Text(
                                     text = doubleFormatter(nutrientData.amount),
                                     style = MaterialTheme.typography.bodyLarge,
@@ -550,8 +551,8 @@ object Nutrient {
                                     color = color,
                                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                                     strokeCap = StrokeCap.Round,
-                                    modifier = Modifier
-                                        .weight(1f),
+                                    drawStopIndicator = { },
+                                    modifier = Modifier.weight(1f),
                                 )
                                 Text(
                                     text = "${doubleFormatter(percentage.toDouble())}%",

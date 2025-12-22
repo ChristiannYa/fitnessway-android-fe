@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -59,9 +60,20 @@ fun HomeScreen(
     var headerHeight by remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
 
+    val deleteFoodLogErrMsg = handleErrStateTempMsg(
+        uiState = uiState.foodLogDeleteState,
+        onTimeOut = viewModel::resetFoodLogDeleteState
+    )
+
+    val apiDateFormat = remember(selectedDate) {
+        viewModel.getApiFormattedDate()
+    }
+
+    val isRefreshing = nutrientRepoUiState.nutrientIntakesCache[apiDateFormat] is UiState.Loading ||
+            foodRepoUiState.foodLogsCache[apiDateFormat] is UiState.Loading
+
     LaunchedEffect(key1 = selectedDate) {
-        viewModel.getNutrientIntakes()
-        viewModel.getFoodLogs()
+        viewModel.loadHomeData()
     }
 
     DisposableEffect(Unit) {
@@ -70,22 +82,13 @@ fun HomeScreen(
         }
     }
 
-    val deleteFoodLogErrMsg = handleErrStateTempMsg(
-        uiState = uiState.foodLogDeleteState,
-        onTimeOut = viewModel::resetFoodLogDeleteState
-    )
-
-    val currentDate = remember(selectedDate) {
-        viewModel.getApiFormattedDate()
+    // Recompose when either nutrientRepoUiState OR apiDateFormat changes
+    val nutrientIntakesState = remember(nutrientRepoUiState, apiDateFormat) {
+        nutrientRepoUiState.nutrientIntakesCache[apiDateFormat] ?: UiState.Loading
     }
 
-    // Recompose when either nutrientRepoUiState OR currentDate changes
-    val nutrientIntakesState = remember(nutrientRepoUiState, currentDate) {
-        nutrientRepoUiState.nutrientIntakesCache[currentDate] ?: UiState.Loading
-    }
-
-    val foodLogsState = remember(foodRepoUiState, currentDate) {
-        foodRepoUiState.foodLogsCache[currentDate] ?: UiState.Loading
+    val foodLogsState = remember(foodRepoUiState, apiDateFormat) {
+        foodRepoUiState.foodLogsCache[apiDateFormat] ?: UiState.Loading
     }
 
     Screen(
@@ -94,11 +97,15 @@ fun HomeScreen(
             Box(
                 modifier = Modifier.fillMaxSize(),
                 content = {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        content = {
+                    PullToRefreshBox(
+                        isRefreshing = isRefreshing,
+                        onRefresh = viewModel::refreshHomeData,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
                             stickyHeader {
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -184,7 +191,7 @@ fun HomeScreen(
                                 }
                             }
                         }
-                    )
+                    }
 
                     BlurOverlay(
                         isVisible = isCreateMenuVisible,

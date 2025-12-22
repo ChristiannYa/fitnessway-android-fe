@@ -8,7 +8,7 @@ import androidx.navigation.navigation
 import com.example.fitnessway.feature.home.screen.create.food.CreateFoodFormScreen
 import com.example.fitnessway.feature.home.screen.foodselection.FoodSelectionScreen
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoodLogScreen
-import com.example.fitnessway.feature.home.screen.logdetails.LogDetailsScreen
+import com.example.fitnessway.feature.home.screen.logdetails.FoodLogDetailsScreen
 import com.example.fitnessway.feature.home.screen.main.HomeScreen
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.feature.profile.navigation.ProfileGoalsDest
@@ -83,7 +83,7 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
 
             val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
-            LogDetailsScreen(
+            FoodLogDetailsScreen(
                 viewModel = viewModel,
                 onBackClick = { navController.popBackStack() }
             )

@@ -108,6 +108,12 @@ fun FoodLogDetails(
                                     )
 
                                     FoodLogEditionField(amountPerServingField)
+
+                                    Text(
+                                        text = "g",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+                                    )
                                 }
                             }
                         }

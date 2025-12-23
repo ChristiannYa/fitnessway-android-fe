@@ -39,7 +39,7 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
-    private val _failedFoodLogDeletions = mutableMapOf<String, MutableSet<FoodLogData>>()
+    private val _foodLogFailedDeletions = mutableMapOf<String, MutableSet<FoodLogData>>()
 
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
@@ -231,7 +231,7 @@ class HomeViewModel(
         ) return
 
         // Get or create the failed deletions set for this date
-        val failedDeletionsForDate = _failedFoodLogDeletions.getOrPut(apiDate) { mutableSetOf() }
+        val failedDeletionsForDate = _foodLogFailedDeletions.getOrPut(apiDate) { mutableSetOf() }
 
         // Remove current food log id from failed deletions list
         failedDeletionsForDate.remove(selectedFoodLogToRemove)
@@ -289,13 +289,15 @@ class HomeViewModel(
                         _uiState.update { it.copy(foodLogDeleteState = state) }
 
                         // Obtain updated UI states after optimistic update
-                        val currentFoodLogsState = foodRepo
-                            .uiState.value.foodLogsCache[apiDate]
-                        val currentNutrientIntakesState = nutrientRepo
-                            .uiState.value.nutrientIntakesCache[apiDate]
+                        val currentFoodLogsState = foodRepo.uiState.value
+                            .foodLogsCache[apiDate]
+
+                        val currentNutrientIntakesState = nutrientRepo.uiState.value
+                            .nutrientIntakesCache[apiDate]
 
                         // Update food logs data after failed deletion
                         if (currentFoodLogsState is UiState.Success) {
+
                             // Revert back to original food logs state
                             val revertedFoodLogs = currentFoodLogsState.data
                                 .mapFoodLogs { category, logs ->
@@ -304,7 +306,9 @@ class HomeViewModel(
                                             other = category.name,
                                             ignoreCase = true
                                         ) // Safe string comparison
-                                    }).distinctBy { it.id }
+                                    })
+                                        .distinctBy { it.id }
+                                        .sortedByDescending { it.id }
                                 }
 
                             foodRepo.updateState {

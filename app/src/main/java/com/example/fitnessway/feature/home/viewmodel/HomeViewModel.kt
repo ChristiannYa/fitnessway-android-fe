@@ -16,12 +16,9 @@ import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Food
 import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLog
 import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
-import com.example.fitnessway.util.Food.combineAll
-import com.example.fitnessway.util.Food.getIds
 import com.example.fitnessway.util.Food.mapFoodLogs
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow

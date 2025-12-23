@@ -37,11 +37,6 @@ import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.util.Constants
-import com.example.fitnessway.util.Food.combineAll
-import com.example.fitnessway.util.Food.getIds
-import com.example.fitnessway.util.Formatters.logcat
-import com.example.fitnessway.util.Nutrient.combineAll
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -72,11 +67,6 @@ fun HomeScreen(
     val apiDateFormat = remember(selectedDate) {
         viewModel.getApiFormattedDate()
     }
-
-    logcat(
-        "home screen date: $apiDateFormat",
-        Constants.LogLevel.INFO
-    )
 
     val isRefreshing = nutrientRepoUiState.nutrientIntakesCache[apiDateFormat] is UiState.Loading ||
             foodRepoUiState.foodLogsCache[apiDateFormat] is UiState.Loading
@@ -150,15 +140,6 @@ fun HomeScreen(
                         } else {
                             val user = viewModel.user
 
-                            if (nutrientIntakesState is UiState.Success) {
-                                val firstTwo = nutrientIntakesState.data.combineAll().take(2)
-
-                                logcat("first two nutrient intakes in home screen")
-                                firstTwo.forEach {
-                                    logcat("> ${it.nutrientWithPreferences.nutrient.name} ${it.amount}")
-                                }
-                            }
-
                             item {
                                 BasicNutrientIntakes(
                                     state = nutrientIntakesState,
@@ -183,11 +164,6 @@ fun HomeScreen(
                                     user = user,
                                     onNavigateToGoals = onNavigateToGoals
                                 )
-                            }
-
-                            if (foodLogsState is UiState.Success) {
-                                val foodLogIds = foodLogsState.data.combineAll().getIds()
-                                logcat("food log ids $foodLogIds")
                             }
 
                             item {

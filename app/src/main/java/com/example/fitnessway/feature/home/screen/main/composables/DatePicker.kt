@@ -33,7 +33,7 @@ fun DatePicker(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 2.dp),
+            .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         content = {

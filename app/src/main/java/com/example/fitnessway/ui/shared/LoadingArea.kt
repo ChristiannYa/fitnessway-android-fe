@@ -25,8 +25,8 @@ fun LoadingArea(
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "pulse_loading")
     val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.6f,
+        initialValue = 0.2f,
+        targetValue = 0.3f,
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = 800,

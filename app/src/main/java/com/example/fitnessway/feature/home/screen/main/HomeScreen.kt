@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -90,6 +93,8 @@ fun HomeScreen(
         foodRepoUiState.foodLogsCache[apiDateFormat] ?: UiState.Loading
     }
 
+    val pullToRefreshState = rememberPullToRefreshState()
+
     Screen(
         isMainScreen = true,
         content = {
@@ -97,7 +102,17 @@ fun HomeScreen(
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,
                     onRefresh = viewModel::refreshHomeData,
-                    modifier = Modifier.fillMaxSize()
+                    state = pullToRefreshState,
+                    modifier = Modifier.fillMaxSize(),
+                    indicator = {
+                        Indicator(
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            isRefreshing = isRefreshing,
+                            state = pullToRefreshState,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 ) {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -114,25 +129,24 @@ fun HomeScreen(
                                         headerHeight = with(localDensity) {
                                             coordinates.size.height.toDp()
                                         }
-                                    },
-                                content = {
-                                    HomeHeader(
-                                        onToggleCreateMenuVisibility = viewModel::toggleCreateMenuVisibility
-                                    )
+                                    }
+                            ) {
+                                HomeHeader(
+                                    onToggleCreateMenuVisibility = viewModel::toggleCreateMenuVisibility
+                                )
 
-                                    DatePicker(
-                                        date = viewModel.getFormattedDay(selectedDate),
-                                        goNextDay = { viewModel.changeDay(1) },
-                                        goPrevDay = { viewModel.changeDay(-1) }
-                                    )
+                                DatePicker(
+                                    date = viewModel.getFormattedDay(selectedDate),
+                                    goNextDay = { viewModel.changeDay(1) },
+                                    goPrevDay = { viewModel.changeDay(-1) }
+                                )
 
-                                    CreateOptions(
-                                        onCreateFood = onNavigateToFoodForm,
-                                        onCreateSupplement = {},
-                                        isVisible = isCreateMenuVisible
-                                    )
-                                }
-                            )
+                                CreateOptions(
+                                    onCreateFood = onNavigateToFoodForm,
+                                    onCreateSupplement = {},
+                                    isVisible = isCreateMenuVisible
+                                )
+                            }
                         }
 
                         if (viewModel.user == null) {

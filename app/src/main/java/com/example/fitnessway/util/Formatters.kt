@@ -50,9 +50,11 @@ object Formatters {
         return if (doubleAsString.isEmpty()) null else {
             val amount = doubleAsString.toDoubleOrNull()
 
-            if (amount == null) "$itemToBeValidated must be provided" else {
+            val error = if (amount == null) "$itemToBeValidated must be provided" else {
                 if (amount > 0.0) null else "$itemToBeValidated must be greater than 0"
             }
+
+            error
         }
     }
 

@@ -24,13 +24,13 @@ class FoodLogManager : IFoodLogManager {
     private val _selectedFoodLogToRemove = MutableStateFlow<FoodLogData?>(null)
     override val selectedFoodLogToRemove: StateFlow<FoodLogData?> = _selectedFoodLogToRemove
 
+    private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
+    override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
+
     private val _foodLogEditionFormState =
         MutableStateFlow<FormState<FormStates.FoodLogEdition>?>(null)
     override val foodLogEditionFormState: StateFlow<FormState<FormStates.FoodLogEdition>?> =
         _foodLogEditionFormState
-
-    private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
-    override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
 
     override val isFoodLogFormValid: Boolean
         get() = foodLogFormState.value?.data?.let { data ->
@@ -44,7 +44,7 @@ class FoodLogManager : IFoodLogManager {
                     time.isNotEmpty() && time.matches(Regex("^\\d{1,2}:\\d{2} [AP]M$"))
         } ?: false
 
-    override val fleFormServsError: String?
+    private val foodLogEditionServingsDoubleError: String?
         get() = _foodLogEditionFormState.value?.let { formState ->
             formState.data.servings.let { value ->
                 validateDoubleAsString(
@@ -54,13 +54,7 @@ class FoodLogManager : IFoodLogManager {
             }
         }
 
-    override val isFleFormValid: Boolean
-        get() = _foodLogEditionFormState.value?.let {
-            it.data.servings.isNotEmpty() && fleFormServsError == null &&
-                    it.data.amountPerServing.isNotEmpty() && fleFormAmPerSerError == null
-        } ?: false
-
-    override val fleFormAmPerSerError: String?
+    private val foodLogEditionFormAmPerSerDoubleError: String?
         get() = _foodLogEditionFormState.value?.let { formState ->
             formState.data.amountPerServing.let { value ->
                 validateDoubleAsString(
@@ -69,6 +63,12 @@ class FoodLogManager : IFoodLogManager {
                 )
             }
         }
+
+    override val isFoodLogEditionFormValid: Boolean
+        get() = _foodLogEditionFormState.value?.let {
+            it.data.servings.isNotEmpty() && foodLogEditionServingsDoubleError == null &&
+                    it.data.amountPerServing.isNotEmpty() && foodLogEditionFormAmPerSerDoubleError == null
+        } ?: false
 
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {
@@ -96,8 +96,8 @@ class FoodLogManager : IFoodLogManager {
 
         _foodLogEditionFormState.value = FormState(
             data = FormStates.FoodLogEdition(
-                servings = doubleFormatter(foodLog.servings),
-                amountPerServing = doubleFormatter(amPerSer),
+                servings = doubleFormatter(foodLog.servings, 2),
+                amountPerServing = doubleFormatter(amPerSer, 2),
                 amountPerServingDb = foodLog.food.information.amountPerServing
             )
         )
@@ -107,7 +107,7 @@ class FoodLogManager : IFoodLogManager {
         _foodLogFormState.value = FormState(
             data = FormStates.FoodLog(
                 servings = doubleFormatter(1.0),
-                amountPerServing = doubleFormatter(food.information.amountPerServing),
+                amountPerServing = doubleFormatter(food.information.amountPerServing, 2),
                 amountPerServingDb = food.information.amountPerServing,
                 time = time
             )

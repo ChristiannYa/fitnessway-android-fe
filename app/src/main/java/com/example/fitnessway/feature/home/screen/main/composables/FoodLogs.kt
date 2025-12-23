@@ -23,14 +23,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue.EndToStart
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -201,28 +200,23 @@ private fun FoodLog(
 ) {
     val food = foodLog.food.information
 
-    val hasCalled = remember { mutableStateOf(false) }
-
     val swipeToRemoveLogState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-            if (it == EndToStart && !hasCalled.value) {
-                hasCalled.value = true
-                onRemoveFoodLog(foodLog)
-            }
-            it == EndToStart
-        }
+        initialValue = SwipeToDismissBoxValue.Settled
     )
+
+    LaunchedEffect(swipeToRemoveLogState.settledValue) {
+        if (swipeToRemoveLogState.settledValue == SwipeToDismissBoxValue.EndToStart) {
+            onRemoveFoodLog(foodLog)
+        }
+    }
 
     LaunchedEffect(foodLogDeleteState) {
         when (foodLogDeleteState) {
             is UiState.Error -> {
                 swipeToRemoveLogState.reset()
-                hasCalled.value = false
             }
 
-            is UiState.Idle -> {
-                hasCalled.value = false
-            }
+            is UiState.Idle -> {}
 
             else -> {}
         }
@@ -234,7 +228,7 @@ private fun FoodLog(
         enableDismissFromStartToEnd = false,
         backgroundContent = {
             when (swipeToRemoveLogState.dismissDirection) {
-                EndToStart -> {
+                SwipeToDismissBoxValue.EndToStart -> {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Remove item",
@@ -250,7 +244,7 @@ private fun FoodLog(
                             )
                             .wrapContentSize(Alignment.CenterEnd)
                             .padding(12.dp),
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -327,7 +321,7 @@ private fun FoodLog(
                                     ),
                                     block = {
                                         append(
-                                            text = doubleFormatter(foodLog.servings)
+                                            text = doubleFormatter(foodLog.servings, 2)
                                         )
                                     }
                                 )

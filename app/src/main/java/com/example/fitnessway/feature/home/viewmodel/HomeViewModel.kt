@@ -8,7 +8,6 @@ import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
-import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
@@ -17,8 +16,13 @@ import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
-import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
-import com.example.fitnessway.util.Food.subtractNutrientsFromIntakes
+import com.example.fitnessway.util.Constants
+import com.example.fitnessway.util.Food
+import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLog
+import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
+import com.example.fitnessway.util.Food.combineAll
+import com.example.fitnessway.util.Food.getIds
+import com.example.fitnessway.util.Food.mapFoodLogs
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,15 +35,14 @@ class HomeViewModel(
     private val foodRepo: IFoodRepository,
     private val managers: IHomeManagers,
     val appStateStore: IApplicationStateStore
-) : ViewModel(),
-    IFoodManager by managers.food,
-    IFoodLogManager by managers.foodLog,
-    IDateManager by managers.date,
-    IUiManager by managers.ui {
+) : ViewModel(), IFoodManager by managers.food, IFoodLogManager by managers.foodLog,
+    IDateManager by managers.date, IUiManager by managers.ui {
     val user = appStateStore.userStateHolder.userState.value.user
 
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
+
+    private val _failedFoodLogDeletions = mutableMapOf<String, MutableSet<FoodLogData>>()
 
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
@@ -87,14 +90,13 @@ class HomeViewModel(
                 amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
                 servingUnit = formState.servingUnit
             ),
-            nutrients = formState.nutrients
-                .filter { (_, amount) -> (amount.toDoubleOrNull() ?: 0.0) > 0 }
-                .map { (nutrientId, amount) ->
-                    FoodAddNutrientAmountApiFormat(
-                        nutrientId = nutrientId,
-                        amount = amount.toDoubleOrNull() ?: 0.0
-                    )
-                }
+            nutrients = formState.nutrients.filter { (_, amount) ->
+                (amount.toDoubleOrNull() ?: 0.0) > 0
+            }.map { (nutrientId, amount) ->
+                FoodAddNutrientAmountApiFormat(
+                    nutrientId = nutrientId, amount = amount.toDoubleOrNull() ?: 0.0
+                )
+            }
         )
 
         viewModelScope.launch {
@@ -164,7 +166,7 @@ class HomeViewModel(
         if (currentFoodLogsState !is UiState.Success) return
 
         // Gather new nutrient data based on amount per servings
-        val newNutrientData = calcNutrientsBasedOnFoodLogServings(
+        val newNutrientData = calcNutrientIntakesFromFoodLogServings(
             nutrients = selectedFoodLog.food.nutrients,
             currentServings = selectedFoodLog.servings,
             newServings = formState.data.servings.toDouble()
@@ -220,38 +222,41 @@ class HomeViewModel(
 
     fun deleteFoodLog() {
         val selectedFoodLogToRemove = managers.foodLog.selectedFoodLogToRemove.value ?: return
-        val formattedDate = managers.date.getApiFormattedDate()
+        val apiDate = managers.date.getApiFormattedDate()
 
         // Get current data to update optimistically
-        val currentFoodLogsState = foodRepo.uiState.value.foodLogsCache[formattedDate]
-        val currentNutrientIntakesState =
-            nutrientRepo.uiState.value.nutrientIntakesCache[formattedDate]
+        val originalFoodLogsState = foodRepo.uiState.value.foodLogsCache[apiDate]
+        val originalNutrientIntakesState = nutrientRepo.uiState.value.nutrientIntakesCache[apiDate]
 
         // Only proceed if we have data
-        if (currentFoodLogsState !is UiState.Success ||
-            currentNutrientIntakesState !is UiState.Success
+        if (originalFoodLogsState !is UiState.Success ||
+            originalNutrientIntakesState !is UiState.Success
         ) return
 
-        val currentFoodLogs = currentFoodLogsState.data
-        val currentNutrientIntakes = currentNutrientIntakesState.data
+        // Get or create the failed deletions set for this date
+        val failedDeletionsForDate = _failedFoodLogDeletions.getOrPut(apiDate) { mutableSetOf() }
+
+        // Remove current food log id from failed deletions list
+        failedDeletionsForDate.remove(selectedFoodLogToRemove)
+
+        val originalFoodLogs = originalFoodLogsState.data
+        val originalNutrientIntakes = originalNutrientIntakesState.data
 
         // Optimistically update food logs UI by filtering out the food log
-        val optimisticFoodLogs = FoodLogsByCategory(
-            breakfast = currentFoodLogs.breakfast.filter { it.id != selectedFoodLogToRemove.id },
-            lunch = currentFoodLogs.lunch.filter { it.id != selectedFoodLogToRemove.id },
-            dinner = currentFoodLogs.dinner.filter { it.id != selectedFoodLogToRemove.id },
-            supplement = currentFoodLogs.supplement.filter { it.id != selectedFoodLogToRemove.id }
-        )
+        val optimisticFoodLogs = originalFoodLogs.mapFoodLogs { _, logs ->
+            logs.filter { it.id != selectedFoodLogToRemove.id }
+        }
 
-        val optimisticNutrientIntakes = subtractNutrientsFromIntakes(
-            currentIntakes = currentNutrientIntakes,
-            foodLog = selectedFoodLogToRemove
+        val optimisticNutrientIntakes = calcNutrientIntakesFromFoodLog(
+            currentIntakes = originalNutrientIntakes,
+            foodLog = selectedFoodLogToRemove,
+            operation = Food.FoodNutrientIntakesOperation.SUBTRACT
         )
 
         // Update UI immediately
         foodRepo.updateState {
             it.copy(
-                foodLogsCache = it.foodLogsCache + (formattedDate to UiState.Success(
+                foodLogsCache = it.foodLogsCache + (apiDate to UiState.Success(
                     optimisticFoodLogs
                 ))
             )
@@ -259,7 +264,7 @@ class HomeViewModel(
 
         nutrientRepo.updateState {
             it.copy(
-                nutrientIntakesCache = it.nutrientIntakesCache + (formattedDate to UiState.Success(
+                nutrientIntakesCache = it.nutrientIntakesCache + (apiDate to UiState.Success(
                     optimisticNutrientIntakes
                 ))
             )
@@ -268,36 +273,72 @@ class HomeViewModel(
         viewModelScope.launch {
             foodRepo.deleteFoodLog(
                 foodLogId = selectedFoodLogToRemove.id,
-                date = formattedDate
+                date = apiDate
             ).collect { state ->
 
                 when (state) {
-                    is UiState.Success -> _uiState.update { it.copy(foodLogDeleteState = state) }
-
-                    is UiState.Error -> {
-                        // Revert back to original state on error
+                    is UiState.Success -> {
                         _uiState.update { it.copy(foodLogDeleteState = state) }
 
-                        foodRepo.updateState {
-                            it.copy(
-                                foodLogsCache = it.foodLogsCache + (formattedDate to UiState.Success(
-                                    currentFoodLogs
-                                ))
-                            )
+                        // No need to remove the food log id form the failed deletion list because
+                        // it's already removed in the beginning of the function
+                    }
+
+                    is UiState.Error -> {
+                        // Add failed deletion to failed deletions list
+                        failedDeletionsForDate.add(selectedFoodLogToRemove)
+
+                        // Provide feedback to UI
+                        _uiState.update { it.copy(foodLogDeleteState = state) }
+
+                        // Obtain updated UI states after optimistic update
+                        val currentFoodLogsState = foodRepo
+                            .uiState.value.foodLogsCache[apiDate]
+                        val currentNutrientIntakesState = nutrientRepo
+                            .uiState.value.nutrientIntakesCache[apiDate]
+
+                        // Update food logs data after failed deletion
+                        if (currentFoodLogsState is UiState.Success) {
+                            // Revert back to original food logs state
+                            val revertedFoodLogs = currentFoodLogsState.data
+                                .mapFoodLogs { category, logs ->
+                                    (logs + failedDeletionsForDate.filter {
+                                        it.category.equals(
+                                            other = category.name,
+                                            ignoreCase = true
+                                        ) // Safe string comparison
+                                    }).distinctBy { it.id }
+                                }
+
+                            foodRepo.updateState {
+                                it.copy(
+                                    foodLogsCache = it.foodLogsCache + (apiDate to UiState.Success(
+                                        revertedFoodLogs
+                                    ))
+                                )
+                            }
                         }
 
-                        nutrientRepo.updateState {
-                            it.copy(
-                                nutrientIntakesCache = it.nutrientIntakesCache + (formattedDate to UiState.Success(
-                                    currentNutrientIntakes
-                                ))
+                        if (currentNutrientIntakesState is UiState.Success) {
+                            // Revert back to original nutrient intakes state
+                            val revertedNutrients = calcNutrientIntakesFromFoodLog(
+                                currentIntakes = currentNutrientIntakesState.data,
+                                foodLog = selectedFoodLogToRemove,
+                                operation = Food.FoodNutrientIntakesOperation.ADD
                             )
+
+                            nutrientRepo.updateState {
+                                it.copy(
+                                    nutrientIntakesCache = it.nutrientIntakesCache + (apiDate to UiState.Success(
+                                        revertedNutrients
+                                    ))
+                                )
+                            }
                         }
                     }
 
                     else -> {}
                 }
-
             }
         }
     }

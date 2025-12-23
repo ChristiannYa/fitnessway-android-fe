@@ -29,7 +29,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
+import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Nutrient
 import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.Ui
@@ -112,7 +112,7 @@ fun FoodLogScreen(
                             ) {
                                 val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
 
-                                calcNutrientsBasedOnFoodLogServings(
+                                calcNutrientIntakesFromFoodLogServings(
                                     nutrients = food.nutrients,
                                     currentServings = 1.0,
                                     newServings = servings

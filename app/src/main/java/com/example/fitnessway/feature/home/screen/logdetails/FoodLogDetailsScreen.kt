@@ -28,7 +28,7 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.colorSpec
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
-import com.example.fitnessway.util.Food.calcNutrientsBasedOnFoodLogServings
+import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
@@ -86,7 +86,7 @@ fun FoodLogDetailsScreen(
                                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    val isFleValid = viewModel.isFleFormValid
+                                    val isFleValid = viewModel.isFoodLogEditionFormValid
                                             && formState.data.servings.toDouble() != foodLog.servings
 
                                     AppLabel(
@@ -147,7 +147,7 @@ fun FoodLogDetailsScreen(
                             ) {
                                 val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
 
-                                calcNutrientsBasedOnFoodLogServings(
+                                calcNutrientIntakesFromFoodLogServings(
                                     nutrients = foodLog.food.nutrients,
                                     currentServings = foodLog.servings,
                                     newServings = servings

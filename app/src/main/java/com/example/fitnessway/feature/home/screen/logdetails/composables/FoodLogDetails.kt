@@ -103,7 +103,7 @@ fun FoodLogDetails(
 
                                             append("$foodServingUnit =")
                                         },
-                                        style = MaterialTheme.typography.bodyLarge,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
                                     )
 
@@ -111,7 +111,7 @@ fun FoodLogDetails(
 
                                     Text(
                                         text = "g",
-                                        style = MaterialTheme.typography.bodyLarge,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
                                     )
                                 }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,6 +37,11 @@ import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.util.Constants
+import com.example.fitnessway.util.Food.combineAll
+import com.example.fitnessway.util.Food.getIds
+import com.example.fitnessway.util.Formatters.logcat
+import com.example.fitnessway.util.Nutrient.combineAll
 import com.example.fitnessway.util.Ui.handleErrStateTempMsg
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -69,6 +73,11 @@ fun HomeScreen(
         viewModel.getApiFormattedDate()
     }
 
+    logcat(
+        "home screen date: $apiDateFormat",
+        Constants.LogLevel.INFO
+    )
+
     val isRefreshing = nutrientRepoUiState.nutrientIntakesCache[apiDateFormat] is UiState.Loading ||
             foodRepoUiState.foodLogsCache[apiDateFormat] is UiState.Loading
 
@@ -94,117 +103,127 @@ fun HomeScreen(
     Screen(
         isMainScreen = true,
         content = {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                content = {
-                    PullToRefreshBox(
-                        isRefreshing = isRefreshing,
-                        onRefresh = viewModel::refreshHomeData,
+            Box(modifier = Modifier.fillMaxSize()) {
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = viewModel::refreshHomeData,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            stickyHeader {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.background)
-                                        .padding(bottom = if (isCreateMenuVisible) 16.dp else 2.dp)
-                                        .onGloballyPositioned { coordinates ->
-                                            headerHeight = with(localDensity) {
-                                                coordinates.size.height.toDp()
-                                            }
-                                        },
-                                    content = {
-                                        HomeHeader(
-                                            onToggleCreateMenuVisibility = viewModel::toggleCreateMenuVisibility
-                                        )
-                                        CreateOptions(
-                                            onCreateFood = onNavigateToFoodForm,
-                                            onCreateSupplement = {},
-                                            isVisible = isCreateMenuVisible
-                                        )
-                                    }
+                        stickyHeader {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(bottom = if (isCreateMenuVisible) 16.dp else 2.dp)
+                                    .onGloballyPositioned { coordinates ->
+                                        headerHeight = with(localDensity) {
+                                            coordinates.size.height.toDp()
+                                        }
+                                    },
+                                content = {
+                                    HomeHeader(
+                                        onToggleCreateMenuVisibility = viewModel::toggleCreateMenuVisibility
+                                    )
+
+                                    DatePicker(
+                                        date = viewModel.getFormattedDay(selectedDate),
+                                        goNextDay = { viewModel.changeDay(1) },
+                                        goPrevDay = { viewModel.changeDay(-1) }
+                                    )
+
+                                    CreateOptions(
+                                        onCreateFood = onNavigateToFoodForm,
+                                        onCreateSupplement = {},
+                                        isVisible = isCreateMenuVisible
+                                    )
+                                }
+                            )
+                        }
+
+                        if (viewModel.user == null) {
+                            item { NotFoundText("No user found") }
+                        } else {
+                            val user = viewModel.user
+
+                            if (nutrientIntakesState is UiState.Success) {
+                                val firstTwo = nutrientIntakesState.data.combineAll().take(2)
+
+                                logcat("first two nutrient intakes in home screen")
+                                firstTwo.forEach {
+                                    logcat("> ${it.nutrientWithPreferences.nutrient.name} ${it.amount}")
+                                }
+                            }
+
+                            item {
+                                BasicNutrientIntakes(
+                                    state = nutrientIntakesState,
+                                    user = user,
+                                    onNavigateToGoals = onNavigateToGoals
                                 )
                             }
 
                             item {
-                                DatePicker(
-                                    date = viewModel.getFormattedDay(selectedDate),
-                                    goNextDay = { viewModel.changeDay(1) },
-                                    goPrevDay = { viewModel.changeDay(-1) }
+                                OtherNutrientIntakes(
+                                    state = nutrientIntakesState,
+                                    nutrientType = NutrientType.VITAMIN,
+                                    user = user,
+                                    onNavigateToGoals = onNavigateToGoals
                                 )
                             }
 
-                            if (viewModel.user == null) {
-                                item { NotFoundText("No user found") }
-                            } else {
-                                val user = viewModel.user
+                            item {
+                                OtherNutrientIntakes(
+                                    state = nutrientIntakesState,
+                                    nutrientType = NutrientType.MINERAL,
+                                    user = user,
+                                    onNavigateToGoals = onNavigateToGoals
+                                )
+                            }
 
-                                item {
-                                    BasicNutrientIntakes(
-                                        state = nutrientIntakesState,
-                                        user = user,
-                                        onNavigateToGoals = onNavigateToGoals
-                                    )
-                                }
+                            if (foodLogsState is UiState.Success) {
+                                val foodLogIds = foodLogsState.data.combineAll().getIds()
+                                logcat("food log ids $foodLogIds")
+                            }
 
-                                item {
-                                    OtherNutrientIntakes(
-                                        state = nutrientIntakesState,
-                                        nutrientType = NutrientType.VITAMIN,
-                                        user = user,
-                                        onNavigateToGoals = onNavigateToGoals
-                                    )
-                                }
-
-                                item {
-                                    OtherNutrientIntakes(
-                                        state = nutrientIntakesState,
-                                        nutrientType = NutrientType.MINERAL,
-                                        user = user,
-                                        onNavigateToGoals = onNavigateToGoals
-                                    )
-                                }
-
-                                item {
-                                    FoodLogs(
-                                        foodLogsState = foodLogsState,
-                                        foodLogDeleteState = uiState.foodLogDeleteState,
-                                        onViewFoodsList = { foodLogCategories ->
-                                            viewModel.setFoodLogCategory(foodLogCategories)
-                                            onViewFoodsList()
-                                        },
-                                        onViewFoodLogDetails = { foodLog ->
-                                            viewModel.setSelectedFoodLog(foodLog)
-                                            onViewFoodLogDetails()
-                                        },
-                                        onRemoveFoodLog = { foodLog ->
-                                            viewModel.resetFoodLogDeleteState()
-                                            viewModel.setSelectedFoodLogToRemove(foodLog)
-                                            viewModel.deleteFoodLog()
-                                        }
-                                    )
-                                }
+                            item {
+                                FoodLogs(
+                                    foodLogsState = foodLogsState,
+                                    foodLogDeleteState = uiState.foodLogDeleteState,
+                                    onViewFoodsList = { foodLogCategories ->
+                                        viewModel.setFoodLogCategory(foodLogCategories)
+                                        onViewFoodsList()
+                                    },
+                                    onViewFoodLogDetails = { foodLog ->
+                                        viewModel.setSelectedFoodLog(foodLog)
+                                        onViewFoodLogDetails()
+                                    },
+                                    onRemoveFoodLog = { foodLog ->
+                                        viewModel.resetFoodLogDeleteState()
+                                        viewModel.setSelectedFoodLogToRemove(foodLog)
+                                        viewModel.deleteFoodLog()
+                                    }
+                                )
                             }
                         }
                     }
-
-                    BlurOverlay(
-                        isVisible = isCreateMenuVisible,
-                        onClick = viewModel::toggleCreateMenuVisibility,
-                        modifier = Modifier.padding(top = headerHeight),
-                    )
-
-                    ApiErrorMessageAnimated(
-                        isVisible = deleteFoodLogErrMsg != "",
-                        errorMessage = deleteFoodLogErrMsg
-                    )
                 }
-            )
+
+                BlurOverlay(
+                    isVisible = isCreateMenuVisible,
+                    onClick = viewModel::toggleCreateMenuVisibility,
+                    modifier = Modifier.padding(top = headerHeight),
+                )
+
+                ApiErrorMessageAnimated(
+                    isVisible = deleteFoodLogErrMsg != "",
+                    errorMessage = deleteFoodLogErrMsg
+                )
+            }
         }
     )
 }

@@ -18,7 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
+import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -29,23 +31,32 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
-import com.example.fitnessway.util.Nutrient.getAllNutrients
+import com.example.fitnessway.util.Nutrient.combineAll
 import com.example.fitnessway.util.Nutrient.mapNutrients
 
 object Food {
-    fun subtractNutrientsFromIntakes(
+    enum class FoodNutrientIntakesOperation {
+        ADD, SUBTRACT
+    }
+
+    fun calcNutrientIntakesFromFoodLog(
         currentIntakes: NutrientIntakesByType,
-        foodLog: FoodLogData
+        foodLog: FoodLogData,
+        operation: FoodNutrientIntakesOperation
     ): NutrientIntakesByType {
         return currentIntakes.mapNutrients { intakes ->
             intakes.map { intake ->
-                val foodNutrientAmountData = getAllNutrients(foodLog.food.nutrients).find {
+                val foodNutrientAmountData = foodLog.food.nutrients.combineAll().find {
                     val nutrient = it.nutrientWithPreferences.nutrient
                     nutrient.id == intake.nutrientWithPreferences.nutrient.id
                 }
 
                 if (foodNutrientAmountData != null) {
-                    val newAmount = intake.amount - foodNutrientAmountData.amount
+                    val newAmount = when (operation) {
+                        FoodNutrientIntakesOperation.ADD -> intake.amount + foodNutrientAmountData.amount
+                        FoodNutrientIntakesOperation.SUBTRACT -> intake.amount - foodNutrientAmountData.amount
+                    }
+
                     intake.copy(amount = newAmount)
                 } else intake
             }
@@ -57,14 +68,14 @@ object Food {
      * when editing a food **to be** logged, not an **existing** one, hence just the current and
      * new serving sizes are asked for instead
      */
-    fun calcNutrientsBasedOnFoodLogServings(
+    fun calcNutrientIntakesFromFoodLogServings(
         nutrients: NutrientsByType<NutrientAmountData>,
         currentServings: Double,
         newServings: Double
     ): NutrientsByType<NutrientAmountData> {
         return nutrients.mapNutrients { nutrientsList ->
             nutrientsList.map { nutrientData ->
-                val foodNutrientAmountData = getAllNutrients(nutrients).find {
+                val foodNutrientAmountData = nutrients.combineAll().find {
                     val nutrient = it.nutrientWithPreferences.nutrient
                     nutrient.id == nutrientData.nutrientWithPreferences.nutrient.id
                 }
@@ -77,6 +88,24 @@ object Food {
             }
         }
     }
+
+    fun FoodLogsByCategory.mapFoodLogs(
+        transform: (category: FoodLogCategories, logs: List<FoodLogData>) -> List<FoodLogData>
+    ): FoodLogsByCategory = FoodLogsByCategory(
+        breakfast = transform(FoodLogCategories.BREAKFAST, breakfast),
+        lunch = transform(FoodLogCategories.LUNCH, lunch),
+        dinner = transform(FoodLogCategories.DINNER, dinner),
+        supplement = transform(FoodLogCategories.SUPPLEMENT, supplement)
+    )
+
+    fun FoodLogsByCategory.combineAll(): List<FoodLogData> {
+        return this.breakfast + this.lunch + this.dinner + this.supplement
+    }
+
+    /**
+     * Returns a list of food log ids
+     */
+    fun List<FoodLogData>.getIds(): List<Int> = this.map { it.id }
 
     object Ui {
         fun getFoodBrandText(brand: String?): String {

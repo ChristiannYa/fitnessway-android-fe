@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.util.Animation
 
 @Composable
 fun FormProgressIndicator(
@@ -77,7 +78,7 @@ private fun ProgressIndicator(
             activeColor
         else
             MaterialTheme.colorScheme.surfaceVariant,
-        animationSpec = tween(durationMillis = 300),
+        animationSpec = Animation.colorSpec,
         label = "food_form_COLOR_ANIMATION"
     )
 

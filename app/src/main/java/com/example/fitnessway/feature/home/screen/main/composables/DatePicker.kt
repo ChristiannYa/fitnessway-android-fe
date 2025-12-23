@@ -1,83 +1,49 @@
 package com.example.fitnessway.feature.home.screen.main.composables
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.example.fitnessway.R
+import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.util.Ui
 
 @Composable
 fun DatePicker(
     date: String,
-    goNextDay: (Int) -> Unit,
-    goPrevDay: (Int) -> Unit,
+    onNextDay: () -> Unit,
+    onPrevDay: () -> Unit,
 ) {
-    val btnSize = 18.dp
-
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        content = {
-            Box(
-                modifier = Modifier
-                    .size(btnSize)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { goPrevDay(-1) }
-                    ),
-                contentAlignment = Alignment.Center,
-                content = {
-                    Icon(
-                        painter = painterResource(R.drawable.custom_arrow_left),
-                        contentDescription = "Go to previous day",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            )
-            Text(
-                text = date,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Box(
-                modifier = Modifier
-                    .size(btnSize)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { goNextDay(1) }
-                    ),
-                contentAlignment = Alignment.Center,
-                content = {
-                    Icon(
-                        painter = painterResource(R.drawable.custom_arrow_right),
-                        contentDescription = "Go to next day",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            )
-        }
-    )
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Clickables.AppIconButton(
+            onClick = onPrevDay,
+            contentDescription = "View Previous Day's Details",
+            icon = Clickables.AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowBack)
+        )
+
+        Ui.AppLabel(
+            text = date,
+            textStyle = MaterialTheme.typography.bodySmall
+        )
+
+        Clickables.AppIconButton(
+            onClick = onNextDay,
+            contentDescription = "View Next Day's Details",
+            icon = Clickables.AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowForward)
+        )
+    }
 }
 
 @Preview(
@@ -89,8 +55,8 @@ fun DatePickerPreview() {
     FitnesswayTheme {
         DatePicker(
             date = "Yesterday",
-            goNextDay = {},
-            goPrevDay = {}
+            onNextDay = {},
+            onPrevDay = {}
         )
     }
 }

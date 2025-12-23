@@ -137,8 +137,8 @@ fun HomeScreen(
 
                                 DatePicker(
                                     date = viewModel.getFormattedDay(selectedDate),
-                                    goNextDay = { viewModel.changeDay(1) },
-                                    goPrevDay = { viewModel.changeDay(-1) }
+                                    onNextDay = { viewModel.changeDay(1) },
+                                    onPrevDay = { viewModel.changeDay(-1) }
                                 )
 
                                 CreateOptions(

@@ -48,7 +48,7 @@ object Animation {
         return headerOffset to headerModifier
     }
 
-    object Transition {
+    object ComposableTransition {
         object PopUpV1 {
             val enter = fadeIn(
                 animationSpec = tween(durationMillis = 200)
@@ -103,19 +103,10 @@ object Animation {
                 animationSpec = tween(durationMillis = 300)
             )
         }
-
-        object SlideVerticallyFromTop {
-            val enter = slideInVertically(
-                initialOffsetY = { fullHeight -> -fullHeight },
-                animationSpec = tween(durationMillis = 300)
-            )
-
-            val exit = slideOutVertically(
-                targetOffsetY = { fullHeight -> -fullHeight },
-                animationSpec = tween(durationMillis = 300)
-            )
-        }
     }
+
+    val fadeIn = fadeIn(animationSpec = tween(300))
+    val fadeOut = fadeOut(animationSpec = tween(300))
 
     val colorSpec: AnimationSpec<Color> = tween(durationMillis = 300)
 }

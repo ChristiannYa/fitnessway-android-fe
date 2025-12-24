@@ -88,10 +88,10 @@ fun FoodLogs(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = Animation.Transition.SlideVerticallyFromBottom.enter,
-        exit = Animation.Transition.SlideVerticallyFromBottom.exit,
+        enter = Animation.ComposableTransition.SlideVerticallyFromBottom.enter,
+        exit = Animation.ComposableTransition.SlideVerticallyFromBottom.exit,
         modifier = modifier
-            .height(480.dp)
+            .height(472.dp)
             .zIndex(2f)
     ) {
         Box(

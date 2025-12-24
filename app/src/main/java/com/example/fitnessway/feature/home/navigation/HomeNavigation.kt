@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
-object HomeMain
+object HomeMainDest
 
 @Serializable
 private object FoodSelection
@@ -28,8 +28,9 @@ private object FoodLogDetails
 private object FoodLog
 
 fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
-    navigation<HomeGraph>(startDestination = HomeMain) {
-        composable<HomeMain> { entry ->
+    navigation<HomeGraph>(startDestination = HomeMainDest) {
+
+        composable<HomeMainDest> { entry ->
             val parentEntry = remember(entry) {
                 navController.getBackStackEntry<HomeGraph>()
             }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
@@ -27,7 +26,6 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.colorSpec
-import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
@@ -68,59 +66,50 @@ fun FoodLogDetailsScreen(
         }
     } else {
         foodLogDetailsFormState?.let { formState ->
-            val (headerOffset, headerAnimationModifier) = rememberHeaderSlideUpAnimation(
-                shouldSlideUp = formState.isEditing
-            )
-
             Screen(
                 header = {
-                    Box(
-                        modifier = headerAnimationModifier,
-                        content = {
-                            Header(
-                                onBackClick = onBackClick,
-                                isOnBackEnabled = !formState.isEditing,
-                                title = "Log Details"
+                    Header(
+                        onBackClick = onBackClick,
+                        isOnBackEnabled = !formState.isEditing,
+                        title = "Log Details"
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val isFleValid = viewModel.isFoodLogEditionFormValid
+                                    && formState.data.servings.toDouble() != foodLog.servings
+
+                            AppLabel(
+                                text = foodLog.category.replaceFirstChar { it.uppercase() },
+                                size = Ui.LabelSize.MEDIUM
+                            )
+
+                            AppLabel(
+                                text = foodLog.time,
+                                size = Ui.LabelSize.MEDIUM
+                            )
+
+                            IconButton(
+                                onClick = viewModel::updateFoodLog,
+                                enabled = isFleValid,
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    val isFleValid = viewModel.isFoodLogEditionFormValid
-                                            && formState.data.servings.toDouble() != foodLog.servings
+                                val tint by animateColorAsState(
+                                    targetValue = if (isFleValid) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else MaterialTheme.colorScheme.surfaceVariant,
+                                    animationSpec = colorSpec,
+                                    label = "FodLogEditionDoneCheckMark"
+                                )
 
-                                    AppLabel(
-                                        text = foodLog.category.replaceFirstChar { it.uppercase() },
-                                        size = Ui.LabelSize.MEDIUM
-                                    )
-
-                                    AppLabel(
-                                        text = foodLog.time,
-                                        size = Ui.LabelSize.MEDIUM
-                                    )
-
-                                    IconButton(
-                                        onClick = viewModel::updateFoodLog,
-                                        enabled = isFleValid,
-                                    ) {
-                                        val tint by animateColorAsState(
-                                            targetValue = if (isFleValid) {
-                                                MaterialTheme.colorScheme.primary
-                                            } else MaterialTheme.colorScheme.surfaceVariant,
-                                            animationSpec = colorSpec,
-                                            label = "FodLogEditionDoneCheckMark"
-                                        )
-
-                                        Icon(
-                                            imageVector = Icons.Default.Done,
-                                            contentDescription = null,
-                                            tint = tint
-                                        )
-                                    }
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.Done,
+                                    contentDescription = null,
+                                    tint = tint
+                                )
                             }
                         }
-                    )
+                    }
                 },
             ) {
                 if (user != null) {
@@ -134,13 +123,8 @@ fun FoodLogDetailsScreen(
                         }
                     )
 
-                    Box(
-                        modifier = Modifier.imePadding()
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.offset(y = headerOffset)
-                        ) {
+                    Box(modifier = Modifier.imePadding()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             val nutrients = remember(
                                 key1 = foodLog.food.nutrients,
                                 key2 = formState.data.servings

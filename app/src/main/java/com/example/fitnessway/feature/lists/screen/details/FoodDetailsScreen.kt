@@ -134,10 +134,6 @@ fun FoodDetailsScreen(
                                                 isMoreOptionsPopupDisplayed = false
                                                 return@FoodMoreOptionsButton
                                             }
-
-                                            if (isConfirmDeletionPopupDisplayed && !isMoreOptionsPopupDisplayed) {
-                                                onCancelFoodDeletion()
-                                            }
                                         }
                                     )
                                 }

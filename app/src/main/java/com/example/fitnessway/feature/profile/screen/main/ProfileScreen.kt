@@ -61,62 +61,60 @@ fun ProfileScreen(
     if (user != null) {
         var isUpgradePromptDialogDisplayed by remember { mutableStateOf(false) }
 
-        Screen(
-            content = {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    content = {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.fillMaxWidth(),
-                            content = {
-                                ProfileImage(
-                                    user = user,
-                                    imagePainter = painterResource(R.drawable.user_img)
+        Screen {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                content = {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        content = {
+                            ProfileImage(
+                                user = user,
+                                imagePainter = painterResource(R.drawable.user_img)
+                            )
+
+                            ProfileInformation(user)
+
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp)),
+                            ) {
+                                val buttons = getProfileScreenButtons(
+                                    onNavigateToGoals = onNavigateToGoals,
+                                    onNavigateToColors = {
+                                        if (user.isPremium) onNavigateToColors() else {
+                                            isUpgradePromptDialogDisplayed = true
+                                        }
+                                    },
+                                    onNavigateToAccInfo = onNavigateToAccInfo,
+                                    onNavigateToSettings = onNavigateToSettings
                                 )
 
-                                ProfileInformation(user)
-
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp)),
-                                ) {
-                                    val buttons = getProfileScreenButtons(
-                                        onNavigateToGoals = onNavigateToGoals,
-                                        onNavigateToColors = {
-                                            if (user.isPremium) onNavigateToColors() else {
-                                                isUpgradePromptDialogDisplayed = true
-                                            }
-                                        },
-                                        onNavigateToAccInfo = onNavigateToAccInfo,
-                                        onNavigateToSettings = onNavigateToSettings
-                                    )
-
-                                    buttons.forEach { button ->
-                                        ProfileScreenMainButton(
-                                            isButtonPremium = button.isButtonPremium,
-                                            text = button.text,
-                                            imageVector = button.imageVector,
-                                            onClick = button.onClick,
-                                            isUserPremium = user.isPremium
-                                        )
-                                    }
-                                }
-
-                                if (isUpgradePromptDialogDisplayed) {
-                                    UpgradePromptDialog(
-                                        onDismiss = { isUpgradePromptDialogDisplayed = false },
-                                        onUpgradeClick = {}
+                                buttons.forEach { button ->
+                                    ProfileScreenMainButton(
+                                        isButtonPremium = button.isButtonPremium,
+                                        text = button.text,
+                                        imageVector = button.imageVector,
+                                        onClick = button.onClick,
+                                        isUserPremium = user.isPremium
                                     )
                                 }
                             }
-                        )
-                    }
-                )
-            }
-        )
+
+                            if (isUpgradePromptDialogDisplayed) {
+                                UpgradePromptDialog(
+                                    onDismiss = { isUpgradePromptDialogDisplayed = false },
+                                    onUpgradeClick = {}
+                                )
+                            }
+                        }
+                    )
+                }
+            )
+        }
     } else Screen { NotFoundText(text = "No user found") }
 
 }

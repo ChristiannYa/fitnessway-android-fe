@@ -30,7 +30,6 @@ import com.example.fitnessway.feature.lists.screen.main.composables.ToggleListVi
 import com.example.fitnessway.feature.lists.screen.main.composables.foodsList
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.WhiteBackground
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -46,12 +45,8 @@ fun ListsScreen(
         viewModel.getFoods()
     }
 
-    Screen(
-        isMainScreen = true
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+    Screen {
+        Box(modifier = Modifier.fillMaxWidth()) {
             CompositionLocalProvider(values = arrayOf(LocalOverscrollFactory provides null)) {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),

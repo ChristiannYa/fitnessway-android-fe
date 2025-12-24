@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-object ProfileMain
+object ProfileMainDest
 
 @Serializable
 object ProfileGoalsDest
@@ -31,8 +31,9 @@ private object ProfileAccountInformationDest
 private object ProfileSettingsDest
 
 fun NavGraphBuilder.profileNavigationGraph(navController: NavController) {
-    navigation<ProfileGraph>(startDestination = ProfileMain) {
-        composable<ProfileMain> { entry ->
+    navigation<ProfileGraph>(startDestination = ProfileMainDest) {
+
+        composable<ProfileMainDest> { entry ->
             val parentEntry = remember(entry) {
                 navController.getBackStackEntry<ProfileGraph>()
             }

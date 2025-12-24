@@ -244,6 +244,12 @@ object Nutrient {
              * - * 2 because ideally we want the height to be double from the other nutrients
              */
             progressBarHeight: Dp = 115.2.dp,
+
+            /**
+             * Represents the vertical space between the intake amount group, progress bar,
+             * and nutrient name
+             */
+            verticalSpace: Dp = 12.dp,
             modifier: Modifier = Modifier
         ) {
             val barShape = 16.dp
@@ -260,8 +266,6 @@ object Nutrient {
 
                 val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
 
-                val spacedBy = if (nutrientType == NutrientType.BASIC) 12.dp else 8.dp
-
                 val animatedProgress by animateFloatAsState(
                     targetValue = (calculatedNutrientData.progress / 100f).toFloat(),
                     animationSpec = tween(
@@ -274,7 +278,7 @@ object Nutrient {
                 Column(
                     modifier = modifier.width(contentWidth),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(verticalSpace),
                     content = {
                         // Top part: Goal
                         if (!isDataMinimal) {
@@ -315,7 +319,7 @@ object Nutrient {
                                 val progressModifier = if (nutrientType == NutrientType.BASIC) {
                                     Modifier
                                         .align(Alignment.BottomCenter)
-                                        .offset(y = -(spacedBy * 2))
+                                        .offset(y = -(verticalSpace * 2))
                                 } else Modifier.align(Alignment.Center)
 
                                 Box(
@@ -600,7 +604,7 @@ object Nutrient {
 
                                 val progressBarHeight = if (isBaseSizeDisplay) {
                                     if (isBasicNutrient) {
-                                        (115.2 / 1).dp
+                                        115.2.dp
                                     } else (115.2 / 2).dp
                                 } else {
                                     if (isBasicNutrient) {
@@ -610,12 +614,16 @@ object Nutrient {
                                     }
                                 }
 
+                                val verticalSpace = if (isBaseSizeDisplay) 10.dp else 12.dp
+
+
                                 NutrientsAsBox(
                                     nutrients = chunkedNutrients[page],
                                     isDataMinimal = isDataMinimal,
                                     isUserPremium = isUserPremium,
                                     progressBarHeight = progressBarHeight,
-                                    contentWidth = contentWidth
+                                    contentWidth = contentWidth,
+                                    verticalSpace = verticalSpace
                                 )
                             }
 

@@ -16,7 +16,6 @@ import com.example.fitnessway.R
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.robotoSerifFamily
-import com.example.fitnessway.util.Ui
 
 @Composable
 fun HomeHeader(
@@ -41,10 +40,9 @@ fun HomeHeader(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Ui.AppLabel(
+            Text(
                 text = date,
-                size = Ui.LabelSize.SMALL,
-                textStyle = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.bodyLarge
             )
 
             Clickables.AppIconButton(

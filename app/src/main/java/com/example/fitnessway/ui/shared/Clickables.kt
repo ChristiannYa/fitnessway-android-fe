@@ -23,15 +23,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.Formatters.doubleFormatter
 
 object Clickables {
     enum class AppIconButtonSize(
         val size: Dp
     ) {
-        LARGE(36.dp),
-        MEDIUM(32.dp),
-        SMALL(28.dp)
+        LARGE(38.dp),
+        MEDIUM(34.dp),
+        SMALL(30.dp)
     }
 
     sealed interface AppIconButtonSource {
@@ -70,7 +69,7 @@ object Clickables {
                 label = "AppIconVectorButtonColorAnimation_$contentDescription"
             )
 
-            val padding = doubleFormatter((size.size.value / 6).toDouble()).toInt().dp
+            val padding = (size.size.value / 6).dp
             val iconModifier = Modifier
                 .fillMaxSize()
                 .padding(padding)

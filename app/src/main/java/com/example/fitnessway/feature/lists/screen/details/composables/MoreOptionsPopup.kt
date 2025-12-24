@@ -34,8 +34,8 @@ fun MoreOptionsPopup(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = Animation.Transition.PopUpV1.enter,
-        exit = Animation.Transition.PopUpV1.exit,
+        enter = Animation.ComposableTransition.PopUpV1.enter,
+        exit = Animation.ComposableTransition.PopUpV1.exit,
         modifier = modifier,
         content = {
             Box(

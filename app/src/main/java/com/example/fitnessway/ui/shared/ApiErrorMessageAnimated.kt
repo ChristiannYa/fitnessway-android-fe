@@ -11,8 +11,8 @@ fun ApiErrorMessageAnimated(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = Animation.Transition.PopUpV2.enter,
-        exit = Animation.Transition.PopUpV2.exit,
+        enter = Animation.ComposableTransition.PopUpV2.enter,
+        exit = Animation.ComposableTransition.PopUpV2.exit,
         content = {
             ApiErrorMessage(errorMessage)
         }

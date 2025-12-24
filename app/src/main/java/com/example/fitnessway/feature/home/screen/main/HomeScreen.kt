@@ -87,7 +87,6 @@ fun HomeScreen(
     }
 
     Screen(
-        isMainScreen = true,
         content = {
             if (viewModel.user != null) {
                 val user = viewModel.user
@@ -113,7 +112,7 @@ fun HomeScreen(
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Column(
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 HomeHeader(
                                     onToggleFoodLogsVisibility = viewModel::toggleFoodLogsVisibility,
@@ -157,41 +156,41 @@ fun HomeScreen(
                                         onNavigateToGoals = onNavigateToGoals
                                     )
                                 }
-
-                                ApiErrorMessageAnimated(
-                                    isVisible = nutrientIntakesState is UiState.Error,
-                                    errorMessage = formatUiErrorMessage(nutrientIntakesState)
-                                )
-
-                                FoodLogs(
-                                    foodLogsState = foodLogsState,
-                                    foodLogDeleteState = uiState.foodLogDeleteState,
-                                    onViewFoodsList = { foodLogCategories ->
-                                        viewModel.setFoodLogCategory(foodLogCategories)
-                                        onViewFoodsList()
-                                    },
-                                    onViewFoodLogDetails = { foodLog ->
-                                        viewModel.setSelectedFoodLog(foodLog)
-                                        onViewFoodLogDetails()
-                                    },
-                                    onRemoveFoodLog = { foodLog ->
-                                        viewModel.resetFoodLogDeleteState()
-                                        viewModel.setSelectedFoodLogToRemove(foodLog)
-                                        viewModel.deleteFoodLog()
-                                    },
-                                    isVisible = areFoodLogsVisible,
-                                    modifier = Modifier.align(Alignment.BottomCenter)
-                                )
-
-                                BlurOverlay(
-                                    isVisible = areFoodLogsVisible,
-                                    onClick = viewModel::toggleFoodLogsVisibility,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                )
                             }
                         }
                     }
+
+                    ApiErrorMessageAnimated(
+                        isVisible = nutrientIntakesState is UiState.Error,
+                        errorMessage = formatUiErrorMessage(nutrientIntakesState)
+                    )
+
+                    FoodLogs(
+                        foodLogsState = foodLogsState,
+                        foodLogDeleteState = uiState.foodLogDeleteState,
+                        onViewFoodsList = { foodLogCategories ->
+                            viewModel.setFoodLogCategory(foodLogCategories)
+                            onViewFoodsList()
+                        },
+                        onViewFoodLogDetails = { foodLog ->
+                            viewModel.setSelectedFoodLog(foodLog)
+                            onViewFoodLogDetails()
+                        },
+                        onRemoveFoodLog = { foodLog ->
+                            viewModel.resetFoodLogDeleteState()
+                            viewModel.setSelectedFoodLogToRemove(foodLog)
+                            viewModel.deleteFoodLog()
+                        },
+                        isVisible = areFoodLogsVisible,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+
+                    BlurOverlay(
+                        isVisible = areFoodLogsVisible,
+                        onClick = viewModel::toggleFoodLogsVisibility,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
 
                     ApiErrorMessageAnimated(
                         isVisible = deleteFoodLogErrMsg != "",

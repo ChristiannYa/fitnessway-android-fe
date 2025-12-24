@@ -88,7 +88,7 @@ fun OtherNutrientIntakes(
             }
         }
 
-        is UiState.Error -> ApiErrorMessage(state.message)
+        is UiState.Error -> {}
         is UiState.Idle -> {}
     }
 }

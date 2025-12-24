@@ -87,6 +87,11 @@ object Formatters {
         }
     }
 
+    fun <T> formatUiErrorMessage(uiState: UiState<T>): String {
+        val backupErrorMessage = "An unknown error occurred"
+        return (uiState as? UiState.Error)?.message ?: backupErrorMessage
+    }
+
     fun logcat(
         message: String,
         level: LogLevel = LogLevel.DEBUG

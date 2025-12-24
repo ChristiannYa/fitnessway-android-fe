@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.screen.main.composables
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,12 +9,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -44,24 +48,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
-import com.example.fitnessway.ui.shared.ApiErrorMessage
-import com.example.fitnessway.ui.shared.LoadingArea
+import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.ui.theme.WhiteBackground
 import com.example.fitnessway.ui.theme.robotoSerifFamily
+import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Food.Ui.getFoodBrandColor
 import com.example.fitnessway.util.Food.Ui.getFoodBrandText
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
+import com.example.fitnessway.util.Ui.formatFoodLogCategory
 import com.example.fitnessway.util.UiState
+
+@Composable
+private fun getFoodLogsContainerColor(): Color {
+    return MaterialTheme.colorScheme.surfaceTint
+}
 
 @Composable
 fun FoodLogs(
@@ -69,21 +82,45 @@ fun FoodLogs(
     foodLogDeleteState: UiState<FoodLogData>,
     onViewFoodsList: (FoodLogCategories) -> Unit,
     onViewFoodLogDetails: (FoodLogData) -> Unit,
-    onRemoveFoodLog: (FoodLogData) -> Unit
+    onRemoveFoodLog: (FoodLogData) -> Unit,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    when (foodLogsState) {
-        is UiState.Loading -> LoadingArea(200.dp, "Food Logs")
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = Animation.Transition.SlideVerticallyFromBottom.enter,
+        exit = Animation.Transition.SlideVerticallyFromBottom.exit,
+        modifier = modifier
+            .height(480.dp)
+            .zIndex(2f)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .areaContainer(
+                    areaColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+                .fillMaxHeight()
+        ) {
+            when (foodLogsState) {
+                is UiState.Loading -> TextWithLoadingIndicator(loadingText = "Loading Food Logs")
 
-        is UiState.Success -> FoodLogsCategorized(
-            foodLogs = foodLogsState.data,
-            foodLogDeleteState = foodLogDeleteState,
-            onViewFoodsList = onViewFoodsList,
-            onViewFoodLogDetails = onViewFoodLogDetails,
-            onRemoveFoodLog = onRemoveFoodLog
-        )
+                is UiState.Success -> FoodLogsCategorized(
+                    foodLogs = foodLogsState.data,
+                    foodLogDeleteState = foodLogDeleteState,
+                    onViewFoodsList = onViewFoodsList,
+                    onViewFoodLogDetails = onViewFoodLogDetails,
+                    onRemoveFoodLog = onRemoveFoodLog
+                )
 
-        is UiState.Error -> ApiErrorMessage(foodLogsState.message)
-        is UiState.Idle -> {}
+                else -> {}
+            }
+
+            ApiErrorMessageAnimated(
+                isVisible = foodLogsState is UiState.Error,
+                errorMessage = formatUiErrorMessage(foodLogsState)
+            )
+        }
     }
 }
 
@@ -103,11 +140,25 @@ private fun FoodLogsCategorized(
         FoodLogCategories.SUPPLEMENT to foodLogs.supplement
     )
 
-    Column(
-        modifier = Modifier.areaContainer(),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        content = {
-            categoriesWithLogs.forEach { (category, logs) ->
+    LazyColumn {
+        categoriesWithLogs.forEachIndexed { index, (category, logs) ->
+            stickyHeader {
+                Text(
+                    text = formatFoodLogCategory(category),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(
+                            top = if (index > 0) AreaContainerSize.LARGE.padding else 0.dp,
+                            bottom = AreaContainerSize.LARGE.padding
+                        )
+                )
+            }
+
+            item {
                 FoodLogCategory(
                     foodLogs = logs,
                     category = category,
@@ -118,7 +169,7 @@ private fun FoodLogsCategorized(
                 )
             }
         }
-    )
+    }
 }
 
 @Composable
@@ -130,64 +181,50 @@ private fun FoodLogCategory(
     onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit
 ) {
-    val categoryFormatted = category.name.lowercase().replaceFirstChar { it.uppercase() }
+    val categoryFormatted = formatFoodLogCategory(category)
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        content = {
+        modifier = Modifier
+            .areaContainer(
+                size = AreaContainerSize.MEDIUM,
+                areaColor = getFoodLogsContainerColor()
+            )
+            .graphicsLayer(clip = true),
+        verticalArrangement = Arrangement.spacedBy(18.dp)
+    ) {
+        if (foodLogs.isEmpty()) {
+            NotFoundText(text = "No $categoryFormatted logged yet")
+        } else {
+            foodLogs.forEach { log ->
+                key(log.id) {
+                    FoodLog(
+                        foodLog = log,
+                        foodLogDeleteState = foodLogDeleteState,
+                        onViewFoodLogDetails = { onViewFoodLogDetails(log) },
+                        onRemoveFoodLog = { onRemoveFoodLog(log) },
+                    )
+                }
+            }
+        }
+
+        TextButton(
+            onClick = { onViewFoodsList(category) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = WhiteBackground
+            )
+        ) {
             Text(
-                text = categoryFormatted,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
+                text = "Log",
+                fontFamily = robotoSerifFamily,
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            Column(
-                modifier = Modifier
-                    .areaContainer(
-                        size = AreaContainerSize.MEDIUM,
-                        areaColor = MaterialTheme.colorScheme.secondaryContainer
-                    )
-                    .graphicsLayer(clip = true),
-                verticalArrangement = Arrangement.spacedBy(18.dp),
-                content = {
-                    if (foodLogs.isEmpty()) {
-                        NotFoundText(text = "No $categoryFormatted logged yet")
-                    } else {
-                        foodLogs.forEach { log ->
-                            key(log.id) {
-                                FoodLog(
-                                    foodLog = log,
-                                    foodLogDeleteState = foodLogDeleteState,
-                                    onViewFoodLogDetails = { onViewFoodLogDetails(log) },
-                                    onRemoveFoodLog = { onRemoveFoodLog(log) },
-                                )
-                            }
-                        }
-                    }
-
-                    TextButton(
-                        onClick = { onViewFoodsList(category) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = WhiteBackground
-                        ),
-                        content = {
-                            Text(
-                                text = "Log",
-                                fontFamily = robotoSerifFamily,
-                                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    )
-                }
-            )
         }
-    )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -236,7 +273,7 @@ private fun FoodLog(
                             .fillMaxSize()
                             .background(
                                 color = lerp(
-                                    start = MaterialTheme.colorScheme.inverseSurface,
+                                    start = getFoodLogsContainerColor(),
                                     stop = MaterialTheme.colorScheme.errorContainer,
                                     fraction = swipeToRemoveLogState.progress
                                 ),
@@ -256,7 +293,7 @@ private fun FoodLog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        color = getFoodLogsContainerColor(),
                     )
                     .padding(
                         end = 2.dp,

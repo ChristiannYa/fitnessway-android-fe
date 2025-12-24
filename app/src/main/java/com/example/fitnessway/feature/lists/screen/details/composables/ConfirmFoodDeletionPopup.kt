@@ -29,8 +29,7 @@ import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.ImperialRed
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
-import com.example.fitnessway.util.Animation.popUpEnter
-import com.example.fitnessway.util.Animation.popupExit
+import com.example.fitnessway.util.Animation
 
 @Composable
 fun ConfirmFoodDeletionPopup(
@@ -49,8 +48,8 @@ fun ConfirmFoodDeletionPopup(
         content = {
             AnimatedVisibility(
                 visible = isVisible,
-                enter = popUpEnter,
-                exit = popupExit,
+                enter = Animation.Transition.PopUpV1.enter,
+                exit = Animation.Transition.PopUpV1.exit,
                 modifier = Modifier
                     .width(260.dp)
                     .areaContainer(

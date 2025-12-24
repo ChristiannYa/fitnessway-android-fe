@@ -23,8 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
-import com.example.fitnessway.util.Animation.popUpEnter
-import com.example.fitnessway.util.Animation.popupExit
+import com.example.fitnessway.util.Animation
 
 @Composable
 fun MoreOptionsPopup(
@@ -35,8 +34,8 @@ fun MoreOptionsPopup(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = popUpEnter,
-        exit = popupExit,
+        enter = Animation.Transition.PopUpV1.enter,
+        exit = Animation.Transition.PopUpV1.exit,
         modifier = modifier,
         content = {
             Box(
@@ -88,7 +87,7 @@ fun MoreOptionsPopup(
 }
 
 @Composable
-fun MoreOptionsButton(
+private fun MoreOptionsButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     text: String
@@ -114,7 +113,7 @@ fun MoreOptionsButton(
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun MoreOptionsPopupPreview() {
+private fun MoreOptionsPopupPreview() {
     FitnesswayTheme {
         MoreOptionsPopup(
             isVisible = true,

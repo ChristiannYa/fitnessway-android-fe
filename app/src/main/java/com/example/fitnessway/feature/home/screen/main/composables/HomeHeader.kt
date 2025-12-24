@@ -11,14 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.robotoSerifFamily
+import com.example.fitnessway.util.Ui
 
 @Composable
 fun HomeHeader(
-    onToggleCreateMenuVisibility: () -> Unit
+    onToggleFoodLogsVisibility: () -> Unit,
+    date: String
 ) {
     Row(
         modifier = Modifier
@@ -34,11 +37,22 @@ fun HomeHeader(
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        Clickables.AppIconButton(
-            onClick = {},
-            contentDescription = "View Food Logs",
-            icon = Clickables.AppIconButtonSource.Resource(R.drawable.scroll)
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Ui.AppLabel(
+                text = date,
+                size = Ui.LabelSize.SMALL,
+                textStyle = MaterialTheme.typography.labelLarge
+            )
+
+            Clickables.AppIconButton(
+                onClick = onToggleFoodLogsVisibility,
+                contentDescription = "View Food Logs",
+                icon = Clickables.AppIconButtonSource.Resource(R.drawable.scroll)
+            )
+        }
     }
 }
 
@@ -47,7 +61,8 @@ fun HomeHeader(
 fun PreviewHeader() {
     FitnesswayTheme {
         HomeHeader(
-            onToggleCreateMenuVisibility = {}
+            onToggleFoodLogsVisibility = {},
+            date = "Today"
         )
     }
 }

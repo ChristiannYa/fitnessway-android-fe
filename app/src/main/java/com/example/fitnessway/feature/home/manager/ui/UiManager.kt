@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class UiManager : IUiManager {
-    private val _isCreateMenuVisible = MutableStateFlow(false)
-    override val isCreateMenuVisible: StateFlow<Boolean> = _isCreateMenuVisible
+    private val _areFoodLogsVisible = MutableStateFlow(false)
+    override val areFoodLogsVisible: StateFlow<Boolean> = _areFoodLogsVisible
 
-    override fun toggleCreateMenuVisibility() {
-        _isCreateMenuVisible.value = !_isCreateMenuVisible.value
+    override fun toggleFoodLogsVisibility() {
+        _areFoodLogsVisible.value = !_areFoodLogsVisible.value
     }
 }

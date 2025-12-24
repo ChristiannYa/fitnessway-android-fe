@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.manager.food
+package com.example.fitnessway.feature.lists.manager.food
 
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.Nutrient
@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.StateFlow
 interface IFoodManager {
     val foodCreationFormState: StateFlow<FormStates.FoodCreation>
     val currentStep: StateFlow<Int>
-    val formNameError: String?
-    val formBrandError: String?
-    val formAmountPerServingError: String?
-    val formServingUnitError: String?
+    val createFormNameError: String?
+    val createFormBrandError: String?
+    val createFormAmountPerServingError: String?
+    val createFormServingUnitError: String?
     val isBasicDataValid: Boolean
     val areBasicNutrientsValid: Boolean
 

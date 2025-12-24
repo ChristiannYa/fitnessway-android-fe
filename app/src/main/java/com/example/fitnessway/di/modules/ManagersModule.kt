@@ -4,7 +4,7 @@ import com.example.fitnessway.feature.home.manager.date.DateManager
 import com.example.fitnessway.feature.home.manager.foodlog.FoodLogManager
 import com.example.fitnessway.feature.home.manager.HomeManagersImpl
 import com.example.fitnessway.feature.home.manager.IHomeManagers
-import com.example.fitnessway.feature.home.manager.food.FoodManager
+import com.example.fitnessway.feature.lists.manager.food.FoodManager
 import com.example.fitnessway.feature.home.manager.ui.UiManager
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.ListsManagersImpl
@@ -21,7 +21,6 @@ val managersModule = module {
         HomeManagersImpl(
             date = DateManager(),
             foodLog = FoodLogManager(),
-            food = FoodManager(),
             ui = UiManager()
         )
     }
@@ -29,7 +28,8 @@ val managersModule = module {
     single<IListsManagers> {
         ListsManagersImpl(
             selection = SelectionManager(),
-            edition = EditionManager()
+            edition = EditionManager(),
+            food = FoodManager()
         )
     }
 

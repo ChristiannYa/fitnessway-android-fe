@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.create.food.composables
+package com.example.fitnessway.feature.lists.screen.create.food.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

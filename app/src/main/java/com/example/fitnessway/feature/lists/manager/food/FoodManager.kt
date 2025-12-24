@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.manager.food
+package com.example.fitnessway.feature.lists.manager.food
 
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
@@ -27,7 +27,7 @@ class FoodManager : IFoodManager {
     private val _currentStep = MutableStateFlow(1)
     override val currentStep: StateFlow<Int> = _currentStep
 
-    override val formNameError: String?
+    override val createFormNameError: String?
         get() = _foodCreationFormState.value.name.let { value ->
             if (value.isEmpty()) null else {
                 val result = NameInlineRules(value.trim()) checkWith nameRules
@@ -35,7 +35,7 @@ class FoodManager : IFoodManager {
             }
         }
 
-    override val formBrandError: String?
+    override val createFormBrandError: String?
         get() = _foodCreationFormState.value.brand.let { value ->
             if (value.isEmpty()) null else {
                 val result = BrandInlineRules(value.trim()) checkWith brandRules
@@ -43,7 +43,7 @@ class FoodManager : IFoodManager {
             }
         }
 
-    override val formAmountPerServingError: String?
+    override val createFormAmountPerServingError: String?
         get() = _foodCreationFormState.value.amountPerServing.let { value ->
             validateDoubleAsString(
                 doubleAsString = value,
@@ -51,7 +51,7 @@ class FoodManager : IFoodManager {
             )
         }
 
-    override val formServingUnitError: String?
+    override val createFormServingUnitError: String?
         get() = _foodCreationFormState.value.servingUnit.let { value ->
             if (value.isEmpty()) null else {
                 val isValid = when (value) {
@@ -66,10 +66,10 @@ class FoodManager : IFoodManager {
         }
 
     override val isBasicDataValid: Boolean
-        get() = _foodCreationFormState.value.name.isNotEmpty() && formNameError == null &&
-                formBrandError == null &&
-                _foodCreationFormState.value.amountPerServing.isNotEmpty() && formAmountPerServingError == null &&
-                _foodCreationFormState.value.servingUnit.isNotEmpty() && formServingUnitError == null
+        get() = _foodCreationFormState.value.name.isNotEmpty() && createFormNameError == null &&
+                createFormBrandError == null &&
+                _foodCreationFormState.value.amountPerServing.isNotEmpty() && createFormAmountPerServingError == null &&
+                _foodCreationFormState.value.servingUnit.isNotEmpty() && createFormServingUnitError == null
 
     override val areBasicNutrientsValid: Boolean
         get() = _foodCreationFormState.value.nutrients.values.any {

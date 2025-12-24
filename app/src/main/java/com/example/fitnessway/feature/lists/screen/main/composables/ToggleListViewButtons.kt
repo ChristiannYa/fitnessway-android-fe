@@ -17,13 +17,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
 import com.example.fitnessway.data.model.food.ListOption
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Animation.colorSpec
 
 @Composable
@@ -63,13 +62,13 @@ fun ListOptionButton(
         ListOption.Food -> Triple(
             R.drawable.food,
             "Food",
-            Color(0xFFE53935)
+            MaterialTheme.colorScheme.primary
         )
 
         ListOption.Supplement -> Triple(
             R.drawable.energy,
             "Supplement",
-            Color(0xFFFDD835)
+            MaterialTheme.colorScheme.primary
         )
     }
 

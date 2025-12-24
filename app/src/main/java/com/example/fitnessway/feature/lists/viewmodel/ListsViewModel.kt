@@ -3,7 +3,9 @@ package com.example.fitnessway.feature.lists.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.food.Food
+import com.example.fitnessway.data.model.food.FoodAddInfoApiFormat
 import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
+import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodInformationOptionals
 import com.example.fitnessway.data.model.food.FoodUpdateRequest
@@ -11,9 +13,11 @@ import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.repository.food.IFoodRepository
+import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
+import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.feature.lists.manager.toggle.ISelectionManager
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,22 +28,60 @@ import kotlinx.coroutines.launch
 
 class ListsViewModel(
     private val foodRepo: IFoodRepository,
+    private val nutrientRepo: INutrientRepository,
     private val managers: IListsManagers,
     userStateHolder: IUserStateHolder
 ) : ViewModel(),
     ISelectionManager by managers.selection,
-    IEditionManager by managers.edition {
+    IEditionManager by managers.edition,
+    IFoodManager by managers.food {
 
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
 
     val foodRepoUiState = foodRepo.uiState
+    val nutrientRepoUiState = nutrientRepo.uiState
 
     val user = userStateHolder.userState.value.user
 
     fun getFoods() {
         foodRepo.loadFoods()
     }
+
+    fun getNutrients() {
+        nutrientRepo.loadNutrients()
+    }
+
+    fun addFood() {
+        val user = user ?: return
+        val formState = managers.food.foodCreationFormState.value
+
+        // @TODO: Make the request optimistic
+
+        val request = FoodAddRequest(
+            userId = user.id,
+            information = FoodAddInfoApiFormat(
+                name = formState.name,
+                brand = formState.brand,
+                amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
+                servingUnit = formState.servingUnit
+            ),
+            nutrients = formState.nutrients.filter { (_, amount) ->
+                (amount.toDoubleOrNull() ?: 0.0) > 0
+            }.map { (nutrientId, amount) ->
+                FoodAddNutrientAmountApiFormat(
+                    nutrientId = nutrientId, amount = amount.toDoubleOrNull() ?: 0.0
+                )
+            }
+        )
+
+        viewModelScope.launch {
+            foodRepo.addFood(request).collect { state ->
+                _uiState.update { it.copy(foodAddState = state) }
+            }
+        }
+    }
+
 
     fun updateFood() {
         val user = user ?: return
@@ -193,6 +235,10 @@ class ListsViewModel(
                 }
             }
         }
+    }
+
+    fun resetFoodAddState() {
+        _uiState.update { it.copy(foodAddState = UiState.Idle) }
     }
 
     fun resetFoodUpdateState() {

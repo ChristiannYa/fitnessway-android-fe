@@ -26,7 +26,7 @@ class EditionManager : IEditionManager {
     private val _deletedNutrients = MutableStateFlow<List<Int>>(emptyList())
     override val deletedNutrients: StateFlow<List<Int>> = _deletedNutrients
 
-    override val formNameError: String?
+    override val editFormNameError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.name.let { value ->
                 if (value.isEmpty()) null else {
@@ -36,7 +36,7 @@ class EditionManager : IEditionManager {
             }
         }
 
-    override val formBrandError: String?
+    override val editFormBrandError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.brand.let { value ->
                 if (value.isEmpty()) null else {
@@ -46,7 +46,7 @@ class EditionManager : IEditionManager {
             }
         }
 
-    override val formAmountPerServingError: String?
+    override val editFormAmountPerServingError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.amountPerServing.let { value ->
                 validateDoubleAsString(
@@ -56,7 +56,7 @@ class EditionManager : IEditionManager {
             }
         }
 
-    override val formServingUnitError: String?
+    override val editFormServingUnitError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.servingUnit.let { value ->
                 if (value.isEmpty()) null else {
@@ -92,10 +92,10 @@ class EditionManager : IEditionManager {
 
     override val isFormValid: Boolean
         get() = _foodEditionFormState.value?.let {
-            it.data.name.isNotEmpty() && formNameError == null &&
-                    formBrandError == null &&
-                    it.data.amountPerServing.isNotEmpty() && formAmountPerServingError == null &&
-                    it.data.servingUnit.isNotEmpty() && formServingUnitError == null &&
+            it.data.name.isNotEmpty() && editFormNameError == null &&
+                    editFormBrandError == null &&
+                    it.data.amountPerServing.isNotEmpty() && editFormAmountPerServingError == null &&
+                    it.data.servingUnit.isNotEmpty() && editFormServingUnitError == null &&
                     areFormNutrientsValid
         } ?: false
 

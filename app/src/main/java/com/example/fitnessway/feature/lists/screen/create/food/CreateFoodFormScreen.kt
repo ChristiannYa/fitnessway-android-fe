@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.create.food
+package com.example.fitnessway.feature.lists.screen.create.food
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -27,11 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.feature.home.screen.create.food.composables.FormProgressIndicator
-import com.example.fitnessway.feature.home.screen.create.food.composables.NextButton
-import com.example.fitnessway.feature.home.screen.create.food.composables.SetBasicData
-import com.example.fitnessway.feature.home.screen.create.food.composables.SetNutrients
-import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
+import com.example.fitnessway.feature.lists.screen.create.food.composables.FormProgressIndicator
+import com.example.fitnessway.feature.lists.screen.create.food.composables.NextButton
+import com.example.fitnessway.feature.lists.screen.create.food.composables.SetBasicData
+import com.example.fitnessway.feature.lists.screen.create.food.composables.SetNutrients
+import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
@@ -50,7 +50,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateFoodFormScreen(
-    viewModel: HomeViewModel = koinViewModel(),
+    viewModel: ListsViewModel = koinViewModel(),
     onBackClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -152,7 +152,7 @@ fun CreateFoodFormScreen(
                                 fieldsProvider.brand(),
                                 fieldsProvider.amountPerServing(),
                                 fieldsProvider.servingUnit(
-                                    errorMessage = viewModel.formServingUnitError
+                                    errorMessage = viewModel.createFormServingUnitError
                                 ),
                             )
 
@@ -162,7 +162,8 @@ fun CreateFoodFormScreen(
                                     type = type
                                 ).filterOutPremiumNutrients(isUserPremium)
 
-                                val nutrientsWithGoal = nutrientsByType.filterOutNutrientsWithoutGoal()
+                                val nutrientsWithGoal =
+                                    nutrientsByType.filterOutNutrientsWithoutGoal()
 
                                 val fields = nutrientsWithGoal
                                     .mapIndexed { index, nutrientWithPrefs ->
@@ -238,14 +239,20 @@ fun CreateFoodFormScreen(
                                                 )
                                         }
                                     ) { step ->
-                                        val nutrientFields = nutrientFieldsData[NutrientType.BASIC]?.first.orEmpty()
-                                        val nutrientsWithoutGoal = nutrientFieldsData[NutrientType.BASIC]?.second.orEmpty()
+                                        val nutrientFields =
+                                            nutrientFieldsData[NutrientType.BASIC]?.first.orEmpty()
+                                        val nutrientsWithoutGoal =
+                                            nutrientFieldsData[NutrientType.BASIC]?.second.orEmpty()
 
-                                        val vitaminFields = nutrientFieldsData[NutrientType.VITAMIN]?.first.orEmpty()
-                                        val vitaminsWithoutGoal = nutrientFieldsData[NutrientType.VITAMIN]?.second.orEmpty()
+                                        val vitaminFields =
+                                            nutrientFieldsData[NutrientType.VITAMIN]?.first.orEmpty()
+                                        val vitaminsWithoutGoal =
+                                            nutrientFieldsData[NutrientType.VITAMIN]?.second.orEmpty()
 
-                                        val mineralFields = nutrientFieldsData[NutrientType.MINERAL]?.first.orEmpty()
-                                        val mineralsWithoutGoal = nutrientFieldsData[NutrientType.MINERAL]?.second.orEmpty()
+                                        val mineralFields =
+                                            nutrientFieldsData[NutrientType.MINERAL]?.first.orEmpty()
+                                        val mineralsWithoutGoal =
+                                            nutrientFieldsData[NutrientType.MINERAL]?.second.orEmpty()
 
                                         when (step) {
                                             1 -> SetBasicData(foodBaseFields)

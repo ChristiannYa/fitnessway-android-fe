@@ -43,7 +43,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     onViewFoodsList: () -> Unit,
     onViewFoodLogDetails: () -> Unit,
-    onNavigateToFoodForm: () -> Unit,
     onNavigateToGoals: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
@@ -213,7 +212,6 @@ fun HomeScreenPreview() {
         HomeScreen(
             onViewFoodsList = {},
             onViewFoodLogDetails = {},
-            onNavigateToFoodForm = {},
             onNavigateToGoals = {}
         )
     }

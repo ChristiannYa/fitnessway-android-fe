@@ -2,9 +2,6 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.model.food.FoodAddInfoApiFormat
-import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
-import com.example.fitnessway.data.model.food.FoodAddRequest
 import com.example.fitnessway.data.model.food.FoodLogAddRequest
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
@@ -13,7 +10,6 @@ import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.manager.IHomeManagers
 import com.example.fitnessway.feature.home.manager.date.IDateManager
-import com.example.fitnessway.feature.home.manager.food.IFoodManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Food
@@ -32,8 +28,11 @@ class HomeViewModel(
     private val foodRepo: IFoodRepository,
     private val managers: IHomeManagers,
     val appStateStore: IApplicationStateStore
-) : ViewModel(), IFoodManager by managers.food, IFoodLogManager by managers.foodLog,
-    IDateManager by managers.date, IUiManager by managers.ui {
+) : ViewModel(),
+    IFoodLogManager by managers.foodLog,
+    IDateManager by managers.date,
+    IUiManager by managers.ui {
+
     val user = appStateStore.userStateHolder.userState.value.user
 
     private val _uiState = MutableStateFlow(HomeScreenUiState())
@@ -67,44 +66,6 @@ class HomeViewModel(
     fun getNutrientIntakes() {
         val date = managers.date.getApiFormattedDate()
         nutrientRepo.loadNutrientIntakes(date)
-    }
-
-    fun getNutrients() {
-        nutrientRepo.loadNutrients()
-    }
-
-    fun addFood() {
-        val user = user ?: return
-        val formState = managers.food.foodCreationFormState.value
-
-        // @TODO: Make the request optimistic
-
-        val request = FoodAddRequest(
-            userId = user.id,
-            information = FoodAddInfoApiFormat(
-                name = formState.name,
-                brand = formState.brand,
-                amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
-                servingUnit = formState.servingUnit
-            ),
-            nutrients = formState.nutrients.filter { (_, amount) ->
-                (amount.toDoubleOrNull() ?: 0.0) > 0
-            }.map { (nutrientId, amount) ->
-                FoodAddNutrientAmountApiFormat(
-                    nutrientId = nutrientId, amount = amount.toDoubleOrNull() ?: 0.0
-                )
-            }
-        )
-
-        viewModelScope.launch {
-            foodRepo.addFood(request).collect { state ->
-                _uiState.update { it.copy(foodAddState = state) }
-            }
-        }
-    }
-
-    fun resetFoodAddState() {
-        _uiState.update { it.copy(foodAddState = UiState.Idle) }
     }
 
     fun addFoodLog() {

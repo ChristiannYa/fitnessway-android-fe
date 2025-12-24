@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.screen.create.food.composables
+package com.example.fitnessway.feature.lists.screen.create.food.composables
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState

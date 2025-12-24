@@ -22,7 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.navigation.HomeMain
 import com.example.fitnessway.feature.home.navigation.homeNavigationGraph
-import com.example.fitnessway.feature.lists.navigation.ListsMain
+import com.example.fitnessway.feature.lists.navigation.ListsMainDest
 import com.example.fitnessway.feature.lists.navigation.listsNavigationGraph
 import com.example.fitnessway.feature.profile.navigation.ProfileMain
 import com.example.fitnessway.feature.profile.navigation.profileNavigationGraph
@@ -32,7 +32,7 @@ import org.koin.compose.koinInject
 
 private val screenWithBottomNavBar = listOf(
     HomeMain::class,
-    ListsMain::class,
+    ListsMainDest::class,
     ProfileMain::class,
 )
 

@@ -5,27 +5,17 @@ import com.example.fitnessway.data.model.form.FoodLogField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
-import com.example.fitnessway.util.Formatters.doubleFormatter
 
 class FoodLogFieldsProvider(
     private val formState: FormState<FormStates.FoodLog>,
     private val onFieldUpdate: (FormFieldName.FoodLog, String) -> Unit
 ) {
-    val isEditing = formState.isEditing
-
     @Composable
     fun servings(): FoodLogField {
-        val value = if (isEditing) {
-            formState.data.servings
-        } else doubleFormatter(
-            value = (formState.data.servings).toDouble(),
-            decimalPlaces = 2
-        )
-
         return FoodLogField(
             name = FormFieldName.FoodLog.SERVINGS,
             label = "Servings",
-            value = value,
+            value = formState.data.servings,
             updateState = { newValue ->
                 onFieldUpdate(FormFieldName.FoodLog.SERVINGS, newValue)
             }
@@ -34,17 +24,10 @@ class FoodLogFieldsProvider(
 
     @Composable
     fun amountPerServing(servingUnit: String): FoodLogField {
-        val value = if (isEditing) {
-            formState.data.amountPerServing
-        } else doubleFormatter(
-            value = (formState.data.amountPerServing).toDouble(),
-            decimalPlaces = 2
-        )
-
         return FoodLogField(
             name = FormFieldName.FoodLog.AMOUNT_PER_SERVING,
             label = "Amount Per Serving ($servingUnit)",
-            value = value,
+            value = formState.data.amountPerServing,
             updateState = { newValue ->
                 onFieldUpdate(FormFieldName.FoodLog.AMOUNT_PER_SERVING, newValue)
             }

@@ -64,11 +64,11 @@ import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Food.Ui.getFoodBrandColor
 import com.example.fitnessway.util.Food.Ui.getFoodBrandText
+import com.example.fitnessway.util.Food.Ui.getFoodLogCategory
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
-import com.example.fitnessway.util.Ui.formatFoodLogCategory
 import com.example.fitnessway.util.UiState
 
 @Composable
@@ -144,7 +144,7 @@ private fun FoodLogsCategorized(
         categoriesWithLogs.forEachIndexed { index, (category, logs) ->
             stickyHeader {
                 Text(
-                    text = formatFoodLogCategory(category),
+                    text = getFoodLogCategory(category),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
@@ -181,7 +181,7 @@ private fun FoodLogCategory(
     onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit
 ) {
-    val categoryFormatted = formatFoodLogCategory(category)
+    val categoryFormatted = getFoodLogCategory(category)
 
     Column(
         modifier = Modifier

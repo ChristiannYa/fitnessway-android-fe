@@ -73,6 +73,7 @@ class HomeViewModel(
         val user = user ?: return
         val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
         val selectedFood = managers.foodLog.selectedFoodToLog.value ?: return
+        val category = managers.foodLog.foodLogCategory.value ?: return
 
         val date = managers.date.getApiFormattedDate()
 
@@ -80,7 +81,7 @@ class HomeViewModel(
             userId = user.id,
             foodId = selectedFood.information.id,
             servings = foodLogFormState.data.servings.toDouble(),
-            category = managers.foodLog.foodLogCategory.value,
+            category = category.name.lowercase(),
             time = "$date ${foodLogFormState.data.time}"
         )
 

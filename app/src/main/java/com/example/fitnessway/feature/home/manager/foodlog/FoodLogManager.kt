@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FoodLogManager : IFoodLogManager {
-    private val _foodLogCategory = MutableStateFlow("")
-    override val foodLogCategory: StateFlow<String> = _foodLogCategory
+    private val _foodLogCategory = MutableStateFlow<FoodLogCategories?>(null)
+    override val foodLogCategory: StateFlow<FoodLogCategories?> = _foodLogCategory
 
     private val _selectedFoodLog = MutableStateFlow<FoodLogData?>(null)
     override val selectedFoodLog: StateFlow<FoodLogData?> = _selectedFoodLog
@@ -33,16 +33,31 @@ class FoodLogManager : IFoodLogManager {
         _foodLogEditionFormState
 
     override val isFoodLogFormValid: Boolean
-        get() = foodLogFormState.value?.data?.let { data ->
-            val servings = data.servings.toDoubleOrNull()
-            val amountPerServing = data.amountPerServing.toDoubleOrNull()
-            val time = data.time
-
-            servings != null && servings > 0 &&
-                    amountPerServing != null &&
-                    amountPerServing > 0 &&
-                    time.isNotEmpty() && time.matches(Regex("^\\d{1,2}:\\d{2} [AP]M$"))
+        get() = _foodLogFormState.value?.let {
+            it.data.servings.isNotEmpty() && foodLogServingsDoubleError == null &&
+                    it.data.amountPerServing.isNotEmpty() && foodLogAmPerSerDoubleError == null &&
+                    it.data.time.isNotEmpty() && it.data.time.matches(Regex("^\\d{1,2}:\\d{2} [AP]M$"))
         } ?: false
+
+    private val foodLogServingsDoubleError: String?
+        get() = _foodLogFormState.value?.let { formState ->
+            formState.data.servings.let { value ->
+                validateDoubleAsString(
+                    doubleAsString = value,
+                    itemToBeValidated = "Servings"
+                )
+            }
+        }
+
+    private val foodLogAmPerSerDoubleError: String?
+        get() = _foodLogFormState.value?.let { formState ->
+            formState.data.amountPerServing.let { value ->
+                validateDoubleAsString(
+                    doubleAsString = value,
+                    itemToBeValidated = "Amount Per Serving"
+                )
+            }
+        }
 
     private val foodLogEditionServingsDoubleError: String?
         get() = _foodLogEditionFormState.value?.let { formState ->
@@ -72,10 +87,10 @@ class FoodLogManager : IFoodLogManager {
 
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {
-            FoodLogCategories.BREAKFAST -> "breakfast"
-            FoodLogCategories.LUNCH -> "lunch"
-            FoodLogCategories.DINNER -> "dinner"
-            FoodLogCategories.SUPPLEMENT -> "supplement"
+            FoodLogCategories.BREAKFAST -> FoodLogCategories.BREAKFAST
+            FoodLogCategories.LUNCH -> FoodLogCategories.LUNCH
+            FoodLogCategories.DINNER -> FoodLogCategories.DINNER
+            FoodLogCategories.SUPPLEMENT -> FoodLogCategories.SUPPLEMENT
         }
     }
 

@@ -12,6 +12,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.util.Food.Ui.getFoodLogCategory
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -21,7 +22,7 @@ fun FoodSelectionScreen(
     onSelectedFoodToLog: () -> Unit
 ) {
     val foodUiState by viewModel.foodRepoUiState.collectAsState()
-    val foodCategory by viewModel.foodLogCategory.collectAsState()
+    val foodLogCategory by viewModel.foodLogCategory.collectAsState()
 
     val user = viewModel.user
 
@@ -29,26 +30,42 @@ fun FoodSelectionScreen(
         viewModel.getFoods()
     }
 
-    Screen(
-        header = {
-            Header(
-                onBackClick = onBackClick,
-                title = "${foodCategory.replaceFirstChar { it.uppercase() }} selection"
-            )
-        },
-        content = {
-            if (user != null) {
+    if (user != null) {
+        // Create local copy of delegated category from the view model
+        // If the following were to be done instead:
+        //
+        // ```
+        // if (foodLogCategory != null) {
+        //    val bar = getFoodLogCategory(foodLogCategory)
+        // }
+        // ```
+        //
+        // The error "Argument type mismatch: actual type is 'FoodLogCategories?', but
+        // 'FoodLogCategories' was expected." would've been shown
+        val foodLogCategoryCopy = foodLogCategory
+
+        if (foodLogCategoryCopy != null) {
+            val categoryString = getFoodLogCategory(foodLogCategoryCopy)
+
+            Screen(
+                header = {
+                    Header(
+                        onBackClick = onBackClick,
+                        title = "$categoryString selection"
+                    )
+                }
+            ) {
                 Foods(
                     state = foodUiState.foodsUiState,
                     setSelectedFoodToLog = viewModel::setSelectedFoodToLog,
                     onSelectedFoodToLog,
                     user = user
                 )
-            } else {
-                NotFoundText("User not found")
             }
-        }
-    )
+
+        } else NotFoundText("Food log category not found")
+
+    } else NotFoundText("Data not found")
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)

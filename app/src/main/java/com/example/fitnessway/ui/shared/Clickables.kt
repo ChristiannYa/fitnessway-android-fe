@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -18,11 +21,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.util.Animation
+import com.example.fitnessway.util.Formatters.logcat
 
 object Clickables {
     enum class AppIconButtonSize(
@@ -44,6 +49,7 @@ object Clickables {
         showsClickIndication: Boolean = true,
         enabled: Boolean = true,
         icon: AppIconButtonSource,
+        iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
         contentDescription: String,
         onClick: () -> Unit
     ) {
@@ -62,7 +68,7 @@ object Clickables {
                 )
         ) {
             val tint by animateColorAsState(
-                targetValue = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else {
+                targetValue = if (enabled) iconTint else {
                     MaterialTheme.colorScheme.surfaceVariant
                 },
                 animationSpec = Animation.colorSpec,
@@ -70,6 +76,8 @@ object Clickables {
             )
 
             val padding = (size.size.value / 6).dp
+            logcat("clickable padding: $padding")
+
             val iconModifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
@@ -93,6 +101,28 @@ object Clickables {
                     )
                 }
             }
+        }
+    }
+
+    @Composable
+    fun HeaderDoneButton(
+        onClick: () -> Unit,
+        enabled: Boolean,
+        isLoading: Boolean = false
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(26.dp), // log the padding of AppIconButton to see its value
+                strokeWidth = 2.dp,
+            )
+        } else {
+            AppIconButton(
+                icon = AppIconButtonSource.Vector(Icons.Default.Done),
+                contentDescription = "Done",
+                onClick = onClick,
+                enabled = enabled,
+                iconTint = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }

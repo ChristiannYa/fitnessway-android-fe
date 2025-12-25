@@ -9,7 +9,7 @@ import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodLogManager {
-    val foodLogCategory: StateFlow<String>
+    val foodLogCategory: StateFlow<FoodLogCategories?>
     val selectedFoodLog: StateFlow<FoodLogData?>
     val selectedFoodToLog: StateFlow<FoodInformation?>
     val selectedFoodLogToRemove: StateFlow<FoodLogData?>

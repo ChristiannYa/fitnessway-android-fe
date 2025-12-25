@@ -114,6 +114,10 @@ object Food {
             } else brand
         }
 
+        fun getFoodLogCategory(category: FoodLogCategories): String {
+            return category.name.lowercase().replaceFirstChar { it.uppercase() }
+        }
+
         @Composable
         fun getFoodBrandColor(): Color {
             return MaterialTheme.colorScheme.onBackground.copy(0.6f)

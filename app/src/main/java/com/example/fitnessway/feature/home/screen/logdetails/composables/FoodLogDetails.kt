@@ -31,7 +31,7 @@ import com.example.fitnessway.util.Food.FoodComposables
 import com.example.fitnessway.util.Formatters.doubleFormatter
 
 private const val deletedFoodMessage = "You have removed this food from your food list"
-private const val updatedFoodMessage = "You have updated this food format"
+private const val updatedFoodMessage = "You have updated this food information"
 
 @Composable
 fun FoodLogDetails(

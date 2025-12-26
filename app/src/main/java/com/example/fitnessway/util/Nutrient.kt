@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -280,28 +281,25 @@ object Nutrient {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(verticalSpace),
                     content = {
-                        // Top part: Goal
-                        if (!isDataMinimal) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                content = {
-                                    Text(
-                                        text = if (preferences.goal != null) {
-                                            doubleFormatter(
-                                                preferences.goal
-                                            )
-                                        } else "0",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontFamily = FontFamily.Default,
-                                        color = nutrientColor
-                                    )
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            // Top part: Goal
+                            if (!isDataMinimal) {
+                                Text(
+                                    text = if (preferences.goal != null) {
+                                        doubleFormatter(
+                                            preferences.goal
+                                        )
+                                    } else "0",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontFamily = FontFamily.Default,
+                                    color = nutrientColor
+                                )
+                            }
 
-                                    Text(
-                                        text = nutrient.unit,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = nutrientColor.copy(0.5f)
-                                    )
-                                }
+                            Text(
+                                text = nutrient.unit,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = nutrientColor.copy(0.5f)
                             )
                         }
 
@@ -314,37 +312,38 @@ object Nutrient {
                                 .background(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(barShape)
-                                ),
-                            content = {
-                                val progressModifier = if (nutrientType == NutrientType.BASIC) {
-                                    Modifier
-                                        .align(Alignment.BottomCenter)
-                                        .offset(y = -(verticalSpace * 2))
-                                } else Modifier.align(Alignment.Center)
+                                )
+                        ) {
+                            val progressModifier = if (nutrientType == NutrientType.BASIC) {
+                                Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .offset(y = -(verticalSpace * 2))
+                            } else Modifier.align(Alignment.Center)
 
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .fillMaxHeight(animatedProgress)
-                                        .background(
-                                            color = nutrientColor,
-                                            shape = RoundedCornerShape(
-                                                bottomStart = barShape,
-                                                bottomEnd = barShape
-                                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(animatedProgress)
+                                    .background(
+                                        color = nutrientColor,
+                                        shape = RoundedCornerShape(
+                                            bottomStart = barShape,
+                                            bottomEnd = barShape
                                         )
-                                        .align(Alignment.BottomCenter)
-                                )
+                                    )
+                                    .align(Alignment.BottomCenter)
+                            )
 
-                                Text(
-                                    text = doubleFormatter(nutrientData.amount),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontFamily = FontFamily.Default,
-                                    color = WhiteFont,
-                                    modifier = progressModifier
-                                )
-                            }
-                        )
+                            Text(
+                                text = doubleFormatter(nutrientData.amount),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Default,
+                                color = WhiteFont,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = progressModifier
+                            )
+                        }
 
                         // Bottom part: nutrient name
                         val name = if (nutrient.type == NutrientType.VITAMIN
@@ -355,25 +354,24 @@ object Nutrient {
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(2.dp),
-                            content = {
-                                if (!isDataMinimal) {
-                                    Text(
-                                        text = "${doubleFormatter(calculatedNutrientData.progress)}%",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontFamily = FontFamily.Default,
-                                        color = nutrientColor.copy(0.5f)
-                                    )
-                                }
-
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            if (!isDataMinimal) {
                                 Text(
-                                    text = name,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1
+                                    text = "${doubleFormatter(calculatedNutrientData.progress)}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Default,
+                                    color = nutrientColor.copy(0.5f)
                                 )
                             }
-                        )
+
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.labelMedium,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
+                            )
+                        }
                     }
                 )
             }
@@ -415,13 +413,16 @@ object Nutrient {
                             0.0
                         }
 
+                        val contentWidth = 70.dp
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.requiredWidth(contentWidth)
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,
-                                modifier = Modifier.size(68.dp),
+                                modifier = Modifier.size(contentWidth)
                             ) {
                                 CircularProgressIndicator(
                                     progress = { animatedProgress },
@@ -435,7 +436,9 @@ object Nutrient {
                                 Text(
                                     text = doubleFormatter(nutrientData.amount),
                                     style = MaterialTheme.typography.bodyLarge,
-                                    fontFamily = FontFamily.Default
+                                    fontFamily = FontFamily.Default,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                             Column(
@@ -446,7 +449,9 @@ object Nutrient {
                                     text = "${doubleFormatter(percentage)}%",
                                     style = MaterialTheme.typography.labelLarge,
                                     color = nutrientColor.copy(0.8f),
-                                    fontFamily = FontFamily.Default
+                                    fontFamily = FontFamily.Default,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
                                     text = nutrient.name,
@@ -562,7 +567,9 @@ object Nutrient {
                                     fontFamily = FontFamily.Default,
                                     color = color,
                                     textAlign = TextAlign.End,
-                                    modifier = Modifier.width(68.dp)
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.width(68.dp),
                                 )
                             }
                         )

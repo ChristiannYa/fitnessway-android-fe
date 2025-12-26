@@ -231,7 +231,7 @@ private fun getNutrientSectionsConfig(nutrients: NutrientsByType<NutrientAmountD
 
     return listOf(
         NutrientSectionConfig(
-            title = "Nutrient Summary",
+            title = "Summary",
             nutrients = nutrients.basic,
         ),
         NutrientSectionConfig(

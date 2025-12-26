@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.NutrientGoalEditionField
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.blurPremiumItem
 import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
@@ -20,7 +19,7 @@ import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
 fun NutrientGoalsContent(
     nutrientFields: Map<NutrientType, List<NutrientGoalEditionField>>,
     premiumNutrientsMap: Map<NutrientType, List<Nutrient>>,
-    user: User
+    isUserPremium: Boolean
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -40,12 +39,13 @@ fun NutrientGoalsContent(
                                         content = {
                                             goalFields.forEach { field ->
                                                 val enabled =
-                                                    (!field.name.nutrientData.nutrient.isPremium || user.isPremium)
+                                                    (!field.name.nutrientData.nutrient.isPremium || isUserPremium)
 
                                                 key(field.name.nutrientData.nutrient.id) {
                                                     GoalsEditionFormField(
                                                         field = field,
                                                         enabled = enabled,
+                                                        isUserPremium = isUserPremium,
                                                         modifier = Modifier.blurPremiumItem(!enabled)
                                                     )
                                                 }
@@ -59,7 +59,7 @@ fun NutrientGoalsContent(
                 }
             }
 
-            if (!user.isPremium) {
+            if (!isUserPremium) {
                 item {
                     UpgradePromptSection(
                         premiumNutrientsMap = premiumNutrientsMap

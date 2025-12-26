@@ -24,19 +24,23 @@ import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.shared.PremiumIcon
-import com.example.fitnessway.util.Nutrient.getColor
+import com.example.fitnessway.util.Nutrient.getUserNutrientColor
 import com.example.fitnessway.util.Ui.InputUi
 
 @Composable
 fun GoalsEditionFormField(
     field: FormField<FormFieldName.NutrientGoalData>,
     enabled: Boolean = true,
+    isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
     val nutrient = field.name.nutrientData.nutrient
     val preferences = field.name.nutrientData.preferences
-    val goalTextColor = getColor(preferences.hexColor) ?: MaterialTheme.colorScheme.primary
-    val textStyle = InputUi.getTextStyle(goalTextColor)
+    val goalTextColor = getUserNutrientColor(
+        color = preferences.hexColor,
+        isUserPremium = isUserPremium
+    )
+    val textStyle = InputUi.getTextStyle(textColor = goalTextColor)
 
     Row(
         modifier = modifier.fillMaxWidth(),

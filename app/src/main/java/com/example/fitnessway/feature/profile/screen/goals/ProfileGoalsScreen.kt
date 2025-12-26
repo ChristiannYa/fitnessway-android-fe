@@ -122,11 +122,11 @@ fun ProfileGoalsScreen(
                                     NutrientGoalsContent(
                                         nutrientFields = goalFields,
                                         premiumNutrientsMap = premiumNutrientsMap,
-                                        user = user
+                                        isUserPremium = user.isPremium
                                     )
                                 }
                             )
-                        } ?: NotFoundText(text = "Form data not found")
+                        } ?: LoadingArea()
                     }
 
                     else -> NotFoundText(text = "Something went wrong")

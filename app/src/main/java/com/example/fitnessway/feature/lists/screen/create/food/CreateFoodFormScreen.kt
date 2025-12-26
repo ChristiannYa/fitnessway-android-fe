@@ -57,16 +57,16 @@ fun CreateFoodFormScreen(
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val currentStep by viewModel.currentStep.collectAsState()
     val foodCreationFormState by viewModel.foodCreationFormState.collectAsState()
-    val focusManager = LocalFocusManager.current
 
+    val focusManager = LocalFocusManager.current
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
     val fieldsProvider = FoodCreationFieldsProvider(
         formState = foodCreationFormState,
-        focusManager = focusManager,
         onFieldUpdate = { fieldName, value ->
             viewModel.updateFoodCreationFormField(fieldName, value)
-        }
+        },
+        focusManager = focusManager
     )
 
     val finalTitle = if (uiState.foodAddState is UiState.Success) {

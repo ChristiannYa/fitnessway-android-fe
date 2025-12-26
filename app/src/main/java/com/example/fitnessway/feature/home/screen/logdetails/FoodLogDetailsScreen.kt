@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -36,10 +37,9 @@ fun FoodLogDetailsScreen(
     val selectedFoodLog by viewModel.selectedFoodLog.collectAsState()
     val foodLogDetailsFormState by viewModel.foodLogEditionFormState.collectAsState()
 
+    val focusManager = LocalFocusManager.current
     val user = viewModel.user
-
     val foodLog = selectedFoodLog
-    val title = "Food Log Details"
 
     val foodLogUpdateErrMsg = handleErrStateTempMsg(
         uiState = uiState.foodLogUpdateState,
@@ -54,7 +54,7 @@ fun FoodLogDetailsScreen(
 
     if (foodLog == null) {
         Screen(
-            header = { Header(onBackClick = onBackClick, title = title) }
+            header = { Header(onBackClick = onBackClick, title = "Food Log Details") }
         ) {
             NotFoundText("Food log not found")
         }
@@ -97,7 +97,8 @@ fun FoodLogDetailsScreen(
                                 fieldName = fieldName,
                                 input = value
                             )
-                        }
+                        },
+                        focusManager = focusManager
                     )
 
                     Box(modifier = Modifier.imePadding()) {

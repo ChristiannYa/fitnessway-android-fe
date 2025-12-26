@@ -16,6 +16,8 @@ fun FoodLogEditionField(field: FoodLogEditionField) {
     BasicTextField(
         value = field.value,
         onValueChange = field.updateState,
+        keyboardActions = field.keyboardActions,
+        keyboardOptions = field.keyboardOptions,
         textStyle = InputUi.getTextStyle(),
         maxLines = 1,
         modifier = Modifier

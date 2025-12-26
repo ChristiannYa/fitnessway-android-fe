@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.user.User
-import com.example.fitnessway.ui.shared.LoadingComposable
+import com.example.fitnessway.ui.shared.Loading.LoadingComposable
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer

@@ -17,8 +17,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
-import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UiState
@@ -35,7 +35,7 @@ fun LazyListScope.foodsList(
                     .padding(bottom = 86.dp),
                 contentAlignment = Alignment.Center
             ) {
-                TextWithLoadingIndicator("Food List")
+                LoadingArea("Food List")
             }
         }
 

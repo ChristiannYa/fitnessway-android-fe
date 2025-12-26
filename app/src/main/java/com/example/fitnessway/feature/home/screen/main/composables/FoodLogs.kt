@@ -54,8 +54,8 @@ import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
-import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
@@ -103,7 +103,7 @@ fun FoodLogs(
                 .fillMaxHeight()
         ) {
             when (foodLogsState) {
-                is UiState.Loading -> TextWithLoadingIndicator(loadingText = "Loading Food Logs")
+                is UiState.Loading -> LoadingArea(text = "Loading Food ")
 
                 is UiState.Success -> FoodLogsCategorized(
                     foodLogs = foodLogsState.data,

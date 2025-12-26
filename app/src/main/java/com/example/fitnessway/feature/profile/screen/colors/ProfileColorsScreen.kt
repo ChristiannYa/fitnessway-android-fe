@@ -1,25 +1,20 @@
 package com.example.fitnessway.feature.profile.screen.colors
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.colors.composables.NutrientColorsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
-import com.example.fitnessway.util.Nutrient.filterOutPremiumNutrients
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientColorsFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -69,15 +64,7 @@ fun ProfileColorsScreen(
         content = {
             if (user != null) {
                 when (nutrientsState) {
-                    is UiState.Loading -> {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize(),
-                            content = {
-                                TextWithLoadingIndicator("Loading nutrients data")
-                            }
-                        )
-                    }
+                    is UiState.Loading -> LoadingArea("Loading nutrients data")
 
                     is UiState.Success -> {
                         colorsEditionFormState?.let { formState ->

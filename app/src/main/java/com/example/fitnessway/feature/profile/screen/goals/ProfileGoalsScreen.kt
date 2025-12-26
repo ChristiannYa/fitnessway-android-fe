@@ -1,16 +1,12 @@
 package com.example.fitnessway.feature.profile.screen.goals
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientGoalsContent
@@ -18,9 +14,9 @@ import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.shared.TextWithLoadingIndicator
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.Nutrient.filterOutNonPremiumNutrients
 import com.example.fitnessway.util.Nutrient.filterOutPremiumNutrients
@@ -81,15 +77,7 @@ fun ProfileGoalsScreen(
         content = {
             if (user != null) {
                 when (nutrientsState) {
-                    is UiState.Loading -> {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize(),
-                            content = {
-                                TextWithLoadingIndicator("Loading nutrients data")
-                            }
-                        )
-                    }
+                    is UiState.Loading -> LoadingArea("Loading nutrients data")
 
                     is UiState.Success -> {
                         goalsEditionFormState?.let { formState ->

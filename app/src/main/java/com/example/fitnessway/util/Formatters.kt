@@ -6,6 +6,7 @@ import java.text.DecimalFormat
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
+import kotlin.math.round
 import kotlin.math.sign
 
 object Formatters {
@@ -41,6 +42,14 @@ object Formatters {
         }
 
         return decimalFormat.format(finalValue)
+    }
+
+    fun Double.roundIfClose(threshold: Double = 0.01): Double {
+        val nearestWhole = round(this)
+
+        return if (abs(this - nearestWhole) < threshold) {
+            nearestWhole
+        } else this
     }
 
     fun validateDoubleAsString(

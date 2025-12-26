@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.roundIfClose
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
@@ -138,7 +139,7 @@ class FoodLogManager : IFoodLogManager {
 
     override fun initializeFoodLogEditionForm(foodLog: FoodLogData) {
         val amPerSerCalc = foodLog.servings * foodLog.food.information.amountPerServing
-        val amPerSer = round(amPerSerCalc)
+        val amPerSer = amPerSerCalc.roundIfClose()
 
         val formState = FormState(
             data = FormStates.FoodLogEdition(

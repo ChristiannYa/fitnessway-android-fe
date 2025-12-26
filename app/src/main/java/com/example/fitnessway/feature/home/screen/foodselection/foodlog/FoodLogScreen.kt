@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
@@ -50,9 +51,10 @@ fun FoodLogScreen(
     val foodLogFormState by viewModel.foodLogFormState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val foodLogAddState = uiState.foodLogAddState
-
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
     val selectedFoodToLog by viewModel.selectedFoodToLog.collectAsState()
+
+    val focusManager = LocalFocusManager.current
     val time = viewModel.getCurrentTime()
 
     var shouldShowFoodLogSuccess by remember { mutableStateOf(false) }
@@ -113,6 +115,7 @@ fun FoodLogScreen(
             ) {
                 val fieldsProvider = FoodLogFieldsProvider(
                     formState = foodLogFormStateCopy,
+                    focusManager = focusManager,
                     onFieldUpdate = { fieldName, value ->
                         viewModel.updateFoodLogFormField(fieldName, value)
                     }

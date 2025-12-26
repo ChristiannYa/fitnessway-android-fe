@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.util.Ui
 
 @Composable
 fun TextWithLoadingIndicator(
@@ -27,8 +28,8 @@ fun TextWithLoadingIndicator(
                 style = MaterialTheme.typography.bodyMedium
             )
             CircularProgressIndicator(
-                modifier = modifier.size(24.dp),
-                strokeWidth = 2.dp
+                modifier = modifier.size(Ui.Measurements.PROGRESS_INDICATOR_SIZE),
+                strokeWidth = Ui.Measurements.PROGRESS_INDICATOR_WIDTH
             )
         }
     )

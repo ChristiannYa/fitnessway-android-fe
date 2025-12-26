@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.Dp
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 
 @Composable
-fun LoadingArea(
+fun LoadingComposable(
     height: Dp,
     text: String? = null
 ) {

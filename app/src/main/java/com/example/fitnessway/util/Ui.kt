@@ -32,6 +32,8 @@ object Ui {
     object Measurements {
         val SCREEN_HORIZONTAL_PADDING = 16.dp
         val TEXT_ICON_HORIZONTAL_SPACE = 10.dp
+        val PROGRESS_INDICATOR_SIZE = 26.dp
+        val PROGRESS_INDICATOR_WIDTH = 2.dp
     }
 
     object InputUi {

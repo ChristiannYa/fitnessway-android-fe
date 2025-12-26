@@ -13,8 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.user.User
-import com.example.fitnessway.ui.shared.ApiErrorMessage
-import com.example.fitnessway.ui.shared.LoadingArea
+import com.example.fitnessway.ui.shared.LoadingComposable
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
@@ -36,7 +35,7 @@ fun OtherNutrientIntakes(
     val nutrientTypeName = nutrientType.name.lowercase().replaceFirstChar { it.uppercase() }
 
     when (state) {
-        is UiState.Loading -> LoadingArea(140.dp, "${nutrientTypeName}s")
+        is UiState.Loading -> LoadingComposable(140.dp, "${nutrientTypeName}s")
 
         is UiState.Success -> {
             val nutrients = filterNutrientsByType(

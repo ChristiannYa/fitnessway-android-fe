@@ -35,6 +35,7 @@ import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Nutrient.filterNutrientsByType
@@ -117,12 +118,13 @@ fun CreateFoodFormScreen(
                             }
                         }
                     },
+                    isOnBackEnabled = uiState.foodAddState !is UiState.Loading,
                     title = title
                 )
             }
         ) {
             when (nutrientsUiState) {
-                is UiState.Loading -> Text("Loading form")
+                is UiState.Loading -> LoadingArea()
 
                 is UiState.Success -> {
                     if (uiState.foodAddState is UiState.Success) {
@@ -156,29 +158,31 @@ fun CreateFoodFormScreen(
                                 ),
                             )
 
-                            val nutrientFieldsData = NutrientType.entries.associateWith { type ->
-                                val nutrientsByType = filterNutrientsByType(
-                                    nutrients = nutrients,
-                                    type = type
-                                ).filterOutPremiumNutrients(isUserPremium)
+                            val nutrientFieldsData = NutrientType.entries
+                                .associateWith { type ->
+                                    val nutrientsByType = filterNutrientsByType(
+                                        nutrients = nutrients,
+                                        type = type
+                                    )
+                                        .filterOutPremiumNutrients(isUserPremium)
 
-                                val nutrientsWithGoal =
-                                    nutrientsByType.filterOutNutrientsWithoutGoal()
+                                    val nutrientsWithGoal = nutrientsByType
+                                        .filterOutNutrientsWithoutGoal()
 
-                                val fields = nutrientsWithGoal
-                                    .mapIndexed { index, nutrientWithPrefs ->
-                                        fieldsProvider.nutrient(
-                                            nutrientWithPreferences = nutrientWithPrefs,
-                                            isLastField = index == nutrientsWithGoal.lastIndex
-                                        )
-                                    }
+                                    val fields = nutrientsWithGoal
+                                        .mapIndexed { index, nutrientWithPrefs ->
+                                            fieldsProvider.nutrient(
+                                                nutrientWithPreferences = nutrientWithPrefs,
+                                                isLastField = index == nutrientsWithGoal.lastIndex
+                                            )
+                                        }
 
-                                val withoutGoal = nutrientsByType
-                                    .filterOutNutrientsWithGoal()
-                                    .map { it.nutrient }
+                                    val withoutGoal = nutrientsByType
+                                        .filterOutNutrientsWithGoal()
+                                        .map { it.nutrient }
 
-                                Pair(fields, withoutGoal)
-                            }
+                                    Pair(fields, withoutGoal)
+                                }
 
                             val areNsValid = viewModel.areBasicNutrientsValid && currentStep >= 2
 

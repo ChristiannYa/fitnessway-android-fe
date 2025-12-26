@@ -44,7 +44,7 @@ fun Header(
                             val iconTint by animateColorAsState(
                                 targetValue = if (enabled) {
                                     MaterialTheme.colorScheme.onBackground
-                                } else MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                                } else MaterialTheme.colorScheme.surfaceVariant
                             )
 
                             Icon(

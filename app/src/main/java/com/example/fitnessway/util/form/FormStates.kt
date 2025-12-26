@@ -20,7 +20,8 @@ sealed interface FormStates {
     data class FoodLogEdition(
         val servings: String,
         val amountPerServing: String,
-        val amountPerServingDb: Double
+        val foodAmountPerServing: Double,
+        val servingsPrecised: Double,
     ) : FormStates
 
     data class FoodLog(

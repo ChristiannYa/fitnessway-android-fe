@@ -1,16 +1,10 @@
 package com.example.fitnessway.feature.home.screen.logdetails
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,10 +16,10 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.util.Animation.colorSpec
 import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
@@ -77,9 +71,6 @@ fun FoodLogDetailsScreen(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            val isFleValid = viewModel.isFoodLogEditionFormValid
-                                    && formState.data.servings.toDouble() != foodLog.servings
-
                             AppLabel(
                                 text = foodLog.category.replaceFirstChar { it.uppercase() },
                                 size = Ui.LabelSize.MEDIUM
@@ -90,24 +81,10 @@ fun FoodLogDetailsScreen(
                                 size = Ui.LabelSize.MEDIUM
                             )
 
-                            IconButton(
+                            Clickables.HeaderDoneButton(
                                 onClick = viewModel::updateFoodLog,
-                                enabled = isFleValid,
-                            ) {
-                                val tint by animateColorAsState(
-                                    targetValue = if (isFleValid) {
-                                        MaterialTheme.colorScheme.primary
-                                    } else MaterialTheme.colorScheme.surfaceVariant,
-                                    animationSpec = colorSpec,
-                                    label = "FodLogEditionDoneCheckMark"
-                                )
-
-                                Icon(
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = null,
-                                    tint = tint
-                                )
-                            }
+                                enabled = viewModel.isFoodLogEditionFormValid
+                            )
                         }
                     }
                 },

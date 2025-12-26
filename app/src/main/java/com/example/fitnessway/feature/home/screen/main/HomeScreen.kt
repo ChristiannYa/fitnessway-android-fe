@@ -167,7 +167,6 @@ fun HomeScreen(
 
                     FoodLogs(
                         foodLogsState = foodLogsState,
-                        foodLogDeleteState = uiState.foodLogDeleteState,
                         onViewFoodsList = { foodLogCategories ->
                             viewModel.setFoodLogCategory(foodLogCategories)
                             onViewFoodsList()
@@ -181,6 +180,7 @@ fun HomeScreen(
                             viewModel.setSelectedFoodLogToRemove(foodLog)
                             viewModel.deleteFoodLog()
                         },
+                        isDeletionError = uiState.foodLogDeleteState is UiState.Error,
                         isVisible = areFoodLogsVisible,
                         modifier = Modifier.align(Alignment.BottomCenter)
                     )

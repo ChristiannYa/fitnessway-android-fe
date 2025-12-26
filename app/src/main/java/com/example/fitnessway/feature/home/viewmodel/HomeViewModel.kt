@@ -16,6 +16,8 @@ import com.example.fitnessway.util.Food
 import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLog
 import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Food.mapFoodLogs
+import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -141,7 +143,10 @@ class HomeViewModel(
             id = selectedFoodLog.id,
             category = selectedFoodLog.category,
             time = selectedFoodLog.time,
-            servings = formState.data.servings.toDouble(),
+            servings = doubleFormatter(
+                value = formState.data.servingsPrecised,
+                decimalPlaces = 4
+            ).toDouble(),
             foodStatus = selectedFoodLog.foodStatus,
             foodSnapshotId = selectedFoodLog.foodSnapshotId,
             food = foodWithUpdatedNutrients

@@ -79,10 +79,10 @@ private fun getFoodLogsContainerColor(): Color {
 @Composable
 fun FoodLogs(
     foodLogsState: UiState<FoodLogsByCategory>,
-    foodLogDeleteState: UiState<FoodLogData>,
     onViewFoodsList: (FoodLogCategories) -> Unit,
     onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit,
+    isDeletionError: Boolean,
     isVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -107,10 +107,10 @@ fun FoodLogs(
 
                 is UiState.Success -> FoodLogsCategorized(
                     foodLogs = foodLogsState.data,
-                    foodLogDeleteState = foodLogDeleteState,
                     onViewFoodsList = onViewFoodsList,
                     onViewFoodLogDetails = onViewFoodLogDetails,
-                    onRemoveFoodLog = onRemoveFoodLog
+                    onRemoveFoodLog = onRemoveFoodLog,
+                    isDeletionError = isDeletionError
                 )
 
                 else -> {}
@@ -128,10 +128,10 @@ fun FoodLogs(
 @Composable
 private fun FoodLogsCategorized(
     foodLogs: FoodLogsByCategory,
-    foodLogDeleteState: UiState<FoodLogData>,
     onViewFoodsList: (FoodLogCategories) -> Unit,
     onViewFoodLogDetails: (FoodLogData) -> Unit,
-    onRemoveFoodLog: (FoodLogData) -> Unit
+    onRemoveFoodLog: (FoodLogData) -> Unit,
+    isDeletionError: Boolean
 ) {
     val categoriesWithLogs = listOf(
         FoodLogCategories.BREAKFAST to foodLogs.breakfast,
@@ -162,10 +162,10 @@ private fun FoodLogsCategorized(
                 FoodLogCategory(
                     foodLogs = logs,
                     category = category,
-                    foodLogDeleteState = foodLogDeleteState,
                     onViewFoodsList = onViewFoodsList,
                     onViewFoodLogDetails = onViewFoodLogDetails,
                     onRemoveFoodLog = onRemoveFoodLog,
+                    isDeletionError = isDeletionError
                 )
             }
         }
@@ -175,11 +175,11 @@ private fun FoodLogsCategorized(
 @Composable
 private fun FoodLogCategory(
     foodLogs: List<FoodLogData>,
-    foodLogDeleteState: UiState<FoodLogData>,
     category: FoodLogCategories,
     onViewFoodsList: (FoodLogCategories) -> Unit,
     onViewFoodLogDetails: (FoodLogData) -> Unit,
-    onRemoveFoodLog: (FoodLogData) -> Unit
+    onRemoveFoodLog: (FoodLogData) -> Unit,
+    isDeletionError: Boolean
 ) {
     val categoryFormatted = getFoodLogCategory(category)
 
@@ -199,9 +199,9 @@ private fun FoodLogCategory(
                 key(log.id) {
                     FoodLog(
                         foodLog = log,
-                        foodLogDeleteState = foodLogDeleteState,
                         onViewFoodLogDetails = { onViewFoodLogDetails(log) },
                         onRemoveFoodLog = { onRemoveFoodLog(log) },
+                        isDeletionError = isDeletionError
                     )
                 }
             }
@@ -231,9 +231,9 @@ private fun FoodLogCategory(
 @Composable
 private fun FoodLog(
     foodLog: FoodLogData,
-    foodLogDeleteState: UiState<FoodLogData>,
     onViewFoodLogDetails: (FoodLogData) -> Unit,
-    onRemoveFoodLog: (FoodLogData) -> Unit
+    onRemoveFoodLog: (FoodLogData) -> Unit,
+    isDeletionError: Boolean
 ) {
     val food = foodLog.food.information
 
@@ -247,15 +247,9 @@ private fun FoodLog(
         }
     }
 
-    LaunchedEffect(foodLogDeleteState) {
-        when (foodLogDeleteState) {
-            is UiState.Error -> {
-                swipeToRemoveLogState.reset()
-            }
-
-            is UiState.Idle -> {}
-
-            else -> {}
+    LaunchedEffect(isDeletionError) {
+        if (isDeletionError) {
+            swipeToRemoveLogState.reset()
         }
     }
 
@@ -358,7 +352,7 @@ private fun FoodLog(
                                     ),
                                     block = {
                                         append(
-                                            text = doubleFormatter(foodLog.servings, 2)
+                                            text = doubleFormatter(foodLog.servings, 3)
                                         )
                                     }
                                 )

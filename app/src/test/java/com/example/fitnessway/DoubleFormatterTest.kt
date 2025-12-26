@@ -25,6 +25,7 @@ class DoubleFormatterTest {
         assertEquals("109.9", doubleFormatter(109.9, 1))
         assertEquals("108.9", doubleFormatter(108.99, 1))
         assertEquals("10.8", doubleFormatter(10.892, 1))
+        assertEquals("50", doubleFormatter(49.98, 0))
         assertEquals("9.9", doubleFormatter(9.99, 1))
         assertEquals("9.9", doubleFormatter(9.98, 1))
         assertEquals("5.8", doubleFormatter(5.895, 1))

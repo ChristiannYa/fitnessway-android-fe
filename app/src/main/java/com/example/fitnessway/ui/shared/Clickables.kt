@@ -27,7 +27,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.Formatters.logcat
 
 object Clickables {
     enum class AppIconButtonSize(
@@ -76,7 +75,6 @@ object Clickables {
             )
 
             val padding = (size.size.value / 6).dp
-            logcat("clickable padding: $padding")
 
             val iconModifier = Modifier
                 .fillMaxSize()

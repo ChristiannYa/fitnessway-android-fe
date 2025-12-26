@@ -10,6 +10,7 @@ import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.math.round
 
 class FoodLogManager : IFoodLogManager {
     private val _foodLogCategory = MutableStateFlow<FoodLogCategories?>(null)
@@ -80,10 +81,28 @@ class FoodLogManager : IFoodLogManager {
         }
 
     override val isFoodLogEditionFormValid: Boolean
-        get() = _foodLogEditionFormState.value?.let {
-            it.data.servings.isNotEmpty() && foodLogEditionServingsDoubleError == null &&
-                    it.data.amountPerServing.isNotEmpty() && foodLogEditionFormAmPerSerDoubleError == null
-        } ?: false
+        get() = run {
+            val formState = _foodLogEditionFormState.value
+            val foodLog = _selectedFoodLog.value
+
+            if (formState != null && foodLog != null) {
+                val servingsPrecisedFormatted = doubleFormatter(
+                    value = formState.data.servingsPrecised,
+                    decimalPlaces = 4
+                ) // formatted into the food's servings for propper comparison
+
+                val foodServingsFormatted = doubleFormatter(
+                    value = foodLog.servings,
+                    decimalPlaces = 4
+                )
+
+                formState.data.servings.isNotEmpty() &&
+                        foodLogEditionServingsDoubleError == null &&
+                        formState.data.amountPerServing.isNotEmpty() &&
+                        foodLogEditionFormAmPerSerDoubleError == null &&
+                        servingsPrecisedFormatted != foodServingsFormatted
+            } else false
+        }
 
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {
@@ -106,27 +125,31 @@ class FoodLogManager : IFoodLogManager {
         _selectedFoodLogToRemove.value = foodLog
     }
 
-    override fun initializeFoodLogEditionForm(foodLog: FoodLogData) {
-        val amPerSer = foodLog.servings * foodLog.food.information.amountPerServing
-
-        _foodLogEditionFormState.value = FormState(
-            data = FormStates.FoodLogEdition(
-                servings = doubleFormatter(foodLog.servings, 2),
-                amountPerServing = doubleFormatter(amPerSer, 2),
-                amountPerServingDb = foodLog.food.information.amountPerServing
-            )
-        )
-    }
-
     override fun initializeFoodLogForm(food: FoodInformation, time: String) {
         _foodLogFormState.value = FormState(
             data = FormStates.FoodLog(
                 servings = doubleFormatter(1.0),
-                amountPerServing = doubleFormatter(food.information.amountPerServing, 2),
+                amountPerServing = doubleFormatter(food.information.amountPerServing, 3),
                 amountPerServingDb = food.information.amountPerServing,
                 time = time
             )
         )
+    }
+
+    override fun initializeFoodLogEditionForm(foodLog: FoodLogData) {
+        val amPerSerCalc = foodLog.servings * foodLog.food.information.amountPerServing
+        val amPerSer = round(amPerSerCalc)
+
+        val formState = FormState(
+            data = FormStates.FoodLogEdition(
+                servings = doubleFormatter(foodLog.servings, 3),
+                amountPerServing = doubleFormatter(amPerSer, 3),
+                foodAmountPerServing = foodLog.food.information.amountPerServing,
+                servingsPrecised = foodLog.servings
+            )
+        )
+
+        _foodLogEditionFormState.value = formState
     }
 
     override fun updateFoodLogEditionFormField(
@@ -139,28 +162,34 @@ class FoodLogManager : IFoodLogManager {
                     val newAmount = input.toDoubleOrNull()
 
                     val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
-                        val amount = formState.data.amountPerServingDb * newAmount
-
+                        val amount = formState.data.foodAmountPerServing * newAmount
                         doubleFormatter(amount, 3)
                     } else formState.data.amountPerServing
 
+                    val servingsPrecised = newAmount ?: formState.data.servingsPrecised
+
                     formState.data.copy(
                         servings = input,
-                        amountPerServing = dynAmountPerServing
+                        amountPerServing = dynAmountPerServing,
+                        servingsPrecised = servingsPrecised
                     )
                 }
 
                 FormFieldName.FoodLogEdition.AMOUNT_PER_SERVING -> {
                     val newAmount = input.toDoubleOrNull()
 
-                    val dynServings = if (newAmount != null && newAmount > 0) {
-                        val amount = newAmount / formState.data.amountPerServingDb
-                        doubleFormatter(amount, 3)
-                    } else formState.data.servings
+                    val (dynServings, servingsPrecised) = if (newAmount != null && newAmount > 0) {
+                        val precised = newAmount / formState.data.foodAmountPerServing
+                        val formatted = doubleFormatter(precised, 3)
+                        formatted to precised
+                    } else {
+                        formState.data.servings to formState.data.servingsPrecised
+                    }
 
                     formState.data.copy(
                         amountPerServing = input,
-                        servings = dynServings
+                        servings = dynServings,
+                        servingsPrecised = servingsPrecised
                     )
                 }
             }

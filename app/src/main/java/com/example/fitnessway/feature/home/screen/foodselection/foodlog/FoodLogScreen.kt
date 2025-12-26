@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
-import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformationList
+import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.ApiErrorMessage
 import com.example.fitnessway.ui.shared.Clickables
@@ -146,7 +146,7 @@ fun FoodLogScreen(
                                 }
 
                                 item {
-                                    FoodLogInformationList(
+                                    FoodLogInformation(
                                         food = selectedFoodToLogCopy,
                                         servingsField = fieldsProvider.servings(),
                                         amountPerServingsField = fieldsProvider.amountPerServing(

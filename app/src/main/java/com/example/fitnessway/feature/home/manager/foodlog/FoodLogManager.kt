@@ -139,7 +139,7 @@ class FoodLogManager : IFoodLogManager {
 
     override fun initializeFoodLogEditionForm(foodLog: FoodLogData) {
         val amPerSerCalc = foodLog.servings * foodLog.food.information.amountPerServing
-        val amPerSer = amPerSerCalc.roundIfClose()
+        val amPerSer = amPerSerCalc.roundIfClose(0.03)
 
         val formState = FormState(
             data = FormStates.FoodLogEdition(
@@ -210,7 +210,7 @@ class FoodLogManager : IFoodLogManager {
 
                     val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
                         val amount = currentState.data.amountPerServingDb * newAmount
-                        doubleFormatter(amount, 2)
+                        doubleFormatter(amount, 3)
                     } else currentState.data.amountPerServing // Keep current if invalid
 
                     currentState.data.copy(
@@ -224,7 +224,7 @@ class FoodLogManager : IFoodLogManager {
 
                     val dynServings = if (newAmount != null && newAmount > 0) {
                         val amount = newAmount / currentState.data.amountPerServingDb
-                        doubleFormatter(amount, 2)
+                        doubleFormatter(amount, 3)
                     } else currentState.data.servings // Keep current if invalid
 
                     currentState.data.copy(

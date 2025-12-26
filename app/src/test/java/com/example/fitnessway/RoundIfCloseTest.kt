@@ -66,6 +66,7 @@ class RoundIfCloseTest {
         assertEquals(50.0, 49.985.roundIfClose(threshold = 0.02), 0.0)
         assertEquals(50.0, 50.015.roundIfClose(threshold = 0.02), 0.0)
         assertEquals(49.97, 49.97.roundIfClose(threshold = 0.02), 0.0)  // Beyond 0.02
+        assertEquals(50.0, 49.98.roundIfClose(threshold = 0.02), 0.0)
     }
 
     @Test

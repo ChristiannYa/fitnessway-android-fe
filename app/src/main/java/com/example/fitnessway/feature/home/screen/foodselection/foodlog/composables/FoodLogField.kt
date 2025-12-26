@@ -19,7 +19,7 @@ import com.example.fitnessway.data.model.form.FoodLogField
 import com.example.fitnessway.util.Ui.InputUi
 
 @Composable
-fun FoodLogBaseInformationField(field: FoodLogField) {
+fun FoodLogField(field: FoodLogField) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,

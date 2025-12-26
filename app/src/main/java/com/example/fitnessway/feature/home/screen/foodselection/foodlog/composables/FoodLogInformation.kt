@@ -16,10 +16,9 @@ import com.example.fitnessway.data.model.form.FoodLogField
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Food
-import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 
 @Composable
-fun FoodLogInformationList(
+fun FoodLogInformation(
     food: FoodInformation,
     servingsField: FoodLogField,
     amountPerServingsField: FoodLogField,
@@ -56,23 +55,11 @@ fun FoodLogInformationList(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 content = {
-                    FoodLogBaseInformationField(servingsField)
-                    FoodLogBaseInformationField(amountPerServingsField)
-                    FoodLogBaseInformationField(timeField)
+                    FoodLogField(servingsField)
+                    FoodLogField(amountPerServingsField)
+                    FoodLogField(timeField)
                 }
             )
         }
-    )
-}
-
-@Composable
-private fun getFoodLogFormFields(
-    fieldsProvider: FoodLogFieldsProvider,
-    servingUnit: String,
-): List<FoodLogField> {
-    return listOf(
-        fieldsProvider.servings(),
-        fieldsProvider.amountPerServing(servingUnit),
-        fieldsProvider.time()
     )
 }

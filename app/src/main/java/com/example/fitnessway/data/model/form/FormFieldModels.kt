@@ -8,6 +8,7 @@ data class FormField<T : FormFieldName>(
     val name: T,
     val label: String,
     val value: String,
+    val enabled: Boolean = true,
     val updateState: (String) -> Unit,
     val keyboardOptions: KeyboardOptions = KeyboardOptions(),
     val keyboardActions: KeyboardActions = KeyboardActions(),

@@ -14,7 +14,8 @@ import com.example.fitnessway.util.form.FormStates
 class FoodLogFieldsProvider(
     private val formState: FormState<FormStates.FoodLog>,
     private val onFieldUpdate: (FormFieldName.FoodLog, String) -> Unit,
-    private val focusManager: FocusManager
+    private val focusManager: FocusManager,
+    private val isFormSubmitting: Boolean
 ) {
     @Composable
     fun servings(): FoodLogField {
@@ -22,6 +23,7 @@ class FoodLogFieldsProvider(
             name = FormFieldName.FoodLog.SERVINGS,
             label = "Servings",
             value = formState.data.servings,
+            enabled = !isFormSubmitting,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
             ),
@@ -40,6 +42,7 @@ class FoodLogFieldsProvider(
             name = FormFieldName.FoodLog.AMOUNT_PER_SERVING,
             label = "Amount Per Serving ($servingUnit)",
             value = formState.data.amountPerServing,
+            enabled = !isFormSubmitting,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
             ),
@@ -58,6 +61,7 @@ class FoodLogFieldsProvider(
             name = FormFieldName.FoodLog.TIME,
             label = "Time",
             value = formState.data.time,
+            enabled = !isFormSubmitting,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
             ),

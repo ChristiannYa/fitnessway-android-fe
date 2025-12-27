@@ -117,6 +117,7 @@ fun FoodLogScreen(
                 val fieldsProvider = FoodLogFieldsProvider(
                     formState = foodLogFormStateCopy,
                     focusManager = focusManager,
+                    isFormSubmitting = foodLogAddState is UiState.Loading,
                     onFieldUpdate = { fieldName, value ->
                         viewModel.updateFoodLogFormField(fieldName, value)
                     }

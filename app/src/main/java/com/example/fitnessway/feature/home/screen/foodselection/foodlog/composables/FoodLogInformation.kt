@@ -22,7 +22,7 @@ fun FoodLogInformation(
     food: FoodInformation,
     servingsField: FoodLogField,
     amountPerServingsField: FoodLogField,
-    timeField: FoodLogField
+    timeField: FoodLogField,
 ) {
     Column(
         modifier = Modifier.areaContainer(AreaContainerSize.LARGE),

@@ -37,6 +37,7 @@ fun FoodLogField(field: FoodLogField) {
             keyboardOptions = field.keyboardOptions,
             keyboardActions = field.keyboardActions,
             onValueChange = field.updateState,
+            enabled = field.enabled,
             textStyle = InputUi.getTextStyle(),
             maxLines = 1,
             modifier = Modifier

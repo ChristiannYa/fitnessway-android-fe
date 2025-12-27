@@ -12,12 +12,11 @@ import com.example.fitnessway.feature.home.manager.IHomeManagers
 import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
-import com.example.fitnessway.util.Food
-import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLog
-import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
-import com.example.fitnessway.util.Food.mapFoodLogs
+import com.example.fitnessway.util.UFood
+import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLog
+import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
+import com.example.fitnessway.util.UFood.mapFoodLogs
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -214,7 +213,7 @@ class HomeViewModel(
         val optimisticNutrientIntakes = calcNutrientIntakesFromFoodLog(
             currentIntakes = originalNutrientIntakes,
             foodLog = selectedFoodLogToRemove,
-            operation = Food.FoodNutrientIntakesOperation.SUBTRACT
+            operation = UFood.FoodNutrientIntakesOperation.SUBTRACT
         )
 
         // Update UI immediately
@@ -292,7 +291,7 @@ class HomeViewModel(
                             val revertedNutrients = calcNutrientIntakesFromFoodLog(
                                 currentIntakes = currentNutrientIntakesState.data,
                                 foodLog = selectedFoodLogToRemove,
-                                operation = Food.FoodNutrientIntakesOperation.ADD
+                                operation = UFood.FoodNutrientIntakesOperation.ADD
                             )
 
                             nutrientRepo.updateState {

@@ -18,9 +18,9 @@ import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.Food
+import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Nutrient.getColor
+import com.example.fitnessway.util.UNutrient.getColor
 import com.example.fitnessway.util.UiState
 
 @Composable
@@ -78,8 +78,8 @@ private fun Food(
     onSelectedFood: () -> Unit,
     user: User
 ) {
-    val foodBrandText = Food.Ui.getFoodBrandText(food.information.brand)
-    val foodBrandColor = Food.Ui.getFoodBrandColor()
+    val foodBrandText = UFood.Ui.getFoodBrandText(food.information.brand)
+    val foodBrandColor = UFood.Ui.getFoodBrandColor()
 
     Column(
         modifier = Modifier

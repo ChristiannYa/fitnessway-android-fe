@@ -31,10 +31,10 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessBannerAnimated
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.Food.Ui.getFoodLogCategory
-import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
-import com.example.fitnessway.util.Nutrient
-import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
+import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
+import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
+import com.example.fitnessway.util.UNutrient
+import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
@@ -212,7 +212,7 @@ private fun NutrientSection(
 
             PagedNutrients(
                 nutrients = nutrients,
-                displayFormat = Nutrient.ScrollableNutrientsFormat.BOX,
+                displayFormat = UNutrient.ScrollableNutrientsFormat.BOX,
                 isDataMinimal = true,
                 isBasicNutrient = isBasicNutrient,
                 isBaseSizeDisplay = false,

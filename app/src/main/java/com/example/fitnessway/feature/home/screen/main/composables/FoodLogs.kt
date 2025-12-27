@@ -62,9 +62,9 @@ import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.ui.theme.WhiteBackground
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.Food.Ui.getFoodBrandColor
-import com.example.fitnessway.util.Food.Ui.getFoodBrandText
-import com.example.fitnessway.util.Food.Ui.getFoodLogCategory
+import com.example.fitnessway.util.UFood.Ui.getFoodBrandColor
+import com.example.fitnessway.util.UFood.Ui.getFoodBrandText
+import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Ui

@@ -30,12 +30,12 @@ import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Nutrient.Ui.NutrientsAsLine
-import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
-import com.example.fitnessway.util.Nutrient.combineAll
-import com.example.fitnessway.util.Nutrient.mapNutrients
+import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
+import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
+import com.example.fitnessway.util.UNutrient.combineAll
+import com.example.fitnessway.util.UNutrient.mapNutrients
 
-object Food {
+object UFood {
     enum class FoodNutrientIntakesOperation {
         ADD, SUBTRACT
     }
@@ -220,7 +220,7 @@ object Food {
 
                     PagedNutrients(
                         nutrients = nutrients.basic,
-                        displayFormat = Nutrient.ScrollableNutrientsFormat.CIRCLE,
+                        displayFormat = UNutrient.ScrollableNutrientsFormat.CIRCLE,
                         isUserPremium = user.isPremium
                     )
                 }

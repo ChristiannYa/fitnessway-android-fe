@@ -15,7 +15,7 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.form.FoodLogField
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.Food
+import com.example.fitnessway.util.UFood
 
 @Composable
 fun FoodLogInformation(
@@ -33,8 +33,8 @@ fun FoodLogInformation(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val brand = Food.Ui.getFoodBrandText(food.information.brand)
-                val brandColor = Food.Ui.getFoodBrandColor()
+                val brand = UFood.Ui.getFoodBrandText(food.information.brand)
+                val brandColor = UFood.Ui.getFoodBrandColor()
 
                 Text(
                     text = brand,

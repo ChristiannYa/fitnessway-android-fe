@@ -1,7 +1,6 @@
 package com.example.fitnessway.feature.lists.manager.food
 
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.StateFlow
 
@@ -13,7 +12,6 @@ interface IFoodManager {
     val createFormAmountPerServingError: String?
     val createFormServingUnitError: String?
     val isBasicDataValid: Boolean
-    val areBasicNutrientsValid: Boolean
 
     fun updateFoodCreationFormField(
         fieldName: FormFieldName.IFoodCreation,
@@ -23,11 +21,11 @@ interface IFoodManager {
     fun updateStep(
         step: Int,
         goesBack: Boolean = true,
-        onExitForm: (() -> Unit)? = null,
         onSubmit: (() -> Unit)? = null
     )
 
-    fun validateFoodNonBaseNutrients(nutrients: List<Nutrient>): Boolean
+    fun validateRequiredNutrients(nutrientIds: Set<Int>): Boolean
+    fun validateOptionalNutrients(nutrientIds: Set<Int>): Boolean
 
     fun resetFoodFormState()
 }

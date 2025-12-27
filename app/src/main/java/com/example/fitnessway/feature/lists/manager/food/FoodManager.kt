@@ -2,7 +2,6 @@ package com.example.fitnessway.feature.lists.manager.food
 
 import com.example.fitnessway.data.model.food.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.util.Formatters.toInputDouble
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormStates
@@ -71,11 +70,6 @@ class FoodManager : IFoodManager {
                 _foodCreationFormState.value.amountPerServing.isNotEmpty() && createFormAmountPerServingError == null &&
                 _foodCreationFormState.value.servingUnit.isNotEmpty() && createFormServingUnitError == null
 
-    override val areBasicNutrientsValid: Boolean
-        get() = _foodCreationFormState.value.nutrients.values.any {
-            (it.toDoubleOrNull() ?: 0.0) > 0
-        }
-
     override fun updateFoodCreationFormField(
         fieldName: FormFieldName.IFoodCreation,
         input: String
@@ -109,49 +103,59 @@ class FoodManager : IFoodManager {
         }
     }
 
+    override fun updateStep(
+        step: Int,
+        goesBack: Boolean,
+        onSubmit: (() -> Unit)?,
+    ) {
+        when (step) {
+            1 -> if (!goesBack) _currentStep.value = 2
+            2 -> if (goesBack) { _currentStep.value = 1 } else { _currentStep.value = 3 }
+            3 -> if (goesBack) { _currentStep.value = 2 } else { _currentStep.value = 4 }
+            4 -> if (goesBack) { _currentStep.value = 3 } else { onSubmit?.invoke() }
+        }
+    }
+
     override fun resetFoodFormState() {
         _currentStep.value = 1
         _foodCreationFormState.value = emptyFoodCreationFormState
     }
 
-    override fun updateStep(
-        step: Int,
-        goesBack: Boolean,
-        onExitForm: (() -> Unit)?,
-        onSubmit: (() -> Unit)?,
-    ) {
-        when (step) {
-            1 -> if (goesBack) {
-                onExitForm?.invoke()
-                resetFoodFormState()
-            } else if (isBasicDataValid) {
-                _currentStep.value = 2
-            }
+    override fun validateRequiredNutrients(nutrientIds: Set<Int>): Boolean {
+        val formState = _foodCreationFormState.value
 
-            2 -> if (goesBack) _currentStep.value =
-                1 else if (areBasicNutrientsValid) _currentStep.value = 3
+        val isAnyInvalid = nutrientIds.any { id ->
+            val value = formState.nutrients[id]
 
-            3 -> if (goesBack) _currentStep.value = 2 else _currentStep.value = 4
-            4 -> if (goesBack) _currentStep.value = 3 else {
-                onSubmit?.invoke()
-            }
+            if (value.isNullOrEmpty()) return@any false
+
+            value.toInputDouble() == null
         }
+
+        if (isAnyInvalid) return false
+
+        val hasAtLeastOnePositive = nutrientIds.any { id ->
+            val value = formState.nutrients[id]
+            value?.toInputDouble()?.let { it > 0 } == true
+        }
+
+        return hasAtLeastOnePositive
     }
 
-    override fun validateFoodNonBaseNutrients(nutrients: List<Nutrient>): Boolean {
+    override fun validateOptionalNutrients(nutrientIds: Set<Int>): Boolean {
         val formState = _foodCreationFormState.value
-        val targetNutrientIds = nutrients.map { it.id }.toSet()
 
-        val isAnyTargetNutrientInvalid = targetNutrientIds.any { id ->
+        val isAnyInvalid = nutrientIds.any { id ->
             val value = formState.nutrients[id]
 
             if (value.isNullOrEmpty()) return@any false
 
             val amount = value.toInputDouble()
             val isInvalid = amount == null || amount <= 0.0
+
             isInvalid
         }
 
-        return !isAnyTargetNutrientInvalid
+        return !isAnyInvalid
     }
 }

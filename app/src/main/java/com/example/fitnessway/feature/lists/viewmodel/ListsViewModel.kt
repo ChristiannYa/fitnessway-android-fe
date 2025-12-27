@@ -19,7 +19,6 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.feature.lists.manager.toggle.ISelectionManager
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -240,7 +239,6 @@ class ListsViewModel(
     }
 
     fun resetFoodAddState() {
-        logcat("lists view model resetFoodAddState called")
         _uiState.update { it.copy(foodAddState = UiState.Idle) }
     }
 
@@ -252,7 +250,7 @@ class ListsViewModel(
         _uiState.update { it.copy(foodDeleteState = UiState.Idle) }
     }
 
-    fun resetFoodCreationScreenStatesOnSuccess() {
+    fun resetFoodCreationScreenStates() {
         viewModelScope.launch {
             delay(500)
             resetFoodFormState()

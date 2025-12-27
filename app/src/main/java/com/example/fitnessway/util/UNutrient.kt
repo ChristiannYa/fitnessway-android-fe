@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -51,10 +52,9 @@ import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.LabelSize
-import com.example.fitnessway.data.model.nutrient.Nutrient as NutrientModel
 
 
-object Nutrient {
+object UNutrient {
     enum class ScrollableNutrientsFormat {
         BOX,
         CIRCLE
@@ -152,6 +152,8 @@ object Nutrient {
     }
 
 
+    fun List<Nutrient>.getIds(): List<Int> = this.map { it.id }
+
     fun getColor(color: String?): Color? {
         if (color.isNullOrEmpty()) return null
 
@@ -194,7 +196,7 @@ object Nutrient {
     object Ui {
         @Composable
         fun NutrientLabelsFlowRow(
-            nutrients: List<NutrientModel>,
+            nutrients: List<Nutrient>,
             textStyle: TextStyle = MaterialTheme.typography.labelMedium,
             color: Color = MaterialTheme.colorScheme.surfaceVariant
         ) {

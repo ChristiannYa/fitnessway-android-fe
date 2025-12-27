@@ -5,7 +5,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
-import com.example.fitnessway.util.Nutrient.formatNutrientsDataAsMap
+import com.example.fitnessway.util.UNutrient.formatNutrientsDataAsMap
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.CoroutineScope

@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.NutrientColorUpdateField
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
-import com.example.fitnessway.util.Nutrient.getColor
+import com.example.fitnessway.util.UNutrient.Ui.NutrientCategoryTitle
+import com.example.fitnessway.util.UNutrient.getColor
 
 @Composable
 fun NutrientColorsContent(fields: Map<NutrientType, List<NutrientColorUpdateField>>) {

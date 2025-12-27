@@ -24,7 +24,7 @@ import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.shared.PremiumIcon
-import com.example.fitnessway.util.Nutrient.getUserNutrientColor
+import com.example.fitnessway.util.UNutrient.getUserNutrientColor
 import com.example.fitnessway.util.Ui.InputUi
 
 @Composable

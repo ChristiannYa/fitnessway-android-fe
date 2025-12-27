@@ -12,7 +12,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.util.Food.Ui.getFoodLogCategory
+import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

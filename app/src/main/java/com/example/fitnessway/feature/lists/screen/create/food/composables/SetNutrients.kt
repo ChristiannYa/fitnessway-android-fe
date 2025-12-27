@@ -14,7 +14,7 @@ import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
-import com.example.fitnessway.util.Nutrient.Ui.NutrientLabelsFlowRow
+import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow
 
 @Composable
 fun SetNutrients(

@@ -15,8 +15,8 @@ import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.Nutrient.Ui.NutrientLabelsFlowRow
-import com.example.fitnessway.util.Nutrient.getNutrientCategoryTitle
+import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow
+import com.example.fitnessway.util.UNutrient.getNutrientCategoryTitle
 import com.example.fitnessway.util.Ui.Measurements.TEXT_ICON_HORIZONTAL_SPACE
 
 @Composable

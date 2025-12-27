@@ -27,7 +27,7 @@ import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
-import com.example.fitnessway.util.Food.FoodComposables
+import com.example.fitnessway.util.UFood.FoodComposables
 import com.example.fitnessway.util.Formatters.doubleFormatter
 
 private const val deletedFoodMessage = "You have removed this food from your food list"

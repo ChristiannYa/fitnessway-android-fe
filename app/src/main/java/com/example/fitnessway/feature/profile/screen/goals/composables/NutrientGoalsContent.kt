@@ -13,7 +13,7 @@ import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.blurPremiumItem
-import com.example.fitnessway.util.Nutrient.Ui.NutrientCategoryTitle
+import com.example.fitnessway.util.UNutrient.Ui.NutrientCategoryTitle
 
 @Composable
 fun NutrientGoalsContent(

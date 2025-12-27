@@ -39,10 +39,11 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
-import com.example.fitnessway.util.Nutrient.filterNutrientsByType
-import com.example.fitnessway.util.Nutrient.filterOutNutrientsWithGoal
-import com.example.fitnessway.util.Nutrient.filterOutNutrientsWithoutGoal
-import com.example.fitnessway.util.Nutrient.filterOutPremiumNutrients
+import com.example.fitnessway.util.UNutrient.filterNutrientsByType
+import com.example.fitnessway.util.UNutrient.filterOutNutrientsWithGoal
+import com.example.fitnessway.util.UNutrient.filterOutNutrientsWithoutGoal
+import com.example.fitnessway.util.UNutrient.filterOutPremiumNutrients
+import com.example.fitnessway.util.UNutrient.getIds
 import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
@@ -122,14 +123,18 @@ fun CreateFoodFormScreen(
                     onBackClick = {
                         if (foodAddState is UiState.Success) {
                             onBackClick()
-                            viewModel.resetFoodCreationScreenStatesOnSuccess()
+                            viewModel.resetFoodCreationScreenStates()
                         } else {
                             if (foodAddState !is UiState.Loading) {
-                                viewModel.updateStep(
-                                    step = currentStep,
-                                    goesBack = true,
-                                    onExitForm = onBackClick
-                                )
+                                if (currentStep == 1) {
+                                    onBackClick()
+                                    viewModel.resetFoodFormState()
+                                } else {
+                                    viewModel.updateStep(
+                                        step = currentStep,
+                                        goesBack = true
+                                    )
+                                }
                             }
                         }
                     },
@@ -210,14 +215,16 @@ fun CreateFoodFormScreen(
                                 Pair(fields, withoutGoal)
                             }
 
-                            val areNsValid = viewModel.areBasicNutrientsValid && currentStep >= 2
+                            val areNsValid = viewModel.validateRequiredNutrients(
+                                nutrientIds = nutrients.basic.map { it.nutrient }.getIds().toSet()
+                            ) && currentStep >= 2
 
-                            val areVsValid = viewModel.validateFoodNonBaseNutrients(
-                                nutrients = nutrients.vitamin.map { it.nutrient }
+                            val areVsValid = viewModel.validateOptionalNutrients(
+                                nutrientIds = nutrients.vitamin.map { it.nutrient }.getIds().toSet()
                             ) && currentStep >= 3
 
-                            val areMsValid = viewModel.validateFoodNonBaseNutrients(
-                                nutrients = nutrients.mineral.map { it.nutrient }
+                            val areMsValid = viewModel.validateOptionalNutrients(
+                                nutrientIds = nutrients.mineral.map { it.nutrient }.getIds().toSet()
                             ) && currentStep >= 4
 
                             val isCurrentStepValid = when (currentStep) {

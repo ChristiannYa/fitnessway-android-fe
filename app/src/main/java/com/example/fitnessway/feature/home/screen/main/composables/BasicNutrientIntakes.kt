@@ -17,9 +17,9 @@ import com.example.fitnessway.ui.shared.Loading.LoadingComposable
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.Nutrient
-import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
-import com.example.fitnessway.util.Nutrient.filterNutrientsByType
+import com.example.fitnessway.util.UNutrient
+import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
+import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 
 @Composable
@@ -71,7 +71,7 @@ fun BasicNutrientIntakes(
 
                         PagedNutrients(
                             nutrients = nutrients,
-                            displayFormat = Nutrient.ScrollableNutrientsFormat.BOX,
+                            displayFormat = UNutrient.ScrollableNutrientsFormat.BOX,
                             isUserPremium = user.isPremium
                         )
                     }

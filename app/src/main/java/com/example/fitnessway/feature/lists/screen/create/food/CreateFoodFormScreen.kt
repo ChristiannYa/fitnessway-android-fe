@@ -22,7 +22,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -48,7 +47,6 @@ import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -80,8 +78,6 @@ fun CreateFoodFormScreen(
         uiState = foodAddState,
         onTimeOut = viewModel::resetFoodAddState
     )
-
-    val scope = rememberCoroutineScope()
 
     val focusManager = LocalFocusManager.current
     val focusRequesterName = remember { FocusRequester() }
@@ -126,14 +122,7 @@ fun CreateFoodFormScreen(
                     onBackClick = {
                         if (foodAddState is UiState.Success) {
                             onBackClick()
-
-                            scope.launch {
-                                // Wait for the transition to the previous screen
-                                delay(500)
-
-                                viewModel.resetFoodFormState()
-                                viewModel.resetFoodAddState()
-                            }
+                            viewModel.resetFoodCreationScreenStatesOnSuccess()
                         } else {
                             if (foodAddState !is UiState.Loading) {
                                 viewModel.updateStep(

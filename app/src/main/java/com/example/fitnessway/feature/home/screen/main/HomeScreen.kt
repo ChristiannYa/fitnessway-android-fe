@@ -35,7 +35,7 @@ import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
-import com.example.fitnessway.util.Ui.handleErrStateTempMsg
+import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -53,7 +53,7 @@ fun HomeScreen(
     val selectedDate by viewModel.selectedDate.collectAsState()
     val areFoodLogsVisible by viewModel.areFoodLogsVisible.collectAsState()
 
-    val deleteFoodLogErrMsg = handleErrStateTempMsg(
+    val deleteFoodLogErrMsg = handleApiErrorTempMessage(
         uiState = uiState.foodLogDeleteState,
         onTimeOut = viewModel::resetFoodLogDeleteState
     )
@@ -193,8 +193,8 @@ fun HomeScreen(
                     )
 
                     ApiErrorMessageAnimated(
-                        isVisible = deleteFoodLogErrMsg != "",
-                        errorMessage = deleteFoodLogErrMsg
+                        isVisible = deleteFoodLogErrMsg != null,
+                        errorMessage = deleteFoodLogErrMsg ?: ""
                     )
                 }
             } else {

@@ -42,7 +42,7 @@ import com.example.fitnessway.util.Nutrient.filterNutrientsByType
 import com.example.fitnessway.util.Nutrient.filterOutNutrientsWithGoal
 import com.example.fitnessway.util.Nutrient.filterOutNutrientsWithoutGoal
 import com.example.fitnessway.util.Nutrient.filterOutPremiumNutrients
-import com.example.fitnessway.util.Ui.handleErrStateTempMsg
+import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
 import kotlinx.coroutines.delay
@@ -82,7 +82,7 @@ fun CreateFoodFormScreen(
         else -> "" to ""
     }
 
-    val foodAddErrMsg = handleErrStateTempMsg(
+    val foodAddErrMsg = handleApiErrorTempMessage(
         uiState = uiState.foodAddState,
         onTimeOut = viewModel::resetFoodAddState
     )
@@ -209,8 +209,8 @@ fun CreateFoodFormScreen(
                                     .verticalScroll(rememberScrollState())
                             ) {
                                 ApiErrorMessageAnimated(
-                                    isVisible = foodAddErrMsg != "",
-                                    errorMessage = foodAddErrMsg
+                                    isVisible = foodAddErrMsg != null,
+                                    errorMessage = foodAddErrMsg ?: ""
                                 )
 
                                 FormProgressIndicator(

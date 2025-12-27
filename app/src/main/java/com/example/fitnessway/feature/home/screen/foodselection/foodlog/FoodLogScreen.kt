@@ -1,20 +1,19 @@
 package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 
-import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -24,12 +23,13 @@ import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.HeaderRow
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.ui.shared.SuccessBannerAnimated
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Food.Ui.getFoodLogCategory
 import com.example.fitnessway.util.Food.calcNutrientIntakesFromFoodLogServings
@@ -37,9 +37,10 @@ import com.example.fitnessway.util.Nutrient
 import com.example.fitnessway.util.Nutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
+import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
+import com.example.fitnessway.util.Ui.handleApiSuccessTempState
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
-import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -47,17 +48,14 @@ fun FoodLogScreen(
     onBackClick: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
-    val user = viewModel.user
     val foodLogFormState by viewModel.foodLogFormState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-    val foodLogAddState = uiState.foodLogAddState
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
     val selectedFoodToLog by viewModel.selectedFoodToLog.collectAsState()
 
-    val focusManager = LocalFocusManager.current
+    val foodLogAddState = uiState.foodLogAddState
+    val user = viewModel.user
     val time = viewModel.getCurrentTime()
-
-    var shouldShowFoodLogSuccess by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -71,18 +69,21 @@ fun FoodLogScreen(
         }
     }
 
-    LaunchedEffect(foodLogAddState) {
-        if (foodLogAddState is UiState.Success) {
-            shouldShowFoodLogSuccess = true
-            delay(5000)
-            shouldShowFoodLogSuccess = false
-            viewModel.resetFoodLogAddState()
-        }
-    }
-
     val foodLogCategoryCopy = foodLogCategory
     val foodLogFormStateCopy = foodLogFormState
     val selectedFoodToLogCopy = selectedFoodToLog
+
+    val focusManager = LocalFocusManager.current
+
+    val isFoodLogSuccess = handleApiSuccessTempState(
+        uiState = foodLogAddState,
+        onTimeout = viewModel::resetFoodLogAddState
+    )
+
+    val foodLogErrorMessage = handleApiErrorTempMessage(
+        uiState = foodLogAddState,
+        onTimeOut = viewModel::resetFoodLogAddState
+    )
 
     if (user != null) {
         if (foodLogCategoryCopy != null &&
@@ -121,62 +122,62 @@ fun FoodLogScreen(
                     }
                 )
 
-                CompositionLocalProvider(
-                    values = arrayOf(LocalOverscrollFactory provides null),
-                    content = {
-                        val nutrients = remember(
-                            selectedFoodToLogCopy.nutrients,
-                            foodLogFormStateCopy.data.servings
-                        ) {
-                            val servings =
-                                foodLogFormStateCopy.data.servings.toDoubleOrNull() ?: 0.0
+                val nutrients = remember(
+                    selectedFoodToLogCopy.nutrients,
+                    foodLogFormStateCopy.data.servings
+                ) {
+                    val servings = foodLogFormStateCopy.data
+                        .servings.toDoubleOrNull() ?: 0.0
 
-                            calcNutrientIntakesFromFoodLogServings(
-                                nutrients = selectedFoodToLogCopy.nutrients,
-                                currentServings = 1.0,
-                                newServings = servings
-                            )
-                        }
+                    calcNutrientIntakesFromFoodLogServings(
+                        nutrients = selectedFoodToLogCopy.nutrients,
+                        currentServings = 1.0,
+                        newServings = servings
+                    )
+                }
 
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            content = {
-                                if (foodLogAddState is UiState.Error) {
-                                    item {
-                                        ApiErrorMessage(foodLogAddState.message)
-                                    }
-                                }
+                val scrollState = rememberScrollState()
 
-                                item {
-                                    FoodLogInformation(
-                                        food = selectedFoodToLogCopy,
-                                        servingsField = fieldsProvider.servings(),
-                                        amountPerServingsField = fieldsProvider.amountPerServing(
-                                            servingUnit = selectedFoodToLogCopy.information.servingUnit
-                                        ),
-                                        timeField = fieldsProvider.time()
-                                    )
-                                }
-
-                                val sections = getNutrientSectionsConfig(nutrients)
-
-                                sections.forEach { section ->
-                                    if (section.shouldShow) {
-                                        item {
-                                            NutrientSection(
-                                                title = section.title,
-                                                nutrients = section.nutrients,
-                                                isUserPremium = user.isPremium,
-                                                isBasicNutrient = section.isBasicNutrient
-                                            )
-                                        }
-                                    }
-                                }
-                            }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.verticalScroll(scrollState)
+                    ) {
+                        ApiErrorMessageAnimated(
+                            isVisible = foodLogErrorMessage != null,
+                            errorMessage = foodLogErrorMessage ?: ""
                         )
+
+                        FoodLogInformation(
+                            food = selectedFoodToLogCopy,
+                            servingsField = fieldsProvider.servings(),
+                            amountPerServingsField = fieldsProvider.amountPerServing(
+                                servingUnit = selectedFoodToLogCopy.information.servingUnit
+                            ),
+                            timeField = fieldsProvider.time()
+                        )
+
+                        val sections = getNutrientSectionsConfig(nutrients)
+
+                        sections.forEach { section ->
+                            if (section.shouldShow) {
+                                NutrientSection(
+                                    title = section.title,
+                                    nutrients = section.nutrients,
+                                    isUserPremium = user.isPremium,
+                                    isBasicNutrient = section.isBasicNutrient
+                                )
+                            }
+                        }
                     }
-                )
+
+                    SuccessBannerAnimated(
+                        text = "Food logged successfully",
+                        isVisible = isFoodLogSuccess,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                }
             }
         }
 

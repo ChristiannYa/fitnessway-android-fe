@@ -92,6 +92,18 @@ object Animation {
                     scaleOut(targetScale = 1.2f)
         }
 
+        object FadeInV1 {
+            val enter = slideInVertically(
+                initialOffsetY = { it }, // Start from bottom (full height offset)
+                animationSpec = tween(durationMillis = 300)
+            ) + fadeIn(animationSpec = tween(durationMillis = 300))
+
+            val exit = slideOutVertically(
+                targetOffsetY = { -it }, // Exit to bottom
+                animationSpec = tween(durationMillis = 300)
+            ) + fadeOut(animationSpec = tween(durationMillis = 300))
+        }
+
         object SlideVerticallyFromBottom {
             val enter = slideInVertically(
                 initialOffsetY = { fullHeight -> fullHeight },

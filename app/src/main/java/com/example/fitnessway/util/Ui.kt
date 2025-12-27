@@ -8,6 +8,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,23 +67,40 @@ object Ui {
     }
 
     @Composable
-    fun <T> handleErrStateTempMsg(
+    fun <T> handleApiErrorTempMessage(
         uiState: UiState<T>,
         onTimeOut: () -> Unit
-    ): String {
-        return when (uiState) {
-            is UiState.Error -> {
-                LaunchedEffect(uiState) {
-                    delay(8000)
-                    onTimeOut()
-                }
-
-                uiState.message
+    ): String? {
+        LaunchedEffect(uiState) {
+            if (uiState is UiState.Error) {
+                delay(8000)
+                onTimeOut()
             }
-
-            else -> ""
         }
+
+        return if (uiState is UiState.Error) uiState.message else null
     }
+
+    @Composable
+    fun <T> handleApiSuccessTempState(
+        uiState: UiState<T>,
+        delayMillis: Long = 6000,
+        onTimeout: () -> Unit
+    ): Boolean {
+        var shouldShow by remember { mutableStateOf(false) }
+
+        LaunchedEffect(uiState) {
+            if (uiState is UiState.Success) {
+                shouldShow = true
+                delay(delayMillis)
+                shouldShow = false
+                onTimeout()
+            }
+        }
+
+        return shouldShow
+    }
+
 
     @Composable
     fun AppLabel(

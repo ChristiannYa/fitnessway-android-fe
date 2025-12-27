@@ -99,7 +99,7 @@ fun EditionMode(
                                             fieldSection(
                                                 title = "Details",
                                                 fields = foodDetailFields,
-                                                content = { EditableField(it) }
+                                                content = { FoodDetailsField(it) }
                                             )
 
                                             nutrientFields.forEach { (_, fields, title) ->
@@ -107,7 +107,7 @@ fun EditionMode(
                                                     title = title,
                                                     fields = fields,
                                                     content = {
-                                                        EditableField(
+                                                        FoodDetailsField(
                                                             field = it,
                                                             onRemoveNutrient = onRemoveNutrient
                                                         )

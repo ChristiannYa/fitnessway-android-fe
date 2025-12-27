@@ -21,7 +21,10 @@ val repositoryModule = module {
     }
 
     single<IUserRepository> {
-        UserRepositoryImpl(apiService = get())
+        UserRepositoryImpl(
+            apiService = get(),
+            httpClient = get()
+        )
     }
 
     single<INutrientRepository> {

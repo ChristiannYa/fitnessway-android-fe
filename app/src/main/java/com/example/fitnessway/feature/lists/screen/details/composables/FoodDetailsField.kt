@@ -27,7 +27,7 @@ import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.form.field.rememberFieldInputMeasures
 
 @Composable
-fun <T : FormFieldName.IFoodEdition> EditableField(
+fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
     field: FormField<T>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

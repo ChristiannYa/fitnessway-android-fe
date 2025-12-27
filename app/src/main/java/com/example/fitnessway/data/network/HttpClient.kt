@@ -25,7 +25,7 @@ class HttpClient(private val cacheManager: CacheManager) {
             if (response.isSuccessful) {
                 val body = response.body()
 
-                if (body?.success == true && body.data != null) {
+                if (body != null && body.data != null) {
                     val extractedData = extractData(body.data)
 
                     // Invalidate cached URLs if provided
@@ -33,7 +33,9 @@ class HttpClient(private val cacheManager: CacheManager) {
                         invalidatedUrls.forEach { url -> cacheManager.evictUrl(url) }
                     }
 
-                    emit(UiState.Success(extractedData))
+                    emit(
+                        UiState.Success(extractedData)
+                    )
                 } else {
                     val err = body?.message ?: errMsg
 

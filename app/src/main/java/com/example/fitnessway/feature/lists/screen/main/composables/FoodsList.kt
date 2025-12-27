@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
-import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.Banners.ErrorBanner
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
@@ -59,7 +59,7 @@ fun LazyListScope.foodsList(
             }
         }
 
-        is UiState.Error -> item { ApiErrorMessage(state.message) }
+        is UiState.Error -> item { ErrorBanner(state.message) }
         is UiState.Idle -> {}
     }
 }

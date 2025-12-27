@@ -23,13 +23,13 @@ import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
+import com.example.fitnessway.ui.shared.Banners.SuccessBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.HeaderRow
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.shared.SuccessBannerAnimated
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
@@ -145,9 +145,9 @@ fun FoodLogScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.verticalScroll(scrollState)
                     ) {
-                        ApiErrorMessageAnimated(
+                        ErrorBannerAnimated(
                             isVisible = foodLogErrorMessage != null,
-                            errorMessage = foodLogErrorMessage ?: ""
+                            text = foodLogErrorMessage ?: ""
                         )
 
                         FoodLogInformation(

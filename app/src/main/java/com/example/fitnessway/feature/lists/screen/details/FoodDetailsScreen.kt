@@ -27,7 +27,7 @@ import com.example.fitnessway.feature.lists.screen.details.composables.FoodInfor
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodMoreOptionsButton
 import com.example.fitnessway.feature.lists.screen.details.composables.MoreOptionsPopup
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
@@ -226,9 +226,9 @@ fun FoodDetailsScreen(
                             verticalArrangement = Arrangement.spacedBy(18.dp),
                             modifier = Modifier.offset(y = headerOffset),
                             content = {
-                                ApiErrorMessageAnimated(
+                                ErrorBannerAnimated(
                                     isVisible = foodUpdateErrMsg != null,
-                                    errorMessage = foodUpdateErrMsg ?: ""
+                                    text = foodUpdateErrMsg ?: ""
                                 )
 
                                 FoodInformation(

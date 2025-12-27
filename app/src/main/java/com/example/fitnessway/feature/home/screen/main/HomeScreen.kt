@@ -29,7 +29,7 @@ import com.example.fitnessway.feature.home.screen.main.composables.FoodLogs
 import com.example.fitnessway.feature.home.screen.main.composables.HomeHeader
 import com.example.fitnessway.feature.home.screen.main.composables.OtherNutrientIntakes
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.shared.Screen
@@ -162,9 +162,9 @@ fun HomeScreen(
                         }
                     }
 
-                    ApiErrorMessageAnimated(
+                    ErrorBannerAnimated(
                         isVisible = nutrientIntakesState is UiState.Error,
-                        errorMessage = formatUiErrorMessage(nutrientIntakesState)
+                        text = formatUiErrorMessage(nutrientIntakesState)
                     )
 
                     FoodLogs(
@@ -194,9 +194,9 @@ fun HomeScreen(
                             .fillMaxWidth()
                     )
 
-                    ApiErrorMessageAnimated(
+                    ErrorBannerAnimated(
                         isVisible = deleteFoodLogErrMsg != null,
-                        errorMessage = deleteFoodLogErrMsg ?: ""
+                        text = deleteFoodLogErrMsg ?: ""
                     )
                 }
             } else {

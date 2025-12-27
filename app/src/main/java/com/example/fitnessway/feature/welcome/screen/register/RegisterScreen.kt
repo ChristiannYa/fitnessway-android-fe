@@ -34,7 +34,7 @@ import com.example.fitnessway.feature.welcome.screen.register.composables.StepOn
 import com.example.fitnessway.feature.welcome.screen.register.composables.StepThree
 import com.example.fitnessway.feature.welcome.screen.register.composables.StepTwo
 import com.example.fitnessway.feature.welcome.screen.register.viewmodel.RegisterViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.Banners.ErrorBanner
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.UiState
@@ -110,7 +110,7 @@ fun RegisterScreen(onBackClick: () -> Unit) {
                             it.uppercase()
                         }
 
-                        if (errMsg != viewableErr) ApiErrorMessage(errMsg)
+                        if (errMsg != viewableErr) ErrorBanner(errMsg)
 
                         if (errMsg == viewableErr) {
                             Box(

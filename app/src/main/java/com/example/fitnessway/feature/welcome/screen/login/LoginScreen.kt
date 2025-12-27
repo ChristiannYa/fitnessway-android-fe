@@ -43,7 +43,7 @@ import com.example.fitnessway.R
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.form.LoginField
 import com.example.fitnessway.feature.welcome.screen.login.viewmodel.LoginViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessage
+import com.example.fitnessway.ui.shared.Banners.ErrorBanner
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.SilverMist
@@ -153,7 +153,7 @@ fun LoginScreen(onBackClick: () -> Unit) {
                             it.uppercase()
                         }
 
-                        if (errMsg != viewableErr) ApiErrorMessage(errMsg)
+                        if (errMsg != viewableErr) ErrorBanner(errMsg)
 
                         if (errMsg == viewableErr) {
                             Box(

@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.NotFoundText
@@ -116,9 +116,9 @@ fun FoodLogDetailsScreen(
                                 )
                             }
 
-                            ApiErrorMessageAnimated(
+                            ErrorBannerAnimated(
                                 isVisible = foodLogUpdateErrMsg != null,
-                                errorMessage = foodLogUpdateErrMsg ?: ""
+                                text = foodLogUpdateErrMsg ?: ""
                             )
 
                             FoodLogDetails(

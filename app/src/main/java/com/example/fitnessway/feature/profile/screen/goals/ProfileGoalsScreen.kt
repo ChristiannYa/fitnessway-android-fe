@@ -12,7 +12,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientGoalsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.ActionButton
-import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
@@ -114,9 +114,9 @@ fun ProfileGoalsScreen(
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
                                 content = {
-                                    ApiErrorMessageAnimated(
+                                    ErrorBannerAnimated(
                                         isVisible = nutrientGoalsUpdateErrMsg != null,
-                                        errorMessage = nutrientGoalsUpdateErrMsg ?: ""
+                                        text = nutrientGoalsUpdateErrMsg ?: ""
                                     )
 
                                     NutrientGoalsContent(

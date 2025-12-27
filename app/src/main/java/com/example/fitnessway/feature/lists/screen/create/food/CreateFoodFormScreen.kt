@@ -33,8 +33,8 @@ import com.example.fitnessway.feature.lists.screen.create.food.composables.NextB
 import com.example.fitnessway.feature.lists.screen.create.food.composables.SetBasicData
 import com.example.fitnessway.feature.lists.screen.create.food.composables.SetNutrients
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
-import com.example.fitnessway.ui.shared.ApiErrorMessage
-import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
+import com.example.fitnessway.ui.shared.Banners.ErrorBanner
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.Screen
@@ -241,9 +241,9 @@ fun CreateFoodFormScreen(
                                     .weight(1f)
                                     .verticalScroll(rememberScrollState())
                             ) {
-                                ApiErrorMessageAnimated(
+                                ErrorBannerAnimated(
                                     isVisible = foodAddErrMsg != null,
-                                    errorMessage = foodAddErrMsg ?: ""
+                                    text = foodAddErrMsg ?: ""
                                 )
 
                                 FormProgressIndicator(
@@ -329,8 +329,8 @@ fun CreateFoodFormScreen(
                     }
                 }
 
-                is UiState.Error -> ApiErrorMessage(
-                    errMsg = nutrientsUiState.message
+                is UiState.Error -> ErrorBanner(
+                    text = nutrientsUiState.message
                 )
 
                 is UiState.Idle -> {}

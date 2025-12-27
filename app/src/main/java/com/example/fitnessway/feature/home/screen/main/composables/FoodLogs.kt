@@ -53,7 +53,7 @@ import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
-import com.example.fitnessway.ui.shared.ApiErrorMessageAnimated
+import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.NotFoundText
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
@@ -116,9 +116,9 @@ fun FoodLogs(
                 else -> {}
             }
 
-            ApiErrorMessageAnimated(
+            ErrorBannerAnimated(
                 isVisible = foodLogsState is UiState.Error,
-                errorMessage = formatUiErrorMessage(foodLogsState)
+                text = formatUiErrorMessage(foodLogsState)
             )
         }
     }

@@ -2,6 +2,8 @@ package com.example.fitnessway.data.model.form
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.focus.FocusProperties
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 
 data class FormField<T : FormFieldName>(
@@ -13,6 +15,7 @@ data class FormField<T : FormFieldName>(
     val keyboardOptions: KeyboardOptions = KeyboardOptions(),
     val keyboardActions: KeyboardActions = KeyboardActions(),
     val autoCapitalize: KeyboardCapitalization = KeyboardCapitalization.None,
+    val focusRequester: FocusRequester? = null,
     val errorMessage: String? = null
 )
 

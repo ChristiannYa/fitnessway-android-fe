@@ -8,6 +8,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -19,7 +20,7 @@ import com.example.fitnessway.util.Ui
 @Composable
 fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     field: FormField<T>,
-    enabled: Boolean = true,
+    enabled: Boolean = true
 ) {
     // val isNutrient = field.name is FormFieldName.FoodCreation.NutrientField
 
@@ -64,6 +65,12 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 focusedContainerColor = inputColor,
                 focusedTextColor = MaterialTheme.colorScheme.primary
             ),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (field.focusRequester != null) {
+                    Modifier.focusRequester(field.focusRequester)
+                } else Modifier
+            )
     )
 }

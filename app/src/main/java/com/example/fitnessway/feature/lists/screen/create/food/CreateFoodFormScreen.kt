@@ -21,9 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
@@ -59,18 +61,10 @@ fun CreateFoodFormScreen(
     val currentStep by viewModel.currentStep.collectAsState()
     val foodCreationFormState by viewModel.foodCreationFormState.collectAsState()
 
-    val focusManager = LocalFocusManager.current
+    val foodAddState = uiState.foodAddState
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
-    val fieldsProvider = FoodCreationFieldsProvider(
-        formState = foodCreationFormState,
-        onFieldUpdate = { fieldName, value ->
-            viewModel.updateFoodCreationFormField(fieldName, value)
-        },
-        focusManager = focusManager
-    )
-
-    val finalTitle = if (uiState.foodAddState is UiState.Success) {
+    val finalTitle = if (foodAddState is UiState.Success) {
         "Go home"
     } else "Minerals"
 
@@ -83,14 +77,46 @@ fun CreateFoodFormScreen(
     }
 
     val foodAddErrMsg = handleApiErrorTempMessage(
-        uiState = uiState.foodAddState,
+        uiState = foodAddState,
         onTimeOut = viewModel::resetFoodAddState
     )
 
     val scope = rememberCoroutineScope()
 
+    val focusManager = LocalFocusManager.current
+    val focusRequesterName = remember { FocusRequester() }
+    val focusRequesterNutrient = remember { FocusRequester() }
+    val focusRequesterVitamin = remember { FocusRequester() }
+    val focusRequesterMineral = remember { FocusRequester() }
+
+    val fieldsProvider = FoodCreationFieldsProvider(
+        formState = foodCreationFormState,
+        isFormSubmitting = foodAddState is UiState.Loading,
+        onFieldUpdate = { fieldName, value ->
+            viewModel.updateFoodCreationFormField(fieldName, value)
+        },
+        focusManager = focusManager
+    )
+
     LaunchedEffect(Unit) {
         viewModel.getNutrients()
+    }
+
+    LaunchedEffect(currentStep, nutrientsUiState) {
+        if (nutrientsUiState is UiState.Success) {
+            val focusRequester = when (currentStep) {
+                1 -> focusRequesterName
+                2 -> focusRequesterNutrient
+                3 -> focusRequesterVitamin
+                4 -> focusRequesterMineral
+                else -> null
+            }
+
+            focusRequester?.let {
+                delay(200)
+                it.requestFocus()
+            }
+        }
     }
 
     if (viewModel.user != null) {
@@ -98,7 +124,7 @@ fun CreateFoodFormScreen(
             header = {
                 Header(
                     onBackClick = {
-                        if (uiState.foodAddState is UiState.Success) {
+                        if (foodAddState is UiState.Success) {
                             onBackClick()
 
                             scope.launch {
@@ -109,7 +135,7 @@ fun CreateFoodFormScreen(
                                 viewModel.resetFoodAddState()
                             }
                         } else {
-                            if (uiState.foodAddState !is UiState.Loading) {
+                            if (foodAddState !is UiState.Loading) {
                                 viewModel.updateStep(
                                     step = currentStep,
                                     goesBack = true,
@@ -118,7 +144,7 @@ fun CreateFoodFormScreen(
                             }
                         }
                     },
-                    isOnBackEnabled = uiState.foodAddState !is UiState.Loading,
+                    isOnBackEnabled = foodAddState !is UiState.Loading,
                     title = title
                 )
             }
@@ -127,7 +153,7 @@ fun CreateFoodFormScreen(
                 is UiState.Loading -> LoadingArea()
 
                 is UiState.Success -> {
-                    if (uiState.foodAddState is UiState.Success) {
+                    if (foodAddState is UiState.Success) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -150,7 +176,9 @@ fun CreateFoodFormScreen(
                             val nutrients = nutrientsUiState.data
 
                             val foodBaseFields = listOf(
-                                fieldsProvider.name(),
+                                fieldsProvider.name(
+                                    focusRequester = focusRequesterName
+                                ),
                                 fieldsProvider.brand(),
                                 fieldsProvider.amountPerServing(),
                                 fieldsProvider.servingUnit(
@@ -158,31 +186,40 @@ fun CreateFoodFormScreen(
                                 ),
                             )
 
-                            val nutrientFieldsData = NutrientType.entries
-                                .associateWith { type ->
-                                    val nutrientsByType = filterNutrientsByType(
-                                        nutrients = nutrients,
-                                        type = type
-                                    )
-                                        .filterOutPremiumNutrients(isUserPremium)
+                            val nutrientFieldsData = NutrientType.entries.associateWith { type ->
+                                val nutrientsByType = filterNutrientsByType(
+                                    nutrients = nutrients,
+                                    type = type
+                                )
+                                    .filterOutPremiumNutrients(isUserPremium)
 
-                                    val nutrientsWithGoal = nutrientsByType
-                                        .filterOutNutrientsWithoutGoal()
+                                val nutrientsWithGoal =
+                                    nutrientsByType.filterOutNutrientsWithoutGoal()
 
-                                    val fields = nutrientsWithGoal
-                                        .mapIndexed { index, nutrientWithPrefs ->
-                                            fieldsProvider.nutrient(
-                                                nutrientWithPreferences = nutrientWithPrefs,
-                                                isLastField = index == nutrientsWithGoal.lastIndex
-                                            )
-                                        }
+                                val fields = nutrientsWithGoal
+                                    .mapIndexed { index, nutrientWithPrefs ->
+                                        // Create focus requester only if the index is 0
+                                        val focusRequester = if (index == 0) {
+                                            when (type) {
+                                                NutrientType.BASIC -> focusRequesterNutrient
+                                                NutrientType.VITAMIN -> focusRequesterVitamin
+                                                NutrientType.MINERAL -> focusRequesterMineral
+                                            }
+                                        } else null
 
-                                    val withoutGoal = nutrientsByType
-                                        .filterOutNutrientsWithGoal()
-                                        .map { it.nutrient }
+                                        fieldsProvider.nutrient(
+                                            nutrientWithPreferences = nutrientWithPrefs,
+                                            focusRequester = focusRequester,
+                                            isLastField = index == nutrientsWithGoal.lastIndex
+                                        )
+                                    }
 
-                                    Pair(fields, withoutGoal)
-                                }
+                                val withoutGoal = nutrientsByType
+                                    .filterOutNutrientsWithGoal()
+                                    .map { it.nutrient }
+
+                                Pair(fields, withoutGoal)
+                            }
 
                             val areNsValid = viewModel.areBasicNutrientsValid && currentStep >= 2
 
@@ -289,7 +326,7 @@ fun CreateFoodFormScreen(
                                     )
                                 },
                                 enabled = isCurrentStepValid,
-                                isSubmitting = uiState.foodAddState is UiState.Loading,
+                                isSubmitting = foodAddState is UiState.Loading,
                                 text = nextButtonText
                             )
                         }

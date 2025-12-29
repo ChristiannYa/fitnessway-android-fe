@@ -14,7 +14,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.Loading.LoadingComposable
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient
@@ -32,10 +32,10 @@ fun OtherNutrientIntakes(
     onNavigateToGoals: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val nutrientTypeName = nutrientType.name.lowercase().replaceFirstChar { it.uppercase() }
+    val nutrientTypeName = nutrientType.name.lowercase()
 
     when (state) {
-        is UiState.Loading -> LoadingComposable(140.dp, "${nutrientTypeName}s")
+        is UiState.Loading -> LoadingComposable(160.dp, "Loading $nutrientTypeName intakes")
 
         is UiState.Success -> {
             val nutrients = filterNutrientsByType(
@@ -60,8 +60,8 @@ fun OtherNutrientIntakes(
                     )
             ) {
                 if (isEmpty) {
-                    NotFoundText(
-                        text = "Set your $nutrientTypeName goals to see their progress"
+                    NotFoundMessage(
+                        message = "Set your $nutrientTypeName goals to see their progress"
                     )
                 } else {
                     Column(

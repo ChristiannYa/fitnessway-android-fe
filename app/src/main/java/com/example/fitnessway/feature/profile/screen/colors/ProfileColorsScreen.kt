@@ -12,8 +12,10 @@ import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientColorsFieldsProvider
@@ -49,14 +51,16 @@ fun ProfileColorsScreen(
                 onBackClick = onBackClick,
                 title = "Color Palette",
                 extraContent = {
-                    ActionButton(
-                        onClick = {
-                            viewModel.setColorsThatChanged()
-                            viewModel.setNutrientColors()
-                        },
-                        text = "Update",
-                        enabled = isColorsFormValid
-                    )
+                    if (nutrientsState is UiState.Success) {
+                        ActionButton(
+                            onClick = {
+                                viewModel.setColorsThatChanged()
+                                viewModel.setNutrientColors()
+                            },
+                            text = "Update",
+                            enabled = isColorsFormValid
+                        )
+                    }
                 }
             )
         },
@@ -64,7 +68,7 @@ fun ProfileColorsScreen(
         content = {
             if (user != null) {
                 when (nutrientsState) {
-                    is UiState.Loading -> LoadingArea("Loading nutrients data")
+                    is UiState.Loading -> LoadingArea("Loading nutrient colors")
 
                     is UiState.Success -> {
                         colorsEditionFormState?.let { formState ->
@@ -92,14 +96,18 @@ fun ProfileColorsScreen(
                                     NutrientColorsContent(fields)
                                 }
                             )
-                        } ?: NotFoundText("Form data not found")
+                        } ?: NotFoundMessage("Form data not found")
                     }
 
-                    else -> NotFoundText(text = "Something went wrong")
+                    else -> {}
                 }
-            } else {
-                NotFoundText("User not found")
-            }
+
+                NotFoundMessageAnimated(
+                    isVisible = nutrientsState is UiState.Error,
+                    message = formatUiErrorMessage(nutrientsState)
+                )
+
+            } else NotFoundMessage("User not found")
         }
     )
 }

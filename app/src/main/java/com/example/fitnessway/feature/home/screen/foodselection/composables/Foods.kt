@@ -15,7 +15,7 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.Banners.ErrorBanner
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UFood
@@ -51,7 +51,7 @@ private fun Foods(
     user: User
 ) {
     if (foods.isEmpty()) {
-        NotFoundText("Foods that you add to your list will appear here")
+        NotFoundMessage("Foods that you add to your list will appear here")
     } else {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),

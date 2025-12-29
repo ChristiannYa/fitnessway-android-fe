@@ -2,25 +2,23 @@ package com.example.fitnessway.feature.lists.screen.main.composables
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
-import com.example.fitnessway.ui.shared.Banners.ErrorBanner
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UiState
 
 fun LazyListScope.foodsList(
@@ -28,23 +26,14 @@ fun LazyListScope.foodsList(
     onViewDetails: (FoodInformation) -> Unit
 ) {
     when (state) {
-        is UiState.Loading -> item {
-            Box(
-                modifier = Modifier
-                    .fillParentMaxHeight()
-                    .padding(bottom = 86.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                LoadingArea("Food List")
-            }
-        }
+        is UiState.Loading -> item { LoadingArea("Loading foods") }
 
         is UiState.Success -> {
             val foods = state.data
 
             if (foods.isEmpty()) {
                 item {
-                    NotFoundText("Foods that you add to your list will appear here")
+                    NotFoundMessage("Foods that you add to your list will appear here")
                 }
             } else {
                 items(
@@ -59,8 +48,14 @@ fun LazyListScope.foodsList(
             }
         }
 
-        is UiState.Error -> item { ErrorBanner(state.message) }
-        is UiState.Idle -> {}
+        else -> {}
+    }
+
+    item("foodListErrorBanner") {
+        NotFoundMessageAnimated(
+            isVisible = state is UiState.Error,
+            message = formatUiErrorMessage(state)
+        )
     }
 }
 

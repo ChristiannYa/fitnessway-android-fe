@@ -30,6 +30,7 @@ import com.example.fitnessway.feature.lists.screen.main.composables.ToggleListVi
 import com.example.fitnessway.feature.lists.screen.main.composables.foodsList
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -40,6 +41,8 @@ fun ListsScreen(
 ) {
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
+
+    val foodsUiState = foodRepoUiState.foodsUiState
 
     LaunchedEffect(Unit) {
         viewModel.getFoods()
@@ -62,7 +65,7 @@ fun ListsScreen(
                     when (selectedList) {
                         ListOption.Food -> {
                             foodsList(
-                                state = foodRepoUiState.foodsUiState,
+                                state = foodsUiState,
                                 onViewDetails = { food ->
                                     viewModel.setSelectedFood(food)
                                     onViewFoodDetails()
@@ -79,21 +82,23 @@ fun ListsScreen(
                 }
             }
 
-            IconButton(
-                onClick = onNavigateToFoodCreationForm,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(42.dp)
-                    .background(MaterialTheme.colorScheme.inverseSurface)
-                    .align(Alignment.BottomCenter)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Create",
-                    tint = MaterialTheme.colorScheme.background,
+            if (foodsUiState is UiState.Success) {
+                IconButton(
+                    onClick = onNavigateToFoodCreationForm,
                     modifier = Modifier
-                        .fillMaxSize(0.8f)
-                )
+                        .clip(CircleShape)
+                        .size(42.dp)
+                        .background(MaterialTheme.colorScheme.inverseSurface)
+                        .align(Alignment.BottomCenter)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Create",
+                        tint = MaterialTheme.colorScheme.background,
+                        modifier = Modifier
+                            .fillMaxSize(0.8f)
+                    )
+                }
             }
         }
     }

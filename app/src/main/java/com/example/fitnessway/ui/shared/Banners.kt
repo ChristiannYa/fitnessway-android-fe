@@ -82,12 +82,14 @@ object Banners {
     @Composable
     fun ErrorBannerAnimated(
         isVisible: Boolean,
-        text: String
+        text: String,
+        modifier: Modifier = Modifier
     ) {
         AnimatedVisibility(
             visible = isVisible,
             enter = Animation.ComposableTransition.PopUpV2.enter,
-            exit = Animation.ComposableTransition.PopUpV2.exit
+            exit = Animation.ComposableTransition.PopUpV2.exit,
+            modifier = modifier
         ) { ErrorBanner(text) }
     }
 

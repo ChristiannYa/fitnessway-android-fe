@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
@@ -31,7 +32,8 @@ import com.example.fitnessway.feature.home.screen.main.composables.OtherNutrient
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.BlurOverlay
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
@@ -136,7 +138,9 @@ fun HomeScreen(
 
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                                    modifier = Modifier.verticalScroll(scrollState)
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .verticalScroll(scrollState)
                                 ) {
                                     BasicNutrientIntakes(
                                         state = nutrientIntakesState,
@@ -157,15 +161,16 @@ fun HomeScreen(
                                         user = user,
                                         onNavigateToGoals = onNavigateToGoals
                                     )
+
+                                    NotFoundMessageAnimated(
+                                        isVisible = nutrientIntakesState is UiState.Error,
+                                        message = formatUiErrorMessage(nutrientIntakesState),
+                                        modifier = Modifier.weight(1f)
+                                    )
                                 }
                             }
                         }
                     }
-
-                    ErrorBannerAnimated(
-                        isVisible = nutrientIntakesState is UiState.Error,
-                        text = formatUiErrorMessage(nutrientIntakesState)
-                    )
 
                     FoodLogs(
                         foodLogsState = foodLogsState,
@@ -200,7 +205,7 @@ fun HomeScreen(
                     )
                 }
             } else {
-                NotFoundText("User not found")
+                NotFoundMessage("User not found")
             }
         }
     )

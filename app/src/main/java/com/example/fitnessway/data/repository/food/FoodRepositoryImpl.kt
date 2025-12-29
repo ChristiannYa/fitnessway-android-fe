@@ -34,7 +34,7 @@ class FoodRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = { apiService.getFoods() },
             extractData = { it.foods ?: emptyList() },
-            errMsg = "Failed to fetch foods"
+            errMsg = "Failed to get foods"
         )
     }
 
@@ -106,7 +106,7 @@ class FoodRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = { apiService.getFoodLogs(date) },
             extractData = { it.foodLogs },
-            errMsg = "Failed to fetch food logs"
+            errMsg = "Failed to get logs"
         )
     }
 
@@ -139,7 +139,7 @@ class FoodRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = { apiService.addFoodLog(request) },
             extractData = { it.foodLogAdded },
-            errMsg = "Failed to add food log",
+            errMsg = "Failed to add log",
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.getIntakes(date),
                 ApiUrls.Food.getLogs(date)
@@ -154,7 +154,7 @@ class FoodRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = { apiService.updateFoodLog(request) },
             extractData = { it.updatedFoodLog },
-            errMsg = "Failed to update food log",
+            errMsg = "Failed to update log",
             invalidatedUrls = listOf(
                 ApiUrls.Food.getLogs(date),
                 ApiUrls.Nutrient.getIntakes(date)
@@ -169,7 +169,7 @@ class FoodRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = { apiService.deleteFoodLog(foodLogId) },
             extractData = { it.foodLogDeleted },
-            errMsg = "Failed to delete food log",
+            errMsg = "Failed to delete log",
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.getIntakes(date),
                 ApiUrls.Food.getLogs(date)

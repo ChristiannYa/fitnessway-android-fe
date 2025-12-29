@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
@@ -37,7 +37,7 @@ fun ProfileAccountInformationScreen(
 
         content = {
             if (user == null) {
-                NotFoundText(text = "No user found")
+                NotFoundMessage(message = "No user found")
             } else {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp),

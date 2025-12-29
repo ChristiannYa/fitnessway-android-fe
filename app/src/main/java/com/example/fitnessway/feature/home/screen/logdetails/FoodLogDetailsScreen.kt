@@ -19,7 +19,7 @@ import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
@@ -56,7 +56,7 @@ fun FoodLogDetailsScreen(
         Screen(
             header = { Header(onBackClick = onBackClick, title = "Food Log Details") }
         ) {
-            NotFoundText("Food log not found")
+            NotFoundMessage("Food log not found")
         }
     } else {
         foodLogDetailsFormState?.let { formState ->
@@ -134,7 +134,7 @@ fun FoodLogDetailsScreen(
                         }
                     }
                 } else {
-                    NotFoundText("User not found")
+                    NotFoundMessage("User not found")
                 }
             }
         }

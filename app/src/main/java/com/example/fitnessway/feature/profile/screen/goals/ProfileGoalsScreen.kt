@@ -15,8 +15,10 @@ import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.filterOutNonPremiumNutrients
 import com.example.fitnessway.util.UNutrient.filterOutPremiumNutrients
@@ -62,14 +64,16 @@ fun ProfileGoalsScreen(
                 onBackClick = onBackClick,
                 title = "My Goals",
                 extraContent = {
-                    ActionButton(
-                        onClick = {
-                            viewModel.setGoalsThatChanged()
-                            viewModel.setNutrientGoals()
-                        },
-                        text = "Update",
-                        enabled = isGoalsFormValid
-                    )
+                    if (nutrientsState is UiState.Success) {
+                        ActionButton(
+                            onClick = {
+                                viewModel.setGoalsThatChanged()
+                                viewModel.setNutrientGoals()
+                            },
+                            text = "Update",
+                            enabled = isGoalsFormValid
+                        )
+                    }
                 }
             )
         },
@@ -77,7 +81,7 @@ fun ProfileGoalsScreen(
         content = {
             if (user != null) {
                 when (nutrientsState) {
-                    is UiState.Loading -> LoadingArea("Loading nutrients data")
+                    is UiState.Loading -> LoadingArea("Loading nutrient goals")
 
                     is UiState.Success -> {
                         goalsEditionFormState?.let { formState ->
@@ -129,11 +133,15 @@ fun ProfileGoalsScreen(
                         } ?: LoadingArea()
                     }
 
-                    else -> NotFoundText(text = "Something went wrong")
+                    else -> {}
                 }
-            } else {
-                NotFoundText("User not found")
-            }
+
+                NotFoundMessageAnimated(
+                    isVisible = nutrientsState is UiState.Error,
+                    message = formatUiErrorMessage(nutrientsState)
+                )
+
+            } else NotFoundMessage("User not found")
         }
     )
 }

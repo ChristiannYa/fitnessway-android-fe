@@ -28,7 +28,7 @@ import com.example.fitnessway.ui.shared.Banners.SuccessBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.HeaderRow
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
@@ -189,7 +189,7 @@ fun FoodLogScreen(
                 title = "Log Information"
             )
         }
-    ) { NotFoundText("User data not found") }
+    ) { NotFoundMessage("User data not found") }
 }
 
 @Composable

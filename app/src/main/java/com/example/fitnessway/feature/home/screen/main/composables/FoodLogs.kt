@@ -53,20 +53,20 @@ import com.example.fitnessway.data.model.food.FoodLogCategories
 import com.example.fitnessway.data.model.food.FoodLogData
 import com.example.fitnessway.data.model.food.FoodLogFoodStatus
 import com.example.fitnessway.data.model.food.FoodLogsByCategory
-import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.ui.theme.WhiteBackground
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
+import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UFood.Ui.getFoodBrandColor
 import com.example.fitnessway.util.UFood.Ui.getFoodBrandText
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
-import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
@@ -103,7 +103,7 @@ fun FoodLogs(
                 .fillMaxHeight()
         ) {
             when (foodLogsState) {
-                is UiState.Loading -> LoadingArea(text = "Loading Food ")
+                is UiState.Loading -> LoadingArea(text = "Loading logs")
 
                 is UiState.Success -> FoodLogsCategorized(
                     foodLogs = foodLogsState.data,
@@ -116,9 +116,9 @@ fun FoodLogs(
                 else -> {}
             }
 
-            ErrorBannerAnimated(
+            NotFoundMessageAnimated(
                 isVisible = foodLogsState is UiState.Error,
-                text = formatUiErrorMessage(foodLogsState)
+                message = formatUiErrorMessage(foodLogsState)
             )
         }
     }
@@ -193,7 +193,7 @@ private fun FoodLogCategory(
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
         if (foodLogs.isEmpty()) {
-            NotFoundText(text = "No $categoryFormatted logged yet")
+            NotFoundMessage(message = "No $categoryFormatted logged yet")
         } else {
             foodLogs.forEach { log ->
                 key(log.id) {

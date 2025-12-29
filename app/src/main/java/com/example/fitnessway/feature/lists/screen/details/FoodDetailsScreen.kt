@@ -29,7 +29,7 @@ import com.example.fitnessway.feature.lists.screen.details.composables.MoreOptio
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
@@ -83,7 +83,7 @@ fun FoodDetailsScreen(
     if (food == null || user == null) {
         Screen(
             header = { Header(onBackClick = onBackClick, title = title) },
-            content = { NotFoundText("Food data not found") }
+            content = { NotFoundMessage("Food data not found") }
         )
     } else {
         foodEditionFormState?.let { formState ->

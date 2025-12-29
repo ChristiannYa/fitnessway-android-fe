@@ -40,7 +40,7 @@ import com.example.fitnessway.R
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.feature.profile.screen.main.composables.UpgradePromptDialog
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.robotoSerifFamily
@@ -115,7 +115,7 @@ fun ProfileScreen(
                 }
             )
         }
-    } else Screen { NotFoundText(text = "No user found") }
+    } else Screen { NotFoundMessage("No user found") }
 
 }
 

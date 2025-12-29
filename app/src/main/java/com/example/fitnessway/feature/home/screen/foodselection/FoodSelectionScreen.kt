@@ -9,7 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.fitnessway.feature.home.screen.foodselection.composables.Foods
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.NotFoundText
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
@@ -63,9 +63,9 @@ fun FoodSelectionScreen(
                 )
             }
 
-        } else NotFoundText("Food log category not found")
+        } else NotFoundMessage("Food log category not found")
 
-    } else NotFoundText("Data not found")
+    } else NotFoundMessage("Data not found")
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)

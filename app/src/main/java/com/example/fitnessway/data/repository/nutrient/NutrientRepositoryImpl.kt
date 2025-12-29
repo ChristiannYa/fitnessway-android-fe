@@ -63,7 +63,7 @@ class NutrientRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = apiService::getNutrients,
             extractData = { it.nutrients },
-            errMsg = "Failed to fetch nutrients"
+            errMsg = "Failed to get nutrients"
         )
     }
 

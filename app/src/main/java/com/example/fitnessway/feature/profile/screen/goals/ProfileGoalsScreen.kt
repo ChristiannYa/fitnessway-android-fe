@@ -115,21 +115,18 @@ fun ProfileGoalsScreen(
                                     .map { it.nutrient }
                             }
 
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                content = {
-                                    ErrorBannerAnimated(
-                                        isVisible = nutrientGoalsUpdateErrMsg != null,
-                                        text = nutrientGoalsUpdateErrMsg ?: ""
-                                    )
+                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                ErrorBannerAnimated(
+                                    isVisible = nutrientGoalsUpdateErrMsg != null,
+                                    text = nutrientGoalsUpdateErrMsg ?: ""
+                                )
 
-                                    NutrientGoalsContent(
-                                        nutrientFields = goalFields,
-                                        premiumNutrientsMap = premiumNutrientsMap,
-                                        isUserPremium = user.isPremium
-                                    )
-                                }
-                            )
+                                NutrientGoalsContent(
+                                    nutrientFields = goalFields,
+                                    premiumNutrientsMap = premiumNutrientsMap,
+                                    isUserPremium = user.isPremium
+                                )
+                            }
                         } ?: LoadingArea()
                     }
 

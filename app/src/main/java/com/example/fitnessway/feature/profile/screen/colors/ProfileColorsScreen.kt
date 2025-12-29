@@ -1,15 +1,18 @@
 package com.example.fitnessway.feature.profile.screen.colors
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.colors.composables.NutrientColorsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.ActionButton
+import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
@@ -17,6 +20,7 @@ import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
+import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientColorsFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -26,12 +30,18 @@ fun ProfileColorsScreen(
     onBackClick: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val colorsEditionFormState by viewModel.colorsEditionFormState.collectAsState()
     val isColorsFormValid by viewModel.isColorsFormValid.collectAsState()
 
     val nutrientsState = nutrientRepoUiState.nutrientsUiState
     val user = viewModel.user
+
+    val nutrientColorsUpdateErrMsg = handleApiErrorTempMessage(
+        uiState = uiState.nutrientColorsSetUiState,
+        onTimeOut = viewModel::resetNutrientColorsUpdateState
+    )
 
     LaunchedEffect(nutrientsState) {
         if (nutrientsState is UiState.Success) {
@@ -91,11 +101,14 @@ fun ProfileColorsScreen(
                                 fieldsByTypeMap
                             }
 
-                            Column(
-                                content = {
-                                    NutrientColorsContent(fields)
-                                }
-                            )
+                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                ErrorBannerAnimated(
+                                    isVisible = nutrientColorsUpdateErrMsg != null,
+                                    text = nutrientColorsUpdateErrMsg ?: ""
+                                )
+
+                                NutrientColorsContent(fields)
+                            }
                         } ?: NotFoundMessage("Form data not found")
                     }
 

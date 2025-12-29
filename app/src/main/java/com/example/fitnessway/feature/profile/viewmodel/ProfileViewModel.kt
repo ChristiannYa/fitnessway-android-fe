@@ -150,7 +150,7 @@ class ProfileViewModel(
 
                     is UiState.Error -> {
                         _uiState.update {
-                            it.copy(nutrientGoalsSetUiState = state)
+                            it.copy(nutrientColorsSetUiState = state)
                         }
 
                         nutrientRepo.updateState {
@@ -175,6 +175,12 @@ class ProfileViewModel(
     fun resetNutrientGoalsUpdateState() {
         _uiState.update {
             it.copy(nutrientGoalsSetUiState = UiState.Idle)
+        }
+    }
+
+    fun resetNutrientColorsUpdateState() {
+        _uiState.update {
+            it.copy(nutrientColorsSetUiState = UiState.Idle)
         }
     }
 }

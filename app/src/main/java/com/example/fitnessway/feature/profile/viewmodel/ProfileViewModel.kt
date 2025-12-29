@@ -61,7 +61,7 @@ class ProfileViewModel(
         val modifiedGoals = managers.goals.modifiedGoals.value
 
         // Store updated nutrient goal data
-        val optimisticNutrientData = currentGoalsData.data.mapNutrients { nutrients ->
+        val optimisticNutrientData = currentGoalsData.data.mapNutrients { _, nutrients ->
             updateNutrientGoals(nutrients, modifiedGoals)
         }
 
@@ -119,9 +119,10 @@ class ProfileViewModel(
         val modifiedColors = managers.colors.modifiedColors.value
 
         // Store updated nutrient colors data
-        val optimisticNutrientsData = currentNutrientsUiState.data.mapNutrients {
-            updateNutrientColors(it, modifiedColors)
-        }
+        val optimisticNutrientsData = currentNutrientsUiState.data
+            .mapNutrients { _, nutrients ->
+                updateNutrientColors(nutrients, modifiedColors)
+            }
 
         val request = NutrientColorsPostRequest(
             userId = user.id,

@@ -104,12 +104,15 @@ object UNutrient {
     }
 
     fun <T> NutrientsByType<T>.mapNutrients(
-        transform: (List<T>) -> List<T>
+        transform: (
+            type: NutrientType,
+            nutrients: List<T>
+        ) -> List<T>
     ): NutrientsByType<T> {
         return NutrientsByType(
-            basic = transform(basic),
-            vitamin = transform(vitamin),
-            mineral = transform(mineral)
+            basic = transform(NutrientType.BASIC, basic),
+            vitamin = transform(NutrientType.VITAMIN, vitamin),
+            mineral = transform(NutrientType.MINERAL, mineral)
         )
     }
 

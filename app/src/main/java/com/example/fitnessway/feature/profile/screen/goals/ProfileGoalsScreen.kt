@@ -107,8 +107,8 @@ fun ProfileGoalsScreen(
 
                             val premiumNutrientsMap = NutrientType.entries.associateWith { type ->
                                 filterNutrientsByType(
-                                    nutrients = nutrientsState.data.mapNutrients {
-                                        it.filterOutNonPremiumNutrients(user.isPremium)
+                                    nutrients = nutrientsState.data.mapNutrients { _, nutrients ->
+                                        nutrients.filterOutNonPremiumNutrients(user.isPremium)
                                     },
                                     type = type
                                 )

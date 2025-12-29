@@ -45,7 +45,7 @@ object UFood {
         foodLog: FoodLogData,
         operation: FoodNutrientIntakesOperation
     ): NutrientIntakesByType {
-        return currentIntakes.mapNutrients { intakes ->
+        return currentIntakes.mapNutrients { _, intakes ->
             intakes.map { intake ->
                 val foodNutrientAmountData = foodLog.food.nutrients.combineAll().find {
                     val nutrient = it.nutrientWithPreferences.nutrient
@@ -74,7 +74,7 @@ object UFood {
         currentServings: Double,
         newServings: Double
     ): NutrientsByType<NutrientAmountData> {
-        return nutrients.mapNutrients { nutrientsList ->
+        return nutrients.mapNutrients { _, nutrientsList ->
             nutrientsList.map { nutrientData ->
                 val foodNutrientAmountData = nutrients.combineAll().find {
                     val nutrient = it.nutrientWithPreferences.nutrient
@@ -91,7 +91,10 @@ object UFood {
     }
 
     fun FoodLogsByCategory.mapFoodLogs(
-        transform: (category: FoodLogCategories, logs: List<FoodLogData>) -> List<FoodLogData>
+        transform: (
+            category: FoodLogCategories,
+            logs: List<FoodLogData>
+        ) -> List<FoodLogData>
     ): FoodLogsByCategory = FoodLogsByCategory(
         breakfast = transform(FoodLogCategories.BREAKFAST, breakfast),
         lunch = transform(FoodLogCategories.LUNCH, lunch),

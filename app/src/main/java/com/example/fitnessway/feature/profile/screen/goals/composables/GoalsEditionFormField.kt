@@ -23,14 +23,12 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.util.UNutrient.getUserNutrientColor
 import com.example.fitnessway.util.Ui.InputUi
 
 @Composable
 fun GoalsEditionFormField(
     field: FormField<FormFieldName.NutrientGoalData>,
-    enabled: Boolean = true,
     isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -45,60 +43,52 @@ fun GoalsEditionFormField(
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        content = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                content = {
-                    if (!enabled) PremiumIcon()
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium
+                    ),
+                    block = { append("${nutrient.name} ") }
+                )
 
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                block = { append("${nutrient.name} ") }
-                            )
-
-                            if (nutrient.type == NutrientType.MINERAL) {
-                                append(text = "(${nutrient.symbol}) ")
-                            }
-
-                            withStyle(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.onBackground.copy(
-                                        0.6f
-                                    )
-                                ),
-                                block = { append(text = nutrient.unit) }
-                            )
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(
-                            PaddingValues(
-                                end = 16.dp
-                            )
-                        )
-                    )
+                if (nutrient.type == NutrientType.MINERAL) {
+                    append(text = "(${nutrient.symbol}) ")
                 }
-            )
 
-            BasicTextField(
-                value = if (!enabled) "0" else field.value,
-                onValueChange = field.updateState,
-                enabled = enabled,
-                textStyle = textStyle,
-                maxLines = 1,
-                modifier = Modifier
-                    .clip(InputUi.shape)
-                    .width(IntrinsicSize.Max)
-                    .background(
-                        color = InputUi.getColor(),
-                        shape = InputUi.shape
-                    )
-                    .padding(InputUi.padding)
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.onBackground.copy(
+                            0.6f
+                        )
+                    ),
+                    block = { append(text = nutrient.unit) }
+                )
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(
+                PaddingValues(
+                    end = 16.dp
+                )
             )
-        }
-    )
+        )
+
+        BasicTextField(
+            value = field.value,
+            onValueChange = field.updateState,
+            enabled = field.enabled,
+            textStyle = textStyle,
+            maxLines = 1,
+            modifier = Modifier
+                .clip(InputUi.shape)
+                .width(IntrinsicSize.Max)
+                .background(
+                    color = InputUi.getColor(),
+                    shape = InputUi.shape
+                )
+                .padding(InputUi.padding)
+        )
+    }
 }

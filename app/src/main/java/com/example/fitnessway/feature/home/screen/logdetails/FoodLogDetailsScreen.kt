@@ -24,7 +24,7 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
-import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,7 +41,7 @@ fun FoodLogDetailsScreen(
     val user = viewModel.user
     val foodLog = selectedFoodLog
 
-    val foodLogUpdateErrMsg = handleApiErrorTempMessage(
+    val foodLogUpdateErrMsg = handleTempApiErrorMessage(
         uiState = uiState.foodLogUpdateState,
         onTimeOut = viewModel::resetFoodLogUpdateState
     )

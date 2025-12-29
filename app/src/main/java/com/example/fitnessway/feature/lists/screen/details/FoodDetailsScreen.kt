@@ -33,7 +33,7 @@ import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
-import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -72,7 +72,7 @@ fun FoodDetailsScreen(
         }
     }
 
-    val foodUpdateErrMsg = handleApiErrorTempMessage(
+    val foodUpdateErrMsg = handleTempApiErrorMessage(
         uiState = uiState.foodUpdateState,
         onTimeOut = viewModel::resetFoodUpdateState
     )

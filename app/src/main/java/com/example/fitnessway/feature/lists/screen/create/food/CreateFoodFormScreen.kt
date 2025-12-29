@@ -44,7 +44,7 @@ import com.example.fitnessway.util.UNutrient.filterOutNutrientsWithGoal
 import com.example.fitnessway.util.UNutrient.filterOutNutrientsWithoutGoal
 import com.example.fitnessway.util.UNutrient.filterOutPremiumNutrients
 import com.example.fitnessway.util.UNutrient.getIds
-import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
 import kotlinx.coroutines.delay
@@ -75,7 +75,7 @@ fun CreateFoodFormScreen(
         else -> "" to ""
     }
 
-    val foodAddErrMsg = handleApiErrorTempMessage(
+    val foodAddErrMsg = handleTempApiErrorMessage(
         uiState = foodAddState,
         onTimeOut = viewModel::resetFoodAddState
     )

@@ -12,7 +12,6 @@ import com.example.fitnessway.data.model.form.NutrientGoalEditionField
 import com.example.fitnessway.data.model.nutrient.Nutrient
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.ui.theme.AppModifiers.blurPremiumItem
 import com.example.fitnessway.util.UNutrient.Ui.NutrientCategoryTitle
 
 @Composable
@@ -21,51 +20,31 @@ fun NutrientGoalsContent(
     premiumNutrientsMap: Map<NutrientType, List<Nutrient>>,
     isUserPremium: Boolean
 ) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        content = {
-            nutrientFields.forEach { (type, goalFields) ->
-                item(key = type) {
-                    Box(
-                        modifier = Modifier.areaContainer(),
-                        content = {
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(20.dp),
-                                content = {
-                                    NutrientCategoryTitle(type)
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        nutrientFields.forEach { (type, goalFields) ->
+            item(key = type) {
+                Box(modifier = Modifier.areaContainer()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        NutrientCategoryTitle(type)
 
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                                        content = {
-                                            goalFields.forEach { field ->
-                                                val enabled =
-                                                    (!field.name.nutrientData.nutrient.isPremium || isUserPremium)
-
-                                                key(field.name.nutrientData.nutrient.id) {
-                                                    GoalsEditionFormField(
-                                                        field = field,
-                                                        enabled = enabled,
-                                                        isUserPremium = isUserPremium,
-                                                        modifier = Modifier.blurPremiumItem(!enabled)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    )
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            goalFields.forEach { field ->
+                                key(field.name.nutrientData.nutrient.id) {
+                                    GoalsEditionFormField(field, isUserPremium)
                                 }
-                            )
+                            }
                         }
-                    )
-                }
-            }
-
-            if (!isUserPremium) {
-                item {
-                    UpgradePromptSection(
-                        premiumNutrientsMap = premiumNutrientsMap
-                    )
+                    }
                 }
             }
         }
-    )
+
+        if (!isUserPremium) {
+            item {
+                UpgradePromptSection(
+                    premiumNutrientsMap = premiumNutrientsMap
+                )
+            }
+        }
+    }
 }

@@ -75,20 +75,24 @@ class ProfileViewModel(
             }
         )
 
-        // Update UI immediately
-        nutrientRepo.updateState {
-            it.copy(nutrientsUiState = UiState.Success(optimisticNutrientData))
-        }
-
         viewModelScope.launch {
             nutrientRepo.setNutrientGoals(request).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(nutrientGoalsSetUiState = state) }
 
+                        // Update UI immediately
+                        nutrientRepo.updateState {
+                            it.copy(nutrientsUiState = UiState.Success(optimisticNutrientData))
+                        }
+
                         nutrientRepo.clearNutrientIntakesUiCache()
                         foodRepo.refreshFoods()
                         foodRepo.clearFoodLogsUiCache()
+                    }
+
+                    is UiState.Loading -> {
+                        _uiState.update { it.copy(nutrientGoalsSetUiState = state) }
                     }
 
                     is UiState.Error -> {

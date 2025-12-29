@@ -67,7 +67,7 @@ object Ui {
     }
 
     @Composable
-    fun <T> handleApiErrorTempMessage(
+    fun <T> handleTempApiErrorMessage(
         uiState: UiState<T>,
         onTimeOut: () -> Unit
     ): String? {

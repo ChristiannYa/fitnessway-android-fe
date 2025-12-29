@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientGoalsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
-import com.example.fitnessway.ui.shared.ActionButton
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
+import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
@@ -23,7 +23,7 @@ import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.filterOutNonPremiumNutrients
 import com.example.fitnessway.util.UNutrient.filterOutPremiumNutrients
 import com.example.fitnessway.util.UNutrient.mapNutrients
-import com.example.fitnessway.util.Ui.handleApiErrorTempMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientGoalsFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -38,10 +38,11 @@ fun ProfileGoalsScreen(
     val goalsEditionFormState by viewModel.goalsEditionFormState.collectAsState()
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
 
-    val nutrientsState = nutrientRepoUiState.nutrientsUiState
     val user = viewModel.user
+    val nutrientsState = nutrientRepoUiState.nutrientsUiState
+    val nutrientGoalsSetState = uiState.nutrientGoalsSetUiState
 
-    val nutrientGoalsUpdateErrMsg = handleApiErrorTempMessage(
+    val nutrientGoalsSetErrorMessage = handleTempApiErrorMessage(
         uiState = uiState.nutrientGoalsSetUiState,
         onTimeOut = viewModel::resetNutrientGoalsUpdateState
     )
@@ -62,20 +63,20 @@ fun ProfileGoalsScreen(
         header = {
             Header(
                 onBackClick = onBackClick,
-                title = "My Goals",
-                extraContent = {
-                    if (nutrientsState is UiState.Success) {
-                        ActionButton(
-                            onClick = {
-                                viewModel.setGoalsThatChanged()
-                                viewModel.setNutrientGoals()
-                            },
-                            text = "Update",
-                            enabled = isGoalsFormValid
-                        )
-                    }
+                isOnBackEnabled = nutrientGoalsSetState !is UiState.Loading,
+                title = "My Goals"
+            ) {
+                if (nutrientsState is UiState.Success) {
+                    Clickables.HeaderDoneButton(
+                        onClick = {
+                            viewModel.setGoalsThatChanged()
+                            viewModel.setNutrientGoals()
+                        },
+                        enabled = isGoalsFormValid,
+                        isLoading = nutrientGoalsSetState is UiState.Loading
+                    )
                 }
-            )
+            }
         },
 
         content = {
@@ -85,9 +86,14 @@ fun ProfileGoalsScreen(
 
                     is UiState.Success -> {
                         goalsEditionFormState?.let { formState ->
-                            val goalFields = remember(nutrientsState.data, formState) {
+                            val goalFields = remember(
+                                nutrientsState.data,
+                                formState,
+                                nutrientGoalsSetState
+                            ) {
                                 val fieldsProvider = NutrientGoalsFieldsProvider(
                                     formState = formState,
+                                    isFormSubmitting = nutrientGoalsSetState is UiState.Loading,
                                     onFieldUpdate = { fieldName, value ->
                                         viewModel.updateGoalEditionFormField(
                                             fieldName = fieldName,
@@ -117,8 +123,8 @@ fun ProfileGoalsScreen(
 
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                                 ErrorBannerAnimated(
-                                    isVisible = nutrientGoalsUpdateErrMsg != null,
-                                    text = nutrientGoalsUpdateErrMsg ?: ""
+                                    isVisible = nutrientGoalsSetErrorMessage != null,
+                                    text = nutrientGoalsSetErrorMessage ?: ""
                                 )
 
                                 NutrientGoalsContent(

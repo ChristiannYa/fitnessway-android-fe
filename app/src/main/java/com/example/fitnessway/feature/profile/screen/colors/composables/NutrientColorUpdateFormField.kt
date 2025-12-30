@@ -38,6 +38,7 @@ fun NutrientColorUpdateFormField(
             BasicTextField(
                 value = field.value,
                 onValueChange = field.updateState,
+                enabled = field.enabled,
                 textStyle = textStyle,
                 singleLine = true,
                 modifier = Modifier

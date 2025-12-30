@@ -8,7 +8,8 @@ import com.example.fitnessway.util.form.FormStates
 
 class NutrientColorsFieldsProvider(
     private val formState: FormState<FormStates.NutrientColors>,
-    private val onFieldUpdate: (FormFieldName.NutrientColorUpdate, String) -> Unit
+    private val onFieldUpdate: (FormFieldName.NutrientColorUpdate, String) -> Unit,
+    private val isFormSubmitting: Boolean
 ) {
     fun nutrientColor(nutrientData: NutrientWithPreferences): NutrientColorUpdateField {
         val nutrient = nutrientData.nutrient
@@ -17,6 +18,7 @@ class NutrientColorsFieldsProvider(
             name = FormFieldName.NutrientColorUpdate(nutrientData),
             label = "${nutrient.name} ${nutrient.unit}",
             value = formState.data.colors[nutrient.id] ?: "~",
+            enabled = !isFormSubmitting,
             updateState = { value ->
                 val truncatedValue = value.take(6).uppercase()
 

@@ -40,10 +40,10 @@ fun ProfileGoalsScreen(
 
     val user = viewModel.user
     val nutrientsState = nutrientRepoUiState.nutrientsUiState
-    val nutrientGoalsSetState = uiState.nutrientGoalsSetUiState
+    val nutrientGoalsSetUiState = uiState.nutrientGoalsSetUiState
 
     val nutrientGoalsSetErrorMessage = handleTempApiErrorMessage(
-        uiState = uiState.nutrientGoalsSetUiState,
+        uiState = nutrientGoalsSetUiState,
         onTimeOut = viewModel::resetNutrientGoalsUpdateState
     )
 
@@ -63,7 +63,7 @@ fun ProfileGoalsScreen(
         header = {
             Header(
                 onBackClick = onBackClick,
-                isOnBackEnabled = nutrientGoalsSetState !is UiState.Loading,
+                isOnBackEnabled = nutrientGoalsSetUiState !is UiState.Loading,
                 title = "My Goals"
             ) {
                 if (nutrientsState is UiState.Success) {
@@ -73,7 +73,7 @@ fun ProfileGoalsScreen(
                             viewModel.setNutrientGoals()
                         },
                         enabled = isGoalsFormValid,
-                        isLoading = nutrientGoalsSetState is UiState.Loading
+                        isLoading = nutrientGoalsSetUiState is UiState.Loading
                     )
                 }
             }
@@ -89,11 +89,11 @@ fun ProfileGoalsScreen(
                             val goalFields = remember(
                                 nutrientsState.data,
                                 formState,
-                                nutrientGoalsSetState
+                                nutrientGoalsSetUiState
                             ) {
                                 val fieldsProvider = NutrientGoalsFieldsProvider(
                                     formState = formState,
-                                    isFormSubmitting = nutrientGoalsSetState is UiState.Loading,
+                                    isFormSubmitting = nutrientGoalsSetUiState is UiState.Loading,
                                     onFieldUpdate = { fieldName, value ->
                                         viewModel.updateGoalEditionFormField(
                                             fieldName = fieldName,

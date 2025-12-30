@@ -214,6 +214,10 @@ class ListsViewModel(
         }
 
         // Update UI immediately
+        _uiState.update {
+            it.copy(foodDeleteState = UiState.Success(selectedFood))
+        }
+
         foodRepo.updateState {
             it.copy(foodsUiState = UiState.Success(optimisticFoods))
         }

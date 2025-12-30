@@ -26,7 +26,13 @@ class EditionManager : IEditionManager {
     private val _deletedNutrients = MutableStateFlow<List<Int>>(emptyList())
     override val deletedNutrients: StateFlow<List<Int>> = _deletedNutrients
 
-    override val editFormNameError: String?
+    private val _originalFormName = MutableStateFlow<String?>(null)
+    private val _originalFormBrand = MutableStateFlow<String?>(null)
+    private val _originalAmountPerServing = MutableStateFlow<String?>(null)
+    private val _originalServingUnit = MutableStateFlow<String?>(null)
+    private val _originalNutrients = MutableStateFlow<Map<Int, String>?>(null)
+
+    private val _editFormNameError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.name.let { value ->
                 if (value.isEmpty()) null else {
@@ -36,7 +42,7 @@ class EditionManager : IEditionManager {
             }
         }
 
-    override val editFormBrandError: String?
+    private val _editFormBrandError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.brand.let { value ->
                 if (value.isEmpty()) null else {
@@ -46,7 +52,7 @@ class EditionManager : IEditionManager {
             }
         }
 
-    override val editFormAmountPerServingError: String?
+    private val _editFormAmountPerServingError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.amountPerServing.let { value ->
                 validateDoubleAsString(
@@ -56,7 +62,7 @@ class EditionManager : IEditionManager {
             }
         }
 
-    override val editFormServingUnitError: String?
+    private val _editFormServingUnitError: String?
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.servingUnit.let { value ->
                 if (value.isEmpty()) null else {
@@ -70,55 +76,67 @@ class EditionManager : IEditionManager {
             }
         }
 
-    private val hasBasicNutrient: Boolean
-        get() {
-            val formNutrientIds = _foodEditionFormState.value?.data?.nutrients?.keys ?: return false
-            val basicNutrients = _selectedFood.value?.nutrients?.basic ?: return false
-
-            return basicNutrients.any { basicNutrientData ->
-                basicNutrientData.nutrientWithPreferences.nutrient.id in formNutrientIds
-            }
-        }
-
-    override val areFormNutrientsValid: Boolean
-        get() = _foodEditionFormState.value?.let { formState ->
-            val areAllAmountsValid = formState.data.nutrients.values.all {
-                val amount = it.toDoubleOrNull()
-                amount != null && amount > 0.0
-            }
-
-            areAllAmountsValid && hasBasicNutrient
-        } ?: false
-
     override val isFormValid: Boolean
-        get() = _foodEditionFormState.value?.let {
-            it.data.name.isNotEmpty() && editFormNameError == null &&
-                    editFormBrandError == null &&
-                    it.data.amountPerServing.isNotEmpty() && editFormAmountPerServingError == null &&
-                    it.data.servingUnit.isNotEmpty() && editFormServingUnitError == null &&
-                    areFormNutrientsValid
-        } ?: false
+        get() = _foodEditionFormState.value?.let { formState ->
+            val hasAnyChange = (formState.data.name != _originalFormName.value) ||
+                    (formState.data.brand != _originalFormBrand.value) ||
+                    (formState.data.amountPerServing != _originalAmountPerServing.value) ||
+                    (formState.data.servingUnit != _originalServingUnit.value) ||
+                    formState.data.nutrients.any { (id, value) ->
+                        _originalNutrients.value?.get(id) != value
+                    } ||
+                    (_originalNutrients.value?.any { (id, _) ->
+                        !formState.data.nutrients.contains(id)
+                    } ?: false)
 
-    override fun setSelectedFood(food: FoodInformation) {
-        _selectedFood.value = food
-    }
+            val hasNoErrors = _editFormNameError == null &&
+                    _editFormBrandError == null &&
+                    _editFormAmountPerServingError == null &&
+                    _editFormServingUnitError == null
+
+            val requiredFieldsProvided = formState.data.name.isNotEmpty() &&
+                    formState.data.amountPerServing.isNotEmpty() &&
+                    formState.data.servingUnit.isNotEmpty()
+
+            val nutrientsAreValid = run {
+                val formNutrients = formState.data.nutrients
+
+                val areAllAmountsValid = formNutrients.values.all {
+                    val amount = it.toDoubleOrNull()
+                    amount != null && amount > 0.0
+                }
+
+                val basicNutrients = _selectedFood.value?.nutrients?.basic ?: return@let false
+
+                val hasBasicNutrient = basicNutrients.any {
+                    it.nutrientWithPreferences.nutrient.id in formNutrients.keys
+                }
+
+                areAllAmountsValid && hasBasicNutrient
+            }
+
+            hasAnyChange && hasNoErrors && requiredFieldsProvided && nutrientsAreValid
+        } ?: false
 
     override fun initializeFoodForm(food: FoodInformation) {
         val nutrients = food.nutrients.combineAll().associate {
-            it.nutrientWithPreferences.nutrient.id to doubleFormatter(it.amount)
+            it.nutrientWithPreferences.nutrient.id to doubleFormatter(it.amount, 4)
         }
 
-        // Result: {1="10.5", 2="20.3", 3="15"}
-        //
-        // If `.map` where to be used instead it would result in:
-        // [(1, "10.5"), (2, "20.3"), (3, "15")]
-        // which is a `List` but we need a map
+        _originalFormName.value = food.information.name
+        _originalFormBrand.value = food.information.brand ?: ""
+        _originalAmountPerServing.value = doubleFormatter(
+            value = food.information.amountPerServing,
+            decimalPlaces = 4
+        )
+        _originalServingUnit.value = food.information.servingUnit
+        _originalNutrients.value = nutrients
 
         _foodEditionFormState.value = FormState(
             data = FormStates.FoodEdition(
                 name = food.information.name,
                 brand = food.information.brand ?: "",
-                amountPerServing = doubleFormatter(food.information.amountPerServing),
+                amountPerServing = doubleFormatter(food.information.amountPerServing, 4),
                 servingUnit = food.information.servingUnit,
                 nutrients = nutrients
             )
@@ -179,6 +197,10 @@ class EditionManager : IEditionManager {
                 data = formState.data.copy(nutrients = updatedNutrients)
             )
         }
+    }
+
+    override fun setSelectedFood(food: FoodInformation) {
+        _selectedFood.value = food
     }
 
     override fun resetDeletedNutrients() {

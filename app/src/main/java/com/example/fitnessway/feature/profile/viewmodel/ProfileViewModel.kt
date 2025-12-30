@@ -53,15 +53,17 @@ class ProfileViewModel(
         val user = user ?: return
 
         // Get current goals data to update it optimistically
-        val currentGoalsData = nutrientRepoUiState.value.nutrientsUiState
+        val currentNutrientsData = nutrientRepoUiState.value.nutrientsUiState
 
         // Only proceed if there are nutrient goals data
-        if (currentGoalsData !is UiState.Success) return
+        if (currentNutrientsData !is UiState.Success) return
+
+        val currentNutrients = currentNutrientsData.data
 
         val modifiedGoals = managers.goals.modifiedGoals.value
 
         // Store updated nutrient goal data
-        val optimisticNutrientData = currentGoalsData.data.mapNutrients { _, nutrients ->
+        val optimisticNutrientData = currentNutrients.mapNutrients { _, nutrients ->
             updateNutrientGoals(nutrients, modifiedGoals)
         }
 
@@ -99,10 +101,6 @@ class ProfileViewModel(
                         _uiState.update {
                             it.copy(nutrientGoalsSetUiState = state)
                         }
-
-                        nutrientRepo.updateState {
-                            it.copy(nutrientsUiState = currentGoalsData)
-                        }
                     }
 
                     else -> {}
@@ -115,15 +113,16 @@ class ProfileViewModel(
         val user = user ?: return
 
         // Get current nutrients UI data to update it optimistically
-        val currentNutrientsUiState = nutrientRepoUiState.value.nutrientsUiState
+        val currentNutrientsData = nutrientRepoUiState.value.nutrientsUiState
 
         // Only proceed if there is UI data
-        if (currentNutrientsUiState !is UiState.Success) return
+        if (currentNutrientsData !is UiState.Success) return
 
+        val currentNutrients = currentNutrientsData.data
         val modifiedColors = managers.colors.modifiedColors.value
 
         // Store updated nutrient colors data
-        val optimisticNutrientsData = currentNutrientsUiState.data
+        val optimisticNutrientsData = currentNutrients
             .mapNutrients { _, nutrients ->
                 updateNutrientColors(nutrients, modifiedColors)
             }
@@ -160,10 +159,6 @@ class ProfileViewModel(
                     is UiState.Error -> {
                         _uiState.update {
                             it.copy(nutrientColorsSetUiState = state)
-                        }
-
-                        nutrientRepo.updateState {
-                            it.copy(nutrientsUiState = currentNutrientsUiState)
                         }
                     }
 

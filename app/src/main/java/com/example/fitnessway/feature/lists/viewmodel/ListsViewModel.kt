@@ -10,8 +10,6 @@ import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.food.FoodInformationOptionals
 import com.example.fitnessway.data.model.food.FoodUpdateRequest
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
-import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
@@ -19,6 +17,8 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.feature.lists.manager.toggle.ISelectionManager
+import com.example.fitnessway.util.UNutrient.buildNutrientsByType
+import com.example.fitnessway.util.UNutrient.combineAll
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,6 +44,10 @@ class ListsViewModel(
     val nutrientRepoUiState = nutrientRepo.uiState
 
     val user = userStateHolder.userState.value.user
+
+    // An int is used as a key so that the data returns one by one depending on the order
+    // of the keys
+    private val _foodFailedUpdates = mutableMapOf<Int, MutableSet<FoodInformation>>()
 
     fun getFoods() {
         foodRepo.loadFoods()
@@ -90,16 +94,16 @@ class ListsViewModel(
         val selectedFood = managers.edition.selectedFood.value ?: return
 
         // Get current data to update optimistically
-        val currentFoodsState = foodRepo.uiState.value.foodsUiState
+        val originalFoodsState = foodRepo.uiState.value.foodsUiState
 
         // Only proceed if there is data
-        if (currentFoodsState !is UiState.Success) return
+        if (originalFoodsState !is UiState.Success) return
 
         // Extract current foods state
-        val currentFoods = currentFoodsState.data
+        val originalFoods = originalFoodsState.data
 
         // Optimistically update foods by filtering out the updated food
-        val optimisticFoodsWithoutUpdatedFood = currentFoods.filter {
+        val optimisticFoodsWithoutUpdatedFood = originalFoods.filter {
             it.information.id != selectedFood.information.id
         }
 
@@ -114,9 +118,8 @@ class ListsViewModel(
             }
 
         // Create a map of all original nutrients
-        val originalNutrients = (selectedFood.nutrients.basic +
-                selectedFood.nutrients.vitamin +
-                selectedFood.nutrients.mineral)
+        val originalNutrients = selectedFood.nutrients
+            .combineAll()
             .associateBy { it.nutrientWithPreferences.nutrient.id }
 
         // Insert updated nutrient data to the food
@@ -124,17 +127,17 @@ class ListsViewModel(
             originalNutrients[upsertedNutrient.nutrientId]?.let { originalNutrient ->
                 NutrientAmountData(
                     nutrientWithPreferences = originalNutrient.nutrientWithPreferences,
-                    amount = upsertedNutrient.amount // Update amount
+                    amount = upsertedNutrient.amount
                 )
             }
         }
 
         // Filter updated nutrients by type
-        val filteredUpdatedFoodNutrientsData = NutrientsByType(
-            basic = updatedFoodNutrientsData.filter { it.nutrientWithPreferences.nutrient.type == NutrientType.BASIC },
-            vitamin = updatedFoodNutrientsData.filter { it.nutrientWithPreferences.nutrient.type == NutrientType.VITAMIN },
-            mineral = updatedFoodNutrientsData.filter { it.nutrientWithPreferences.nutrient.type == NutrientType.MINERAL }
-        )
+        val filteredUpdatedFoodNutrientsData = buildNutrientsByType(
+            nutrients = updatedFoodNutrientsData
+        ) { type, nutrients ->
+            nutrients.filter { it.nutrientWithPreferences.nutrient.type == type }
+        }
 
         // Create the new food
         val optimisticFood = FoodInformation(
@@ -185,7 +188,7 @@ class ListsViewModel(
                     is UiState.Error -> {
                         // Revert back to original state on error
                         _uiState.update { it.copy(foodUpdateState = state) }
-                        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(currentFoods)) }
+                        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(originalFoods)) }
                         managers.edition.setSelectedFood(selectedFood)
                     }
 

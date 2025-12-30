@@ -55,18 +55,18 @@ class HomeViewModel(
         foodRepo.refreshFoodLogs(date)
     }
 
-    fun getFoodLogs() {
+    fun getNutrientIntakes() {
         val date = managers.date.getApiFormattedDate()
-        foodRepo.loadFoodLogs(date)
+        nutrientRepo.loadNutrientIntakes(date)
     }
 
     fun getFoods() {
         foodRepo.loadFoods()
     }
 
-    fun getNutrientIntakes() {
+    fun getFoodLogs() {
         val date = managers.date.getApiFormattedDate()
-        nutrientRepo.loadNutrientIntakes(date)
+        foodRepo.loadFoodLogs(date)
     }
 
     fun addFoodLog() {
@@ -283,12 +283,15 @@ class HomeViewModel(
 
         // Get current data to update optimistically
         val originalFoodLogsState = foodRepo.uiState.value.foodLogsCache[apiDate]
-        val originalNutrientIntakesState = nutrientRepo.uiState.value.nutrientIntakesCache[apiDate]
+        val originalIntakesState = nutrientRepo.uiState.value.nutrientIntakesCache[apiDate]
 
         // Only proceed if we have data
         if (originalFoodLogsState !is UiState.Success ||
-            originalNutrientIntakesState !is UiState.Success
+            originalIntakesState !is UiState.Success
         ) return
+
+        val originalFoodLogs = originalFoodLogsState.data
+        val originalIntakes = originalIntakesState.data
 
         // Get or create the failed deletions set for this date
         val failedDeletionsForDate = _foodLogFailedDeletions.getOrPut(apiDate) { mutableSetOf() }
@@ -296,16 +299,13 @@ class HomeViewModel(
         // Remove current food log id from failed deletions list
         failedDeletionsForDate.remove(selectedFoodLogToRemove)
 
-        val originalFoodLogs = originalFoodLogsState.data
-        val originalNutrientIntakes = originalNutrientIntakesState.data
-
         // Optimistically update food logs UI by filtering out the food log
         val optimisticFoodLogs = originalFoodLogs.mapFoodLogs { _, logs ->
             logs.filter { it.id != selectedFoodLogToRemove.id }
         }
 
         val optimisticNutrientIntakes = calcNutrientIntakesFromFoodLog(
-            currentIntakes = originalNutrientIntakes,
+            currentIntakes = originalIntakes,
             foodLog = selectedFoodLogToRemove,
             operation = UFood.FoodNutrientIntakesOperation.SUBTRACT
         )
@@ -352,14 +352,15 @@ class HomeViewModel(
                         val currentFoodLogsState = foodRepo.uiState.value
                             .foodLogsCache[apiDate]
 
-                        val currentNutrientIntakesState = nutrientRepo.uiState.value
+                        val currentIntakesState = nutrientRepo.uiState.value
                             .nutrientIntakesCache[apiDate]
 
                         // Update food logs data after failed deletion
                         if (currentFoodLogsState is UiState.Success) {
+                            val currentFoodLogs = currentFoodLogsState.data
 
                             // Revert back to original food logs state
-                            val revertedFoodLogs = currentFoodLogsState.data
+                            val revertedFoodLogs = currentFoodLogs
                                 .mapFoodLogs { category, logs ->
                                     (logs + failedDeletionsForDate.filter {
                                         it.category.equals(
@@ -380,10 +381,12 @@ class HomeViewModel(
                             }
                         }
 
-                        if (currentNutrientIntakesState is UiState.Success) {
+                        if (currentIntakesState is UiState.Success) {
+                            val currentIntakes = currentIntakesState.data
+
                             // Revert back to original nutrient intakes state
                             val revertedNutrients = calcNutrientIntakesFromFoodLog(
-                                currentIntakes = currentNutrientIntakesState.data,
+                                currentIntakes = currentIntakes,
                                 foodLog = selectedFoodLogToRemove,
                                 operation = UFood.FoodNutrientIntakesOperation.ADD
                             )

@@ -116,6 +116,20 @@ object UNutrient {
         )
     }
 
+    fun <T, R> buildNutrientsByType(
+        nutrients: List<T>,
+        transform: (
+            type: NutrientType,
+            nutrients: List<T>
+        ) -> List<R>
+    ): NutrientsByType<R> {
+        return NutrientsByType(
+            basic = transform(NutrientType.BASIC, nutrients),
+            vitamin = transform(NutrientType.VITAMIN, nutrients),
+            mineral = transform(NutrientType.MINERAL, nutrients)
+        )
+    }
+
     fun List<NutrientWithPreferences>.sortPremiumNutrients(
         isPremiumUser: Boolean
     ): List<NutrientWithPreferences> {

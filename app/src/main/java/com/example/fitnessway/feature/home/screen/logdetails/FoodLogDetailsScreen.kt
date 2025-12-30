@@ -25,6 +25,7 @@ import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
+import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -37,12 +38,13 @@ fun FoodLogDetailsScreen(
     val selectedFoodLog by viewModel.selectedFoodLog.collectAsState()
     val foodLogDetailsFormState by viewModel.foodLogEditionFormState.collectAsState()
 
-    val focusManager = LocalFocusManager.current
     val user = viewModel.user
     val foodLog = selectedFoodLog
+    val foodLogUpdateState = uiState.foodLogUpdateState
+    val focusManager = LocalFocusManager.current
 
     val foodLogUpdateErrMsg = handleTempApiErrorMessage(
-        uiState = uiState.foodLogUpdateState,
+        uiState = foodLogUpdateState,
         onTimeOut = viewModel::resetFoodLogUpdateState
     )
 
@@ -63,7 +65,13 @@ fun FoodLogDetailsScreen(
             Screen(
                 header = {
                     Header(
-                        onBackClick = onBackClick,
+                        onBackClick = {
+                            if (foodLogUpdateState is UiState.Error) {
+                                viewModel.resetFoodLogUpdateState()
+                            }
+
+                            onBackClick()
+                        },
                         isOnBackEnabled = !formState.isEditing,
                         title = "Log Details"
                     ) {

@@ -59,7 +59,13 @@ fun ProfileColorsScreen(
     Screen(
         header = {
             Header(
-                onBackClick = onBackClick,
+                onBackClick = {
+                    if (nutrientColorsSetUiState is UiState.Error) {
+                        viewModel.resetNutrientColorsUpdateState()
+                    }
+
+                    onBackClick()
+                },
                 isOnBackEnabled = nutrientColorsSetUiState !is UiState.Loading,
                 title = "Color Palette",
                 extraContent = {

@@ -76,16 +76,14 @@ fun ConfirmFoodDeletionPopup(
                                         onClick = onCancel,
                                         text = "No",
                                         backgroundColor = MaterialTheme.colorScheme.surfaceTint,
-                                        modifier = Modifier
-                                            .weight(1f)
+                                        modifier = Modifier.weight(1f)
                                     )
 
                                     FoodDeletionConfirmButton(
                                         onClick = onConfirm,
                                         text = "Yes",
                                         backgroundColor = ImperialRed,
-                                        modifier = Modifier
-                                            .weight(1f)
+                                        modifier = Modifier.weight(1f)
                                     )
                                 }
                             )

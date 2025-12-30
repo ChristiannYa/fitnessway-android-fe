@@ -62,7 +62,13 @@ fun ProfileGoalsScreen(
     Screen(
         header = {
             Header(
-                onBackClick = onBackClick,
+                onBackClick = {
+                    if (nutrientGoalsSetUiState is UiState.Error) {
+                        viewModel.resetNutrientGoalsUpdateState()
+                    }
+
+                    onBackClick()
+                },
                 isOnBackEnabled = nutrientGoalsSetUiState !is UiState.Loading,
                 title = "My Goals"
             ) {

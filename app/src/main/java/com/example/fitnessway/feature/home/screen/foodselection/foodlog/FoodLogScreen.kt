@@ -95,7 +95,13 @@ fun FoodLogScreen(
             Screen(
                 header = {
                     Header(
-                        onBackClick = onBackClick,
+                        onBackClick = {
+                            if (foodLogAddState is UiState.Error) {
+                                viewModel.resetFoodLogAddState()
+                            }
+
+                            onBackClick()
+                        },
                         isOnBackEnabled = foodLogAddState !is UiState.Loading,
                         title = "Log Submission"
                     ) {

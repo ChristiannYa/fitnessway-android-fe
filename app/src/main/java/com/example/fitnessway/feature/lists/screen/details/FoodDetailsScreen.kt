@@ -48,17 +48,26 @@ fun FoodDetailsScreen(
     val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
     val deletedNutrients by viewModel.deletedNutrients.collectAsState()
 
-    val user = viewModel.user
-
     LaunchedEffect(selectedFood) {
         selectedFood?.let { food ->
             viewModel.initializeFoodForm(food)
         }
     }
 
+    val user = viewModel.user
+    val food = selectedFood
+    val foodUpdateState = uiState.foodUpdateState
+    val foodDeleteState = uiState.foodDeleteState
+    val title = "Food Details"
+
+    val foodUpdateErrMsg = handleTempApiErrorMessage(
+        uiState = foodUpdateState,
+        onTimeOut = viewModel::resetFoodUpdateState
+    )
+
     DisposableEffect(Unit) {
         onDispose {
-            if (uiState.foodUpdateState is UiState.Error) {
+            if (foodUpdateState is UiState.Error) {
                 viewModel.resetFoodUpdateState()
             }
         }
@@ -66,19 +75,11 @@ fun FoodDetailsScreen(
 
     DisposableEffect(Unit) {
         onDispose {
-            if (uiState.foodDeleteState !is UiState.Idle) {
+            if (foodDeleteState !is UiState.Idle) {
                 viewModel.resetFoodDeleteState()
             }
         }
     }
-
-    val foodUpdateErrMsg = handleTempApiErrorMessage(
-        uiState = uiState.foodUpdateState,
-        onTimeOut = viewModel::resetFoodUpdateState
-    )
-
-    val food = selectedFood
-    val title = "Food Details"
 
     if (food == null || user == null) {
         Screen(
@@ -119,7 +120,13 @@ fun FoodDetailsScreen(
                         modifier = headerAnimationModifier,
                         content = {
                             Header(
-                                onBackClick = onBackClick,
+                                onBackClick = {
+                                    if (foodDeleteState is UiState.Error) {
+                                        viewModel.resetFoodDeleteState()
+                                    }
+
+                                    onBackClick()
+                                },
                                 isOnBackEnabled = !formState.isEditing,
                                 title = title,
                                 extraContent = {
@@ -218,27 +225,26 @@ fun FoodDetailsScreen(
 
                         ConfirmFoodDeletionPopup(
                             isVisible = isConfirmDeletionPopupDisplayed,
-                            onCancel = { onCancelFoodDeletion() },
-                            onConfirm = { viewModel.deleteFood() }
+                            onCancel = ::onCancelFoodDeletion,
+                            onConfirm = viewModel::deleteFood
                         )
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(18.dp),
-                            modifier = Modifier.offset(y = headerOffset),
-                            content = {
-                                ErrorBannerAnimated(
-                                    isVisible = foodUpdateErrMsg != null,
-                                    text = foodUpdateErrMsg ?: ""
-                                )
+                            modifier = Modifier.offset(y = headerOffset)
+                        ) {
+                            ErrorBannerAnimated(
+                                isVisible = foodUpdateErrMsg != null,
+                                text = foodUpdateErrMsg ?: ""
+                            )
 
-                                FoodInformation(
-                                    food = food,
-                                    shouldOverlayAppear = shouldOverlayAppear,
-                                    onOverlayClick = onOverlayClick,
-                                    user = user
-                                )
-                            }
-                        )
+                            FoodInformation(
+                                food = food,
+                                shouldOverlayAppear = shouldOverlayAppear,
+                                onOverlayClick = onOverlayClick,
+                                user = user
+                            )
+                        }
 
                         EditionMode(
                             foodDetailFields = detailFields,
@@ -249,9 +255,7 @@ fun FoodDetailsScreen(
                                 viewModel.updateFood()
                                 viewModel.resetDeletedNutrients()
                             },
-                            onCancel = {
-                                viewModel.cancelEditionMode()
-                            },
+                            onCancel = viewModel::cancelEditionMode,
                             onRemoveNutrient = { nutrientId ->
                                 viewModel.filterNutrientFromForm(nutrientId)
                             },

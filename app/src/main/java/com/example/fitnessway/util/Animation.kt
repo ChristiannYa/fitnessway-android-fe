@@ -48,12 +48,15 @@ object Animation {
         return headerOffset to headerModifier
     }
 
+    val colorSpec: AnimationSpec<Color> = tween(durationMillis = 300)
+
     object ComposableTransition {
+        val fadeIn = fadeIn(animationSpec = tween(300))
+        val fadeOut = fadeOut(animationSpec = tween(300))
+
         object PopUpV1 {
-            val enter = fadeIn(
-                animationSpec = tween(durationMillis = 200)
-            ) + scaleIn(
-                initialScale = 0.8f,
+            val enter = fadeIn + scaleIn(
+                initialScale = 0.2f,
                 transformOrigin = TransformOrigin(1f, 0f),
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -61,10 +64,8 @@ object Animation {
                 )
             )
 
-            val exit = fadeOut(
-                animationSpec = tween(durationMillis = 150)
-            ) + scaleOut(
-                targetScale = 0.8f,
+            val exit = fadeOut + scaleOut(
+                targetScale = 0.2f,
                 transformOrigin = TransformOrigin(1f, 0f),
                 animationSpec = tween(durationMillis = 150)
             )
@@ -92,16 +93,16 @@ object Animation {
                     scaleOut(targetScale = 1.2f)
         }
 
-        object FadeInV1 {
+        object PopUpV3 {
             val enter = slideInVertically(
                 initialOffsetY = { it }, // Start from bottom (full height offset)
                 animationSpec = tween(durationMillis = 300)
-            ) + fadeIn(animationSpec = tween(durationMillis = 300))
+            ) + fadeIn
 
             val exit = slideOutVertically(
                 targetOffsetY = { -it }, // Exit to bottom
                 animationSpec = tween(durationMillis = 300)
-            ) + fadeOut(animationSpec = tween(durationMillis = 300))
+            ) + fadeOut
         }
 
         object SlideVerticallyFromBottom {
@@ -116,9 +117,4 @@ object Animation {
             )
         }
     }
-
-    val fadeIn = fadeIn(animationSpec = tween(300))
-    val fadeOut = fadeOut(animationSpec = tween(300))
-
-    val colorSpec: AnimationSpec<Color> = tween(durationMillis = 300)
 }

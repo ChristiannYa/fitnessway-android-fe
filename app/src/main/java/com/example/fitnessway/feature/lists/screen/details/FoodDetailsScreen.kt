@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -14,9 +13,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.ConfirmFoodDeletionPopup
 import com.example.fitnessway.feature.lists.screen.details.composables.EditionMode
@@ -25,9 +24,10 @@ import com.example.fitnessway.feature.lists.screen.details.composables.FoodMoreO
 import com.example.fitnessway.feature.lists.screen.details.composables.MoreOptionsPopup
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
-import com.example.fitnessway.ui.shared.Banners.SuccessBannerAnimated
+import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
+import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
@@ -94,25 +94,29 @@ fun FoodDetailsScreen(
                 shouldSlideUp = formState.isEditing
             )
 
-            var isMoreOptionsPopupDisplayed by remember { mutableStateOf(false) }
-            var isConfirmDeletionPopupDisplayed by remember { mutableStateOf(false) }
+            var isMoreOptionsPopupVisible by remember { mutableStateOf(false) }
+            var isConfirmDeletionPopupVisible by remember { mutableStateOf(false) }
 
-            val shouldOverlayAppear = formState.isEditing ||
-                    isMoreOptionsPopupDisplayed ||
-                    isConfirmDeletionPopupDisplayed
+            val isOverlayVisible = formState.isEditing ||
+                    isMoreOptionsPopupVisible ||
+                    isConfirmDeletionPopupVisible
 
-            fun onCancelFoodDeletion() {
-                isConfirmDeletionPopupDisplayed = false
-                isMoreOptionsPopupDisplayed = true
+            val onCancelFoodDeletion = {
+                isConfirmDeletionPopupVisible = false
+                isMoreOptionsPopupVisible = true
             }
 
             val onOverlayClick = {
-                if (isMoreOptionsPopupDisplayed) {
-                    isMoreOptionsPopupDisplayed = false
+                if (isMoreOptionsPopupVisible) {
+                    isMoreOptionsPopupVisible = false
                 }
 
-                if (isConfirmDeletionPopupDisplayed) {
+                if (isConfirmDeletionPopupVisible) {
                     onCancelFoodDeletion()
+                }
+
+                if (formState.isEditing) {
+                    viewModel.cancelEditionMode()
                 }
             }
 
@@ -123,7 +127,9 @@ fun FoodDetailsScreen(
                         content = {
                             Header(
                                 onBackClick = {
-                                    if (foodDeleteState is UiState.Error) {
+                                    if (foodDeleteState is UiState.Error ||
+                                        foodDeleteState is UiState.Success
+                                    ) {
                                         viewModel.resetFoodDeleteState()
                                     }
 
@@ -139,15 +145,17 @@ fun FoodDetailsScreen(
                                 if (foodDeleteState !is UiState.Success) {
                                     FoodMoreOptionsButton(
                                         onClick = {
-                                            if (!isMoreOptionsPopupDisplayed
-                                                && !isConfirmDeletionPopupDisplayed) {
-                                                isMoreOptionsPopupDisplayed = true
+                                            if (!isMoreOptionsPopupVisible
+                                                && !isConfirmDeletionPopupVisible
+                                            ) {
+                                                isMoreOptionsPopupVisible = true
                                                 return@FoodMoreOptionsButton
                                             }
 
-                                            if (isMoreOptionsPopupDisplayed
-                                                && !isConfirmDeletionPopupDisplayed) {
-                                                isMoreOptionsPopupDisplayed = false
+                                            if (isMoreOptionsPopupVisible
+                                                && !isConfirmDeletionPopupVisible
+                                            ) {
+                                                isMoreOptionsPopupVisible = false
                                                 return@FoodMoreOptionsButton
                                             }
                                         }
@@ -202,33 +210,8 @@ fun FoodDetailsScreen(
                 }
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    MoreOptionsPopup(
-                        isVisible = isMoreOptionsPopupDisplayed,
-                        onEdit = {
-                            isMoreOptionsPopupDisplayed = false
-                            viewModel.startEditionMode()
-                        },
-                        onDelete = {
-                            isConfirmDeletionPopupDisplayed = true
-                            isMoreOptionsPopupDisplayed = false
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .zIndex(2f)
-                    )
-
-                    ConfirmFoodDeletionPopup(
-                        isVisible = isConfirmDeletionPopupDisplayed,
-                        onCancel = ::onCancelFoodDeletion,
-                        onConfirm = {
-                            viewModel.deleteFood()
-                            isConfirmDeletionPopupDisplayed = false
-                            isMoreOptionsPopupDisplayed = false
-                        }
-                    )
-
-                    SuccessBannerAnimated(
-                        text = "Food deleted successfully",
+                    SuccessMessageAnimated(
+                        message = "Food deleted successfully",
                         isVisible = foodDeleteState is UiState.Success
                     )
 
@@ -243,17 +226,45 @@ fun FoodDetailsScreen(
 
                         ErrorBannerAnimated(
                             isVisible = foodDeleteErrorMessage != null,
-                            text = foodDeleteErrorMessage ?:""
+                            text = foodDeleteErrorMessage ?: ""
                         )
 
                         FoodInformation(
                             food = food,
                             isFoodDeletionSuccess = foodDeleteState is UiState.Success,
-                            shouldOverlayAppear = shouldOverlayAppear,
-                            onOverlayClick = onOverlayClick,
                             user = user
                         )
                     }
+
+                    DarkOverlay(
+                        isVisible = isOverlayVisible,
+                        onClick = onOverlayClick,
+                        modifier = Modifier.offset(y = headerOffset)
+                    )
+
+                    MoreOptionsPopup(
+                        isVisible = isMoreOptionsPopupVisible,
+                        onEdit = {
+                            isMoreOptionsPopupVisible = false
+                            viewModel.startEditionMode()
+                        },
+                        onDelete = {
+                            isConfirmDeletionPopupVisible = true
+                            isMoreOptionsPopupVisible = false
+                        },
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    )
+
+                    ConfirmFoodDeletionPopup(
+                        isVisible = isConfirmDeletionPopupVisible,
+                        onCancel = onCancelFoodDeletion,
+                        onConfirm = {
+                            viewModel.deleteFood()
+                            isConfirmDeletionPopupVisible = false
+                            isMoreOptionsPopupVisible = false
+                        },
+                        modifier = Modifier.align(Alignment.Center)
+                    )
 
                     EditionMode(
                         foodDetailFields = detailFields,
@@ -266,7 +277,8 @@ fun FoodDetailsScreen(
                         },
                         onCancel = viewModel::cancelEditionMode,
                         onRemoveNutrient = viewModel::filterNutrientFromForm,
-                        isVisible = formState.isEditing
+                        isVisible = formState.isEditing,
+                        modifier = Modifier.align(Alignment.BottomCenter)
                     )
                 }
             }

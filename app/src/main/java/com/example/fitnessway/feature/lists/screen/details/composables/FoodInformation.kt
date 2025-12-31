@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.food.FoodInformation
 import com.example.fitnessway.data.model.user.User
-import com.example.fitnessway.ui.shared.BlurOverlay
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.UFood.FoodComposables
 
@@ -20,8 +19,6 @@ import com.example.fitnessway.util.UFood.FoodComposables
 fun FoodInformation(
     food: FoodInformation,
     isFoodDeletionSuccess: Boolean,
-    shouldOverlayAppear: Boolean,
-    onOverlayClick: () -> Unit,
     user: User,
     modifier: Modifier = Modifier
 ) {
@@ -31,8 +28,8 @@ fun FoodInformation(
 
     AnimatedVisibility(
         visible = !isFoodDeletionSuccess,
-        enter = Animation.ComposableTransition.PopUpV2.enter,
-        exit = Animation.ComposableTransition.PopUpV2.exit,
+        enter = Animation.ComposableTransition.fadeIn,
+        exit = Animation.ComposableTransition.fadeOut,
         modifier = modifier
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -52,11 +49,6 @@ fun FoodInformation(
                     foodComposables.RemainingNutrients()
                 }
             }
-
-            BlurOverlay(
-                isVisible = shouldOverlayAppear,
-                onClick = onOverlayClick
-            )
         }
     }
 }

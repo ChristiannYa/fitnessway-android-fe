@@ -31,7 +31,7 @@ import com.example.fitnessway.feature.home.screen.main.composables.HomeHeader
 import com.example.fitnessway.feature.home.screen.main.composables.OtherNutrientIntakes
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
-import com.example.fitnessway.ui.shared.BlurOverlay
+import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
@@ -192,11 +192,9 @@ fun HomeScreen(
                         modifier = Modifier.align(Alignment.BottomCenter)
                     )
 
-                    BlurOverlay(
+                    DarkOverlay(
                         isVisible = areFoodLogsVisible,
-                        onClick = viewModel::toggleFoodLogsVisibility,
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        onClick = viewModel::toggleFoodLogsVisibility
                     )
 
                     ErrorBannerAnimated(

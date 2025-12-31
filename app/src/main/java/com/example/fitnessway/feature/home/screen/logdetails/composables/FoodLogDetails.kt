@@ -23,7 +23,7 @@ import com.example.fitnessway.data.model.form.FoodLogEditionField
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.data.model.user.User
-import com.example.fitnessway.ui.shared.BlurOverlay
+import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
@@ -141,7 +141,7 @@ fun FoodLogDetails(
                 }
             )
 
-            BlurOverlay(isVisible = isBlurredOverlayVisible)
+            DarkOverlay(isVisible = isBlurredOverlayVisible)
         }
     )
 }

@@ -1,6 +1,7 @@
 package com.example.fitnessway.feature.lists.screen.create.food
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -13,18 +14,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -39,8 +36,9 @@ import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
+import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.shared.SuccessIcon
+import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.filterOutNutrientsWithGoal
@@ -157,19 +155,16 @@ fun CreateFoodFormScreen(
                         is UiState.Loading -> LoadingArea("Loading nutrients")
 
                         is UiState.Success -> {
-                            if (foodAddState is UiState.Success) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    SuccessIcon()
-                                    Text(
-                                        text = "Food Added Successfully!",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            } else {
+                            SuccessMessageAnimated(
+                                isVisible = foodAddState is UiState.Success,
+                                message = "Food added successfully!"
+                            )
+
+                            AnimatedVisibility(
+                                visible = foodAddState !is UiState.Success,
+                                enter = Animation.ComposableTransition.fadeIn,
+                                exit = Animation.ComposableTransition.fadeOut
+                            ) {
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(16.dp),
                                     modifier = Modifier
@@ -190,51 +185,55 @@ fun CreateFoodFormScreen(
                                         ),
                                     )
 
-                                    val nutrientFieldsData = NutrientType.entries.associateWith { type ->
-                                        val nutrientsByType = filterNutrientsByType(
-                                            nutrients = nutrients,
-                                            type = type
-                                        )
-                                            .filterOutPremiumNutrients(isUserPremium)
+                                    val nutrientFieldsData =
+                                        NutrientType.entries.associateWith { type ->
+                                            val nutrientsByType = filterNutrientsByType(
+                                                nutrients = nutrients,
+                                                type = type
+                                            )
+                                                .filterOutPremiumNutrients(isUserPremium)
 
-                                        val nutrientsWithGoal =
-                                            nutrientsByType.filterOutNutrientsWithoutGoal()
+                                            val nutrientsWithGoal =
+                                                nutrientsByType.filterOutNutrientsWithoutGoal()
 
-                                        val fields = nutrientsWithGoal
-                                            .mapIndexed { index, nutrientWithPrefs ->
-                                                // Create focus requester only if the index is 0
-                                                val focusRequester = if (index == 0) {
-                                                    when (type) {
-                                                        NutrientType.BASIC -> focusRequesterNutrient
-                                                        NutrientType.VITAMIN -> focusRequesterVitamin
-                                                        NutrientType.MINERAL -> focusRequesterMineral
-                                                    }
-                                                } else null
+                                            val fields = nutrientsWithGoal
+                                                .mapIndexed { index, nutrientWithPrefs ->
+                                                    // Create focus requester only if the index is 0
+                                                    val focusRequester = if (index == 0) {
+                                                        when (type) {
+                                                            NutrientType.BASIC -> focusRequesterNutrient
+                                                            NutrientType.VITAMIN -> focusRequesterVitamin
+                                                            NutrientType.MINERAL -> focusRequesterMineral
+                                                        }
+                                                    } else null
 
-                                                fieldsProvider.nutrient(
-                                                    nutrientWithPreferences = nutrientWithPrefs,
-                                                    focusRequester = focusRequester,
-                                                    isLastField = index == nutrientsWithGoal.lastIndex
-                                                )
-                                            }
+                                                    fieldsProvider.nutrient(
+                                                        nutrientWithPreferences = nutrientWithPrefs,
+                                                        focusRequester = focusRequester,
+                                                        isLastField = index == nutrientsWithGoal.lastIndex
+                                                    )
+                                                }
 
-                                        val withoutGoal = nutrientsByType
-                                            .filterOutNutrientsWithGoal()
-                                            .map { it.nutrient }
+                                            val withoutGoal = nutrientsByType
+                                                .filterOutNutrientsWithGoal()
+                                                .map { it.nutrient }
 
-                                        Pair(fields, withoutGoal)
-                                    }
+                                            Pair(fields, withoutGoal)
+                                        }
 
                                     val areNsValid = viewModel.validateRequiredNutrients(
-                                        nutrientIds = nutrients.basic.map { it.nutrient }.getIds().toSet()
+                                        nutrientIds = nutrients.basic.map { it.nutrient }.getIds()
+                                            .toSet()
                                     ) && currentStep >= 2
 
                                     val areVsValid = viewModel.validateOptionalNutrients(
-                                        nutrientIds = nutrients.vitamin.map { it.nutrient }.getIds().toSet()
+                                        nutrientIds = nutrients.vitamin.map { it.nutrient }.getIds()
+                                            .toSet()
                                     ) && currentStep >= 3
 
                                     val areMsValid = viewModel.validateOptionalNutrients(
-                                        nutrientIds = nutrients.mineral.map { it.nutrient }.getIds().toSet()
+                                        nutrientIds = nutrients.mineral.map { it.nutrient }.getIds()
+                                            .toSet()
                                     ) && currentStep >= 4
 
                                     val isCurrentStepValid = when (currentStep) {

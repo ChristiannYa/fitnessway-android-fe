@@ -115,8 +115,8 @@ object Banners {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = Animation.ComposableTransition.FadeInV1.enter,
-            exit = Animation.ComposableTransition.FadeInV1.exit,
+            enter = Animation.ComposableTransition.PopUpV3.enter,
+            exit = Animation.ComposableTransition.PopUpV3.exit,
             modifier = modifier
         ) { SuccessBanner(text) }
     }

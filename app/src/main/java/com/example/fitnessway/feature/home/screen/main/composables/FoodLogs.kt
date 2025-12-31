@@ -91,7 +91,7 @@ fun FoodLogs(
         enter = Animation.ComposableTransition.SlideVerticallyFromBottom.enter,
         exit = Animation.ComposableTransition.SlideVerticallyFromBottom.exit,
         modifier = modifier
-            .height(472.dp)
+            .height(Ui.Measurements.UPWARDS_SLIDEABLE_HEIGHT_SMALL)
             .zIndex(2f)
     ) {
         Box(

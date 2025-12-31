@@ -2,15 +2,12 @@ package com.example.fitnessway.feature.lists.screen.details.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,9 +25,11 @@ import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.shared.ActionButton
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Animation.colorSpec
+import com.example.fitnessway.util.Ui
 
 @Composable
 fun EditionMode(
@@ -40,90 +39,71 @@ fun EditionMode(
     onDone: () -> Unit,
     onCancel: () -> Unit,
     onRemoveNutrient: (nutrientId: Int) -> Unit,
-    isVisible: Boolean
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = slideInVertically(
-            initialOffsetY = { fullHeight -> fullHeight },
-            animationSpec = tween(durationMillis = 300)
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { fullHeight -> fullHeight },
-            animationSpec = tween(durationMillis = 300)
-        ),
-        content = {
-            Box(
-                modifier = Modifier.fillMaxHeight(),
-                contentAlignment = Alignment.BottomCenter,
-                content = {
-                    Box(
-                        modifier = Modifier
-                            .areaContainer(
-                                areaColor = MaterialTheme.colorScheme.primaryContainer
-                            ),
-                        content = {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(18.dp),
-                                content = {
-                                    val backgroundColor by animateColorAsState(
-                                        targetValue = if (enabled) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else MaterialTheme.colorScheme.surfaceVariant,
-                                        animationSpec = colorSpec,
-                                        label = "FoodEditionFinishButtonBackground"
-                                    )
+        enter = Animation.ComposableTransition.SlideVerticallyFromBottom.enter,
+        exit = Animation.ComposableTransition.SlideVerticallyFromBottom.exit,
+        modifier = modifier.height(Ui.Measurements.UPWARDS_SLIDEABLE_HEIGHT_LARGE)
+    ) {
+        Box(
+            modifier = Modifier
+                .areaContainer(
+                    areaColor = MaterialTheme.colorScheme.primaryContainer
+                )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
+                val backgroundColor by animateColorAsState(
+                    targetValue = if (enabled) {
+                        MaterialTheme.colorScheme.primary
+                    } else MaterialTheme.colorScheme.surfaceVariant,
+                    animationSpec = colorSpec,
+                    label = "FoodEditionFinishButtonBackground"
+                )
 
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                        content = {
-                                            ActionButton(
-                                                text = "Done",
-                                                onClick = onDone,
-                                                enabled = enabled,
-                                                backgroundColor = backgroundColor
-                                            )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    ActionButton(
+                        text = "Done",
+                        onClick = onDone,
+                        enabled = enabled,
+                        backgroundColor = backgroundColor
+                    )
 
-                                            ActionButton(
-                                                text = "Cancel",
-                                                onClick = onCancel,
-                                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant
-                                            )
-                                        }
-                                    )
-
-                                    LazyColumn(
-                                        verticalArrangement = Arrangement.spacedBy(24.dp),
-                                        content = {
-                                            fieldSection(
-                                                title = "Details",
-                                                fields = foodDetailFields,
-                                                content = { FoodDetailsField(it) }
-                                            )
-
-                                            nutrientFields.forEach { (_, fields, title) ->
-                                                fieldSection(
-                                                    title = title,
-                                                    fields = fields,
-                                                    content = {
-                                                        FoodDetailsField(
-                                                            field = it,
-                                                            onRemoveNutrient = onRemoveNutrient
-                                                        )
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    )
-                                }
-                            )
-                        }
+                    ActionButton(
+                        text = "Cancel",
+                        onClick = onCancel,
+                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 }
-            )
+
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                    fieldSection(
+                        title = "Details",
+                        fields = foodDetailFields,
+                        content = { FoodDetailsField(it) }
+                    )
+
+                    nutrientFields.forEach { (_, fields, title) ->
+                        fieldSection(
+                            title = title,
+                            fields = fields,
+                            content = {
+                                FoodDetailsField(
+                                    field = it,
+                                    onRemoveNutrient = onRemoveNutrient
+                                )
+                            }
+                        )
+                    }
+                }
+            }
         }
-    )
+    }
 }
 
 private fun <T> LazyListScope.fieldSection(
@@ -132,7 +112,9 @@ private fun <T> LazyListScope.fieldSection(
     content: @Composable (T) -> Unit
 ) {
     if (fields.isNotEmpty()) {
-        item {
+        item(
+            key = title
+        ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier

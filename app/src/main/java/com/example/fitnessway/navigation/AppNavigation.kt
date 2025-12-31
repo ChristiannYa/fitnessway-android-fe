@@ -63,7 +63,7 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
                 startDestination = if (tokensState.isAuthenticated) HomeGraph else WelcomeGraph,
                 exitTransition = {
                     if (isTabNavigation()) {
-                        Animation.fadeOut
+                        Animation.ComposableTransition.fadeOut
                     } else {
                         slideOutOfContainer(
                             AnimatedContentTransitionScope.SlideDirection.Left,
@@ -73,7 +73,7 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
                 },
                 popEnterTransition = {
                     if (isTabNavigation()) {
-                        Animation.fadeIn
+                        Animation.ComposableTransition.fadeIn
                     } else {
                         slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Right,
@@ -83,7 +83,7 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
                 },
                 enterTransition = {
                     if (isTabNavigation()) {
-                        Animation.fadeIn
+                        Animation.ComposableTransition.fadeIn
                     } else {
                         slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Left,
@@ -93,7 +93,7 @@ fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
                 },
                 popExitTransition = {
                     if (isTabNavigation()) {
-                        Animation.fadeOut
+                        Animation.ComposableTransition.fadeOut
                     } else {
                         slideOutOfContainer(
                             AnimatedContentTransitionScope.SlideDirection.Right,

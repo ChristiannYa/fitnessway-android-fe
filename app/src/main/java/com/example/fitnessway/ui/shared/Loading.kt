@@ -48,7 +48,7 @@ object Loading {
                 }
 
                 CircularProgressIndicator(
-                    strokeWidth = Ui.Measurements.PROGRESS_INDICATOR_WIDTH,
+                    strokeWidth = Ui.Measurements.PROGRESS_INDICATOR_STROKE_WIDTH,
                     modifier = Modifier.size(Ui.Measurements.PROGRESS_INDICATOR_SIZE)
                 )
             }

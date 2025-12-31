@@ -1,13 +1,11 @@
 package com.example.fitnessway.feature.lists.screen.details.composables
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,9 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
@@ -36,54 +32,45 @@ fun MoreOptionsPopup(
         visible = isVisible,
         enter = Animation.ComposableTransition.PopUpV1.enter,
         exit = Animation.ComposableTransition.PopUpV1.exit,
-        modifier = modifier,
-        content = {
-            Box(
-                contentAlignment = Alignment.TopEnd,
-                modifier = Modifier.fillMaxSize(),
-                content = {
-                    val shape = 16.dp
-                    val space = 5.dp
+        modifier = modifier
+    ) {
+        val shape = 16.dp
+        val space = 5.dp
 
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(shape))
-                            .background(
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(shape)
-                            )
-                            .padding(space)
-                            .width(100.dp),
-                        content = {
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(space),
-                                modifier = Modifier.clip(RoundedCornerShape(shape - 4.dp)),
-                                content = {
-                                    MoreOptionsButton(
-                                        onClick = onEdit,
-                                        text = "Edit",
-                                        modifier = Modifier
-                                            .background(
-                                                color = MaterialTheme.colorScheme.primary,
-                                            )
-                                    )
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(shape))
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = RoundedCornerShape(shape)
+                )
+                .padding(space)
+                .width(100.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(space),
+                modifier = Modifier.clip(RoundedCornerShape(shape - 4.dp))
+            ) {
+                MoreOptionsButton(
+                    onClick = onEdit,
+                    text = "Edit",
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                )
 
-                                    MoreOptionsButton(
-                                        onClick = onDelete,
-                                        text = "Delete",
-                                        modifier = Modifier
-                                            .background(
-                                                color = MaterialTheme.colorScheme.surfaceTint,
-                                            )
-                                    )
-                                }
-                            )
-                        }
-                    )
-                }
-            )
+                MoreOptionsButton(
+                    onClick = onDelete,
+                    text = "Delete",
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceTint,
+                        )
+                )
+            }
         }
-    )
+    }
 }
 
 @Composable
@@ -109,16 +96,4 @@ private fun MoreOptionsButton(
             )
         }
     )
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun MoreOptionsPopupPreview() {
-    FitnesswayTheme {
-        MoreOptionsPopup(
-            isVisible = true,
-            onEdit = {},
-            onDelete = {}
-        )
-    }
 }

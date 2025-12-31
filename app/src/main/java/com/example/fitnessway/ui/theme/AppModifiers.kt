@@ -72,5 +72,4 @@ object AppModifiers {
         shouldBlur: Boolean
     ) = this
         .blur(if (!shouldBlur) 0.dp else 2.dp)
-
 }

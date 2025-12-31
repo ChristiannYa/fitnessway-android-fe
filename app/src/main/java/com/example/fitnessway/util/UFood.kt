@@ -111,6 +111,10 @@ object UFood {
      */
     fun List<FoodLogData>.getIds(): List<Int> = this.map { it.id }
 
+    fun List<FoodInformation>.getFoodById(id: Int): FoodInformation? {
+        return this.find { it.information.id == id }
+    }
+
     object Ui {
         fun getFoodBrandText(brand: String?): String {
             return if (brand == null || brand.isEmpty()) {

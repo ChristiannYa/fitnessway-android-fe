@@ -290,6 +290,7 @@ class HomeViewModel(
             originalIntakesState !is UiState.Success
         ) return
 
+        // Extract current states' data
         val originalFoodLogs = originalFoodLogsState.data
         val originalIntakes = originalIntakesState.data
 
@@ -299,12 +300,14 @@ class HomeViewModel(
         // Remove current food log id from failed deletions list
         failedDeletionsForDate.remove(selectedFoodLogToRemove)
 
-        // Optimistically update food logs UI by filtering out the food log
+        // Store optimistic food logs by filtering out the food log
         val optimisticFoodLogs = originalFoodLogs.mapFoodLogs { _, logs ->
             logs.filter { it.id != selectedFoodLogToRemove.id }
         }
 
-        val optimisticNutrientIntakes = calcNutrientIntakesFromFoodLog(
+        // Store optimistic intakes by removing the food log's intake amount from
+        // the original intakes
+        val optimisticIntakes = calcNutrientIntakesFromFoodLog(
             currentIntakes = originalIntakes,
             foodLog = selectedFoodLogToRemove,
             operation = UFood.FoodNutrientIntakesOperation.SUBTRACT
@@ -313,17 +316,15 @@ class HomeViewModel(
         // Update UI immediately
         foodRepo.updateState {
             it.copy(
-                foodLogsCache = it.foodLogsCache + (apiDate to UiState.Success(
-                    optimisticFoodLogs
-                ))
+                foodLogsCache = it.foodLogsCache
+                        + (apiDate to UiState.Success(optimisticFoodLogs))
             )
         }
 
         nutrientRepo.updateState {
             it.copy(
-                nutrientIntakesCache = it.nutrientIntakesCache + (apiDate to UiState.Success(
-                    optimisticNutrientIntakes
-                ))
+                nutrientIntakesCache = it.nutrientIntakesCache
+                        + (apiDate to UiState.Success(optimisticIntakes))
             )
         }
 
@@ -342,11 +343,11 @@ class HomeViewModel(
                     }
 
                     is UiState.Error -> {
-                        // Add failed deletion to failed deletions list
-                        failedDeletionsForDate.add(selectedFoodLogToRemove)
-
                         // Provide feedback to UI
                         _uiState.update { it.copy(foodLogDeleteState = state) }
+
+                        // Add failed deletion to failed deletions list
+                        failedDeletionsForDate.add(selectedFoodLogToRemove)
 
                         // Obtain updated UI states after optimistic update
                         val currentFoodLogsState = foodRepo.uiState.value

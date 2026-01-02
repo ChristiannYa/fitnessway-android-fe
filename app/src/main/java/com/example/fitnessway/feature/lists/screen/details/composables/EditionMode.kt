@@ -2,34 +2,27 @@ package com.example.fitnessway.feature.lists.screen.details.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.shared.ActionButton
-import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Animation.colorSpec
-import com.example.fitnessway.util.Ui
 
 @Composable
 fun EditionMode(
@@ -46,7 +39,7 @@ fun EditionMode(
         visible = isVisible,
         enter = Animation.ComposableTransition.SlideVerticallyFromBottom.enter,
         exit = Animation.ComposableTransition.SlideVerticallyFromBottom.exit,
-        modifier = modifier.height(Ui.Measurements.UPWARDS_SLIDEABLE_HEIGHT_LARGE)
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier
@@ -58,7 +51,7 @@ fun EditionMode(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-                val backgroundColor by animateColorAsState(
+                val doneBackgroundColor by animateColorAsState(
                     targetValue = if (enabled) {
                         MaterialTheme.colorScheme.primary
                     } else MaterialTheme.colorScheme.surfaceVariant,
@@ -71,7 +64,7 @@ fun EditionMode(
                         text = "Done",
                         onClick = onDone,
                         enabled = enabled,
-                        backgroundColor = backgroundColor
+                        backgroundColor = doneBackgroundColor
                     )
 
                     ActionButton(
@@ -112,37 +105,21 @@ private fun <T> LazyListScope.fieldSection(
     content: @Composable (T) -> Unit
 ) {
     if (fields.isNotEmpty()) {
-        item(
-            key = title
-        ) {
+        item {
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .clip(RoundedCornerShape(14.dp))
-                    .border(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        width = 4.dp,
-                        shape = RoundedCornerShape(14.dp)
-                    )
-                    .areaContainer(
-                        size = AreaContainerSize.MEDIUM,
-                        areaColor = Color.Transparent
-                    ),
-                content = {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        content = {
-                            fields.forEach { content(it) }
-                        }
-                    )
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.SemiBold,
+                )
+
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    fields.forEach { content(it) }
                 }
-            )
+            }
         }
     }
 }

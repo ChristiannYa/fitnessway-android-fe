@@ -32,7 +32,7 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
-import com.example.fitnessway.util.UNutrient.combineAll
+import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.mapNutrients
 
 object UFood {
@@ -47,7 +47,7 @@ object UFood {
     ): NutrientIntakesByType {
         return currentIntakes.mapNutrients { _, intakes ->
             intakes.map { intake ->
-                val foodNutrientAmountData = foodLog.food.nutrients.combineAll().find {
+                val foodNutrientAmountData = foodLog.food.nutrients.combine().find {
                     val nutrient = it.nutrientWithPreferences.nutrient
                     nutrient.id == intake.nutrientWithPreferences.nutrient.id
                 }
@@ -76,7 +76,7 @@ object UFood {
     ): NutrientsByType<NutrientAmountData> {
         return nutrients.mapNutrients { _, nutrientsList ->
             nutrientsList.map { nutrientData ->
-                val foodNutrientAmountData = nutrients.combineAll().find {
+                val foodNutrientAmountData = nutrients.combine().find {
                     val nutrient = it.nutrientWithPreferences.nutrient
                     nutrient.id == nutrientData.nutrientWithPreferences.nutrient.id
                 }

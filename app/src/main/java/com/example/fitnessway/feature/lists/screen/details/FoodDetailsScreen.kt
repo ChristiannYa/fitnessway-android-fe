@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.composables.ConfirmFoodDeletionPopup
@@ -30,6 +32,7 @@ import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation.rememberHeaderSlideUpAnimation
+import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
@@ -66,6 +69,8 @@ fun FoodDetailsScreen(
         uiState = foodDeleteState,
         onTimeOut = viewModel::resetFoodDeleteState
     )
+
+    val focusManager = LocalFocusManager.current
 
     DisposableEffect(Unit) {
         onDispose {
@@ -168,6 +173,8 @@ fun FoodDetailsScreen(
             ) {
                 val fieldsProvider = FoodEditionFieldsProvider(
                     formState = formState,
+                    focusManager = focusManager,
+                    isFormSubmitting = foodUpdateState is UiState.Loading,
                     onFieldUpdate = { fieldName, value ->
                         viewModel.updateFoodEditionFormField(
                             fieldName = fieldName,
@@ -201,10 +208,22 @@ fun FoodDetailsScreen(
                     )
                 )
 
+                val allNutrientIds = food.nutrients.combine().map {
+                    it.nutrientWithPreferences.nutrient.id
+                }
+                    .filter { it !in deletedNutrients }
+
                 val nutrientFields = nutrients.map { (type, ns, title) ->
                     val fields = ns
                         .filter { it.nutrientWithPreferences.nutrient.id !in deletedNutrients }
-                        .map { fieldsProvider.nutrient(it.nutrientWithPreferences.nutrient) }
+                        .map { nutrientData ->
+                            val nutrient = nutrientData.nutrientWithPreferences.nutrient
+
+                            fieldsProvider.nutrient(
+                                nutrient = nutrientData.nutrientWithPreferences.nutrient,
+                                isLastField = nutrient.id == allNutrientIds.last()
+                            )
+                        }
 
                     Triple(type, fields, title)
                 }
@@ -277,8 +296,7 @@ fun FoodDetailsScreen(
                         },
                         onCancel = viewModel::cancelEditionMode,
                         onRemoveNutrient = viewModel::filterNutrientFromForm,
-                        isVisible = formState.isEditing,
-                        modifier = Modifier.align(Alignment.BottomCenter)
+                        isVisible = formState.isEditing
                     )
                 }
             }

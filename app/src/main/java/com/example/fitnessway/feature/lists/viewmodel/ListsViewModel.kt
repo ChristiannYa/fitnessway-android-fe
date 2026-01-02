@@ -19,7 +19,7 @@ import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.feature.lists.manager.toggle.ISelectionManager
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient.buildNutrientsByType
-import com.example.fitnessway.util.UNutrient.combineAll
+import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -123,7 +123,7 @@ class ListsViewModel(
 
         // Create a map of all original nutrients
         val originalNutrients = selectedFood.nutrients
-            .combineAll()
+            .combine()
             .associateBy { it.nutrientWithPreferences.nutrient.id }
 
         // Create updated nutrient data

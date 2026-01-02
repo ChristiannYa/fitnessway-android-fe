@@ -44,7 +44,7 @@ fun FoodLogField(field: FoodLogField) {
                 .width(IntrinsicSize.Max)
                 .clip(InputUi.shape)
                 .background(
-                    color = InputUi.getColor(),
+                    color = InputUi.getBackgroundColor(),
                     shape = InputUi.shape
                 )
                 .padding(InputUi.padding)

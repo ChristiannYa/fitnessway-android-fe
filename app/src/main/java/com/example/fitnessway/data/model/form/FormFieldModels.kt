@@ -2,16 +2,18 @@ package com.example.fitnessway.data.model.form
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.focus.FocusProperties
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
 
 data class FormField<T : FormFieldName>(
     val name: T,
     val label: String,
-    val value: String,
+    val value: String, // TODO: Remove this field (replaced by textFieldValue)
+    val textFieldValue: TextFieldValue? = null,
     val enabled: Boolean = true,
-    val updateState: (String) -> Unit,
+    val updateState: (String) -> Unit, // TODO: Remove this field (replaced by updateTextFieldValueState)
+    val updateTextFieldValueState: ((TextFieldValue) -> Unit)? = null,
     val keyboardOptions: KeyboardOptions = KeyboardOptions(),
     val keyboardActions: KeyboardActions = KeyboardActions(),
     val autoCapitalize: KeyboardCapitalization = KeyboardCapitalization.None,

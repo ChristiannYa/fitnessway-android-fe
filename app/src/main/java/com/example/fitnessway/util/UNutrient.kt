@@ -88,7 +88,7 @@ object UNutrient {
         )
     }
 
-    fun <T> NutrientsByType<T>.combineAll(): List<T> {
+    fun <T> NutrientsByType<T>.combine(): List<T> {
         return this.basic + this.vitamin + this.mineral
     }
 
@@ -193,7 +193,7 @@ object UNutrient {
         nutrientsData: NutrientsByType<NutrientWithPreferences>,
         propertySelector: (NutrientPreferences) -> String
     ): Map<Int, String> {
-        return nutrientsData.combineAll().associate {
+        return nutrientsData.combine().associate {
             val value = propertySelector(it.preferences)
             it.nutrient.id to value
         }

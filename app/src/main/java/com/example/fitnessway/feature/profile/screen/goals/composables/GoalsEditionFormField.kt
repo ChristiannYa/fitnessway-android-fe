@@ -85,7 +85,7 @@ fun GoalsEditionFormField(
                 .clip(InputUi.shape)
                 .width(IntrinsicSize.Max)
                 .background(
-                    color = InputUi.getColor(),
+                    color = InputUi.getBackgroundColor(),
                     shape = InputUi.shape
                 )
                 .padding(InputUi.padding)

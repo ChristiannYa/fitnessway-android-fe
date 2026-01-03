@@ -32,22 +32,24 @@ fun FoodLogField(field: FoodLogField) {
             modifier = Modifier.padding(end = 16.dp)
         )
 
-        BasicTextField(
-            value = field.value,
-            keyboardOptions = field.keyboardOptions,
-            keyboardActions = field.keyboardActions,
-            onValueChange = field.updateState,
-            enabled = field.enabled,
-            textStyle = InputUi.getTextStyle(),
-            maxLines = 1,
-            modifier = Modifier
-                .width(IntrinsicSize.Max)
-                .clip(InputUi.shape)
-                .background(
-                    color = InputUi.getBackgroundColor(),
-                    shape = InputUi.shape
-                )
-                .padding(InputUi.padding)
-        )
+        if (field.textFieldValue != null && field.updateTextFieldValueState != null) {
+            BasicTextField(
+                value = field.textFieldValue,
+                onValueChange = field.updateTextFieldValueState,
+                keyboardOptions = field.keyboardOptions,
+                keyboardActions = field.keyboardActions,
+                enabled = field.enabled,
+                textStyle = InputUi.getTextStyle(),
+                maxLines = 1,
+                modifier = Modifier
+                    .width(IntrinsicSize.Max)
+                    .clip(InputUi.shape)
+                    .background(
+                        color = InputUi.getBackgroundColor(),
+                        shape = InputUi.shape
+                    )
+                    .padding(InputUi.padding)
+            )
+        }
     }
 }

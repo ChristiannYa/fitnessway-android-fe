@@ -111,6 +111,7 @@ class FoodEditionFieldsProvider(
             textFieldValue = textFieldValue.value,
             enabled = !isFormSubmitting,
             keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(

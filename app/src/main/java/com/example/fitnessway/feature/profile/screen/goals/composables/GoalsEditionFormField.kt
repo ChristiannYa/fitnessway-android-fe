@@ -75,20 +75,24 @@ fun GoalsEditionFormField(
             )
         )
 
-        BasicTextField(
-            value = field.value,
-            onValueChange = field.updateState,
-            enabled = field.enabled,
-            textStyle = textStyle,
-            maxLines = 1,
-            modifier = Modifier
-                .clip(InputUi.shape)
-                .width(IntrinsicSize.Max)
-                .background(
-                    color = InputUi.getBackgroundColor(),
-                    shape = InputUi.shape
-                )
-                .padding(InputUi.padding)
-        )
+        if (field.textFieldValue != null && field.updateTextFieldValueState != null) {
+            BasicTextField(
+                value = field.textFieldValue,
+                onValueChange = field.updateTextFieldValueState,
+                enabled = field.enabled,
+                keyboardActions = field.keyboardActions,
+                keyboardOptions = field.keyboardOptions,
+                textStyle = textStyle,
+                maxLines = 1,
+                modifier = Modifier
+                    .clip(InputUi.shape)
+                    .width(IntrinsicSize.Max)
+                    .background(
+                        color = InputUi.getBackgroundColor(),
+                        shape = InputUi.shape
+                    )
+                    .padding(InputUi.padding)
+            )
+        }
     }
 }

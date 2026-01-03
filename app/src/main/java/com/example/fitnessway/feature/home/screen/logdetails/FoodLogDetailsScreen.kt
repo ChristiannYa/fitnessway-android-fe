@@ -90,7 +90,10 @@ fun FoodLogDetailsScreen(
                             )
 
                             Clickables.HeaderDoneButton(
-                                onClick = viewModel::updateFoodLog,
+                                onClick = {
+                                    focusManager.clearFocus()
+                                    viewModel.updateFoodLog()
+                                },
                                 enabled = viewModel.isFoodLogEditionFormValid
                             )
                         }

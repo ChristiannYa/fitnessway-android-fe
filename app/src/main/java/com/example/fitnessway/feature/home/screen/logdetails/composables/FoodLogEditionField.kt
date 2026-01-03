@@ -13,20 +13,22 @@ import com.example.fitnessway.util.Ui.InputUi
 
 @Composable
 fun FoodLogEditionField(field: FoodLogEditionField) {
-    BasicTextField(
-        value = field.value,
-        onValueChange = field.updateState,
-        keyboardActions = field.keyboardActions,
-        keyboardOptions = field.keyboardOptions,
-        textStyle = InputUi.getTextStyle(),
-        maxLines = 1,
-        modifier = Modifier
-            .width(IntrinsicSize.Max)
-            .clip(InputUi.shape)
-            .background(
-                color = InputUi.getBackgroundColor(),
-                shape = InputUi.shape
-            )
-            .padding(InputUi.padding)
-    )
+    if (field.textFieldValue != null && field.updateTextFieldValueState != null) {
+        BasicTextField(
+            value = field.textFieldValue,
+            onValueChange = field.updateTextFieldValueState,
+            keyboardActions = field.keyboardActions,
+            keyboardOptions = field.keyboardOptions,
+            textStyle = InputUi.getTextStyle(),
+            maxLines = 1,
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .clip(InputUi.shape)
+                .background(
+                    color = InputUi.getBackgroundColor(),
+                    shape = InputUi.shape
+                )
+                .padding(InputUi.padding)
+        )
+    }
 }

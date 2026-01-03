@@ -17,7 +17,5 @@ interface IEditionManager {
     fun updateFoodEditionFormField(fieldName: FormFieldName.IFoodEdition, input: String)
     fun filterNutrientFromForm(nutrientId: Int)
     fun resetDeletedNutrients()
-    fun startEditionMode()
     fun simpleFormCancel()
-    fun cancelEditionMode()
 }

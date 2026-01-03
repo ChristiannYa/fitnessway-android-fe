@@ -207,16 +207,7 @@ class EditionManager : IEditionManager {
         _deletedNutrients.value = emptyList()
     }
 
-    override fun startEditionMode() {
-        _foodEditionFormState.value = _foodEditionFormState.value?.edit()
-    }
-
     override fun simpleFormCancel() {
         _foodEditionFormState.value = _foodEditionFormState.value?.setIsEditingToFalse()
-    }
-
-    override fun cancelEditionMode() {
-        _foodEditionFormState.value = _foodEditionFormState.value?.cancel()
-        resetDeletedNutrients()
     }
 }

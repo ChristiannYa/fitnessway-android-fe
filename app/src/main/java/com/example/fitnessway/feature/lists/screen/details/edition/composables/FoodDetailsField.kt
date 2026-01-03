@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.details.composables
+package com.example.fitnessway.feature.lists.screen.details.edition.composables
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -18,7 +18,6 @@ import com.example.fitnessway.util.Ui
 @Composable
 fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
     field: FormField<T>,
-    enabled: Boolean = true,
     onRemoveNutrient: ((nutrientId: Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -32,7 +31,7 @@ fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
         OutlinedTextField(
             value = field.textFieldValue,
             onValueChange = field.updateTextFieldValueState,
-            enabled = enabled,
+            enabled = field.enabled,
             label = {
                 Text(
                     text = field.label,
@@ -41,14 +40,16 @@ fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
             },
             trailingIcon = if (isNutrient) {
                 {
+                    val nutrient = field.name.nutrient
+
                     Clickables.AppIconButton(
                         size = Clickables.AppIconButtonSize.SMALL,
                         icon = Clickables.AppIconButtonSource.Vector(Icons.Default.Delete),
-                        contentDescription = "Delete ${field.name.nutrient.name} from food",
+                        contentDescription = "Delete ${nutrient.name} from food",
                         onClick = {
-                            val nutrientId = field.name.nutrient.id
-                            onRemoveNutrient?.invoke(nutrientId)
+                            onRemoveNutrient?.invoke(nutrient.id)
                         },
+                        enabled = field.enabled,
                         showsClickIndication = false
                     )
                 }
@@ -60,11 +61,14 @@ fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
                 .colors(
                     unfocusedBorderColor = Color.Transparent,
                     unfocusedContainerColor = inputColor.copy(0.6f),
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onBackground.copy(0.8f),
+                    disabledBorderColor = Color.Transparent,
+                    disabledContainerColor = inputColor.copy(0.6f),
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.8f),
                     focusedContainerColor = inputColor,
-                    focusedTextColor = MaterialTheme.colorScheme.primary
+                    focusedTextColor = MaterialTheme.colorScheme.primary,
                 ),
-            modifier = modifier
-                .fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         )
     }
 }

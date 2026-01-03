@@ -189,6 +189,10 @@ class ListsViewModel(
                         // foodRepo.clearFoodLogsUiCache()
                     }
 
+                    is UiState.Loading -> {
+                        _uiState.update { it.copy(foodUpdateState = state) }
+                    }
+
                     is UiState.Error -> {
                         // Revert back to original state on error
                         _uiState.update { it.copy(foodUpdateState = state) }

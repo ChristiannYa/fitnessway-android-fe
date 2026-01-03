@@ -34,7 +34,7 @@ object Clickables {
     ) {
         LARGE(38.dp),
         MEDIUM(34.dp),
-        SMALL(30.dp)
+        SMALL(28.dp)
     }
 
     sealed interface AppIconButtonSource {

@@ -28,8 +28,8 @@ import com.example.fitnessway.ui.shared.Banners.SuccessBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.HeaderRow
-import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
@@ -37,8 +37,8 @@ import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
-import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.Ui.handleApiSuccessTempState
+import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import org.koin.compose.viewmodel.koinViewModel
@@ -188,14 +188,11 @@ fun FoodLogScreen(
             }
         }
 
-    } else Screen(
-        header = {
-            Header(
-                onBackClick = onBackClick,
-                title = "Log Information"
-            )
-        }
-    ) { NotFoundMessage("User data not found") }
+    } else NotFoundScreen(
+        onBackClick = onBackClick,
+        title = "Log Information",
+        message = "User data not found"
+    )
 }
 
 @Composable

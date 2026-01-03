@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,8 +18,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -85,6 +88,32 @@ object Ui {
                     focusedContainerColor = inputColor,
                     focusedTextColor = MaterialTheme.colorScheme.primary,
                 )
+        }
+
+        @Composable
+        fun rememberTextFieldValueWithCursor(
+            text: String,
+            key: Any? = null
+        ): MutableState<TextFieldValue> {
+            val textFieldValue = remember(key) {
+                mutableStateOf(
+                    TextFieldValue(
+                        text = text,
+                        selection = TextRange(text.length)
+                    )
+                )
+            }
+
+            LaunchedEffect(text) {
+                if (textFieldValue.value.text != text) {
+                    textFieldValue.value = TextFieldValue(
+                        text = text,
+                        selection = TextRange(text.length)
+                    )
+                }
+            }
+
+            return textFieldValue
         }
     }
 

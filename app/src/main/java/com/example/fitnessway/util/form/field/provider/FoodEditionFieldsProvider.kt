@@ -5,15 +5,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.Nutrient
-import com.example.fitnessway.util.Formatters.logcat
+import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 
@@ -27,14 +25,16 @@ class FoodEditionFieldsProvider(
     fun name(): FoodEditionDetailField {
         val value = formState.data.name
 
+        val textFieldValue = Ui.InputUi.rememberTextFieldValueWithCursor(
+            text = value,
+            key = FormFieldName.FoodEdition.DetailField.NAME
+        )
+
         return FoodEditionDetailField(
             name = FormFieldName.FoodEdition.DetailField.NAME,
             label = "Name",
-            value = formState.data.name,
-            textFieldValue = TextFieldValue(
-                text = value,
-                selection = TextRange(value.length)
-            ),
+            value = value,
+            textFieldValue = textFieldValue.value,
             enabled = !isFormSubmitting,
             updateState = { newValue ->
                 onFieldUpdate(
@@ -43,6 +43,7 @@ class FoodEditionFieldsProvider(
                 )
             },
             updateTextFieldValueState = {
+                textFieldValue.value = it
                 onFieldUpdate(
                     FormFieldName.FoodEdition.DetailField.NAME,
                     it.text
@@ -61,14 +62,16 @@ class FoodEditionFieldsProvider(
     fun brand(): FoodEditionDetailField {
         val value = formState.data.brand
 
+        val textFieldValue = Ui.InputUi.rememberTextFieldValueWithCursor(
+            text = value,
+            key = FormFieldName.FoodEdition
+        )
+
         return FoodEditionDetailField(
             name = FormFieldName.FoodEdition.DetailField.BRAND,
             label = "Brand",
             value = formState.data.brand,
-            textFieldValue = TextFieldValue(
-                text = value,
-                selection = TextRange(value.length)
-            ),
+            textFieldValue = textFieldValue.value,
             enabled = !isFormSubmitting,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
@@ -83,6 +86,7 @@ class FoodEditionFieldsProvider(
                 )
             },
             updateTextFieldValueState = {
+                textFieldValue.value = it
                 onFieldUpdate(
                     FormFieldName.FoodEdition.DetailField.BRAND,
                     it.text
@@ -95,14 +99,16 @@ class FoodEditionFieldsProvider(
     fun amountPerServing(): FoodEditionDetailField {
         val value = formState.data.amountPerServing
 
+        val textFieldValue = Ui.InputUi.rememberTextFieldValueWithCursor(
+            text = value,
+            key = FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING
+        )
+
         return FoodEditionDetailField(
             name = FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING,
             label = "Amount Per Serving",
             value = formState.data.amountPerServing,
-            textFieldValue = TextFieldValue(
-                text = value,
-                selection = TextRange(value.length)
-            ),
+            textFieldValue = textFieldValue.value,
             enabled = !isFormSubmitting,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
@@ -117,6 +123,7 @@ class FoodEditionFieldsProvider(
                 )
             },
             updateTextFieldValueState = {
+                textFieldValue.value = it
                 onFieldUpdate(
                     FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING,
                     it.text
@@ -129,14 +136,16 @@ class FoodEditionFieldsProvider(
     fun servingUnit(): FoodEditionDetailField {
         val value = formState.data.servingUnit
 
+        val textFieldValue = Ui.InputUi.rememberTextFieldValueWithCursor(
+            text = value,
+            key = FormFieldName.FoodEdition.DetailField.SERVING_UNIT
+        )
+
         return FoodEditionDetailField(
             name = FormFieldName.FoodEdition.DetailField.SERVING_UNIT,
             label = "Serving Unit",
             value = formState.data.servingUnit,
-            textFieldValue = TextFieldValue(
-                text = value,
-                selection = TextRange(value.length)
-            ),
+            textFieldValue = textFieldValue.value,
             enabled = !isFormSubmitting,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
@@ -151,6 +160,7 @@ class FoodEditionFieldsProvider(
                 )
             },
             updateTextFieldValueState = {
+                textFieldValue.value = it
                 onFieldUpdate(
                     FormFieldName.FoodEdition.DetailField.SERVING_UNIT,
                     it.text
@@ -166,15 +176,30 @@ class FoodEditionFieldsProvider(
     ): FoodEditionNutrientField {
         val value = formState.data.nutrients[nutrient.id] ?: ""
 
+        val textFieldValue = Ui.InputUi.rememberTextFieldValueWithCursor(
+            text = value,
+            key = nutrient.id
+        )
+
         return FoodEditionNutrientField(
             name = FormFieldName.FoodEdition.NutrientField(nutrient),
             label = "${nutrient.name} ${nutrient.unit}",
             value = value, // @TODO: Remove this field. Replaced by textFieldValue
-            textFieldValue = TextFieldValue(
-                text = value,
-                selection = TextRange(value.length)
-            ),
+            textFieldValue = textFieldValue.value,
             enabled = !isFormSubmitting,
+            updateState = { newValue ->
+                onFieldUpdate(
+                    FormFieldName.FoodEdition.NutrientField(nutrient),
+                    newValue
+                )
+            }, // @TODO: Remove this field. Replaced by updateTextFieldValueState
+            updateTextFieldValueState = {
+                textFieldValue.value = it
+                onFieldUpdate(
+                    FormFieldName.FoodEdition.NutrientField(nutrient),
+                    it.text // extract the text from the state
+                )
+            },
             keyboardOptions = KeyboardOptions(
                 imeAction = if (isLastField) ImeAction.Done else ImeAction.Next,
                 keyboardType = KeyboardType.Decimal
@@ -187,18 +212,6 @@ class FoodEditionFieldsProvider(
                     { focusManager.clearFocus() }
                 } else null
             ),
-            updateState = { newValue ->
-                onFieldUpdate(
-                    FormFieldName.FoodEdition.NutrientField(nutrient),
-                    newValue
-                )
-            }, // @TODO: Remove this field. Replaced by updateTextFieldValueState
-            updateTextFieldValueState = {
-                onFieldUpdate(
-                    FormFieldName.FoodEdition.NutrientField(nutrient),
-                    it.text // extract the text from the state
-                )
-            }
         )
     }
 }

@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -66,6 +68,23 @@ object Ui {
                 color = textColor,
                 textAlign = textAlign
             )
+        }
+
+        @Composable
+        fun getOutlinedColors(): TextFieldColors {
+            val inputColor = this.getBackgroundColor()
+
+            return OutlinedTextFieldDefaults
+                .colors(
+                    unfocusedBorderColor = Color.Transparent,
+                    unfocusedContainerColor = inputColor.copy(0.6f),
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onBackground.copy(0.8f),
+                    disabledBorderColor = Color.Transparent,
+                    disabledContainerColor = inputColor.copy(0.6f),
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.8f),
+                    focusedContainerColor = inputColor,
+                    focusedTextColor = MaterialTheme.colorScheme.primary,
+                )
         }
     }
 

@@ -122,21 +122,25 @@ fun CreateFoodFormScreen(
             header = {
                 Header(
                     onBackClick = {
-                        if (foodAddState is UiState.Success) {
+                        val onScreenLeave = {
                             onBackClick()
                             viewModel.resetFoodCreationScreenStates()
-                        } else {
-                            if (foodAddState !is UiState.Loading) {
-                                if (currentStep == 1) {
-                                    onBackClick()
-                                    viewModel.resetFoodFormState()
-                                } else {
-                                    viewModel.updateStep(
-                                        step = currentStep,
-                                        goesBack = true
-                                    )
-                                }
+                        }
+
+                        val goBackOnIdle = {
+                            if (currentStep == 1) onScreenLeave() else {
+                                viewModel.updateStep(
+                                    step = currentStep,
+                                    goesBack = true
+                                )
                             }
+                        }
+
+                        when (foodAddState) {
+                            is UiState.Success -> onScreenLeave()
+                            is UiState.Error -> goBackOnIdle()
+                            is UiState.Idle -> goBackOnIdle()
+                            else -> {}
                         }
                     },
                     isOnBackEnabled = foodAddState !is UiState.Loading,
@@ -327,7 +331,10 @@ fun CreateFoodFormScreen(
                                             viewModel.updateStep(
                                                 step = currentStep,
                                                 goesBack = false,
-                                                onSubmit = viewModel::addFood
+                                                onSubmit = {
+                                                    focusManager.clearFocus()
+                                                    viewModel.addFood()
+                                                }
                                             )
                                         },
                                         enabled = isCurrentStepValid,

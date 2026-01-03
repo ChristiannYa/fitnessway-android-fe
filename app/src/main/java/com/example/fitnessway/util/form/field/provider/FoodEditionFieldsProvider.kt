@@ -13,6 +13,7 @@ import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.nutrient.Nutrient
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 
@@ -168,7 +169,7 @@ class FoodEditionFieldsProvider(
         return FoodEditionNutrientField(
             name = FormFieldName.FoodEdition.NutrientField(nutrient),
             label = "${nutrient.name} ${nutrient.unit}",
-            value = value,
+            value = value, // @TODO: Remove this field. Replaced by textFieldValue
             textFieldValue = TextFieldValue(
                 text = value,
                 selection = TextRange(value.length)
@@ -191,7 +192,7 @@ class FoodEditionFieldsProvider(
                     FormFieldName.FoodEdition.NutrientField(nutrient),
                     newValue
                 )
-            },
+            }, // @TODO: Remove this field. Replaced by updateTextFieldValueState
             updateTextFieldValueState = {
                 onFieldUpdate(
                     FormFieldName.FoodEdition.NutrientField(nutrient),

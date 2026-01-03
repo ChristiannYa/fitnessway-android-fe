@@ -5,11 +5,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.ui.shared.Clickables
@@ -23,8 +21,8 @@ fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
 ) {
     val isNutrient = field.name is FormFieldName.FoodEdition.NutrientField
 
+    val outlinedColors = Ui.InputUi.getOutlinedColors()
     val inputShape = Ui.InputUi.shape
-    val inputColor = Ui.InputUi.getBackgroundColor()
     val inputTextStyle = Ui.InputUi.getTextStyle()
 
     if (field.textFieldValue != null && field.updateTextFieldValueState != null) {
@@ -55,19 +53,11 @@ fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
                 }
             } else null,
             keyboardOptions = field.keyboardOptions,
+            keyboardActions = field.keyboardActions,
             textStyle = inputTextStyle,
+            singleLine = true,
             shape = inputShape,
-            colors =  OutlinedTextFieldDefaults
-                .colors(
-                    unfocusedBorderColor = Color.Transparent,
-                    unfocusedContainerColor = inputColor.copy(0.6f),
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onBackground.copy(0.8f),
-                    disabledBorderColor = Color.Transparent,
-                    disabledContainerColor = inputColor.copy(0.6f),
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.8f),
-                    focusedContainerColor = inputColor,
-                    focusedTextColor = MaterialTheme.colorScheme.primary,
-                ),
+            colors = outlinedColors,
             modifier = modifier.fillMaxWidth()
         )
     }

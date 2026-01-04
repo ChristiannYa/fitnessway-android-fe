@@ -5,8 +5,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.form.NutrientColorUpdateField
 import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
@@ -49,10 +49,17 @@ class NutrientColorsFieldsProvider(
                 )
             },
             updateTextFieldValueState = {
-                textFieldValue.value = it
+                val truncatedValue = it.text.take(6).uppercase()
+
+                textFieldValue.value = it.copy(
+                    text = truncatedValue,
+
+                    // Adjust cursor position to be within the truncated text bounds
+                    selection = TextRange(truncatedValue.length.coerceAtMost(it.selection.end))
+                )
                 onFieldUpdate(
                     FormFieldName.NutrientColorUpdate(nutrientData),
-                    it.text
+                    truncatedValue
                 )
             },
             keyboardOptions = KeyboardOptions(

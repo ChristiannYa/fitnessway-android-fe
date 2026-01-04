@@ -53,50 +53,49 @@ fun GoalsEditionFormField(
     )
     val inputPadding = InputUi.padding
     val inputShape = InputUi.shape
-    val inputTextStyle = InputUi.getTextStyle(
-        textAlign = TextAlign.Center,
-        textColor = goalTextColor
-    )
+    val inputTextStyle = InputUi.getTextStyle(textAlign = TextAlign.Center)
 
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-    ) {
-        NutrientFieldLabel(
-            nutrient = nutrient,
-            isFocused = isFocused
-        )
+    if (field.textFieldValue != null && field.updateTextFieldValueState != null) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+        ) {
+            NutrientFieldLabel(
+                nutrient = nutrient,
+                isFocused = isFocused
+            )
 
-        BasicTextField(
-            value = field.value,
-            onValueChange = field.updateState,
-            enabled = field.enabled,
-            textStyle = inputTextStyle,
-            singleLine = true,
-            interactionSource = interactionSource,
-            keyboardOptions = field.keyboardOptions,
-            keyboardActions = field.keyboardActions,
-            cursorBrush = SolidColor(inputTextStyle.color), // Caret color
-            modifier = Modifier
-                .clip(inputShape)
-                .width(120.dp)
-                .background(
-                    color = inputBackgroundColor,
-                    shape = inputShape
-                )
-                .border(
-                    width = 2.dp,
-                    color = inputBorderColor,
-                    shape = inputShape
-                )
-        ) { innerTextField ->
-            Row(
+            BasicTextField(
+                value = field.textFieldValue,
+                onValueChange = field.updateTextFieldValueState,
+                enabled = field.enabled,
+                textStyle = inputTextStyle,
+                singleLine = true,
+                interactionSource = interactionSource,
+                keyboardOptions = field.keyboardOptions,
+                keyboardActions = field.keyboardActions,
+                cursorBrush = SolidColor(inputTextStyle.color), // Caret color
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(inputPadding)
-            ) {
-                innerTextField()
+                    .clip(inputShape)
+                    .width(120.dp)
+                    .background(
+                        color = inputBackgroundColor,
+                        shape = inputShape
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = inputBorderColor,
+                        shape = inputShape
+                    )
+            ) { innerTextField ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(inputPadding)
+                ) {
+                    innerTextField()
+                }
             }
         }
     }

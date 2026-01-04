@@ -1,10 +1,7 @@
 package com.example.fitnessway.feature.profile.screen.goals
 
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,9 +11,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientFields
@@ -75,9 +69,7 @@ fun ProfileGoalsScreen(
     val loadingText = "Loading nutrient goals"
     val goalsEditionFormStateCopy = goalsEditionFormState
 
-    val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
-    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
 
     if (user != null) {
         Screen(
@@ -105,7 +97,7 @@ fun ProfileGoalsScreen(
                     }
                 }
             }
-        ) {
+        ) { focusManager ->
             when (nutrientsState) {
                 is UiState.Loading -> LoadingArea(loadingText)
 
@@ -162,17 +154,7 @@ fun ProfileGoalsScreen(
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier
-                                .imePadding()
-                                .pointerInput(isImeVisible) {
-                                    if (isImeVisible) {
-                                        detectTapGestures(
-                                            onTap = {
-                                                focusManager.clearFocus()
-                                            }
-                                        )
-                                    }
-                                }
+                            modifier = Modifier.imePadding()
                         ) {
                             ErrorBannerAnimated(
                                 isVisible = nutrientGoalsSetErrorMessage != null,

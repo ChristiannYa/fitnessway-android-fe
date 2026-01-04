@@ -56,8 +56,7 @@ fun NutrientColorsContent(
 
                                     NutrientColorUpdateFormField(
                                         field = field,
-                                        modifier = Modifier
-                                            .weight(1f)
+                                        modifier = Modifier.weight(1f)
                                     )
 
                                     Box(

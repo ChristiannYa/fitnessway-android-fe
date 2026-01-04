@@ -48,48 +48,47 @@ fun NutrientColorUpdateFormField(
     val inputShape = InputUi.shape
 
     Row(
-        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        content = {
-            NutrientFieldLabel(
-                nutrient = nutrient,
-                isFocused = isFocused
-            )
+        modifier = modifier
+    ) {
+        NutrientFieldLabel(
+            nutrient = nutrient,
+            isFocused = isFocused
+        )
 
-            BasicTextField(
-                value = field.value,
-                onValueChange = field.updateState,
-                enabled = field.enabled,
-                textStyle = inputTextStyle,
-                singleLine = true,
-                interactionSource = interactionSource,
-                keyboardOptions = field.keyboardOptions,
-                keyboardActions = field.keyboardActions,
-                cursorBrush = SolidColor(inputTextStyle.color), // Caret color
+        BasicTextField(
+            value = field.value,
+            onValueChange = field.updateState,
+            enabled = field.enabled,
+            textStyle = inputTextStyle,
+            singleLine = true,
+            interactionSource = interactionSource,
+            keyboardOptions = field.keyboardOptions,
+            keyboardActions = field.keyboardActions,
+            cursorBrush = SolidColor(inputTextStyle.color), // Caret color
+            modifier = Modifier
+                .clip(inputShape)
+                .width(120.dp)
+                .background(
+                    color = inputBackgroundColor,
+                    shape = inputShape
+                )
+                .border(
+                    width = 2.dp,
+                    color = inputBorderColor,
+                    shape = inputShape
+                )
+        ) { innerTextField ->
+            Row(
                 modifier = Modifier
-                    .clip(inputShape)
-                    .width(116.dp)
-                    .background(
-                        color = inputBackgroundColor,
-                        shape = inputShape
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = inputBorderColor,
-                        shape = inputShape
-                    )
-            ) { innerTextField ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(inputPadding)
-                ) {
-                    innerTextField()
-                }
+                    .fillMaxWidth()
+                    .padding(inputPadding)
+            ) {
+                innerTextField()
             }
         }
-    )
+    }
 
 }
 

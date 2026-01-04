@@ -1,14 +1,19 @@
 package com.example.fitnessway.feature.lists.screen.create.food.composables
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import com.example.fitnessway.data.model.form.FormField
 import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
 import com.example.fitnessway.util.Ui
 
 @Composable
@@ -16,7 +21,10 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     field: FormField<T>,
     modifier: Modifier = Modifier
 ) {
-    // val isNutrient = field.name is FormFieldName.FoodCreation.NutrientField
+    val isNutrient = field.name is FormFieldName.FoodCreation.NutrientField
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
 
     val outlinedColors = Ui.InputUi.getOutlinedColors()
     val inputShape = Ui.InputUi.shape
@@ -28,10 +36,17 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
             onValueChange = field.updateTextFieldValueState,
             enabled = field.enabled,
             label = {
-                Text(
-                    text = field.label,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                if (isNutrient) {
+                    NutrientFieldLabel(
+                        nutrient = field.name.nutrientWithPreferences.nutrient,
+                        isFocused = isFocused
+                    )
+                } else {
+                    Text(
+                        text = field.label,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             },
             supportingText = if (field.errorMessage != null) {
                 {

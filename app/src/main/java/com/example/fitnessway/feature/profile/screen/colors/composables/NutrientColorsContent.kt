@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
@@ -26,62 +24,56 @@ import com.example.fitnessway.util.UNutrient.Ui.NutrientCategoryTitle
 import com.example.fitnessway.util.UNutrient.getColor
 
 @Composable
-fun NutrientColorsContent(fields: Map<NutrientType, List<NutrientColorUpdateField>>) {
-    LazyColumn(
+fun NutrientColorsContent(
+    fields: Map<NutrientType, List<NutrientColorUpdateField>>,
+    modifier: Modifier = Modifier
+) {
+    Column (
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
     ) {
-        item {
-            Text(
-                text = "B43757",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
         fields.forEach { (type, colorFields) ->
-            item(key = type) {
-                Box(modifier = Modifier.areaContainer()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                        NutrientCategoryTitle(type)
+            Box(modifier = Modifier.areaContainer()) {
+                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                    NutrientCategoryTitle(type)
 
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            colorFields.forEach { field ->
-                                val color = getColor("#" + field.value)
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        colorFields.forEach { field ->
+                            val color = getColor("#" + field.value)
 
-                                val borderColor = if (color == null) {
-                                    MaterialTheme.colorScheme.primary
-                                } else Color.Transparent
+                            val borderColor = if (color == null) {
+                                MaterialTheme.colorScheme.primary
+                            } else Color.Transparent
 
-                                key(field.name.nutrientData.nutrient.id) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        val colorPreviewShape = RoundedCornerShape(5.dp)
+                            key(field.name.nutrientData.nutrient.id) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    val colorPreviewShape = RoundedCornerShape(5.dp)
 
-                                        NutrientColorUpdateFormField(
-                                            field = field,
-                                            modifier = Modifier
-                                                .weight(1f)
-                                        )
+                                    NutrientColorUpdateFormField(
+                                        field = field,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    )
 
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(colorPreviewShape)
-                                                .size(21.dp)
-                                                .border(
-                                                    width = 1.dp,
-                                                    color = borderColor,
-                                                    shape = colorPreviewShape
-                                                )
-                                                .background(
-                                                    color = color ?: Color.Transparent,
-                                                    shape = colorPreviewShape
-                                                )
-                                        )
-                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(colorPreviewShape)
+                                            .size(21.dp)
+                                            .border(
+                                                width = 1.dp,
+                                                color = borderColor,
+                                                shape = colorPreviewShape
+                                            )
+                                            .background(
+                                                color = color ?: Color.Transparent,
+                                                shape = colorPreviewShape
+                                            )
+                                    )
                                 }
                             }
                         }

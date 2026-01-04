@@ -1,5 +1,6 @@
 package com.example.fitnessway.util
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -84,10 +85,50 @@ object Ui {
                     unfocusedLabelColor = MaterialTheme.colorScheme.onBackground.copy(0.8f),
                     disabledBorderColor = Color.Transparent,
                     disabledContainerColor = inputColor.copy(0.6f),
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.8f),
+                    disabledLabelColor = MaterialTheme.colorScheme.onBackground.copy(0.8f),
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
                     focusedContainerColor = inputColor,
                     focusedTextColor = MaterialTheme.colorScheme.primary,
                 )
+        }
+
+        @Composable
+        fun getBackgroundColorAnimated(
+            isFocused: Boolean,
+            isEnabled: Boolean,
+            label: String
+        ): Color {
+            val inputBackgroundColor = this.getBackgroundColor()
+
+            val color by animateColorAsState(
+                targetValue = if (isFocused) {
+                    inputBackgroundColor
+                } else if (isEnabled) inputBackgroundColor.copy(0.6f) else {
+                    inputBackgroundColor.copy(0.6f)
+                },
+                animationSpec = Animation.colorSpec,
+                label = label + "_backgroundColor"
+            )
+
+            return color
+        }
+
+        @Composable
+        fun getBorderColorAnimated(
+            isFocused: Boolean,
+            label: String
+        ): Color {
+            val inputTextStyle = this.getTextStyle()
+
+            val color by animateColorAsState(
+                targetValue = if (isFocused) {
+                    inputTextStyle.color
+                } else Color.Transparent,
+                animationSpec = Animation.colorSpec,
+                label = label + "_borderColor"
+            )
+
+            return color
         }
 
         @Composable

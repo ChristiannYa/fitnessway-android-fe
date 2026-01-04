@@ -2,11 +2,14 @@ package com.example.fitnessway.feature.profile.screen.colors
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.feature.profile.screen.colors.composables.NutrientColorsContent
@@ -19,6 +22,7 @@ import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
+import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
@@ -81,59 +85,66 @@ fun ProfileColorsScreen(
                     }
                 }
             )
-        },
+        }
+    ) { focusManager ->
+        if (user != null) {
+            when (nutrientsState) {
+                is UiState.Loading -> LoadingArea("Loading nutrient colors")
 
-        content = {
-            if (user != null) {
-                when (nutrientsState) {
-                    is UiState.Loading -> LoadingArea("Loading nutrient colors")
+                is UiState.Success -> {
+                    val nutrients = nutrientsState.data
 
-                    is UiState.Success -> {
-                        colorsEditionFormState?.let { formState ->
-                            val fields = remember(
-                                nutrientsState.data,
-                                formState,
-                                nutrientColorsSetUiState
-                            ) {
-                                val fieldsProvider = NutrientColorsFieldsProvider(
-                                    formState = formState,
-                                    isFormSubmitting = nutrientColorsSetUiState is UiState.Loading,
-                                    onFieldUpdate = { fieldName, value ->
-                                        viewModel.updateColorsEditionFormField(
-                                            fieldName = fieldName,
-                                            input = value
-                                        )
-                                    }
+                    colorsEditionFormState?.let { formState ->
+                        val fieldsProvider = NutrientColorsFieldsProvider(
+                            formState = formState,
+                            isFormSubmitting = nutrientColorsSetUiState is UiState.Loading,
+                            focusManager = focusManager,
+                            onFieldUpdate = { fieldName, value ->
+                                viewModel.updateColorsEditionFormField(
+                                    fieldName = fieldName,
+                                    input = value
                                 )
+                            }
+                        )
 
-                                val fieldsByTypeMap = NutrientType.entries.associateWith { type ->
-                                    filterNutrientsByType(nutrientsState.data, type)
-                                        .map { fieldsProvider.nutrientColor(it) }
+                        val fields = NutrientType.entries.associateWith { type ->
+                            filterNutrientsByType(nutrientsState.data, type)
+                                .map {
+                                    fieldsProvider.nutrientColor(
+                                        nutrientData = it,
+                                        isLastField = nutrients.combine().last() == it
+                                    )
                                 }
+                        }
 
-                                fieldsByTypeMap
-                            }
+                        val scrollState = rememberScrollState()
 
-                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                ErrorBannerAnimated(
-                                    isVisible = nutrientColorsUpdateErrMsg != null,
-                                    text = nutrientColorsUpdateErrMsg ?: ""
-                                )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.imePadding()
+                        ) {
+                            ErrorBannerAnimated(
+                                isVisible = nutrientColorsUpdateErrMsg != null,
+                                text = nutrientColorsUpdateErrMsg ?: ""
+                            )
 
-                                NutrientColorsContent(fields)
-                            }
-                        } ?: LoadingArea()
-                    }
-
-                    else -> {}
+                            NutrientColorsContent(
+                                fields = fields,
+                                modifier = Modifier
+                                    .verticalScroll(scrollState)
+                            )
+                        }
+                    } ?: LoadingArea()
                 }
 
-                NotFoundMessageAnimated(
-                    isVisible = nutrientsState is UiState.Error,
-                    message = formatUiErrorMessage(nutrientsState)
-                )
+                else -> {}
+            }
 
-            } else NotFoundMessage("User not found")
-        }
-    )
+            NotFoundMessageAnimated(
+                isVisible = nutrientsState is UiState.Error,
+                message = formatUiErrorMessage(nutrientsState)
+            )
+
+        } else NotFoundMessage("User not found")
+    }
 }

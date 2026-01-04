@@ -12,52 +12,50 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
 import com.example.fitnessway.data.model.nutrient.Nutrient
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.data.model.nutrient.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow
+import com.example.fitnessway.util.UNutrient.getNutrientCategoryTitle
 
 @Composable
 fun SetNutrients(
     fields: List<FoodCreationNutrientField>,
-    nutrientsWithoutGoal: List<Nutrient>
+    nutrientsWithoutGoal: Pair<NutrientType, List<Nutrient>>
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        content = {
-            fields.forEach { field ->
-                FoodCreationFormField(field)
-            }
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        fields.forEach { field ->
+            FoodCreationFormField(field)
+        }
 
-            if (nutrientsWithoutGoal.isNotEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .areaContainer(size = AreaContainerSize.SMALL),
-                    content = {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            content = {
-                                val messageText = if (nutrientsWithoutGoal.size > 1) {
-                                    "These nutrients are missing goals. If you choose to set goals for them, " +
-                                            "they can be added to your food."
-                                } else "This nutrient is missing a goal. If you choose to set a goal for it, " +
-                                        "it can be added to your food."
+        if (nutrientsWithoutGoal.second.isNotEmpty()) {
+            Box(modifier = Modifier.areaContainer(size = AreaContainerSize.SMALL)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val moreThanOne = nutrientsWithoutGoal.second.size > 1
+                    val category = getNutrientCategoryTitle(nutrientsWithoutGoal.first)
+                    val nutrientsType = category.lowercase().dropLast(if (moreThanOne) 0 else 1)
 
-                                Text(
-                                    text = messageText,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
+                    val messageText = if (moreThanOne) {
+                        "These $nutrientsType are missing goals. Setting their goal will allow them to be " +
+                                "added to your food"
+                    } else "This $nutrientsType is missing a goal. Setting its goal will allow it to be " +
+                            "added to your food"
 
-                                NutrientLabelsFlowRow(
-                                    nutrients = nutrientsWithoutGoal,
-                                    textStyle = MaterialTheme.typography.labelLarge
-                                )
-                            }
-                        )
-                    }
-                )
+                    Text(
+                        text = messageText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+
+                    NutrientLabelsFlowRow(
+                        nutrients = nutrientsWithoutGoal.second,
+                        textStyle = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
         }
-    )
+    }
 }

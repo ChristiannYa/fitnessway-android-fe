@@ -290,19 +290,31 @@ fun CreateFoodFormScreen(
                                                 }
                                             ) { step ->
                                                 val nutrientFields =
-                                                    nutrientFieldsData[NutrientType.BASIC]?.first.orEmpty()
-                                                val nutrientsWithoutGoal =
-                                                    nutrientFieldsData[NutrientType.BASIC]?.second.orEmpty()
+                                                    nutrientFieldsData[NutrientType.BASIC]
+                                                        ?.first.orEmpty()
+                                                val nutrientsWithoutGoal = Pair(
+                                                    NutrientType.BASIC,
+                                                    nutrientFieldsData[NutrientType.BASIC]
+                                                        ?.second.orEmpty()
+                                                )
 
                                                 val vitaminFields =
-                                                    nutrientFieldsData[NutrientType.VITAMIN]?.first.orEmpty()
-                                                val vitaminsWithoutGoal =
-                                                    nutrientFieldsData[NutrientType.VITAMIN]?.second.orEmpty()
+                                                    nutrientFieldsData[NutrientType.VITAMIN]
+                                                        ?.first.orEmpty()
+                                                val vitaminsWithoutGoal = Pair(
+                                                    NutrientType.VITAMIN,
+                                                    nutrientFieldsData[NutrientType.VITAMIN]
+                                                        ?.second.orEmpty()
+                                                )
 
                                                 val mineralFields =
-                                                    nutrientFieldsData[NutrientType.MINERAL]?.first.orEmpty()
-                                                val mineralsWithoutGoal =
-                                                    nutrientFieldsData[NutrientType.MINERAL]?.second.orEmpty()
+                                                    nutrientFieldsData[NutrientType.MINERAL]
+                                                        ?.first.orEmpty()
+                                                val mineralsWithoutGoal = Pair(
+                                                    NutrientType.MINERAL,
+                                                    nutrientFieldsData[NutrientType.MINERAL]
+                                                        ?.second.orEmpty()
+                                                )
 
                                                 when (step) {
                                                     1 -> SetBasicData(foodBaseFields)

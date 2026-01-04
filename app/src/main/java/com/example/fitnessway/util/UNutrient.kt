@@ -34,11 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
@@ -51,6 +54,7 @@ import com.example.fitnessway.data.model.nutrient.NutrientsByType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Ui.AppLabel
+import com.example.fitnessway.util.Ui.InputUi
 import com.example.fitnessway.util.Ui.LabelSize
 
 
@@ -242,6 +246,49 @@ object UNutrient {
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        @Composable
+        fun NutrientFieldLabel(
+            nutrient: Nutrient,
+            isFocused: Boolean
+        ) {
+            val inputOutlinedColors = InputUi.getOutlinedColors()
+
+            val extraFieldContentColor = if (isFocused) {
+                inputOutlinedColors.focusedLabelColor.copy(0.6f)
+            } else inputOutlinedColors.unfocusedLabelColor.copy(0.6f)
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Medium,
+                            color = if (isFocused) inputOutlinedColors.focusedLabelColor else {
+                                inputOutlinedColors.unfocusedLabelColor
+                            }
+                        ),
+                        block = { append("${nutrient.name} ") }
+                    )
+
+                    if (nutrient.type == NutrientType.MINERAL) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = extraFieldContentColor
+                            ),
+                            block = { append(text = "(${nutrient.symbol}) ") }
+                        )
+                    }
+
+                    withStyle(
+                        style = SpanStyle(
+                            color = extraFieldContentColor
+                        ),
+                        block = { append(text = nutrient.unit) }
+                    )
+                },
+                style = MaterialTheme.typography.bodyMedium
             )
         }
 

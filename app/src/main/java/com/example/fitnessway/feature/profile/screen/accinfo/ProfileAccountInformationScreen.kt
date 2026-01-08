@@ -81,13 +81,6 @@ private fun ProfileAccInfoRow(key: String, value: String) {
 private fun getUserAccountInformation(user: User): List<Pair<String, String>> {
     return listOf(
         Pair("Email", user.email),
-        Pair("Date Joined", formatDate(user.createdAt))
+        Pair("Date Joined", user.createdAt)
     )
-}
-
-
-private fun formatDate(dateString: String): String {
-    val offsetDateTime = OffsetDateTime.parse(dateString)
-    val formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
-    return offsetDateTime.format(formatter)
 }

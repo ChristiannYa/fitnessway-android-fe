@@ -74,8 +74,14 @@ fun NavGraphBuilder.profileNavigationGraph(navController: NavController) {
             )
         }
 
-        composable<ProfileAccountInformationDest> {
+        composable<ProfileAccountInformationDest> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<ProfileGraph>()
+            }
+            val viewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
             ProfileAccountInformationScreen(
+                viewModel = viewModel,
                 onBackClick = navController::popBackStack
             )
         }

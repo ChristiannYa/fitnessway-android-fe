@@ -2,7 +2,7 @@ package com.example.fitnessway.data.network
 
 import com.example.fitnessway.data.model.MAuth.Api.Req.RefreshTokenRequest
 import com.example.fitnessway.data.model.MAuth.Api.Res.RefreshTokenApiResponse
-import com.example.fitnessway.data.model.api.ApiResponseWithContent
+import com.example.fitnessway.data.model.MApi.Model.ApiResponseWithContent
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import kotlinx.serialization.json.Json
 import okhttp3.Authenticator

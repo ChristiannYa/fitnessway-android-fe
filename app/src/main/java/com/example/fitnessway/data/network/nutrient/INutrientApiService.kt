@@ -6,7 +6,7 @@ import com.example.fitnessway.data.model.MNutrient.Api.Res.NutrientColorsApiPost
 import com.example.fitnessway.data.model.MNutrient.Api.Res.NutrientGoalsPostApiResponse
 import com.example.fitnessway.data.model.MNutrient.Api.Res.NutrientIntakesByTypeGetApiResponse
 import com.example.fitnessway.data.model.MNutrient.Api.Res.NutrientsByTypeGetApiResponse
-import com.example.fitnessway.data.model.api.ApiResponseWithContent
+import com.example.fitnessway.data.model.MApi.Model.ApiResponseWithContent
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

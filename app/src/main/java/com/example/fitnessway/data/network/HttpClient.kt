@@ -1,6 +1,6 @@
 package com.example.fitnessway.data.network
 
-import com.example.fitnessway.data.model.api.ApiResponseWithContent
+import com.example.fitnessway.data.model.MApi.Model.ApiResponseWithContent
 import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UiState

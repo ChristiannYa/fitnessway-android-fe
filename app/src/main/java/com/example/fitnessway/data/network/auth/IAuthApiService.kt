@@ -2,7 +2,7 @@ package com.example.fitnessway.data.network.auth
 
 import com.example.fitnessway.data.model.MAuth.Api.Res.LoginApiResponse
 import com.example.fitnessway.data.model.MAuth.Api.Req.LoginRequest
-import com.example.fitnessway.data.model.api.ApiResponseWithContent
+import com.example.fitnessway.data.model.MApi.Model.ApiResponseWithContent
 import com.example.fitnessway.data.model.MAuth.Api.Res.RegisterApiResponse
 import com.example.fitnessway.data.model.MAuth.Api.Req.RegisterRequest
 import retrofit2.Response

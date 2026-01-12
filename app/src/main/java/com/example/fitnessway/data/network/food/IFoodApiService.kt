@@ -12,7 +12,7 @@ import com.example.fitnessway.data.model.MFood.Api.Res.FoodLogUpdateApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodLogsGetApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodUpdateApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodsGetApiResponse
-import com.example.fitnessway.data.model.api.ApiResponseWithContent
+import com.example.fitnessway.data.model.MApi.Model.ApiResponseWithContent
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

@@ -10,8 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.nutrient.Nutrient
-import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
+import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer

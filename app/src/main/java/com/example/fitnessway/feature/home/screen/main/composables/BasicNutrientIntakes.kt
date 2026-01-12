@@ -10,8 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
-import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.Loading.LoadingComposable
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
@@ -24,7 +25,7 @@ import com.example.fitnessway.util.UiState
 
 @Composable
 fun BasicNutrientIntakes(
-    state: UiState<NutrientIntakesByType>,
+    state: UiState<NutrientsByType<NutrientDataWithAmount>>,
     user: User,
     onNavigateToGoals: () -> Unit,
     modifier: Modifier = Modifier

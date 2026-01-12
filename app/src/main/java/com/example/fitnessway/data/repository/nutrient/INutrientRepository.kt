@@ -1,9 +1,9 @@
 package com.example.fitnessway.data.repository.nutrient
 
-import com.example.fitnessway.data.model.nutrient.NutrientColorsPostRequest
-import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
-import com.example.fitnessway.data.model.nutrient.NutrientIdWithColor
-import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
+import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostRequest
+import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow

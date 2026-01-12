@@ -1,12 +1,12 @@
 package com.example.fitnessway.data.repository.nutrient
 
-import com.example.fitnessway.data.model.nutrient.NutrientColorsPostRequest
-import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
-import com.example.fitnessway.data.model.nutrient.NutrientIdWithColor
-import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
-import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
+import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostRequest
+import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient
@@ -31,7 +31,7 @@ class NutrientRepositoryImpl(
     private val _uiState = MutableStateFlow(NutrientRepositoryUiState())
     override val uiState: StateFlow<NutrientRepositoryUiState> = _uiState.asStateFlow()
 
-    private fun fetchNutrientIntakes(date: String): Flow<UiState<NutrientIntakesByType>> {
+    private fun fetchNutrientIntakes(date: String): Flow<UiState<NutrientsByType<NutrientDataWithAmount>>> {
         return httpClient.makeRequest(
             apiCall = { apiService.getNutrientIntakes(date) },
             extractData = { it.nutrientIntakes },

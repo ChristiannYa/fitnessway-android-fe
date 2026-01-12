@@ -1,7 +1,7 @@
 package com.example.fitnessway.data.model.form
 
-import com.example.fitnessway.data.model.nutrient.Nutrient
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
+import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 
 sealed interface FormFieldName {
     enum class Login : FormFieldName {

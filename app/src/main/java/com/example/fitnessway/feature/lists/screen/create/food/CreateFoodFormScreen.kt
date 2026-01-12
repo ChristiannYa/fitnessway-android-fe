@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.feature.lists.screen.create.food.composables.FormProgressIndicator
 import com.example.fitnessway.feature.lists.screen.create.food.composables.NextButton
 import com.example.fitnessway.feature.lists.screen.create.food.composables.SetBasicData

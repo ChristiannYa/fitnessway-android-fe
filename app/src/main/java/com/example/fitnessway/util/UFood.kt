@@ -19,13 +19,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
-import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.nutrient.NutrientAmountData
-import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
-import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
@@ -41,10 +40,10 @@ object UFood {
     }
 
     fun calcNutrientIntakesFromFoodLog(
-        currentIntakes: NutrientIntakesByType,
+        currentIntakes: NutrientsByType<NutrientDataWithAmount>,
         foodLog: FoodLogData,
         operation: FoodNutrientIntakesOperation
-    ): NutrientIntakesByType {
+    ): NutrientsByType<NutrientDataWithAmount> {
         return currentIntakes.mapNutrients { _, intakes ->
             intakes.map { intake ->
                 val foodNutrientAmountData = foodLog.food.nutrients.combine().find {
@@ -70,10 +69,10 @@ object UFood {
      * new serving sizes are asked for instead
      */
     fun calcNutrientIntakesFromFoodLogServings(
-        nutrients: NutrientsByType<NutrientAmountData>,
+        nutrients: NutrientsByType<NutrientDataWithAmount>,
         currentServings: Double,
         newServings: Double
-    ): NutrientsByType<NutrientAmountData> {
+    ): NutrientsByType<NutrientDataWithAmount> {
         return nutrients.mapNutrients { _, nutrientsList ->
             nutrientsList.map { nutrientData ->
                 val foodNutrientAmountData = nutrients.combine().find {
@@ -134,7 +133,7 @@ object UFood {
 
     data class FoodComposables(
         val food: FoodInformation,
-        val nutrients: NutrientsByType<NutrientAmountData> = food.nutrients,
+        val nutrients: NutrientsByType<NutrientDataWithAmount> = food.nutrients,
         val user: User
     ) {
         @Composable

@@ -45,12 +45,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
-import com.example.fitnessway.data.model.nutrient.Nutrient
-import com.example.fitnessway.data.model.nutrient.NutrientAmountData
-import com.example.fitnessway.data.model.nutrient.NutrientPreferences
-import com.example.fitnessway.data.model.nutrient.NutrientType
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
+import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Ui.AppLabel
@@ -73,7 +73,7 @@ object UNutrient {
         val isOverGoal: Boolean
     )
 
-    fun calcNutrientIntakeData(intakeData: NutrientAmountData): NutrientData {
+    fun calcNutrientIntakeData(intakeData: NutrientDataWithAmount): NutrientData {
         val intake = intakeData.amount
         val goal = intakeData.nutrientWithPreferences.preferences.goal ?: 0.0
 
@@ -294,7 +294,7 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsBox(
-            nutrients: List<NutrientAmountData>,
+            nutrients: List<NutrientDataWithAmount>,
             isUserPremium: Boolean,
             isDataMinimal: Boolean = false,
             /**
@@ -445,7 +445,7 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsCircle(
-            nutrients: List<NutrientAmountData>,
+            nutrients: List<NutrientDataWithAmount>,
             isUserPremium: Boolean
         ) {
             Row(
@@ -532,7 +532,7 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsLine(
-            nutrients: List<NutrientAmountData>
+            nutrients: List<NutrientDataWithAmount>
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 nutrients.forEach { nutrientData ->
@@ -646,7 +646,7 @@ object UNutrient {
 
         @Composable
         fun PagedNutrients(
-            nutrients: List<NutrientAmountData>,
+            nutrients: List<NutrientDataWithAmount>,
             displayFormat: ScrollableNutrientsFormat,
             isDataMinimal: Boolean = false,
             isBasicNutrient: Boolean = true,

@@ -8,7 +8,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithAmount
-import com.example.fitnessway.data.model.nutrient.NutrientAmountData
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
@@ -129,7 +129,7 @@ class ListsViewModel(
         // Create updated nutrient data
         val updatedFoodNutrientData = upsertedNutrients.mapNotNull { upsertedNutrient ->
             originalNutrients[upsertedNutrient.nutrientId]?.let { originalNutrient ->
-                NutrientAmountData(
+                NutrientDataWithAmount(
                     nutrientWithPreferences = originalNutrient.nutrientWithPreferences,
                     amount = upsertedNutrient.amount
                 )

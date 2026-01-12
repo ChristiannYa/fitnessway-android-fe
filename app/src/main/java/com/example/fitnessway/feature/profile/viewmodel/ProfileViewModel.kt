@@ -2,12 +2,12 @@ package com.example.fitnessway.feature.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.model.nutrient.NutrientColorsPostRequest
-import com.example.fitnessway.data.model.nutrient.NutrientGoalsPostRequest
-import com.example.fitnessway.data.model.nutrient.NutrientIdWithColor
-import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
-import com.example.fitnessway.data.model.nutrient.NutrientPreferences
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
+import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostRequest
+import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository

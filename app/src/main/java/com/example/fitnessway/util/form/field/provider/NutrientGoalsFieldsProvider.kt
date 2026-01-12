@@ -9,7 +9,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.data.model.form.NutrientGoalEditionField
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates

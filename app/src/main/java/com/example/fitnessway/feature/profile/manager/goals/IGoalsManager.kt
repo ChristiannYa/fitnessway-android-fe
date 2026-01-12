@@ -1,8 +1,8 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.nutrient.NutrientWithPreferences
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.StateFlow

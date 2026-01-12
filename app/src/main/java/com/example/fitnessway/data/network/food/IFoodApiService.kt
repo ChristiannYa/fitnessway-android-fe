@@ -25,7 +25,7 @@ interface IFoodApiService {
     @GET("food/get-foods")
     suspend fun getFoods(): Response<ApiResponseWithContent<FoodsGetApiResponse>>
 
-    @POST("food/create")
+    @POST("food/add")
     suspend fun addFood(
         @Body request: FoodAddRequest
     ): Response<ApiResponseWithContent<FoodAddApiResponse>>

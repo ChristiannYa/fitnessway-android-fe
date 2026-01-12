@@ -1,7 +1,7 @@
 package com.example.fitnessway.feature.profile.viewmodel
 
-import com.example.fitnessway.data.model.nutrient.NutrientIdWithColor
-import com.example.fitnessway.data.model.nutrient.NutrientIdWithGoal
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
 import com.example.fitnessway.util.UiState
 
 data class ProfileUiState(

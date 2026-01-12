@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.nutrient.NutrientAmountData
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
@@ -198,7 +198,7 @@ fun FoodLogScreen(
 @Composable
 private fun NutrientSection(
     title: String,
-    nutrients: List<NutrientAmountData>,
+    nutrients: List<NutrientDataWithAmount>,
     isBasicNutrient: Boolean,
     isUserPremium: Boolean
 ) {
@@ -227,12 +227,12 @@ private fun NutrientSection(
 
 private data class NutrientSectionConfig(
     val title: String,
-    val nutrients: List<NutrientAmountData>,
+    val nutrients: List<NutrientDataWithAmount>,
     val isBasicNutrient: Boolean = true,
     val shouldShow: Boolean = true,
 )
 
-private fun getNutrientSectionsConfig(nutrients: NutrientsByType<NutrientAmountData>): List<NutrientSectionConfig> {
+private fun getNutrientSectionsConfig(nutrients: NutrientsByType<NutrientDataWithAmount>): List<NutrientSectionConfig> {
 
     return listOf(
         NutrientSectionConfig(

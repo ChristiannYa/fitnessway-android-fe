@@ -7,8 +7,8 @@ import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithAmount
-import com.example.fitnessway.data.model.nutrient.NutrientAmountData
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -81,7 +81,7 @@ object MFood {
         @Serializable
         data class FoodInformation(
             val information: FoodBaseInfo,
-            val nutrients: NutrientsByType<NutrientAmountData>
+            val nutrients: NutrientsByType<NutrientDataWithAmount>
         )
 
         @Serializable

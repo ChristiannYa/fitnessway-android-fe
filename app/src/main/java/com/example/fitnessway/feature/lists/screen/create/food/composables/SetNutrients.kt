@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.form.FoodCreationNutrientField
-import com.example.fitnessway.data.model.nutrient.Nutrient
-import com.example.fitnessway.data.model.nutrient.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
+import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow

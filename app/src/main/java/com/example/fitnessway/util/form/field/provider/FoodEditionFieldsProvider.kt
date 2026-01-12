@@ -10,7 +10,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.example.fitnessway.data.model.form.FoodEditionDetailField
 import com.example.fitnessway.data.model.form.FoodEditionNutrientField
 import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.nutrient.Nutrient
+import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates

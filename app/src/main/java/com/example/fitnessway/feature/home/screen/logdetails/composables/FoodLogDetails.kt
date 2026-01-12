@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.form.FoodLogEditionField
-import com.example.fitnessway.data.model.nutrient.NutrientAmountData
-import com.example.fitnessway.data.model.nutrient.NutrientsByType
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.user.User
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.theme.AppModifiers
@@ -37,7 +37,7 @@ private const val updatedFoodMessage = "You have updated this food information"
 fun FoodLogDetails(
     foodLog: FoodLogData,
     isBlurredOverlayVisible: Boolean,
-    nutrients: NutrientsByType<NutrientAmountData>,
+    nutrients: NutrientsByType<NutrientDataWithAmount>,
     servingField: FoodLogEditionField,
     amountPerServingField: FoodLogEditionField,
     user: User

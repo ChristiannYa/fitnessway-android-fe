@@ -7,8 +7,8 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.form.NutrientGoalEditionField
+import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.form.field.NutrientGoalEditionField
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormState

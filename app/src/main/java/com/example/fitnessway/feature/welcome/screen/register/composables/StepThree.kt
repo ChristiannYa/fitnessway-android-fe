@@ -18,8 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.form.RegisterField
+import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.form.field.RegisterField
 
 @Composable
 fun StepThree(fields: List<RegisterField>) {

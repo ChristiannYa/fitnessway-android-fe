@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.form.FoodCreationBaseField
+import com.example.fitnessway.util.form.field.FoodCreationBaseField
 
 @Composable
 fun SetBasicData(fields: List<FoodCreationBaseField>) {

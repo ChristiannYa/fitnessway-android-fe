@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.form.NutrientGoalEditionField
+import com.example.fitnessway.util.form.field.NutrientGoalEditionField
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient.Ui.NutrientCategoryTitle

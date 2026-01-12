@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
-import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.util.form.FormState

@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.form.FoodLogField
+import com.example.fitnessway.util.form.field.FoodLogField
 import com.example.fitnessway.util.Ui.InputUi
 
 @Composable

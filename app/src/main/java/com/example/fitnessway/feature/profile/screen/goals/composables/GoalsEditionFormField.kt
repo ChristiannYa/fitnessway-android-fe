@@ -19,8 +19,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.form.FormField
-import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.form.field.FormField
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
 import com.example.fitnessway.util.UNutrient.getUserNutrientColor
 import com.example.fitnessway.util.Ui.InputUi

@@ -40,8 +40,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
-import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.form.LoginField
+import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.form.field.LoginField
 import com.example.fitnessway.feature.welcome.screen.login.viewmodel.LoginViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBanner
 import com.example.fitnessway.ui.shared.Screen

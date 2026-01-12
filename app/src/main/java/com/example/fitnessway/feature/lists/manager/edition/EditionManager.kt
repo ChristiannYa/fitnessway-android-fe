@@ -2,7 +2,7 @@ package com.example.fitnessway.feature.lists.manager.edition
 
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
-import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.UNutrient.combine

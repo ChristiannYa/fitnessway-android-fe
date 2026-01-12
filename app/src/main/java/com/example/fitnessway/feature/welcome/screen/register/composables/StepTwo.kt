@@ -19,8 +19,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.form.RegisterField
+import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.form.field.RegisterField
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 
 @Composable

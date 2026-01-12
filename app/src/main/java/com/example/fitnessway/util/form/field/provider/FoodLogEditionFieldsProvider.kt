@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.fitnessway.data.model.form.FoodLogEditionField
-import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.form.field.FoodLogEditionField
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates

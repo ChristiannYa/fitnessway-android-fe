@@ -3,8 +3,8 @@ package com.example.fitnessway.util.form.field.provider
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.fitnessway.data.model.form.FormFieldName
-import com.example.fitnessway.data.model.form.RegisterField
+import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.form.field.RegisterField
 import com.example.fitnessway.feature.welcome.screen.register.viewmodel.RegisterViewModel
 
 class RegisterFieldsProvider(private val viewModel: RegisterViewModel) {

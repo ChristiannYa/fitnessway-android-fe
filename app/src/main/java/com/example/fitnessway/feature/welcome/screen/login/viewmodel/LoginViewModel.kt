@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.Rules.AuthForm.passwordRules

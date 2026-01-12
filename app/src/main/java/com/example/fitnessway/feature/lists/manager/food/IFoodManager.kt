@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.lists.manager.food
 
-import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.StateFlow
 

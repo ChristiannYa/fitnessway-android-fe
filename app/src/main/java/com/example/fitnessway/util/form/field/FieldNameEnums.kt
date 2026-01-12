@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.model.form
+package com.example.fitnessway.util.form.field
 
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences

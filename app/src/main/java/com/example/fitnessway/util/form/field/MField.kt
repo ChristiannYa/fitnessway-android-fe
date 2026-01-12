@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.model.form
+package com.example.fitnessway.util.form.field
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions

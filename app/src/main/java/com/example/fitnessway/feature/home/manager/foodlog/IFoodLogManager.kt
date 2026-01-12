@@ -3,7 +3,7 @@ package com.example.fitnessway.feature.home.manager.foodlog
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.form.FormFieldName
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.StateFlow

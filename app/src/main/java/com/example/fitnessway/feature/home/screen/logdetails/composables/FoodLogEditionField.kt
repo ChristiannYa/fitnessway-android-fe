@@ -8,7 +8,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import com.example.fitnessway.data.model.form.FoodLogEditionField
+import com.example.fitnessway.util.form.field.FoodLogEditionField
 import com.example.fitnessway.util.Ui.InputUi
 
 @Composable

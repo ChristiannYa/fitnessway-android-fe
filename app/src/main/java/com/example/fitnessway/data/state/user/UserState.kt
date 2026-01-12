@@ -1,6 +1,6 @@
 package com.example.fitnessway.data.state.user
 
-import com.example.fitnessway.data.model.user.User
+import com.example.fitnessway.data.model.MUser.Model.User
 
 data class UserState(
     val user: User? = null,

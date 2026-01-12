@@ -37,7 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
-import com.example.fitnessway.data.model.user.User
+import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.feature.profile.screen.main.composables.UpgradePromptDialog
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage

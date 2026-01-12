@@ -23,14 +23,3 @@ data class ApiResponseWithContent<T>(
    override val message: String,
    val data: T?, // Can be null if the api does not return data
 ) : ApiResponse()
-
-
-// These are targeted types to authorization requests
-
-@Serializable
-data class ApiAuthResponse<T>(
-   val success: Boolean,
-   val message: String? = null,
-   val data: T? = null,
-   val errors: Map<String, String>? = null
-)

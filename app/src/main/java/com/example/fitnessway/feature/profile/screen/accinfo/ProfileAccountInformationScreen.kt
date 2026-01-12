@@ -9,16 +9,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.user.User
+import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import org.koin.androidx.compose.koinViewModel
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun ProfileAccountInformationScreen(

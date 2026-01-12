@@ -1,7 +1,8 @@
 package com.example.fitnessway.data.network
 
-import com.example.fitnessway.data.model.auth.RefreshTokenApiPostResponse
-import com.example.fitnessway.data.model.auth.RefreshTokenRequest
+import com.example.fitnessway.data.model.MAuth.Api.Req.RefreshTokenRequest
+import com.example.fitnessway.data.model.MAuth.Api.Res.RefreshTokenApiResponse
+import com.example.fitnessway.data.model.api.ApiResponseWithContent
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import kotlinx.serialization.json.Json
 import okhttp3.Authenticator
@@ -73,7 +74,7 @@ class TokenAuthenticator(
          val json = Json { ignoreUnknownKeys = true }
 
          val refreshData = json.encodeToString(
-            RefreshTokenRequest(refreshToken, "Android Device")
+             RefreshTokenRequest(refreshToken, "Android Device")
          ).toRequestBody("application/json".toMediaType())
 
          val request = Request.Builder()
@@ -85,7 +86,7 @@ class TokenAuthenticator(
 
          if (httpResponse.isSuccessful) {
             val httpResponseString = httpResponse.body?.string() ?: return null
-            val response = json.decodeFromString<RefreshTokenApiPostResponse>(httpResponseString)
+            val response = json.decodeFromString<ApiResponseWithContent<RefreshTokenApiResponse>>(httpResponseString)
 
             val newAccessToken = response.data?.accessToken
             val newRefreshToken = response.data?.refreshToken

@@ -25,7 +25,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
-import com.example.fitnessway.data.model.user.User
+import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter

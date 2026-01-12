@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.user.User
+import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.UFood.FoodComposables
 

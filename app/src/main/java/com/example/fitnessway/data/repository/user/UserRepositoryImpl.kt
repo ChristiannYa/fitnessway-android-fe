@@ -1,6 +1,6 @@
 package com.example.fitnessway.data.repository.user
 
-import com.example.fitnessway.data.model.user.User
+import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.user.IUserApiService
 import com.example.fitnessway.util.UiState

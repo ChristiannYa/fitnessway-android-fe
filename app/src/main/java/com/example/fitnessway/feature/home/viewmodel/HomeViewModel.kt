@@ -2,9 +2,9 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.model.food.FoodLogAddRequest
-import com.example.fitnessway.data.model.food.FoodLogData
-import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
+import com.example.fitnessway.data.model.MFood.Model.FoodLogData
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.IApplicationStateStore

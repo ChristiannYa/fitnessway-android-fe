@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.lists.viewmodel
 
-import com.example.fitnessway.data.model.food.FoodInformation
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.util.UiState
 
 data class ListsScreenUiState(

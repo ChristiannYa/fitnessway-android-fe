@@ -2,13 +2,12 @@ package com.example.fitnessway.feature.lists.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.model.food.Food
-import com.example.fitnessway.data.model.food.FoodAddInfoApiFormat
-import com.example.fitnessway.data.model.food.FoodAddNutrientAmountApiFormat
-import com.example.fitnessway.data.model.food.FoodAddRequest
-import com.example.fitnessway.data.model.food.FoodInformation
-import com.example.fitnessway.data.model.food.FoodInformationOptionals
-import com.example.fitnessway.data.model.food.FoodUpdateRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
+import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
+import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
+import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithAmount
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
@@ -60,11 +59,12 @@ class ListsViewModel(
         val user = user ?: return
         val formState = managers.food.foodCreationFormState.value
 
-        // @TODO: Make the request optimistic
+        // @TODO: Test functionality of setting the id to 0
 
         val request = FoodAddRequest(
             userId = user.id,
-            information = FoodAddInfoApiFormat(
+            information = FoodBaseInfo(
+                id = 0,
                 name = formState.name,
                 brand = formState.brand,
                 amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
@@ -73,7 +73,7 @@ class ListsViewModel(
             nutrients = formState.nutrients.filter { (_, amount) ->
                 (amount.toDoubleOrNull() ?: 0.0) > 0
             }.map { (nutrientId, amount) ->
-                FoodAddNutrientAmountApiFormat(
+                NutrientIdWithAmount(
                     nutrientId = nutrientId, amount = amount.toDoubleOrNull() ?: 0.0
                 )
             }
@@ -115,7 +115,7 @@ class ListsViewModel(
         val deletedNutrients = managers.edition.deletedNutrients.value
         val upsertedNutrients = formState.data.nutrients
             .map { (nutrientId, amount) ->
-                FoodAddNutrientAmountApiFormat(
+                NutrientIdWithAmount(
                     nutrientId = nutrientId,
                     amount = amount.toDouble()
                 )
@@ -145,7 +145,7 @@ class ListsViewModel(
 
         // Create the new food
         val optimisticFood = FoodInformation(
-            information = Food(
+            information = FoodBaseInfo(
                 id = selectedFood.information.id,
                 name = formState.data.name,
                 brand = formState.data.brand,
@@ -169,7 +169,7 @@ class ListsViewModel(
         // Create request
         val request = FoodUpdateRequest(
             userId = user.id,
-            information = FoodInformationOptionals(
+            information = FoodBaseInfoNullable(
                 id = selectedFood.information.id,
                 name = formState.data.name,
                 brand = formState.data.brand,

@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.food.ListOption
+import com.example.fitnessway.data.model.MFood.Enum.ListOption
 import com.example.fitnessway.feature.lists.screen.main.composables.SupplementList
 import com.example.fitnessway.feature.lists.screen.main.composables.ToggleListViewButtons
 import com.example.fitnessway.feature.lists.screen.main.composables.foodsList

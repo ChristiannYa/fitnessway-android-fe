@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
-import com.example.fitnessway.data.model.food.ListOption
+import com.example.fitnessway.data.model.MFood.Enum.ListOption
 import com.example.fitnessway.ui.theme.WhiteFont
 
 

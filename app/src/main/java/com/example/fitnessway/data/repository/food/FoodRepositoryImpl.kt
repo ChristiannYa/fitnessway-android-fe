@@ -1,12 +1,12 @@
 package com.example.fitnessway.data.repository.food
 
-import com.example.fitnessway.data.model.food.FoodAddRequest
-import com.example.fitnessway.data.model.food.FoodInformation
-import com.example.fitnessway.data.model.food.FoodLogAddRequest
-import com.example.fitnessway.data.model.food.FoodLogData
-import com.example.fitnessway.data.model.food.FoodLogUpdateRequest
-import com.example.fitnessway.data.model.food.FoodLogsByCategory
-import com.example.fitnessway.data.model.food.FoodUpdateRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
+import com.example.fitnessway.data.model.MFood.Model.FoodLogData
+import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient

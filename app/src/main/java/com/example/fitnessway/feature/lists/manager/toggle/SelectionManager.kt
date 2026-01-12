@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.lists.manager.toggle
 
-import com.example.fitnessway.data.model.food.ListOption
+import com.example.fitnessway.data.model.MFood.Enum.ListOption
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

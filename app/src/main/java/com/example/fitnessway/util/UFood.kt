@@ -18,10 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.food.FoodInformation
-import com.example.fitnessway.data.model.food.FoodLogCategories
-import com.example.fitnessway.data.model.food.FoodLogData
-import com.example.fitnessway.data.model.food.FoodLogsByCategory
+import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
+import com.example.fitnessway.data.model.MFood.Model.FoodLogData
+import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.nutrient.NutrientAmountData
 import com.example.fitnessway.data.model.nutrient.NutrientIntakesByType
 import com.example.fitnessway.data.model.nutrient.NutrientType

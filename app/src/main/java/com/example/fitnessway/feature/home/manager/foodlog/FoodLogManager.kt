@@ -1,8 +1,8 @@
 package com.example.fitnessway.feature.home.manager.foodlog
 
-import com.example.fitnessway.data.model.food.FoodInformation
-import com.example.fitnessway.data.model.food.FoodLogCategories
-import com.example.fitnessway.data.model.food.FoodLogData
+import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
+import com.example.fitnessway.data.model.MFood.Model.FoodLogData
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.roundIfClose
@@ -11,7 +11,6 @@ import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.math.round
 
 class FoodLogManager : IFoodLogManager {
     private val _foodLogCategory = MutableStateFlow<FoodLogCategories?>(null)

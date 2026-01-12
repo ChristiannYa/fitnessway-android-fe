@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.lists.manager.food
 
-import com.example.fitnessway.data.model.food.ServingUnits
+import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
 import com.example.fitnessway.data.model.form.FormFieldName
 import com.example.fitnessway.util.Formatters.toInputDouble
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
@@ -110,9 +110,23 @@ class FoodManager : IFoodManager {
     ) {
         when (step) {
             1 -> if (!goesBack) _currentStep.value = 2
-            2 -> if (goesBack) { _currentStep.value = 1 } else { _currentStep.value = 3 }
-            3 -> if (goesBack) { _currentStep.value = 2 } else { _currentStep.value = 4 }
-            4 -> if (goesBack) { _currentStep.value = 3 } else { onSubmit?.invoke() }
+            2 -> if (goesBack) {
+                _currentStep.value = 1
+            } else {
+                _currentStep.value = 3
+            }
+
+            3 -> if (goesBack) {
+                _currentStep.value = 2
+            } else {
+                _currentStep.value = 4
+            }
+
+            4 -> if (goesBack) {
+                _currentStep.value = 3
+            } else {
+                onSubmit?.invoke()
+            }
         }
     }
 

@@ -19,7 +19,7 @@ import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.Loading.LoadingArea
+import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
@@ -99,7 +99,7 @@ fun ProfileGoalsScreen(
             }
         ) { focusManager ->
             when (nutrientsState) {
-                is UiState.Loading -> LoadingArea(loadingText)
+                is UiState.Loading -> Area(loadingText)
 
                 is UiState.Success -> {
                     if (goalsEditionFormStateCopy != null) {
@@ -177,7 +177,7 @@ fun ProfileGoalsScreen(
                                 }
                             }
                         }
-                    } else LoadingArea()
+                    } else Area()
                 }
 
                 else -> {}

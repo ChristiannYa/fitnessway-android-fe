@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.manager.foodlog
 
+import com.example.fitnessway.data.model.MFood.Enum.FoodSort
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
@@ -9,6 +10,7 @@ import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodLogManager {
+    val selectedFoodSort: StateFlow<String?>
     val foodLogCategory: StateFlow<FoodLogCategories?>
     val selectedFoodLog: StateFlow<FoodLogData?>
     val selectedFoodToLog: StateFlow<FoodInformation?>
@@ -18,6 +20,7 @@ interface IFoodLogManager {
     val isFoodLogFormValid: Boolean
     val isFoodLogEditionFormValid: Boolean
 
+    fun setSelectedFoodSort(foodSort: String)
     fun setFoodLogCategory(categories: FoodLogCategories)
     fun setSelectedFoodLog(foodLog: FoodLogData)
     fun setSelectedFoodToLog(food: FoodInformation)

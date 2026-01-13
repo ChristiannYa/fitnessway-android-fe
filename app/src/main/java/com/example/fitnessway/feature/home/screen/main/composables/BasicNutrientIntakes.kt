@@ -14,7 +14,7 @@ import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
-import com.example.fitnessway.ui.shared.Loading.LoadingComposable
+import com.example.fitnessway.ui.shared.Loading.Composable
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
@@ -31,7 +31,7 @@ fun BasicNutrientIntakes(
     modifier: Modifier = Modifier
 ) {
     when (state) {
-        is UiState.Loading -> LoadingComposable(210.dp, "Loading nutrient intakes")
+        is UiState.Loading -> Composable(210.dp, "Loading nutrient intakes")
 
         is UiState.Success -> {
             val nutrients = filterNutrientsByType(

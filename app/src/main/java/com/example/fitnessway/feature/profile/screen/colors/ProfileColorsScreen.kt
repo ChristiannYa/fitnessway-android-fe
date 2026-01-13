@@ -17,7 +17,7 @@ import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.Loading.LoadingArea
+import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
@@ -89,7 +89,7 @@ fun ProfileColorsScreen(
     ) { focusManager ->
         if (user != null) {
             when (nutrientsState) {
-                is UiState.Loading -> LoadingArea("Loading nutrient colors")
+                is UiState.Loading -> Area("Loading nutrient colors")
 
                 is UiState.Success -> {
                     val nutrients = nutrientsState.data
@@ -134,7 +134,7 @@ fun ProfileColorsScreen(
                                     .verticalScroll(scrollState)
                             )
                         }
-                    } ?: LoadingArea()
+                    } ?: Area()
                 }
 
                 else -> {}

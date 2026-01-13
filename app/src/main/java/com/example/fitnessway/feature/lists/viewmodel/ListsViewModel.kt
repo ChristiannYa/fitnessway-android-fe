@@ -56,10 +56,7 @@ class ListsViewModel(
     }
 
     fun addFood() {
-        val user = user ?: return
         val formState = managers.food.foodCreationFormState.value
-
-        // @TODO: Test functionality of setting the id to 0
 
         val request = FoodAddRequest(
             information = FoodBaseInfo(

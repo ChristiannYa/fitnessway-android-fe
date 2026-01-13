@@ -13,6 +13,7 @@ import com.example.fitnessway.data.model.MFood.Api.Res.FoodLogsGetApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodUpdateApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodsGetApiResponse
 import com.example.fitnessway.data.model.MApi.Model.ApiResponseWithContent
+import com.example.fitnessway.data.model.MFood.Api.Res.FoodSortUpdateApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodSortGetApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import retrofit2.Response
@@ -65,8 +66,8 @@ interface IFoodApiService {
     @GET("food/preferences/get-food-sort")
     suspend fun getFoodSort(): Response<ApiResponseWithContent<FoodSortGetApiResponse>>
 
-    @POST
-    suspend fun setFoodSort(
+    @POST("food/preferences/update-food-sort")
+    suspend fun updateFoodSort(
         @Body request: FoodSortUpdateRequest
-    ): Response<ApiResponseWithContent<FoodSortGetApiResponse>>
+    ): Response<ApiResponseWithContent<FoodSortUpdateApiResponse>>
 }

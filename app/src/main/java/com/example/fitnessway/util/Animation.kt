@@ -65,7 +65,7 @@ object Animation {
             )
 
             val exit = fadeOut + scaleOut(
-                targetScale = 0.2f,
+                targetScale = 0.1f,
                 transformOrigin = TransformOrigin(1f, 0f),
                 animationSpec = tween(durationMillis = 150)
             )

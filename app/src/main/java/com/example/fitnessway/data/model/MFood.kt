@@ -250,6 +250,12 @@ object MFood {
                 @SerialName("food_sort")
                 val foodSort: String
             )
+
+            @Serializable
+            data class FoodSortUpdateApiResponse(
+                @SerialName("food_sort")
+                val foodSort: String
+            )
         }
     }
 }

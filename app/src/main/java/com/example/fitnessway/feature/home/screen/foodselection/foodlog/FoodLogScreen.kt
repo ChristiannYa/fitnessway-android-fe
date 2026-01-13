@@ -48,8 +48,8 @@ fun FoodLogScreen(
     onBackClick: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
-    val foodLogFormState by viewModel.foodLogFormState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val foodLogFormState by viewModel.foodLogFormState.collectAsState()
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
     val selectedFoodToLog by viewModel.selectedFoodToLog.collectAsState()
 

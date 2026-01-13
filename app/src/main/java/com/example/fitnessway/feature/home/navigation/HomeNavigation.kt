@@ -55,7 +55,7 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
             FoodSelectionScreen(
                 viewModel,
                 onBackClick = { navController.popBackStack() },
-                onSelectedFoodToLog = { navController.navigate(FoodLog) }
+                onNavigateToSelectedFood = { navController.navigate(FoodLog) }
             )
         }
 

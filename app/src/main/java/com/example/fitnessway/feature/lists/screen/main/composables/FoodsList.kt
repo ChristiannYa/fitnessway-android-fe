@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.ui.shared.Loading.LoadingArea
+import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
@@ -26,7 +26,7 @@ fun LazyListScope.foodsList(
     onViewDetails: (FoodInformation) -> Unit
 ) {
     when (state) {
-        is UiState.Loading -> item { LoadingArea("Loading foods") }
+        is UiState.Loading -> item { Area("Loading foods") }
 
         is UiState.Success -> {
             val foods = state.data
@@ -51,7 +51,7 @@ fun LazyListScope.foodsList(
         else -> {}
     }
 
-    item("foodListErrorBanner") {
+    item("foodListTabErrorMessage") {
         NotFoundMessageAnimated(
             isVisible = state is UiState.Error,
             message = formatUiErrorMessage(state)

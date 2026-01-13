@@ -1,18 +1,23 @@
 package com.example.fitnessway.feature.home.manager.foodlog
 
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Formatters.roundIfClose
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FormFieldName
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FoodLogManager : IFoodLogManager {
+    private val _selectedFoodSort = MutableStateFlow<String?>(null)
+
+    override val selectedFoodSort: StateFlow<String?> = _selectedFoodSort
+
     private val _foodLogCategory = MutableStateFlow<FoodLogCategories?>(null)
     override val foodLogCategory: StateFlow<FoodLogCategories?> = _foodLogCategory
 
@@ -103,6 +108,11 @@ class FoodLogManager : IFoodLogManager {
                         servingsPrecisedFormatted != foodServingsFormatted
             } else false
         }
+
+    override fun setSelectedFoodSort(foodSort: String) {
+        logcat("setSelectedFoodSort called with value -> $foodSort")
+        _selectedFoodSort.value = foodSort
+    }
 
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {

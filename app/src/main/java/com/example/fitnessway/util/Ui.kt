@@ -42,11 +42,11 @@ object Ui {
     object Measurements {
         val SCREEN_HORIZONTAL_PADDING = 16.dp
         val TEXT_ICON_HORIZONTAL_SPACE = 10.dp
-        val PROGRESS_INDICATOR_SIZE = 26.dp
-        val PROGRESS_INDICATOR_STROKE_WIDTH = 2.dp
+        val LOADING_CIRCLE_IN_HEADER_SIZE = 24.dp
+        val LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH = 2.dp
+        val LOADING_CIRCLE_IN_SCREEN_SIZE = 36.dp
+        val LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH = 3.dp
         val UPWARDS_SLIDEABLE_HEIGHT_SMALL = 460.dp
-        val UPWARDS_SLIDEABLE_HEIGHT_MEDIUM = 540.dp
-        val UPWARDS_SLIDEABLE_HEIGHT_LARGE = 620.dp
     }
 
     object InputUi {

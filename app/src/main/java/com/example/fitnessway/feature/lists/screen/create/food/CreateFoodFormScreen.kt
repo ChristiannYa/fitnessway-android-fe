@@ -34,7 +34,7 @@ import com.example.fitnessway.feature.lists.screen.create.food.composables.SetNu
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.Loading.LoadingArea
+import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
@@ -156,7 +156,7 @@ fun CreateFoodFormScreen(
                     )
 
                     when (nutrientsUiState) {
-                        is UiState.Loading -> LoadingArea("Loading nutrients")
+                        is UiState.Loading -> Area("Loading nutrients")
 
                         is UiState.Success -> {
                             SuccessMessageAnimated(

@@ -13,55 +13,60 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MUser.Model.User
-import com.example.fitnessway.ui.shared.Banners.ErrorBanner
-import com.example.fitnessway.ui.shared.Loading.LoadingArea
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
+import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.UNutrient.getColor
 import com.example.fitnessway.util.UiState
 
 @Composable
 fun Foods(
     state: UiState<List<FoodInformation>>,
-    setSelectedFoodToLog: (FoodInformation) -> Unit,
-    onSelectedFoodToLog: () -> Unit,
-    user: User
+    onFoodClick: (FoodInformation) -> Unit,
+    user: User,
+    modifier: Modifier = Modifier
 ) {
     when (state) {
-        is UiState.Loading -> LoadingArea(text = "Loading Foods")
         is UiState.Success -> Foods(
             foods = state.data,
-            setSelectedFoodToLog = setSelectedFoodToLog,
-            onSelectedFoodToLog = onSelectedFoodToLog,
-            user = user
+            onFoodClick = { onFoodClick(it) },
+            user = user,
+            modifier = modifier
         )
-        is UiState.Error -> ErrorBanner(state.message)
+
         is UiState.Idle -> {}
+        else -> {}
     }
+
+    NotFoundMessageAnimated(
+        isVisible = state is UiState.Error,
+        message = formatUiErrorMessage(state)
+    )
 }
 
 @Composable
 private fun Foods(
     foods: List<FoodInformation>,
-    setSelectedFoodToLog: (FoodInformation) -> Unit,
-    onSelectedFoodToLog: () -> Unit,
-    user: User
+    onFoodClick: (FoodInformation) -> Unit,
+    user: User,
+    modifier: Modifier = Modifier
 ) {
     if (foods.isEmpty()) {
         NotFoundMessage("Foods that you add to your list will appear here")
     } else {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = modifier,
             content = {
-                foods.forEach {
+                foods.forEach { food ->
                     item {
                         Food(
-                            food = it,
-                            setSelectedFood = setSelectedFoodToLog,
-                            onSelectedFood = onSelectedFoodToLog,
+                            food = food,
+                            onFoodClick = { onFoodClick(food) },
                             user = user
                         )
                     }
@@ -74,8 +79,7 @@ private fun Foods(
 @Composable
 private fun Food(
     food: FoodInformation,
-    setSelectedFood: (FoodInformation) -> Unit,
-    onSelectedFood: () -> Unit,
+    onFoodClick: () -> Unit,
     user: User
 ) {
     val foodBrandText = UFood.Ui.getFoodBrandText(food.information.brand)
@@ -86,10 +90,8 @@ private fun Food(
             .fillMaxWidth()
             .areaContainer(
                 size = AreaContainerSize.SMALL,
-                onClick = {
-                    setSelectedFood(food)
-                    onSelectedFood()
-                }
+                onClick = onFoodClick
+
             ),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         content = {

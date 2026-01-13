@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
 import com.example.fitnessway.util.Animation
+import com.example.fitnessway.util.Ui
 
 object Clickables {
     enum class AppIconButtonSize(
@@ -87,8 +88,8 @@ object Clickables {
     ) {
         if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.size(26.dp), // log the padding of AppIconButton to see its value
-                strokeWidth = 2.dp,
+                modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE), // log the padding of AppIconButton to see its value
+                strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
             )
         } else {
             AppIconButton(

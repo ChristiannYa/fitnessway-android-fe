@@ -53,7 +53,7 @@ import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
-import com.example.fitnessway.ui.shared.Loading.LoadingArea
+import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
@@ -103,7 +103,7 @@ fun FoodLogs(
                 .fillMaxHeight()
         ) {
             when (foodLogsState) {
-                is UiState.Loading -> LoadingArea(text = "Loading logs")
+                is UiState.Loading -> Area(text = "Loading logs")
 
                 is UiState.Success -> FoodLogsCategorized(
                     foodLogs = foodLogsState.data,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -142,6 +143,7 @@ object Structure {
         val text: String,
         val onClick: () -> Unit,
         val icon: AppIconButtonSource? = null,
+        val iconTint: Color? = null,
         val iconModifier: Modifier = Modifier,
         val backgroundColor: Color? = null,
         val textColor: Color? = null
@@ -155,7 +157,7 @@ object Structure {
     @Composable
     fun MoreOptions(
         state: MoreOptionsState,
-        vararg actions: MoreOptionsConfig,
+        vararg options: MoreOptionsConfig,
         modifier: Modifier = Modifier
     ) {
         AnimatedVisibility(
@@ -169,49 +171,52 @@ object Structure {
 
             Box(
                 modifier = Modifier
+                    .width(IntrinsicSize.Max)
                     .clip(RoundedCornerShape(shape))
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(shape)
                     )
-                    .padding(space.times(1.5f))
-                    .width(IntrinsicSize.Max)
+                    .padding(space)
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(space),
-                    modifier = Modifier.clip(RoundedCornerShape(shape - 4.dp))
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(shape - 4.dp))
                 ) {
-                    actions.forEach {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = modifier
+                    options.forEach {
+                        val hasIcon = it.icon != null
+
+                        Row(
+                            horizontalArrangement = if (hasIcon) Arrangement.Start else {
+                                Arrangement.Center
+                            },
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
                                 .fillMaxWidth()
                                 .background(
                                     it.backgroundColor ?: MaterialTheme.colorScheme.surfaceTint
                                 )
                                 .clickable(onClick = it.onClick)
-                                .padding(12.dp)
+                                .padding(space.times(3))
                         ) {
-                            Row(
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                if (it.icon != null) {
-                                    AppIconDynamic(
-                                        source = it.icon,
-                                        modifier = it.iconModifier
-                                            .padding(end = 4.dp)
-                                    )
-                                }
-
-                                Text(
-                                    text = it.text,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = it.textColor ?: WhiteFont,
-                                    fontFamily = robotoSerifFamily
+                            if (hasIcon) {
+                                AppIconDynamic(
+                                    source = it.icon,
+                                    tint = it.iconTint
+                                        ?: MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = it.iconModifier
                                 )
+
+                                Spacer(modifier = Modifier.width(space))
                             }
+
+                            Text(
+                                text = it.text,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = it.textColor ?: WhiteFont,
+                                fontFamily = robotoSerifFamily
+                            )
                         }
                     }
                 }

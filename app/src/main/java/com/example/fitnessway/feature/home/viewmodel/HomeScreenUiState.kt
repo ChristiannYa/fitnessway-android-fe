@@ -6,5 +6,6 @@ import com.example.fitnessway.util.UiState
 data class HomeScreenUiState(
     val foodLogAddState: UiState<FoodLogData> = UiState.Idle,
     val foodLogUpdateState: UiState<FoodLogData> = UiState.Idle,
-    val foodLogDeleteState: UiState<FoodLogData> = UiState.Idle
+    val foodLogDeleteState: UiState<FoodLogData> = UiState.Idle,
+    val foodSortUpdateState: UiState<String> = UiState.Idle
 )

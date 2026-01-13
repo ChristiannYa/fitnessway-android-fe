@@ -207,7 +207,7 @@ class FoodRepositoryImpl(
         request: FoodSortUpdateRequest
     ): Flow<UiState<String>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.setFoodSort(request) },
+            apiCall = { apiService.updateFoodSort(request) },
             extractData = { it.foodSort },
             errMsg = "Failed to update food sort",
             invalidatedUrls = listOf(

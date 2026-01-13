@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
@@ -116,7 +117,6 @@ class HomeViewModel(
 
     fun updateFoodLog() {
         // Check for states before proceeding
-        val user = user ?: return
         val formState = managers.foodLog.foodLogEditionFormState.value ?: return
         val selectedFoodLog = managers.foodLog.selectedFoodLog.value ?: return
 
@@ -412,6 +412,41 @@ class HomeViewModel(
         }
     }
 
+    fun updateFoodSort(foodSort: String) {
+        // Capture original food sort
+        val originalFoodSort = managers.foodLog.selectedFoodSort.value ?: return
+
+        // Create request
+        val request = FoodSortUpdateRequest(foodSort)
+
+        // Update ui immediately
+        managers.foodLog.setSelectedFoodSort(foodSort)
+
+        viewModelScope.launch {
+            foodRepo.updateFoodSort(request).collect { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(foodSortUpdateState = state) }
+                        foodRepo.refreshFoods()
+                    }
+
+                    is UiState.Error -> {
+                        _uiState.update { it.copy(foodSortUpdateState = state) }
+                        managers.foodLog.setSelectedFoodSort(originalFoodSort)
+                    }
+
+                    is UiState.Loading -> {
+                        _uiState.update {
+                            it.copy(foodSortUpdateState = state)
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
     fun resetFoodLogAddState() {
         _uiState.update { it.copy(foodLogAddState = UiState.Idle) }
     }
@@ -422,5 +457,9 @@ class HomeViewModel(
 
     fun resetFoodLogDeleteState() {
         _uiState.update { it.copy(foodLogDeleteState = UiState.Idle) }
+    }
+
+    fun resetFoodSortUpdateState() {
+        _uiState.update { it.copy(foodSortUpdateState = UiState.Idle) }
     }
 }

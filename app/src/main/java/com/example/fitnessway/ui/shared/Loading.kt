@@ -28,12 +28,13 @@ import com.example.fitnessway.util.Ui
 
 object Loading {
     @Composable
-    fun LoadingArea(
-        text: String? = null
+    fun Area(
+        text: String? = null,
+        modifier: Modifier = Modifier
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -43,20 +44,20 @@ object Loading {
                 if (text != null) {
                     Text(
                         text = text,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
 
                 CircularProgressIndicator(
-                    strokeWidth = Ui.Measurements.PROGRESS_INDICATOR_STROKE_WIDTH,
-                    modifier = Modifier.size(Ui.Measurements.PROGRESS_INDICATOR_SIZE)
+                    strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH,
+                    modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_SIZE)
                 )
             }
         }
     }
 
     @Composable
-    fun LoadingComposable(
+    fun Composable(
         height: Dp,
         text: String? = null
     ) {

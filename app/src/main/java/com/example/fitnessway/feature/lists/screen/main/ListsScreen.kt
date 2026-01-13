@@ -1,10 +1,10 @@
 package com.example.fitnessway.feature.lists.screen.main
 
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Enum.ListOption
 import com.example.fitnessway.feature.lists.screen.main.composables.SupplementList
@@ -49,6 +50,8 @@ fun ListsScreen(
         viewModel.getFoods()
     }
 
+    val view = LocalView.current
+
     Screen {
         Box(modifier = Modifier.fillMaxWidth()) {
             CompositionLocalProvider(values = arrayOf(LocalOverscrollFactory provides null)) {
@@ -58,7 +61,10 @@ fun ListsScreen(
                 ) {
                     stickyHeader {
                         ToggleListViewButtons(
-                            onToggleSelectedList = viewModel::setSelectedList,
+                            onToggleSelectedList = {
+                                view.playSoundEffect(SoundEffectConstants.CLICK)
+                                viewModel.setSelectedList(it)
+                            },
                             selectedOption = selectedList
                         )
                     }
@@ -68,6 +74,7 @@ fun ListsScreen(
                             foodsList(
                                 state = foodsUiState,
                                 onViewDetails = { food ->
+                                    view.playSoundEffect(SoundEffectConstants.CLICK)
                                     viewModel.setSelectedFood(food)
                                     onViewFoodDetails()
                                 }

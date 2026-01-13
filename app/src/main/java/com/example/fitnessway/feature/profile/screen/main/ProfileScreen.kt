@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.profile.screen.main
 
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -57,6 +59,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val user = viewModel.user
+    val view = LocalView.current
 
     if (user != null) {
         var isUpgradePromptDialogDisplayed by remember { mutableStateOf(false) }
@@ -98,7 +101,10 @@ fun ProfileScreen(
                                         isButtonPremium = button.isButtonPremium,
                                         text = button.text,
                                         imageVector = button.imageVector,
-                                        onClick = button.onClick,
+                                        onClick = {
+                                            view.playSoundEffect(SoundEffectConstants.CLICK)
+                                            button.onClick()
+                                        },
                                         isUserPremium = user.isPremium
                                     )
                                 }

@@ -26,40 +26,31 @@ fun Screen(
     val focusManager = LocalFocusManager.current
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        content = {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                content = {
-                    val horizontalPadding = if (usesInnerHorizontalPadding) {
-                        SCREEN_HORIZONTAL_PADDING
-                    } else 0.dp
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            val horizontalPadding = if (usesInnerHorizontalPadding) {
+                SCREEN_HORIZONTAL_PADDING
+            } else 0.dp
 
-                    header?.let { it() }
+            header?.let { it() }
 
-                    Box(
-                        modifier = Modifier
-                            .pointerInput(isImeVisible) {
-                                if (isImeVisible) {
-                                    detectTapGestures(
-                                        onTap = {
-                                            focusManager.clearFocus()
-                                        }
-                                    )
+            Box(
+                modifier = Modifier
+                    .pointerInput(isImeVisible) {
+                        if (isImeVisible) {
+                            detectTapGestures(
+                                onTap = {
+                                    focusManager.clearFocus()
                                 }
-                            }
-                            .padding(
-                                start = horizontalPadding,
-                                end = horizontalPadding,
-                                top = 4.dp
-                            ),
-                        content = {
-                            content(focusManager)
+                            )
                         }
-                    )
-                }
-            )
+                    }
+                    .padding(
+                        start = horizontalPadding,
+                        end = horizontalPadding,
+                        top = 4.dp
+                    ),
+            ) { content(focusManager) }
         }
-    )
+    }
 }

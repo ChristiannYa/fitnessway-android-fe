@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.home.screen.main.composables
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -10,13 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
 import com.example.fitnessway.ui.shared.Clickables
-import com.example.fitnessway.ui.theme.FitnesswayTheme
-import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
+import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 @Composable
 fun HomeHeader(
@@ -52,16 +49,5 @@ fun HomeHeader(
                 icon = AppIconButtonSource.Resource(R.drawable.scroll)
             )
         }
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewHeader() {
-    FitnesswayTheme {
-        HomeHeader(
-            onToggleFoodLogsVisibility = {},
-            date = "Today"
-        )
     }
 }

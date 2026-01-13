@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.lists.screen.details
 
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.lists.screen.details.composables.ConfirmFoodDeletionPopup
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
@@ -47,6 +49,8 @@ fun FoodDetailsScreen(
         uiState = foodDeleteState,
         onTimeOut = viewModel::resetFoodDeleteState
     )
+
+    val view = LocalView.current
 
     if (food == null || user == null) {
         Screen(
@@ -143,6 +147,7 @@ fun FoodDetailsScreen(
                     Structure.MoreOptionsConfig(
                         text = "Edit",
                         onClick = {
+                            view.playSoundEffect(SoundEffectConstants.CLICK)
                             moreOptionsState.hide()
                             onNavigateToEditionScreen()
                         },
@@ -151,6 +156,7 @@ fun FoodDetailsScreen(
                     Structure.MoreOptionsConfig(
                         text = "Delete",
                         onClick = {
+                            view.playSoundEffect(SoundEffectConstants.CLICK)
                             isConfirmDeletionPopupVisible = true
                             moreOptionsState.hide()
                         }
@@ -160,11 +166,15 @@ fun FoodDetailsScreen(
 
                 ConfirmFoodDeletionPopup(
                     isVisible = isConfirmDeletionPopupVisible,
-                    onCancel = onCancelFoodDeletion,
+                    onCancel = {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        onCancelFoodDeletion()
+                    },
                     onConfirm = {
-                        viewModel.deleteFood()
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
                         isConfirmDeletionPopupVisible = false
                         moreOptionsState.hide()
+                        viewModel.deleteFood()
                     },
                     modifier = Modifier.align(Alignment.Center)
                 )

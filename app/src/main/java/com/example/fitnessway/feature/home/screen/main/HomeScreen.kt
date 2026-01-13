@@ -1,6 +1,7 @@
 package com.example.fitnessway.feature.home.screen.main
 
 import android.content.res.Configuration
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
@@ -90,123 +92,138 @@ fun HomeScreen(
         }
     }
 
-    Screen(
-        content = {
-            if (viewModel.user != null) {
-                val user = viewModel.user
+    val view = LocalView.current
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    PullToRefreshBox(
-                        isRefreshing = isRefreshing,
-                        onRefresh = viewModel::refreshHomeData,
-                        state = pullToRefreshState,
-                        modifier = Modifier.fillMaxSize(),
-                        indicator = {
-                            Indicator(
-                                modifier = Modifier.align(Alignment.TopCenter),
-                                isRefreshing = isRefreshing,
-                                state = pullToRefreshState,
-                                containerColor = MaterialTheme.colorScheme.surfaceTint,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
+    Screen {
+
+        if (viewModel.user != null) {
+            val user = viewModel.user
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = viewModel::refreshHomeData,
+                    state = pullToRefreshState,
+                    modifier = Modifier.fillMaxSize(),
+                    indicator = {
+                        Indicator(
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            isRefreshing = isRefreshing,
+                            state = pullToRefreshState,
+                            containerColor = MaterialTheme.colorScheme.surfaceTint,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.fillMaxSize()
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(2.dp)
-                            ) {
-                                HomeHeader(
-                                    onToggleFoodLogsVisibility = viewModel::toggleFoodLogsVisibility,
-                                    date = viewModel.getFormattedDay(selectedDate)
-                                )
+                            HomeHeader(
+                                onToggleFoodLogsVisibility = {
+                                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                                    viewModel.toggleFoodLogsVisibility()
+                                },
+                                date = viewModel.getFormattedDay(selectedDate)
+                            )
 
-                                DatePicker(
-                                    onNextDay = { viewModel.changeDay(1) },
-                                    onPrevDay = { viewModel.changeDay(-1) }
-                                )
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth()
-                            ) {
-                                val scrollState = rememberScrollState()
-
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .verticalScroll(scrollState)
-                                ) {
-                                    BasicNutrientIntakes(
-                                        state = nutrientIntakesState,
-                                        user = user,
-                                        onNavigateToGoals = onNavigateToGoals
-                                    )
-
-                                    OtherNutrientIntakes(
-                                        state = nutrientIntakesState,
-                                        nutrientType = NutrientType.VITAMIN,
-                                        user = user,
-                                        onNavigateToGoals = onNavigateToGoals
-                                    )
-
-                                    OtherNutrientIntakes(
-                                        state = nutrientIntakesState,
-                                        nutrientType = NutrientType.MINERAL,
-                                        user = user,
-                                        onNavigateToGoals = onNavigateToGoals
-                                    )
-
-                                    NotFoundMessageAnimated(
-                                        isVisible = nutrientIntakesState is UiState.Error,
-                                        message = formatUiErrorMessage(nutrientIntakesState),
-                                        modifier = Modifier.weight(1f)
-                                    )
+                            DatePicker(
+                                onNextDay = {
+                                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                                    viewModel.changeDay(1)
+                                },
+                                onPrevDay = {
+                                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                                    viewModel.changeDay(-1)
                                 }
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                        ) {
+                            val scrollState = rememberScrollState()
+
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .verticalScroll(scrollState)
+                            ) {
+                                BasicNutrientIntakes(
+                                    state = nutrientIntakesState,
+                                    user = user,
+                                    onNavigateToGoals = onNavigateToGoals
+                                )
+
+                                OtherNutrientIntakes(
+                                    state = nutrientIntakesState,
+                                    nutrientType = NutrientType.VITAMIN,
+                                    user = user,
+                                    onNavigateToGoals = onNavigateToGoals
+                                )
+
+                                OtherNutrientIntakes(
+                                    state = nutrientIntakesState,
+                                    nutrientType = NutrientType.MINERAL,
+                                    user = user,
+                                    onNavigateToGoals = onNavigateToGoals
+                                )
+
+                                NotFoundMessageAnimated(
+                                    isVisible = nutrientIntakesState is UiState.Error,
+                                    message = formatUiErrorMessage(nutrientIntakesState),
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
                         }
                     }
-
-                    FoodLogs(
-                        foodLogsState = foodLogsState,
-                        onViewFoodsList = { foodLogCategories ->
-                            viewModel.setFoodLogCategory(foodLogCategories)
-                            onViewFoodsList()
-                        },
-                        onViewFoodLogDetails = { foodLog ->
-                            viewModel.setSelectedFoodLog(foodLog)
-                            onViewFoodLogDetails()
-                        },
-                        onRemoveFoodLog = { foodLog ->
-                            viewModel.resetFoodLogDeleteState()
-                            viewModel.setSelectedFoodLogToRemove(foodLog)
-                            viewModel.deleteFoodLog()
-                        },
-                        isDeletionError = uiState.foodLogDeleteState is UiState.Error,
-                        isVisible = areFoodLogsVisible,
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    )
-
-                    DarkOverlay(
-                        isVisible = areFoodLogsVisible,
-                        onClick = viewModel::toggleFoodLogsVisibility
-                    )
-
-                    ErrorBannerAnimated(
-                        isVisible = deleteFoodLogErrMsg != null,
-                        text = deleteFoodLogErrMsg ?: ""
-                    )
                 }
-            } else {
-                NotFoundMessage("User not found")
+
+                FoodLogs(
+                    foodLogsState = foodLogsState,
+                    onViewFoodsList = { foodLogCategories ->
+                        view.playSoundEffect(SoundEffectConstants.NAVIGATION_RIGHT)
+                        viewModel.setFoodLogCategory(foodLogCategories)
+                        onViewFoodsList()
+                    },
+                    onViewFoodLogDetails = { foodLog ->
+                        view.playSoundEffect(SoundEffectConstants.NAVIGATION_RIGHT)
+                        viewModel.setSelectedFoodLog(foodLog)
+                        onViewFoodLogDetails()
+                    },
+                    onRemoveFoodLog = { foodLog ->
+                        viewModel.resetFoodLogDeleteState()
+                        viewModel.setSelectedFoodLogToRemove(foodLog)
+                        viewModel.deleteFoodLog()
+                    },
+                    isDeletionError = uiState.foodLogDeleteState is UiState.Error,
+                    isVisible = areFoodLogsVisible,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
+
+                DarkOverlay(
+                    isVisible = areFoodLogsVisible,
+                    onClick = {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        viewModel.toggleFoodLogsVisibility()
+                    }
+                )
+
+                ErrorBannerAnimated(
+                    isVisible = deleteFoodLogErrMsg != null,
+                    text = deleteFoodLogErrMsg ?: ""
+                )
             }
+        } else {
+            NotFoundMessage("User not found")
         }
-    )
+    }
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)

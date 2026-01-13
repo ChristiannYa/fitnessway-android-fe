@@ -1,6 +1,7 @@
 package com.example.fitnessway.feature.home.screen.foodselection
 
 import android.content.res.Configuration
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
@@ -69,6 +71,8 @@ fun FoodSelectionScreen(
         onTimeOut = viewModel::resetFoodSortUpdateState
     )
 
+    val view = LocalView.current
+
     if (user != null) {
         val selectedFoodSortCopy = selectedFoodSort
         val foodLogCategoryCopy = foodLogCategory
@@ -109,6 +113,7 @@ fun FoodSelectionScreen(
                             Foods(
                                 state = foodsUiState,
                                 onFoodClick = { food ->
+                                    view.playSoundEffect(SoundEffectConstants.CLICK)
                                     viewModel.setSelectedFoodToLog(food)
                                     onNavigateToSelectedFood()
                                 },

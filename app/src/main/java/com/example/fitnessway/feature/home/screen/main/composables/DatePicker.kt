@@ -12,13 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fitnessway.ui.shared.Clickables
-import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
+import com.example.fitnessway.ui.theme.FitnesswayTheme
 
 @Composable
 fun DatePicker(
     onNextDay: () -> Unit,
-    onPrevDay: () -> Unit,
+    onPrevDay: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),

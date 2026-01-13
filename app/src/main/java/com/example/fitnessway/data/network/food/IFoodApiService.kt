@@ -13,6 +13,8 @@ import com.example.fitnessway.data.model.MFood.Api.Res.FoodLogsGetApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodUpdateApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodsGetApiResponse
 import com.example.fitnessway.data.model.MApi.Model.ApiResponseWithContent
+import com.example.fitnessway.data.model.MFood.Api.Res.FoodSortGetApiResponse
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -59,4 +61,12 @@ interface IFoodApiService {
     suspend fun deleteFoodLog(
         @Query("food-log-id") foodLogId: Int
     ): Response<ApiResponseWithContent<FoodLogDeleteApiResponse>>
+
+    @GET("food/preferences/get-food-sort")
+    suspend fun getFoodSort(): Response<ApiResponseWithContent<FoodSortGetApiResponse>>
+
+    @POST
+    suspend fun setFoodSort(
+        @Body request: FoodSortUpdateRequest
+    ): Response<ApiResponseWithContent<FoodSortGetApiResponse>>
 }

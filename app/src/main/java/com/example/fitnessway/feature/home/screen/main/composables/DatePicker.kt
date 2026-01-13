@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.theme.FitnesswayTheme
+import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
 
 @Composable
 fun DatePicker(
@@ -27,13 +28,13 @@ fun DatePicker(
         Clickables.AppIconButton(
             onClick = onPrevDay,
             contentDescription = "View Previous Day's Details",
-            icon = Clickables.AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowBack)
+            icon = AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowBack)
         )
 
         Clickables.AppIconButton(
             onClick = onNextDay,
             contentDescription = "View Next Day's Details",
-            icon = Clickables.AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowForward)
+            icon = AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowForward)
         )
     }
 }

@@ -12,6 +12,7 @@ import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.util.Ui
+import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
 
 @Composable
 fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
@@ -42,7 +43,7 @@ fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
 
                     Clickables.AppIconButton(
                         size = Clickables.AppIconButtonSize.SMALL,
-                        icon = Clickables.AppIconButtonSource.Vector(Icons.Default.Delete),
+                        icon = AppIconButtonSource.Vector(Icons.Default.Delete),
                         contentDescription = "Delete ${nutrient.name} from food",
                         onClick = {
                             onRemoveNutrient?.invoke(nutrient.id)

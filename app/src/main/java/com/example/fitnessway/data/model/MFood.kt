@@ -1,5 +1,10 @@
 package com.example.fitnessway.data.model
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.SortByAlpha
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
@@ -9,6 +14,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.ui.shared.Structure
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -43,6 +49,15 @@ object MFood {
 
             @SerialName("deleted")
             DELETED
+        }
+
+        enum class FoodSort(
+            val icon: Structure.AppIconButtonSource
+        ) {
+            ALPHABETICALLY(Structure.AppIconButtonSource.Vector(Icons.Default.SortByAlpha)),
+            CREATION_DATE(Structure.AppIconButtonSource.Vector(Icons.Default.CalendarToday)),
+            FAVORITE(Structure.AppIconButtonSource.Vector(Icons.Default.Favorite)),
+            RECENTLY_LOGGED(Structure.AppIconButtonSource.Vector(Icons.Default.History)),
         }
 
         enum class ListOption {
@@ -150,7 +165,6 @@ object MFood {
                 val deletedNutrients: List<Int>
             )
 
-            // ========== Logs ==========
             @Serializable
             data class FoodLogAddRequest(
                 @SerialName("food_id")
@@ -172,10 +186,15 @@ object MFood {
 
                 val servings: Double
             )
+
+            @Serializable
+            data class FoodSortUpdateRequest(
+                @SerialName("food_sort")
+                val foodSort: String
+            )
         }
 
         object Res {
-            // ========== Food ==========
             @Serializable
             data class FoodsGetApiResponse(
                 // There will be cases where the user will not have any foods created, so the
@@ -202,7 +221,6 @@ object MFood {
                 val foodDeleted: FoodInformation
             )
 
-            // ========== Logs ==========
             @Serializable
             data class FoodLogsGetApiResponse(
                 @SerialName("food_logs")
@@ -225,6 +243,12 @@ object MFood {
             data class FoodLogDeleteApiResponse(
                 @SerialName("food_log_deleted")
                 val foodLogDeleted: FoodLogData
+            )
+
+            @Serializable
+            data class FoodSortGetApiResponse(
+                @SerialName("food_sort")
+                val foodSort: String
             )
         }
     }

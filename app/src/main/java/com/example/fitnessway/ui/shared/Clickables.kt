@@ -1,6 +1,5 @@
 package com.example.fitnessway.ui.shared
 
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
@@ -13,7 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,10 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
 import com.example.fitnessway.util.Animation
 
 object Clickables {
@@ -35,11 +32,6 @@ object Clickables {
         LARGE(38.dp),
         MEDIUM(34.dp),
         SMALL(28.dp)
-    }
-
-    sealed interface AppIconButtonSource {
-        data class Resource(@get:DrawableRes val id: Int) : AppIconButtonSource
-        data class Vector(val imageVector: ImageVector) : AppIconButtonSource
     }
 
     @Composable
@@ -76,29 +68,14 @@ object Clickables {
 
             val padding = (size.size.value / 6).dp
 
-            val iconModifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-
-            when (icon) {
-                is AppIconButtonSource.Resource -> {
-                    Icon(
-                        painter = painterResource(icon.id),
-                        contentDescription = contentDescription,
-                        tint = tint,
-                        modifier = iconModifier
-                    )
-                }
-
-                is AppIconButtonSource.Vector -> {
-                    Icon(
-                        imageVector = icon.imageVector,
-                        contentDescription = contentDescription,
-                        tint = tint,
-                        modifier = iconModifier
-                    )
-                }
-            }
+            Structure.AppIconDynamic(
+                source = icon,
+                contentDescription = contentDescription,
+                tint = tint,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            )
         }
     }
 

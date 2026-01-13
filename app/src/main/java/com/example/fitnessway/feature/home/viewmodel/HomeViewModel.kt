@@ -64,6 +64,10 @@ class HomeViewModel(
         foodRepo.loadFoods()
     }
 
+    fun getFoodSort() {
+        foodRepo.loadFoodSort()
+    }
+
     fun getFoodLogs() {
         val date = managers.date.getApiFormattedDate()
         foodRepo.loadFoodLogs(date)

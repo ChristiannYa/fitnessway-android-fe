@@ -13,5 +13,6 @@ object ApiUrls {
         const val FOODS = "${BASE_URL}food/get-foods"
         const val ALL_LOGS = "${BASE_URL}food/log/get-logs"
         fun getLogs(date: String) = "${BASE_URL}food/log/get-logs?date=$date"
+        const val FOOD_SORT = "${BASE_URL}food/preferences/get-food-sort"
     }
 }

@@ -3,6 +3,7 @@ package com.example.fitnessway.data.repository.food
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
@@ -173,6 +174,45 @@ class FoodRepositoryImpl(
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.getIntakes(date),
                 ApiUrls.Food.getLogs(date)
+            )
+        )
+    }
+
+    private fun fetchFoodSort(): Flow<UiState<String>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.getFoodSort() },
+            extractData = { it.foodSort },
+            errMsg = "Failed to get food sort"
+        )
+    }
+
+    override fun refreshFoodSort() {
+        cacheManager.evictUrl(ApiUrls.Food.FOOD_SORT)
+        _uiState.update { it.copy(foodSortUiState = UiState.Loading) }
+
+        repositoryScope.launch {
+            fetchFoodSort().collect { state ->
+                _uiState.update { it.copy(foodSortUiState = state) }
+            }
+        }
+    }
+
+    override fun loadFoodSort() {
+        val uiState = _uiState.value.foodSortUiState
+        if (uiState is UiState.Success || uiState is UiState.Error) return
+        refreshFoodSort()
+    }
+
+    override fun updateFoodSort(
+        request: FoodSortUpdateRequest
+    ): Flow<UiState<String>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.setFoodSort(request) },
+            extractData = { it.foodSort },
+            errMsg = "Failed to update food sort",
+            invalidatedUrls = listOf(
+                ApiUrls.Food.FOOD_SORT,
+                ApiUrls.Food.FOODS
             )
         )
     }

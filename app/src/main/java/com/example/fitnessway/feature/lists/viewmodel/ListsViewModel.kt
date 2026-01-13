@@ -62,7 +62,6 @@ class ListsViewModel(
         // @TODO: Test functionality of setting the id to 0
 
         val request = FoodAddRequest(
-            userId = user.id,
             information = FoodBaseInfo(
                 id = 0,
                 name = formState.name,
@@ -152,6 +151,7 @@ class ListsViewModel(
                 amountPerServing = formState.data.amountPerServing.toDouble(),
                 servingUnit = formState.data.servingUnit
             ),
+            metadata = selectedFood.metadata,
             nutrients = filteredUpdatedFoodNutrientsData
         )
 
@@ -168,7 +168,6 @@ class ListsViewModel(
 
         // Create request
         val request = FoodUpdateRequest(
-            userId = user.id,
             information = FoodBaseInfoNullable(
                 id = selectedFood.information.id,
                 name = formState.data.name,

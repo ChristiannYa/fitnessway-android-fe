@@ -25,7 +25,7 @@ interface INutrientApiService {
     @POST("nutrient/set-goal")
     suspend fun setNutrientGoals(
         @Body request: NutrientGoalsPostRequest
-    ): Response<NutrientGoalsPostApiResponse>
+    ): Response<ApiResponseWithContent<NutrientGoalsPostApiResponse>>
 
     @POST("nutrient/set-color")
     suspend fun setNutrientColors(

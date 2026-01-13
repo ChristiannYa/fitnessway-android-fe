@@ -185,8 +185,6 @@ object UFood {
                         )
                     }
 
-
-
                     if (foodLogServings != null) {
                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                             val amPerSer = doubleFormatter(

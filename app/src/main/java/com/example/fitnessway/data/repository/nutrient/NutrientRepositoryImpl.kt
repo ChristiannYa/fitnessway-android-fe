@@ -55,7 +55,7 @@ class NutrientRepositoryImpl(
 
     override fun loadNutrientIntakes(date: String) {
         val cachedData = _uiState.value.nutrientIntakesCache[date]
-        if (cachedData is UiState.Success) return
+        if (cachedData is UiState.Success || cachedData is UiState.Error) return
         refreshNutrientIntakes(date)
     }
 
@@ -80,7 +80,7 @@ class NutrientRepositoryImpl(
 
     override fun loadNutrients() {
         val nutrientsUiState = _uiState.value.nutrientsUiState
-        if (nutrientsUiState is UiState.Success) return
+        if (nutrientsUiState is UiState.Success || nutrientsUiState is UiState.Error) return
         refreshNutrients()
     }
 

@@ -3,8 +3,8 @@ package com.example.fitnessway.feature.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
+import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
@@ -71,7 +71,6 @@ class HomeViewModel(
 
     fun addFoodLog() {
         // Check for data states before allowing request
-        val user = user ?: return
         val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
         val selectedFood = managers.foodLog.selectedFoodToLog.value ?: return
         val category = managers.foodLog.foodLogCategory.value ?: return
@@ -79,10 +78,10 @@ class HomeViewModel(
         val date = managers.date.getApiFormattedDate()
 
         val request = FoodLogAddRequest(
-            userId = user.id,
             foodId = selectedFood.information.id,
             servings = foodLogFormState.data.servings.toDouble(),
             category = category.name.lowercase(),
+            source = "user",
             time = "$date ${foodLogFormState.data.time}"
         )
 
@@ -148,12 +147,14 @@ class HomeViewModel(
             id = selectedFoodLog.id,
             category = selectedFoodLog.category,
             time = selectedFoodLog.time,
+            loggedAt = selectedFoodLog.loggedAt,
             servings = doubleFormatter(
                 value = formState.data.servingsPrecised,
                 decimalPlaces = 4
             ).toDouble(),
             foodStatus = selectedFoodLog.foodStatus,
             foodSnapshotId = selectedFoodLog.foodSnapshotId,
+            source = selectedFoodLog.source,
             food = foodWithUpdatedNutrients
         )
 
@@ -184,7 +185,6 @@ class HomeViewModel(
         )
 
         val request = FoodLogUpdateRequest(
-            userId = user.id,
             foodLogId = updatedFoodLog.id,
             foodSnapshotId = updatedFoodLog.foodSnapshotId,
             servings = updatedFoodLog.servings

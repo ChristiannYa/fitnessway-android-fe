@@ -45,10 +45,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
-import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.ui.theme.WhiteFont
@@ -519,9 +519,12 @@ object UNutrient {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
+
                                 Text(
                                     text = nutrient.name,
-                                    style = MaterialTheme.typography.labelLarge
+                                    style = MaterialTheme.typography.labelLarge,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }

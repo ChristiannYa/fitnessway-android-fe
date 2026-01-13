@@ -51,7 +51,7 @@ class FoodRepositoryImpl(
 
     override fun loadFoods() {
         val foodsUiState = _uiState.value.foodsUiState
-        if (foodsUiState is UiState.Success) return
+        if (foodsUiState is UiState.Success || foodsUiState is UiState.Error) return
         refreshFoods()
     }
 
@@ -126,7 +126,7 @@ class FoodRepositoryImpl(
 
     override fun loadFoodLogs(date: String) {
         val cachedData = _uiState.value.foodLogsCache[date]
-        if (cachedData is UiState.Success) {
+        if (cachedData is UiState.Success || cachedData is UiState.Error) {
             return
         }
         refreshFoodLogs(date)

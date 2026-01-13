@@ -56,7 +56,7 @@ class HttpClient(private val cacheManager: CacheManager) {
 
         } catch (e: Exception) {
             logcat(
-                message = "makeRequest exception: $e",
+                message = "makeRequest exception: ${e.message}",
                 level = Constants.LogLevel.ERROR
             )
             emit(UiState.Error(errMsg))

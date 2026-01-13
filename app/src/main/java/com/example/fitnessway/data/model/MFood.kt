@@ -79,8 +79,24 @@ object MFood {
         )
 
         @Serializable
+        data class FoodMetaData(
+            @SerialName("is_favorite")
+            val isFavorite: Boolean,
+
+            @SerialName("last_logged_at")
+            val lastLoggedAt: String?,
+
+            @SerialName("created_at")
+            val createdAt: String,
+
+            @SerialName("updated_at")
+            val updatedAt: String
+        )
+
+        @Serializable
         data class FoodInformation(
             val information: FoodBaseInfo,
+            val metadata: FoodMetaData,
             val nutrients: NutrientsByType<NutrientDataWithAmount>
         )
 
@@ -97,6 +113,10 @@ object MFood {
             val id: Int,
             val category: String,
             val time: String,
+
+            @SerialName("logged_at")
+            val loggedAt: String,
+
             val servings: Double,
 
             @SerialName("food_status")
@@ -105,6 +125,7 @@ object MFood {
             @SerialName("food_snapshot_id")
             val foodSnapshotId: Int?,
 
+            val source: String,
             val food: FoodInformation
         )
     }
@@ -114,18 +135,12 @@ object MFood {
             // ========== Food ==========
             @Serializable
             data class FoodAddRequest(
-                @SerialName("user_id")
-                val userId: String,
-
                 val information: FoodBaseInfo,
                 val nutrients: List<NutrientIdWithAmount>
             )
 
             @Serializable
             data class FoodUpdateRequest(
-                @SerialName("user_id")
-                val userId: String,
-
                 val information: FoodBaseInfoNullable,
 
                 @SerialName("upserted_nutrients")
@@ -138,22 +153,17 @@ object MFood {
             // ========== Logs ==========
             @Serializable
             data class FoodLogAddRequest(
-                @SerialName("user_id")
-                val userId: String,
-
                 @SerialName("food_id")
                 val foodId: Int,
 
                 val servings: Double,
                 val category: String,
+                val source: String,
                 val time: String
             )
 
             @Serializable
             data class FoodLogUpdateRequest(
-                @SerialName("user_id")
-                val userId: String,
-
                 @SerialName("food_log_id")
                 val foodLogId: Int,
 

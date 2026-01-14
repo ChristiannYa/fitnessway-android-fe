@@ -43,7 +43,7 @@ fun HomeHeader(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            Clickables.AppIconButton(
+            Clickables.AppPngIconButton(
                 onClick = onToggleFoodLogsVisibility,
                 contentDescription = "View Food Logs",
                 icon = AppIconButtonSource.Resource(R.drawable.scroll)

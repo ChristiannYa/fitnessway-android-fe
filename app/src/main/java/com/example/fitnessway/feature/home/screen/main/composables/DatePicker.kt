@@ -25,13 +25,13 @@ fun DatePicker(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Clickables.AppIconButton(
+        Clickables.AppPngIconButton(
             onClick = onPrevDay,
             contentDescription = "View Previous Day's Details",
             icon = AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowBack)
         )
 
-        Clickables.AppIconButton(
+        Clickables.AppPngIconButton(
             onClick = onNextDay,
             contentDescription = "View Next Day's Details",
             icon = AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowForward)

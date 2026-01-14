@@ -34,7 +34,7 @@ class AppInitializer(
                             is UiState.Success -> userStateHolder.setUser(uiState.data)
                             is UiState.Error -> {
                                 logcat(
-                                    message = "error collecting token states",
+                                    message = "error collecting user state",
                                     level = Constants.LogLevel.ERROR
                                 )
                                 tokensStateHolder.clearTokens()
@@ -46,6 +46,7 @@ class AppInitializer(
 
                 // Clear user if not authenticated
                 if (!tokensState.isAuthenticated && userState.user != null) {
+                    tokensStateHolder.clearTokens()
                     userStateHolder.clearUser()
                 }
             }

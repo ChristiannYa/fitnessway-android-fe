@@ -1,7 +1,6 @@
 package com.example.fitnessway.feature.lists.screen.details
 
 import android.view.SoundEffectConstants
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +27,10 @@ import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.HeaderRow
 import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
-import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
@@ -91,7 +88,9 @@ fun FoodDetailsScreen(
                     onBackClick = {
                         if (foodDeleteState is UiState.Error ||
                             foodDeleteState is UiState.Success
-                        ) { viewModel.resetFoodDeleteState() }
+                        ) {
+                            viewModel.resetFoodDeleteState()
+                        }
 
                         onBackClick()
                     },
@@ -100,56 +99,45 @@ fun FoodDetailsScreen(
                     val isFavorite = selectedFoodCopy.metadata.isFavorite
 
                     if (foodDeleteState !is UiState.Success) {
-                        HeaderRow {
-                            val favoriteIcon = if (isFavorite) {
-                                Icons.Default.Star
-                            } else Icons.Default.StarBorder
+                        val favoriteIcon =
+                            if (isFavorite) Icons.Default.Star else Icons.Default.StarBorder
 
-                            val favoriteIconTint by animateColorAsState(
-                                targetValue = if (isFavorite) {
-                                    MaterialTheme.colorScheme.primary
-                                } else MaterialTheme.colorScheme.onSurfaceVariant,
-                                animationSpec = Animation.colorSpec,
-                                label = "favoriteIconTint_ColorSpec"
-                            )
+                        Clickables.AppPngIconButton(
+                            icon = Structure.AppIconButtonSource.Vector(favoriteIcon),
+                            contentDescription = "Favorite this food",
+                            enabled = !(moreOptionsState.isVisible || isConfirmDeletionPopupVisible),
+                            onClick = {
+                                view.playSoundEffect(SoundEffectConstants.CLICK)
+                                viewModel.updateFoodFavoriteStatus(!isFavorite)
+                            }
+                        )
 
-                            Clickables.AppIconButton(
-                                icon = Structure.AppIconButtonSource.Vector(favoriteIcon),
-                                contentDescription = "Favorite this food",
-                                enabled = !(moreOptionsState.isVisible || isConfirmDeletionPopupVisible),
-                                onClick = {
-                                    view.playSoundEffect(SoundEffectConstants.CLICK)
-                                    viewModel.updateFoodFavoriteStatus(!isFavorite)
-                                },
-                                iconTint = favoriteIconTint
-                            )
+                        FoodMoreOptionsButton(
+                            onClick = {
+                                view.playSoundEffect(SoundEffectConstants.CLICK)
 
-                            FoodMoreOptionsButton(
-                                onClick = {
-                                    view.playSoundEffect(SoundEffectConstants.CLICK)
-
-                                    if (!moreOptionsState.isVisible
-                                        && !isConfirmDeletionPopupVisible
-                                    ) {
-                                        moreOptionsState.show()
-                                        return@FoodMoreOptionsButton
-                                    }
-
-                                    if (moreOptionsState.isVisible
-                                        && !isConfirmDeletionPopupVisible
-                                    ) {
-                                        moreOptionsState.hide()
-                                        return@FoodMoreOptionsButton
-                                    }
-
-                                    if (!moreOptionsState.isVisible
-                                        && isConfirmDeletionPopupVisible) {
-                                        isConfirmDeletionPopupVisible = false
-                                        moreOptionsState.show()
-                                    }
+                                if (!moreOptionsState.isVisible
+                                    && !isConfirmDeletionPopupVisible
+                                ) {
+                                    moreOptionsState.show()
+                                    return@FoodMoreOptionsButton
                                 }
-                            )
-                        }
+
+                                if (moreOptionsState.isVisible
+                                    && !isConfirmDeletionPopupVisible
+                                ) {
+                                    moreOptionsState.hide()
+                                    return@FoodMoreOptionsButton
+                                }
+
+                                if (!moreOptionsState.isVisible
+                                    && isConfirmDeletionPopupVisible
+                                ) {
+                                    isConfirmDeletionPopupVisible = false
+                                    moreOptionsState.show()
+                                }
+                            }
+                        )
                     }
                 }
             }

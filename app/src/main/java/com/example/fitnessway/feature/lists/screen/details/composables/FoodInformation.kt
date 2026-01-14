@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.UFood.FoodComposables
+import com.example.fitnessway.util.UFood.FoodInformationComposables
 
 @Composable
 fun FoodInformation(
@@ -23,7 +23,7 @@ fun FoodInformation(
     modifier: Modifier = Modifier
 ) {
     val foodComposables = remember(food) {
-        FoodComposables(food = food, user = user)
+        FoodInformationComposables(food = food, user = user)
     }
 
     AnimatedVisibility(

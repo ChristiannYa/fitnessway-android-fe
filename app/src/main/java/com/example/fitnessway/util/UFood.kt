@@ -1,5 +1,6 @@
 package com.example.fitnessway.util
 
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,15 +8,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
@@ -26,12 +34,18 @@ import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
+import com.example.fitnessway.ui.shared.Loading.Area
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
+import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UNutrient.combine
+import com.example.fitnessway.util.UNutrient.getColor
 import com.example.fitnessway.util.UNutrient.mapNutrients
 
 object UFood {
@@ -131,7 +145,123 @@ object UFood {
         }
     }
 
-    data class FoodComposables(
+    @Composable
+    fun FoodPreview(
+        food: FoodInformation,
+        user: User? = null,
+        showsNutrientPreview: Boolean = false,
+        onClick: (() -> Unit)? = null
+    ) {
+        val view = LocalView.current
+        val missingBrand = food.information.brand == null || food.information.brand.isEmpty()
+
+        Box(
+            modifier = Modifier
+                .areaContainer(
+                    size = AreaContainerSize.MEDIUM,
+                    borderColor = MaterialTheme.colorScheme.surfaceVariant,
+                    showsIndication = true,
+                    onClickEnabled = onClick != null,
+                    onClick = {
+                        if (onClick != null) {
+                            view.playSoundEffect(SoundEffectConstants.CLICK)
+                            onClick()
+                        }
+                    }
+                ),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = food.information.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = if (missingBrand) "~" else food.information.brand,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    if (food.metadata.isFavorite) {
+                        Structure.AppIconDynamic(
+                            source = Structure.AppIconButtonSource.Vector(Icons.Default.Star),
+                            contentDescription = "Food favorite indicator",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
+                if (user != null && user.isPremium && showsNutrientPreview) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        food.nutrients.basic.forEach { (nutrientData, amount) ->
+                            val nutrientColor = getColor(nutrientData.preferences.hexColor)
+
+                            if (nutrientColor != null) {
+                                Text(
+                                    text = doubleFormatter(amount),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = nutrientColor
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun LazyListScope.foodsListWithState(
+        state: UiState<List<FoodInformation>>,
+        showsNutrientPreview: Boolean = false,
+        onFoodClick: (FoodInformation) -> Unit,
+    ) {
+        when (state) {
+            is UiState.Loading -> item { Area("Loading foods") }
+
+            is UiState.Success -> {
+                val foods = state.data
+
+                if (foods.isEmpty()) {
+                    item {
+                        NotFoundMessage("Foods that you add to your list will appear here")
+                    }
+                } else {
+                    items(
+                        items = foods,
+                        key = { food -> food.information.id }
+                    ) { food ->
+                        FoodPreview(
+                            food = food,
+                            showsNutrientPreview = showsNutrientPreview,
+                            onClick = { onFoodClick(food) }
+                        )
+                    }
+                }
+            }
+
+            else -> {}
+        }
+
+        item("foodListState_errorMessage") {
+            NotFoundMessageAnimated(
+                isVisible = state is UiState.Error,
+                message = formatUiErrorMessage(state)
+            )
+        }
+    }
+
+    data class FoodInformationComposables(
         val food: FoodInformation,
         val nutrients: NutrientsByType<NutrientDataWithAmount> = food.nutrients,
         val user: User

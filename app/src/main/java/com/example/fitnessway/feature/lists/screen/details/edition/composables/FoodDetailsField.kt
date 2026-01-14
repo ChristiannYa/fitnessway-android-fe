@@ -41,7 +41,7 @@ fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
                 {
                     val nutrient = field.name.nutrient
 
-                    Clickables.AppIconButton(
+                    Clickables.AppPngIconButton(
                         size = Clickables.AppIconButtonSize.SMALL,
                         icon = AppIconButtonSource.Vector(Icons.Default.Delete),
                         contentDescription = "Delete ${nutrient.name} from food",

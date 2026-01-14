@@ -40,7 +40,7 @@ fun Header(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(
-                onClick =  {
+                onClick = {
                     view.playSoundEffect(SoundEffectConstants.NAVIGATION_LEFT)
                     onBackClick()
                 },
@@ -67,6 +67,11 @@ fun Header(
             }
         }
 
-        extraContent?.invoke()
+        if (extraContent != null) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) { extraContent() }
+        }
     }
 }

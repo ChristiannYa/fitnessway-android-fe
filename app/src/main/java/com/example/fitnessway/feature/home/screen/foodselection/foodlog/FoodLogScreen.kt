@@ -27,7 +27,6 @@ import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Banners.SuccessBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.HeaderRow
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
@@ -105,18 +104,16 @@ fun FoodLogScreen(
                         isOnBackEnabled = foodLogAddState !is UiState.Loading,
                         title = "Log Submission"
                     ) {
-                        HeaderRow {
-                            AppLabel(
-                                text = foodLogCategoryString,
-                                size = Ui.LabelSize.MEDIUM,
-                            )
+                        AppLabel(
+                            text = foodLogCategoryString,
+                            size = Ui.LabelSize.MEDIUM,
+                        )
 
-                            Clickables.HeaderDoneButton(
-                                onClick = viewModel::addFoodLog,
-                                enabled = viewModel.isFoodLogFormValid,
-                                isLoading = foodLogAddState is UiState.Loading
-                            )
-                        }
+                        Clickables.HeaderDoneButton(
+                            onClick = viewModel::addFoodLog,
+                            enabled = viewModel.isFoodLogFormValid,
+                            isLoading = foodLogAddState is UiState.Loading
+                        )
                     }
                 }
             ) {

@@ -36,7 +36,7 @@ object Clickables {
     }
 
     @Composable
-    fun AppIconButton(
+    fun AppPngIconButton(
         size: AppIconButtonSize = AppIconButtonSize.LARGE,
         showsClickIndication: Boolean = true,
         enabled: Boolean = true,
@@ -92,7 +92,7 @@ object Clickables {
                 strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
             )
         } else {
-            AppIconButton(
+            AppPngIconButton(
                 icon = AppIconButtonSource.Vector(Icons.Default.Done),
                 contentDescription = "Done",
                 onClick = onClick,

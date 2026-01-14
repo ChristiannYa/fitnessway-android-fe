@@ -3,14 +3,12 @@ package com.example.fitnessway.feature.home.screen.logdetails
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
@@ -75,28 +73,23 @@ fun FoodLogDetailsScreen(
                         isOnBackEnabled = !formState.isEditing,
                         title = "Log Details"
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            AppLabel(
-                                text = foodLog.category.replaceFirstChar { it.uppercase() },
-                                size = Ui.LabelSize.MEDIUM
-                            )
+                        AppLabel(
+                            text = foodLog.category.replaceFirstChar { it.uppercase() },
+                            size = Ui.LabelSize.MEDIUM
+                        )
 
-                            AppLabel(
-                                text = foodLog.time,
-                                size = Ui.LabelSize.MEDIUM
-                            )
+                        AppLabel(
+                            text = foodLog.time,
+                            size = Ui.LabelSize.MEDIUM
+                        )
 
-                            Clickables.HeaderDoneButton(
-                                onClick = {
-                                    focusManager.clearFocus()
-                                    viewModel.updateFoodLog()
-                                },
-                                enabled = viewModel.isFoodLogEditionFormValid
-                            )
-                        }
+                        Clickables.HeaderDoneButton(
+                            onClick = {
+                                focusManager.clearFocus()
+                                viewModel.updateFoodLog()
+                            },
+                            enabled = viewModel.isFoodLogEditionFormValid
+                        )
                     }
                 },
             ) {

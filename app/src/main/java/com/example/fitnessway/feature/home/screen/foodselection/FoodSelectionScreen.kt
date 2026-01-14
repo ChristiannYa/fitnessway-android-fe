@@ -1,12 +1,12 @@
 package com.example.fitnessway.feature.home.screen.foodselection
 
-import android.content.res.Configuration
-import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.MaterialTheme
@@ -16,25 +16,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
-import com.example.fitnessway.feature.home.screen.foodselection.composables.Foods
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.ScreenOverlay
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
-import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Formatters.snakeToReadableText
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
+import com.example.fitnessway.util.UFood.foodsListWithState
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -57,7 +57,10 @@ fun FoodSelectionScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getFoods()
-        viewModel.getFoodSort()
+
+        if (user?.isPremium == true) {
+            viewModel.getFoodSort()
+        }
     }
 
     LaunchedEffect(foodSortUiState) {
@@ -70,8 +73,6 @@ fun FoodSelectionScreen(
         uiState = foodSortUpdateState,
         onTimeOut = viewModel::resetFoodSortUpdateState
     )
-
-    val view = LocalView.current
 
     if (user != null) {
         val selectedFoodSortCopy = selectedFoodSort
@@ -89,7 +90,7 @@ fun FoodSelectionScreen(
                         isOnBackEnabled = foodSortUpdateState !is UiState.Loading
                     ) {
                         if (foodSortUiState is UiState.Success) {
-                            Clickables.AppIconButton(
+                            Clickables.AppPngIconButton(
                                 onClick = moreOptionsState::toggle,
                                 enabled = foodSortUpdateState !is UiState.Loading,
                                 contentDescription = "Filter sort display",
@@ -113,11 +114,9 @@ fun FoodSelectionScreen(
                             Foods(
                                 state = foodsUiState,
                                 onFoodClick = { food ->
-                                    view.playSoundEffect(SoundEffectConstants.CLICK)
                                     viewModel.setSelectedFoodToLog(food)
                                     onNavigateToSelectedFood()
                                 },
-                                user = user
                             )
 
                             ScreenOverlay.Loading(
@@ -171,13 +170,24 @@ fun FoodSelectionScreen(
     )
 }
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun FoodSelectionPreview() {
-    FitnesswayTheme {
-        FoodSelectionScreen(
-            onBackClick = {},
-            onNavigateToSelectedFood = {}
+private fun Foods(
+    state: UiState<List<FoodInformation>>,
+    onFoodClick: (FoodInformation) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.fillMaxHeight()
+    ) {
+        foodsListWithState(
+            state = state,
+            onFoodClick = onFoodClick
         )
     }
+
+    NotFoundMessageAnimated(
+        isVisible = state is UiState.Error,
+        message = formatUiErrorMessage(state)
+    )
 }

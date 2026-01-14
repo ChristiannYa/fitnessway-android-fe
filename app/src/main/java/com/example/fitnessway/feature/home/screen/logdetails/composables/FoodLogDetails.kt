@@ -28,7 +28,7 @@ import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.UFood.FoodComposables
+import com.example.fitnessway.util.UFood.FoodInformationComposables
 
 private const val deletedFoodMessage = "You have removed this food from your food list"
 private const val updatedFoodMessage = "You have updated this food information"
@@ -45,7 +45,7 @@ fun FoodLogDetails(
     val foodComposables = remember(
         key1 = foodLog.food,
         key2 = nutrients
-    ) { FoodComposables(foodLog.food, nutrients, user) }
+    ) { FoodInformationComposables(foodLog.food, nutrients, user) }
 
     Box(
         modifier = Modifier.fillMaxWidth(),

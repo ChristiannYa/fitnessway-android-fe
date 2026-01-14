@@ -13,6 +13,8 @@ import com.example.fitnessway.data.model.MFood.Api.Res.FoodLogsGetApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodUpdateApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodsGetApiResponse
 import com.example.fitnessway.data.model.MApi.Model.ApiResponseWithContent
+import com.example.fitnessway.data.model.MFood.Api.Res.FoodFavoriteStatusUpdateApiResponse
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodSortUpdateApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Res.FoodSortGetApiResponse
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
@@ -43,6 +45,19 @@ interface IFoodApiService {
         @Query("food-id") foodId: Int
     ): Response<ApiResponseWithContent<FoodDeleteApiResponse>>
 
+    @PUT("food/update-favorite-status")
+    suspend fun updateFoodFavoriteStatus(
+        @Body request: FoodFavoriteStatusUpdateRequest
+    ): Response<ApiResponseWithContent<FoodFavoriteStatusUpdateApiResponse>>
+
+    @GET("food/preferences/get-food-sort")
+    suspend fun getFoodSort(): Response<ApiResponseWithContent<FoodSortGetApiResponse>>
+
+    @POST("food/preferences/update-food-sort")
+    suspend fun updateFoodSort(
+        @Body request: FoodSortUpdateRequest
+    ): Response<ApiResponseWithContent<FoodSortUpdateApiResponse>>
+
     @GET("food/log/get-logs")
     suspend fun getFoodLogs(
         @Query("date") date: String
@@ -62,12 +77,4 @@ interface IFoodApiService {
     suspend fun deleteFoodLog(
         @Query("food-log-id") foodLogId: Int
     ): Response<ApiResponseWithContent<FoodLogDeleteApiResponse>>
-
-    @GET("food/preferences/get-food-sort")
-    suspend fun getFoodSort(): Response<ApiResponseWithContent<FoodSortGetApiResponse>>
-
-    @POST("food/preferences/update-food-sort")
-    suspend fun updateFoodSort(
-        @Body request: FoodSortUpdateRequest
-    ): Response<ApiResponseWithContent<FoodSortUpdateApiResponse>>
 }

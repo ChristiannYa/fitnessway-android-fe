@@ -1,5 +1,6 @@
 package com.example.fitnessway.data.repository.food
 
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
@@ -79,7 +80,7 @@ class FoodRepositoryImpl(
     ): Flow<UiState<FoodInformation>> {
         return httpClient.makeRequest(
             apiCall = { apiService.updateFood(request) },
-            extractData = { it.updatedFood },
+            extractData = { it.foodUpdated },
             errMsg = "Failed to update food",
             invalidatedUrls = listOf(
                 ApiUrls.Food.FOODS,
@@ -99,6 +100,54 @@ class FoodRepositoryImpl(
             invalidatedUrls = listOf(
                 ApiUrls.Food.FOODS,
                 ApiUrls.Food.ALL_LOGS
+            )
+        )
+    }
+
+    override fun updateFoodFavoriteStatus(
+        request: FoodFavoriteStatusUpdateRequest
+    ): Flow<UiState<FoodInformation>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.updateFoodFavoriteStatus(request) },
+            extractData = { it.foodUpdated }
+        )
+    }
+
+    private fun fetchFoodSort(): Flow<UiState<String>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.getFoodSort() },
+            extractData = { it.foodSort },
+            errMsg = "Failed to get food sort"
+        )
+    }
+
+    override fun refreshFoodSort() {
+        cacheManager.evictUrl(ApiUrls.Food.FOOD_SORT)
+        _uiState.update { it.copy(foodSortUiState = UiState.Loading) }
+
+        repositoryScope.launch {
+            fetchFoodSort().collect { state ->
+                _uiState.update { it.copy(foodSortUiState = state) }
+            }
+        }
+    }
+
+    override fun loadFoodSort() {
+        val uiState = _uiState.value.foodSortUiState
+        if (uiState is UiState.Success || uiState is UiState.Error) return
+        refreshFoodSort()
+    }
+
+    override fun updateFoodSort(
+        request: FoodSortUpdateRequest
+    ): Flow<UiState<String>> {
+        return httpClient.makeRequest(
+            apiCall = { apiService.updateFoodSort(request) },
+            extractData = { it.foodSort },
+            errMsg = "Failed to update food sort",
+            invalidatedUrls = listOf(
+                ApiUrls.Food.FOOD_SORT,
+                ApiUrls.Food.FOODS
             )
         )
     }
@@ -174,45 +223,6 @@ class FoodRepositoryImpl(
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.getIntakes(date),
                 ApiUrls.Food.getLogs(date)
-            )
-        )
-    }
-
-    private fun fetchFoodSort(): Flow<UiState<String>> {
-        return httpClient.makeRequest(
-            apiCall = { apiService.getFoodSort() },
-            extractData = { it.foodSort },
-            errMsg = "Failed to get food sort"
-        )
-    }
-
-    override fun refreshFoodSort() {
-        cacheManager.evictUrl(ApiUrls.Food.FOOD_SORT)
-        _uiState.update { it.copy(foodSortUiState = UiState.Loading) }
-
-        repositoryScope.launch {
-            fetchFoodSort().collect { state ->
-                _uiState.update { it.copy(foodSortUiState = state) }
-            }
-        }
-    }
-
-    override fun loadFoodSort() {
-        val uiState = _uiState.value.foodSortUiState
-        if (uiState is UiState.Success || uiState is UiState.Error) return
-        refreshFoodSort()
-    }
-
-    override fun updateFoodSort(
-        request: FoodSortUpdateRequest
-    ): Flow<UiState<String>> {
-        return httpClient.makeRequest(
-            apiCall = { apiService.updateFoodSort(request) },
-            extractData = { it.foodSort },
-            errMsg = "Failed to update food sort",
-            invalidatedUrls = listOf(
-                ApiUrls.Food.FOOD_SORT,
-                ApiUrls.Food.FOODS
             )
         )
     }

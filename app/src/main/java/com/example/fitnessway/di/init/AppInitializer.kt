@@ -11,13 +11,13 @@ import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.launch
 
 class AppInitializer(
-    private val tokensStetHolder: ITokensStateHolder,
+    private val tokensStateHolder: ITokensStateHolder,
     private val userStateHolder: IUserStateHolder,
     private val userRepo: IUserRepository
 ) {
     fun initialize() {
         ProcessLifecycleOwner.get().lifecycleScope.launch {
-            tokensStetHolder.tokensState.collect { tokensState ->
+            tokensStateHolder.tokensState.collect { tokensState ->
                 logcat(message = tokensState.accessToken.toString())
 
                 val userState = userStateHolder.userState.value
@@ -37,7 +37,7 @@ class AppInitializer(
                                     message = "error collecting token states",
                                     level = Constants.LogLevel.ERROR
                                 )
-                                tokensStetHolder.clearTokens()
+                                tokensStateHolder.clearTokens()
                                 userStateHolder.clearUser()
                             }
                         }

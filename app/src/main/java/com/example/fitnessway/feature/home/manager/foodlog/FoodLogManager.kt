@@ -4,7 +4,6 @@ import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Formatters.roundIfClose
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormState
@@ -110,7 +109,6 @@ class FoodLogManager : IFoodLogManager {
         }
 
     override fun setSelectedFoodSort(foodSort: String) {
-        logcat("setSelectedFoodSort called with value -> $foodSort")
         _selectedFoodSort.value = foodSort
     }
 

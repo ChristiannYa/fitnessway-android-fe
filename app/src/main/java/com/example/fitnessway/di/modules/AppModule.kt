@@ -6,7 +6,7 @@ import org.koin.dsl.module
 val appModule = module {
     single {
         AppInitializer(
-            tokensStetHolder = get(),
+            tokensStateHolder = get(),
             userStateHolder = get(),
             userRepo = get()
         )

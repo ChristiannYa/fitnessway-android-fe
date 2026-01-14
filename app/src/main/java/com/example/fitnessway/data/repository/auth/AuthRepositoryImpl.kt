@@ -6,6 +6,7 @@ import com.example.fitnessway.data.model.MAuth.Api.Req.LogoutRequest
 import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
 import com.example.fitnessway.data.network.auth.IAuthApiService
 import com.example.fitnessway.data.state.token.ITokensStateHolder
+import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.flowOn
 class AuthRepositoryImpl(
     private val authApiService: IAuthApiService,
     private val authApiAuthorizedService: IAuthApiAuthorizedService,
-    private val tokensStateHolder: ITokensStateHolder
+    private val tokensStateHolder: ITokensStateHolder,
+    private val userStateHolder: IUserStateHolder
 ) : IAuthRepository {
     override suspend fun register(
         name: String,
@@ -122,6 +124,7 @@ class AuthRepositoryImpl(
 
         if (refreshToken == null) {
             tokensStateHolder.clearTokens()
+            userStateHolder.clearUser()
             emit(UiState.Success(Unit))
             // complete `flow {` lambda above
             // The code below this block won't be called
@@ -137,24 +140,29 @@ class AuthRepositoryImpl(
                 val body = response.body()
 
                 if (body?.success == true) {
-                    tokensStateHolder.clearTokens()
+                    hardLogout()
                     emit(UiState.Success(Unit))
                 } else {
                     // Still clear auth even if API returns an error
-                    tokensStateHolder.clearTokens()
+                    hardLogout()
                     emit(UiState.Error("Logout failed"))
                 }
             } else {
                 // Still clear auth even on HTTP error
-                tokensStateHolder.clearTokens()
-                // val errMsg = response.message()
+                logcat(response.message())
+                hardLogout()
                 emit(UiState.Error("Logout failed"))
             }
         } catch (e: Exception) {
             logcat("logout exception: ${e.message}")
             // Still clear auth even on network error
-            tokensStateHolder.clearTokens()
+            hardLogout()
             emit(UiState.Error("Logout network error"))
         }
     }.flowOn(Dispatchers.IO)
+
+    private val hardLogout = {
+        tokensStateHolder.clearTokens()
+        userStateHolder.clearUser()
+    }
 }

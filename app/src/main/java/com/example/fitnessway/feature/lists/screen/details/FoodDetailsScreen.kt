@@ -1,10 +1,14 @@
 package com.example.fitnessway.feature.lists.screen.details
 
 import android.view.SoundEffectConstants
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,12 +25,15 @@ import com.example.fitnessway.feature.lists.screen.details.composables.FoodInfor
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodMoreOptionsButton
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
+import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
+import com.example.fitnessway.ui.shared.HeaderRow
 import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure
+import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
+import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
@@ -40,8 +47,8 @@ fun FoodDetailsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
 
-    val user = viewModel.user
-    val food = selectedFood
+    val userCopy = viewModel.user
+    val selectedFoodCopy = selectedFood
     val foodDeleteState = uiState.foodDeleteState
     val title = "Food Details"
 
@@ -52,15 +59,15 @@ fun FoodDetailsScreen(
 
     val view = LocalView.current
 
-    if (food == null || user == null) {
-        Screen(
-            header = { Header(onBackClick = onBackClick, title = title) },
-            content = { NotFoundMessage("Food data not found") }
+    if (selectedFoodCopy == null || userCopy == null) {
+        NotFoundScreen(
+            onBackClick = onBackClick,
+            title = title,
+            message = "Food data not found"
         )
     } else {
         val moreOptionsState = Structure.rememberMoreOptionsState()
         var isConfirmDeletionPopupVisible by remember { mutableStateOf(false) }
-
         val isOverlayVisible = moreOptionsState.isVisible || isConfirmDeletionPopupVisible
 
         val onCancelFoodDeletion = {
@@ -80,42 +87,71 @@ fun FoodDetailsScreen(
 
         Screen(
             header = {
-                Box(
-                    content = {
-                        Header(
-                            onBackClick = {
-                                if (foodDeleteState is UiState.Error ||
-                                    foodDeleteState is UiState.Success
-                                ) {
-                                    viewModel.resetFoodDeleteState()
-                                }
+                Header(
+                    onBackClick = {
+                        if (foodDeleteState is UiState.Error ||
+                            foodDeleteState is UiState.Success
+                        ) { viewModel.resetFoodDeleteState() }
 
-                                onBackClick()
-                            },
-                            title = title
-                        ) {
-                            if (foodDeleteState !is UiState.Success) {
-                                FoodMoreOptionsButton(
-                                    onClick = {
-                                        if (!moreOptionsState.isVisible
-                                            && !isConfirmDeletionPopupVisible
-                                        ) {
-                                            moreOptionsState.show()
-                                            return@FoodMoreOptionsButton
-                                        }
+                        onBackClick()
+                    },
+                    title = title
+                ) {
+                    val isFavorite = selectedFoodCopy.metadata.isFavorite
 
-                                        if (moreOptionsState.isVisible
-                                            && !isConfirmDeletionPopupVisible
-                                        ) {
-                                            moreOptionsState.hide()
-                                            return@FoodMoreOptionsButton
-                                        }
+                    if (foodDeleteState !is UiState.Success) {
+                        HeaderRow {
+                            val favoriteIcon = if (isFavorite) {
+                                Icons.Default.Star
+                            } else Icons.Default.StarBorder
+
+                            val favoriteIconTint by animateColorAsState(
+                                targetValue = if (isFavorite) {
+                                    MaterialTheme.colorScheme.primary
+                                } else MaterialTheme.colorScheme.onSurfaceVariant,
+                                animationSpec = Animation.colorSpec,
+                                label = "favoriteIconTint_ColorSpec"
+                            )
+
+                            Clickables.AppIconButton(
+                                icon = Structure.AppIconButtonSource.Vector(favoriteIcon),
+                                contentDescription = "Favorite this food",
+                                enabled = !(moreOptionsState.isVisible || isConfirmDeletionPopupVisible),
+                                onClick = {
+                                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                                    viewModel.updateFoodFavoriteStatus(!isFavorite)
+                                },
+                                iconTint = favoriteIconTint
+                            )
+
+                            FoodMoreOptionsButton(
+                                onClick = {
+                                    view.playSoundEffect(SoundEffectConstants.CLICK)
+
+                                    if (!moreOptionsState.isVisible
+                                        && !isConfirmDeletionPopupVisible
+                                    ) {
+                                        moreOptionsState.show()
+                                        return@FoodMoreOptionsButton
                                     }
-                                )
-                            }
+
+                                    if (moreOptionsState.isVisible
+                                        && !isConfirmDeletionPopupVisible
+                                    ) {
+                                        moreOptionsState.hide()
+                                        return@FoodMoreOptionsButton
+                                    }
+
+                                    if (!moreOptionsState.isVisible
+                                        && isConfirmDeletionPopupVisible) {
+                                        isConfirmDeletionPopupVisible = false
+                                        moreOptionsState.show()
+                                    }
+                                }
+                            )
                         }
                     }
-                )
+                }
             }
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -131,9 +167,9 @@ fun FoodDetailsScreen(
                     )
 
                     FoodInformation(
-                        food = food,
+                        food = selectedFoodCopy,
                         isFoodDeletionSuccess = foodDeleteState is UiState.Success,
-                        user = user
+                        user = userCopy
                     )
                 }
 

@@ -56,7 +56,7 @@ fun ProfileScreen(
     onNavigateToColors: () -> Unit,
     onNavigateToAccInfo: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    viewModel: ProfileViewModel = koinViewModel()
+    viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val user = viewModel.user
     val view = LocalView.current

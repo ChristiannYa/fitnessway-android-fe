@@ -98,17 +98,11 @@ object MNutrient {
         object Req {
             @Serializable
             data class NutrientGoalsPostRequest(
-                @SerialName("user_id")
-                val userId: String,
-
                 val goals: List<NutrientIdWithGoal>
             )
 
             @Serializable
             data class NutrientColorsPostRequest(
-                @SerialName("user_id")
-                val userId: String,
-
                 val colors: List<NutrientIdWithColor>
             )
         }

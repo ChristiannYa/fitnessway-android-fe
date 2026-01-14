@@ -3,6 +3,7 @@ package com.example.fitnessway.feature.lists.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
@@ -20,6 +21,7 @@ import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient.buildNutrientsByType
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +48,9 @@ class ListsViewModel(
     val user = userStateHolder.userState.value.user
 
     private val _foodFailedUpdates = mutableListOf<FoodInformation>()
+
+    private var originalFoodBeforeUpdate: FoodInformation? = null
+    private var updateFoodFavoriteStatusJob: Job? = null
 
     fun getFoods() {
         foodRepo.loadFoods()
@@ -82,7 +87,6 @@ class ListsViewModel(
         }
     }
 
-
     fun updateFood() {
         if (this.user == null) return
 
@@ -95,15 +99,16 @@ class ListsViewModel(
         // Only proceed if there is data
         if (originalFoodsState !is UiState.Success) return
 
-        // Extract current state data
+        // Extract data from state
         val originalFoods = originalFoodsState.data
-
-        // Add failed update set for this food
         val originalFood = originalFoods.getFoodById(selectedFood.information.id) ?: return
+
+        // Add failed update for this food
+        // TODO: Check if we are removing the food from `_foodFailedUpdates` even after success
         _foodFailedUpdates.add(originalFood)
 
-        // Create optimistic foods by filtering out the selected food
-        val optimisticFoodsWithoutUpdatedFood = originalFoods.filter {
+        // Filter out the selected food
+        val foodsWithoutUpdatedFood = originalFoods.filter {
             it.information.id != selectedFood.information.id
         }
 
@@ -156,7 +161,7 @@ class ListsViewModel(
         managers.edition.setSelectedFood(optimisticFood)
 
         // Finally inserting the new food
-        val optimisticFoods = optimisticFoodsWithoutUpdatedFood + optimisticFood
+        val optimisticFoods = foodsWithoutUpdatedFood + optimisticFood
 
         // Update UI immediately
         foodRepo.updateState {
@@ -208,6 +213,7 @@ class ListsViewModel(
                                 } + revertedFood
 
                                 managers.edition.setSelectedFood(revertedFood)
+
                                 foodRepo.updateState {
                                     it.copy(
                                         foodsUiState = UiState.Success(revertedFoods)
@@ -237,10 +243,10 @@ class ListsViewModel(
         if (currentFoodsState !is UiState.Success) return
 
         // Extract current foods data from the state
-        val currentFoods = currentFoodsState.data
+        val originalFoods = currentFoodsState.data
 
         // Filter out optimistically the deleted food
-        val optimisticFoods = currentFoods.filter {
+        val optimisticFoods = originalFoods.filter {
             it.information.id != selectedFoodId
         }
 
@@ -264,7 +270,90 @@ class ListsViewModel(
 
                     is UiState.Error -> {
                         _uiState.update { it.copy(foodDeleteState = state) }
-                        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(currentFoods)) }
+                        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(originalFoods)) }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    fun updateFoodFavoriteStatus(isFavorite: Boolean) {
+        val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
+
+        // Get current foods data
+        val originalFoodsState = foodRepo.uiState.value.foodsUiState
+
+        // Proceed only if there is data
+        if (originalFoodsState !is UiState.Success) return
+
+        // Extract data from state
+        val originalFoods = originalFoodsState.data
+
+        // Obtain most recent version of the food from the repository
+        val latestFood = originalFoods.getFoodById(selectedFoodId) ?: return
+
+        // Store original food if first update
+        if (originalFoodBeforeUpdate == null) {
+            originalFoodBeforeUpdate = latestFood
+        }
+
+        // Cancel previous job
+        updateFoodFavoriteStatusJob?.cancel()
+
+        // Create optimistic food
+        val optimisticFood = latestFood.copy(
+            metadata = latestFood.metadata.copy(isFavorite = isFavorite)
+        )
+
+        // Create optimistic foods
+        val optimisticFoods = originalFoods.map { food ->
+            if (food.information.id == latestFood.information.id) optimisticFood else food
+        }
+
+        // Update Ui immediately
+        foodRepo.updateState {
+            it.copy(foodsUiState = UiState.Success(optimisticFoods))
+        }
+        managers.edition.setSelectedFood(optimisticFood)
+
+        // Send request
+        val request = FoodFavoriteStatusUpdateRequest(selectedFoodId, isFavorite)
+        updateFoodFavoriteStatusJob = viewModelScope.launch {
+            foodRepo.updateFoodFavoriteStatus(request).collect { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(foodFavoriteStatusUpdateState = state) }
+
+                        // Clear the original food before update
+                        originalFoodBeforeUpdate = null
+                    }
+
+                    is UiState.Error -> {
+                        _uiState.update { it.copy(foodFavoriteStatusUpdateState = state) }
+
+                        // Revert back to original state
+                        val revertedFood = originalFoodBeforeUpdate
+
+                        if (revertedFood != null) {
+                            val currentState = foodRepo.uiState.value.foodsUiState
+                            if (currentState is UiState.Success) {
+                                val revertedFoods = currentState.data.map { food ->
+                                    if (food.information.id == revertedFood.information.id) {
+                                        revertedFood
+                                    } else food
+                                }
+
+                                foodRepo.updateState {
+                                    it.copy(foodsUiState = UiState.Success(revertedFoods))
+                                }
+
+                                managers.edition.setSelectedFood(revertedFood)
+                            }
+
+                            originalFoodBeforeUpdate = null
+                        }
                     }
 
                     else -> {}
@@ -283,6 +372,10 @@ class ListsViewModel(
 
     fun resetFoodDeleteState() {
         _uiState.update { it.copy(foodDeleteState = UiState.Idle) }
+    }
+
+    fun resetFoodFavoriteStatusUpdateState() {
+        _uiState.update { it.copy(foodFavoriteStatusUpdateState = UiState.Idle) }
     }
 
     fun resetFoodCreationScreenStates() {

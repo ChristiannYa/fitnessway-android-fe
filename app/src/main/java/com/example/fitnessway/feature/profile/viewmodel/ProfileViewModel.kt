@@ -68,7 +68,6 @@ class ProfileViewModel(
         }
 
         val request = NutrientGoalsPostRequest(
-            userId = user.id,
             goals = modifiedGoals.map {
                 NutrientIdWithGoal(
                     nutrientId = it.key,
@@ -128,7 +127,6 @@ class ProfileViewModel(
             }
 
         val request = NutrientColorsPostRequest(
-            userId = user.id,
             colors = modifiedColors.map {
                 NutrientIdWithColor(
                     nutrientId = it.key,

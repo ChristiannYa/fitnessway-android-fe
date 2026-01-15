@@ -294,7 +294,6 @@ class ListsViewModel(
 
                             val revertedFoods = (currentFoods + _foodFailedDeletions.map { it.second })
                                 .distinctBy { it.information.id }
-
                                 .sortedBy { food ->
                                     // First check failed deletions
                                     val failedPosition = _foodFailedDeletions.find {

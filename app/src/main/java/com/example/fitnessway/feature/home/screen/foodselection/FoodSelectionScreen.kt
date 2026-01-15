@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +36,7 @@ import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Formatters.snakeToReadableText
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
 import com.example.fitnessway.util.UFood.foodsListWithState
+import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -89,13 +91,24 @@ fun FoodSelectionScreen(
                         title = "$categoryString selection",
                         isOnBackEnabled = foodSortUpdateState !is UiState.Loading
                     ) {
-                        if (foodSortUiState is UiState.Success) {
-                            Clickables.AppPngIconButton(
-                                onClick = moreOptionsState::toggle,
-                                enabled = foodSortUpdateState !is UiState.Loading,
-                                contentDescription = "Filter sort display",
-                                icon = AppIconButtonSource.Vector(Icons.Default.FilterList)
-                            )
+                        when (foodSortUiState) {
+                            is UiState.Success -> {
+                                Clickables.AppPngIconButton(
+                                    onClick = moreOptionsState::toggle,
+                                    enabled = foodSortUpdateState !is UiState.Loading,
+                                    contentDescription = "Filter sort display",
+                                    icon = AppIconButtonSource.Vector(Icons.Default.FilterList)
+                                )
+                            }
+
+                            is UiState.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE),
+                                    strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
+                                )
+                            }
+
+                            else -> {}
                         }
                     }
                 }
@@ -116,12 +129,13 @@ fun FoodSelectionScreen(
                                 onFoodClick = { food ->
                                     viewModel.setSelectedFoodToLog(food)
                                     onNavigateToSelectedFood()
-                                },
+                                }
                             )
 
                             ScreenOverlay.Loading(
-                                isVisible = foodSortUpdateState is UiState.Loading ||
-                                        foodsUiState is UiState.Loading
+                                isVisible = (foodSortUpdateState is UiState.Loading ||
+                                        foodsUiState is UiState.Loading) &&
+                                        foodsUiState is UiState.Success
                             )
                         }
                     }

@@ -88,7 +88,7 @@ object Clickables {
     ) {
         if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE), // log the padding of AppIconButton to see its value
+                modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE),
                 strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
             )
         } else {

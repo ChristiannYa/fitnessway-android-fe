@@ -3,7 +3,8 @@ package com.example.fitnessway.util
 import android.util.Log
 import com.example.fitnessway.util.Constants.LogLevel
 import java.text.DecimalFormat
-import java.util.Locale
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale.getDefault
 import kotlin.math.abs
 import kotlin.math.floor
@@ -67,6 +68,26 @@ object Formatters {
 
             error
         }
+    }
+
+    private val SERVER_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+    private val READABLE_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a")
+    private val SERVER_FORMAT_REGEX = Regex("""\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}""")
+
+    fun transformServerDate(dateString: String): String {
+        val dateTime = LocalDateTime.parse(dateString, SERVER_DATE_FORMAT)
+        return dateTime.format(READABLE_DATE_FORMAT)
+    }
+
+    fun getCurrentDateInServerFormat(): String {
+        val currentDateTime = LocalDateTime.now()
+        return currentDateTime.format(SERVER_DATE_FORMAT)
+    }
+
+    fun serverDateToReadableAppDate(dateString: String): String {
+        return if (SERVER_FORMAT_REGEX.matches(dateString)) {
+            transformServerDate(dateString)
+        } else dateString
     }
 
     /**

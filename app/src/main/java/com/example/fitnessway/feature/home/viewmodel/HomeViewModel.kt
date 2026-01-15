@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
+import com.example.fitnessway.data.model.MFood.Enum.FoodSort
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
@@ -14,9 +15,11 @@ import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.getCurrentDateInServerFormat
 import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLog
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
+import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UFood.mapFoodLogs
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,15 +78,15 @@ class HomeViewModel(
     }
 
     fun addFoodLog() {
-        // Check for data states before allowing request
+        val user = this.user ?: return
         val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
-        val selectedFood = managers.foodLog.selectedFoodToLog.value ?: return
+        val selectedFoodId = managers.foodLog.selectedFoodToLog.value?.information?.id ?: return
         val category = managers.foodLog.foodLogCategory.value ?: return
 
         val date = managers.date.getApiFormattedDate()
 
         val request = FoodLogAddRequest(
-            foodId = selectedFood.information.id,
+            foodId = selectedFoodId,
             servings = foodLogFormState.data.servings.toDouble(),
             category = category.name.lowercase(),
             source = "user",
@@ -96,6 +99,52 @@ class HomeViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
+
+                        val foodSortState = foodRepo.uiState.value.foodSortUiState
+
+                        // Update food sorting value if the user is premium and has a recently
+                        // logged at sort mode
+                        if (user.isPremium && foodSortState is UiState.Success) {
+                            val currentFoodsState = foodRepo.uiState.value.foodsUiState
+
+                            // Proceed if there is data from states
+                            if (currentFoodsState is UiState.Success) {
+                                val foodSort = foodSortState.data
+
+                                // Check if food sort value is recently logged
+                                if (foodSort.equals(
+                                        other = FoodSort.RECENTLY_LOGGED.name,
+                                        ignoreCase = true
+                                    )
+                                ) {
+                                    // Extract data from foods state
+                                    val currentFoods = currentFoodsState.data
+
+                                    // Obtain most recent version of the food from the repository
+                                    val latestFood = currentFoods.getFoodById(selectedFoodId)
+
+                                    if (latestFood != null) {
+                                        // Create optimistic food with `lastLoggedAt` value
+                                        val optimisticFood = latestFood.copy(
+                                            metadata = latestFood.metadata.copy(
+                                                lastLoggedAt = getCurrentDateInServerFormat()
+                                            )
+                                        )
+
+                                        // Create optimistic foods with optimistic logged food on top
+                                        val optimisticFoods =
+                                            listOf(optimisticFood) + currentFoods.filter {
+                                                it.information.id != optimisticFood.information.id
+                                            }
+
+                                        // Update Ui immediately
+                                        foodRepo.updateState {
+                                            it.copy(foodsUiState = UiState.Success(optimisticFoods))
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
                         foodRepo.refreshFoodLogs(date)
                         nutrientRepo.refreshNutrientIntakes(date)
@@ -427,6 +476,7 @@ class HomeViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodSortUpdateState = state) }
+                        foodRepo.updateState { it.copy(foodSortUiState = state) }
                         foodRepo.refreshFoods()
                     }
 
@@ -436,9 +486,7 @@ class HomeViewModel(
                     }
 
                     is UiState.Loading -> {
-                        _uiState.update {
-                            it.copy(foodSortUpdateState = state)
-                        }
+                        _uiState.update { it.copy(foodSortUpdateState = state) }
                     }
 
                     else -> {}

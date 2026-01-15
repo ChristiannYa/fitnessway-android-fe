@@ -304,7 +304,9 @@ class ListsViewModel(
 
         // Create optimistic food
         val optimisticFood = latestFood.copy(
-            metadata = latestFood.metadata.copy(isFavorite = isFavorite)
+            metadata = latestFood.metadata.copy(
+                isFavorite = isFavorite
+            )
         )
 
         // Create optimistic foods

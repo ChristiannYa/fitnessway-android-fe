@@ -182,6 +182,7 @@ private fun Foods(
     ) {
         foodsListWithState(
             state = state,
+            showsNutrientPreview = true,
             onFoodClick = onFoodClick
         )
     }

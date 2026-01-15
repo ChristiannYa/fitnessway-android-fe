@@ -43,8 +43,6 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
-    private val _foodLogFailedDeletions = mutableMapOf<String, MutableSet<FoodLogData>>()
-
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
 
@@ -329,6 +327,8 @@ class HomeViewModel(
             }
         }
     }
+
+    private val _foodLogFailedDeletions = mutableMapOf<String, MutableSet<FoodLogData>>()
 
     fun deleteFoodLog() {
         val selectedFoodLogToRemove = managers.foodLog.selectedFoodLogToRemove.value ?: return

@@ -101,11 +101,13 @@ class ListsViewModel(
 
         // Extract data from state
         val originalFoods = originalFoodsState.data
-        val originalFood = originalFoods.getFoodById(selectedFood.information.id) ?: return
+
+        // Obtain most recent version of the food from the repository
+        val latestFood = originalFoods.getFoodById(selectedFood.information.id) ?: return
 
         // Add failed update for this food
         // TODO: Check if we are removing the food from `_foodFailedUpdates` even after success
-        _foodFailedUpdates.add(originalFood)
+        _foodFailedUpdates.add(latestFood)
 
         // Filter out the selected food
         val foodsWithoutUpdatedFood = originalFoods.filter {
@@ -187,7 +189,7 @@ class ListsViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodUpdateState = state) }
-                        // foodRepo.clearFoodLogsUiCache()
+                        foodRepo.clearFoodLogsUiCache()
                     }
 
                     is UiState.Loading -> {
@@ -195,7 +197,7 @@ class ListsViewModel(
                     }
 
                     is UiState.Error -> {
-                        // Revert back to original state on error
+                        // Provide ui the error state
                         _uiState.update { it.copy(foodUpdateState = state) }
 
                         // Obtain updated UI states after optimistic update
@@ -232,51 +234,95 @@ class ListsViewModel(
         }
     }
 
+    private val _foodFailedDeletions = mutableSetOf<Pair<Int, FoodInformation>>()
+    private var _foodsBeforeSuccessfulDeletion: List<FoodInformation>? = null
+
     fun deleteFood() {
         val selectedFood = managers.edition.selectedFood.value ?: return
         val selectedFoodId = selectedFood.information.id
 
-        // Get current foods state to update optimistically
-        val currentFoodsState = foodRepo.uiState.value.foodsUiState
+        val originalFoodsState = foodRepo.uiState.value.foodsUiState
+        if (originalFoodsState !is UiState.Success) return
 
-        // Only proceed if there is data
-        if (currentFoodsState !is UiState.Success) return
 
-        // Extract current foods data from the state
-        val originalFoods = currentFoodsState.data
+        val originalFoods = originalFoodsState.data
 
-        // Filter out optimistically the deleted food
+        // Capture the foods before successful deletion on first deletion
+        if (_foodsBeforeSuccessfulDeletion == null) {
+            _foodsBeforeSuccessfulDeletion = originalFoods
+        }
+
+        val latestFood = originalFoods.getFoodById(selectedFoodId) ?: return
+
+        // Use the foods before successful list for position
+        val originalPosition = _foodsBeforeSuccessfulDeletion?.indexOfFirst {
+            it.information.id == selectedFoodId
+        } ?: return
+
+        _foodFailedDeletions.removeIf { it.second.information.id == selectedFoodId }
+
         val optimisticFoods = originalFoods.filter {
             it.information.id != selectedFoodId
         }
 
-        // Update UI immediately
-        _uiState.update {
-            it.copy(foodDeleteState = UiState.Success(selectedFood))
-        }
-
-        foodRepo.updateState {
-            it.copy(foodsUiState = UiState.Success(optimisticFoods))
-        }
+        _uiState.update { it.copy(foodDeleteState = UiState.Success(selectedFood)) }
+        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(optimisticFoods)) }
 
         viewModelScope.launch {
             foodRepo.deleteFood(selectedFoodId).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodDeleteState = state) }
-
                         foodRepo.clearFoodLogsUiCache()
+
+                        // Reset foods before successful deletion if all deletions succeeded
+                        if (_foodFailedDeletions.isEmpty()) {
+                            _foodsBeforeSuccessfulDeletion = null
+                        }
                     }
 
                     is UiState.Error -> {
                         _uiState.update { it.copy(foodDeleteState = state) }
-                        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(originalFoods)) }
+
+                        // Add failed deletion
+                        _foodFailedDeletions.add(originalPosition to latestFood)
+
+                        val currentFoodsState = foodRepo.uiState.value.foodsUiState
+
+                        if (currentFoodsState is UiState.Success) {
+                            val currentFoods = currentFoodsState.data
+
+                            val revertedFoods = (currentFoods + _foodFailedDeletions.map { it.second })
+                                .distinctBy { it.information.id }
+
+                                .sortedBy { food ->
+                                    // First check failed deletions
+                                    val failedPosition = _foodFailedDeletions.find {
+                                        it.second.information.id == food.information.id
+                                    }?.first
+
+
+                                    if (failedPosition != null) {
+                                        failedPosition
+                                    } else {
+                                        // For foods still in the list, use their absolute original position
+                                        _foodsBeforeSuccessfulDeletion?.indexOfFirst {
+                                            it.information.id == food.information.id
+                                        } ?: Int.MAX_VALUE
+                                    }
+                                }
+
+                            foodRepo.updateState {
+                                it.copy(foodsUiState = UiState.Success(data = revertedFoods))
+                            }
+                        }
                     }
 
                     else -> {}
                 }
             }
         }
+
     }
 
     fun updateFoodFavoriteStatus(isFavorite: Boolean) {

@@ -47,6 +47,7 @@ fun FoodDetailsScreen(
     val userCopy = viewModel.user
     val selectedFoodCopy = selectedFood
     val foodDeleteState = uiState.foodDeleteState
+    val foodFavoriteStatusUpdateState = uiState.foodFavoriteStatusUpdateState
     val title = "Food Details"
 
     val foodDeleteErrorMessage = handleTempApiErrorMessage(
@@ -86,11 +87,8 @@ fun FoodDetailsScreen(
             header = {
                 Header(
                     onBackClick = {
-                        if (foodDeleteState is UiState.Error ||
-                            foodDeleteState is UiState.Success
-                        ) {
-                            viewModel.resetFoodDeleteState()
-                        }
+                        if (foodDeleteState !is UiState.Idle) viewModel.resetFoodDeleteState()
+                        if (foodFavoriteStatusUpdateState !is UiState.Idle) viewModel.resetFoodFavoriteStatusUpdateState()
 
                         onBackClick()
                     },
@@ -99,8 +97,9 @@ fun FoodDetailsScreen(
                     val isFavorite = selectedFoodCopy.metadata.isFavorite
 
                     if (foodDeleteState !is UiState.Success) {
-                        val favoriteIcon =
-                            if (isFavorite) Icons.Default.Star else Icons.Default.StarBorder
+                        val favoriteIcon = if (isFavorite) {
+                            Icons.Default.Star
+                        } else Icons.Default.StarBorder
 
                         Clickables.AppPngIconButton(
                             icon = Structure.AppIconButtonSource.Vector(favoriteIcon),

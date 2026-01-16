@@ -76,7 +76,9 @@ class FoodRepositoryImpl(
         }
     }
 
-    // @TODO: Re-fetch food logs data when updating food data
+    private var updateFoodJob: Job? = null
+    private val updateFoodFlow = MutableSharedFlow<UiState<FoodInformation>>(replay = 1)
+
     override suspend fun updateFood(
         request: FoodUpdateRequest
     ): Flow<UiState<FoodInformation>> {
@@ -111,7 +113,7 @@ class FoodRepositoryImpl(
     // `MutableSharedFlow` with `replay = 1` caches the last emitted state so that new collectors
     // (e.g., ViewModels that start collecting after the state was emitted) immediately receive
     // the most recent value. This ensures all ViewModels stay in sync with the latest update status.
-    private val _favoriteUpdateFlow = MutableSharedFlow<UiState<FoodInformation>>(replay = 1)
+    private val _updateFoodFavoriteStatusFlow = MutableSharedFlow<UiState<FoodInformation>>(replay = 1)
 
     override fun updateFoodFavoriteStatus(
         request: FoodFavoriteStatusUpdateRequest
@@ -123,11 +125,11 @@ class FoodRepositoryImpl(
                 apiCall = { apiService.updateFoodFavoriteStatus(request) },
                 extractData = { it.foodUpdated }
             ).collect { state ->
-                _favoriteUpdateFlow.emit(state)
+                _updateFoodFavoriteStatusFlow.emit(state)
             }
         }
 
-        return _favoriteUpdateFlow
+        return _updateFoodFavoriteStatusFlow
     }
 
     private fun fetchFoodSort(): Flow<UiState<String>> {

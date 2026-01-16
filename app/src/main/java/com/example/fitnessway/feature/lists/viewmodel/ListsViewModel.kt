@@ -365,10 +365,14 @@ class ListsViewModel(
             foodRepo.updateFoodFavoriteStatus(request).collect { state ->
                 when (state) {
                     is UiState.Success -> {
-                        _uiState.update { it.copy(foodFavoriteStatusUpdateState = state) }
+                        val updatedFood = state.data
 
-                        // Clear the original food before update
-                        originalFoodBeforeUpdate = null
+                        if (updatedFood.information.id == selectedFoodId) {
+                            _uiState.update { it.copy(foodFavoriteStatusUpdateState = state) }
+
+                            // Clear the original food before update
+                            originalFoodBeforeUpdate = null
+                        }
                     }
 
                     is UiState.Error -> {

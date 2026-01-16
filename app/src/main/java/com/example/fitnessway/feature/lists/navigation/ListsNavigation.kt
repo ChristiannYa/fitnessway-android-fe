@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.fitnessway.feature.lists.screen.create.food.CreateFoodFormScreen
 import com.example.fitnessway.feature.lists.screen.details.FoodDetailsScreen
-import com.example.fitnessway.feature.lists.screen.details.edition.FoodDEditionScreen
+import com.example.fitnessway.feature.lists.screen.details.edition.FoodEditionScreen
 import com.example.fitnessway.feature.lists.screen.main.ListsScreen
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.navigation.ListsGraph
@@ -77,7 +77,7 @@ fun NavGraphBuilder.listsNavigationGraph(navController: NavController) {
 
             val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
-            FoodDEditionScreen(
+            FoodEditionScreen(
                 viewModel = viewModel,
                 onBackClick = navController::popBackStack
             )

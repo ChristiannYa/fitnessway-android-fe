@@ -173,6 +173,7 @@ fun FoodDetailsScreen(
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
                             moreOptionsState.hide()
+                            viewModel.initializeFoodForm(selectedFoodCopy)
                             onNavigateToEditionScreen()
                         },
                         backgroundColor = MaterialTheme.colorScheme.primary

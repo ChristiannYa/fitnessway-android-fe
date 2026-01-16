@@ -1,13 +1,13 @@
 package com.example.fitnessway.feature.lists.manager.edition
 
-import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
-import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
@@ -76,7 +76,7 @@ class EditionManager : IEditionManager {
             }
         }
 
-    override val isFormValid: Boolean
+    override val isFoodEditionFormValid: Boolean
         get() = _foodEditionFormState.value?.let { formState ->
             val hasAnyChange = (formState.data.name != _originalFormName.value) ||
                     (formState.data.brand != _originalFormBrand.value) ||
@@ -115,7 +115,8 @@ class EditionManager : IEditionManager {
                 areAllAmountsValid && hasBasicNutrient
             }
 
-            hasAnyChange && hasNoErrors && requiredFieldsProvided && nutrientsAreValid
+            val v = hasAnyChange && hasNoErrors && requiredFieldsProvided && nutrientsAreValid
+            v
         } ?: false
 
     override fun initializeFoodForm(food: FoodInformation) {
@@ -205,9 +206,5 @@ class EditionManager : IEditionManager {
 
     override fun resetDeletedNutrients() {
         _deletedNutrients.value = emptyList()
-    }
-
-    override fun simpleFormCancel() {
-        _foodEditionFormState.value = _foodEditionFormState.value?.setIsEditingToFalse()
     }
 }

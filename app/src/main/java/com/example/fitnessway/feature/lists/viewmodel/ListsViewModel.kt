@@ -109,11 +109,6 @@ class ListsViewModel(
         // TODO: Check if we are removing the food from `_foodFailedUpdates` even after success
         _foodFailedUpdates.add(latestFood)
 
-        // Filter out the selected food
-        val foodsWithoutUpdatedFood = originalFoods.filter {
-            it.information.id != selectedFood.information.id
-        }
-
         // Gather updated nutrient data
         val deletedNutrients = managers.edition.deletedNutrients.value
         val upsertedNutrients = formState.data.nutrients
@@ -159,16 +154,20 @@ class ListsViewModel(
             nutrients = filteredUpdatedFoodNutrientsData
         )
 
-        // Change the selected food value to the newly created food
-        managers.edition.setSelectedFood(optimisticFood)
-
         // Finally inserting the new food
-        val optimisticFoods = foodsWithoutUpdatedFood + optimisticFood
+        val optimisticFoods = originalFoods.map {
+            if (it.information.id == latestFood.information.id) optimisticFood else it
+        }
 
         // Update UI immediately
+        _uiState.update { state ->
+            state.copy(foodUpdateState = UiState.Success(optimisticFood))
+        }
         foodRepo.updateState {
             it.copy(foodsUiState = UiState.Success(optimisticFoods))
         }
+        managers.edition.initializeFoodForm(optimisticFood)
+        managers.edition.setSelectedFood(optimisticFood)
 
         // Create request
         val request = FoodUpdateRequest(
@@ -192,10 +191,6 @@ class ListsViewModel(
                         foodRepo.clearFoodLogsUiCache()
                     }
 
-                    is UiState.Loading -> {
-                        _uiState.update { it.copy(foodUpdateState = state) }
-                    }
-
                     is UiState.Error -> {
                         // Provide ui the error state
                         _uiState.update { it.copy(foodUpdateState = state) }
@@ -210,10 +205,13 @@ class ListsViewModel(
                             val revertedFood = _foodFailedUpdates.lastOrNull()
 
                             if (revertedFood != null) {
-                                val revertedFoods = currentFoods.filter {
-                                    it.information.id != revertedFood.information.id
-                                } + revertedFood
+                                val revertedFoods = currentFoods.map {
+                                    if (it.information.id == revertedFood.information.id) {
+                                        revertedFood
+                                    } else it
+                                }
 
+                                managers.edition.initializeFoodForm(revertedFood)
                                 managers.edition.setSelectedFood(revertedFood)
 
                                 foodRepo.updateState {

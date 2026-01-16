@@ -8,7 +8,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -30,7 +29,7 @@ import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun FoodDEditionScreen(
+fun FoodEditionScreen(
     viewModel: ListsViewModel = koinViewModel(),
     onBackClick: () -> Unit
 ) {
@@ -41,12 +40,6 @@ fun FoodDEditionScreen(
 
     val user = viewModel.user
     val foodUpdateState = uiState.foodUpdateState
-
-    LaunchedEffect(selectedFood) {
-        selectedFood?.let {
-            viewModel.initializeFoodForm(it)
-        }
-    }
 
     val foodUpdateErrorMessage = handleTempApiErrorMessage(
         uiState = foodUpdateState,
@@ -103,8 +96,7 @@ fun FoodDEditionScreen(
 
             val allNutrientIds = selectedFoodCopy.nutrients.combine().map {
                 it.nutrientWithPreferences.nutrient.id
-            }
-                .filter { it !in deletedNutrients }
+            }.filter { it !in deletedNutrients }
 
             val nutrientFields = nutrients.map { (type, ns, title) ->
                 val fields = ns
@@ -136,12 +128,11 @@ fun FoodDEditionScreen(
                     ) {
                         Clickables.HeaderDoneButton(
                             onClick = {
-                                viewModel.simpleFormCancel()
+                                focusManager.clearFocus()
                                 viewModel.updateFood()
                                 viewModel.resetDeletedNutrients()
                             },
-                            enabled = viewModel.isFormValid,
-                            isLoading = foodUpdateState is UiState.Loading
+                            enabled = viewModel.isFoodEditionFormValid
                         )
                     }
                 }

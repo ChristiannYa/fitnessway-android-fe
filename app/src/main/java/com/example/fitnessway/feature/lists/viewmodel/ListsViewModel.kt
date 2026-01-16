@@ -21,7 +21,6 @@ import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient.buildNutrientsByType
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,11 +45,6 @@ class ListsViewModel(
     val nutrientRepoUiState = nutrientRepo.uiState
 
     val user = userStateHolder.userState.value.user
-
-    private val _foodFailedUpdates = mutableListOf<FoodInformation>()
-
-    private var originalFoodBeforeUpdate: FoodInformation? = null
-    private var updateFoodFavoriteStatusJob: Job? = null
 
     fun getFoods() {
         foodRepo.loadFoods()
@@ -87,6 +81,8 @@ class ListsViewModel(
         }
     }
 
+    private val _foodFailedUpdates = mutableListOf<FoodInformation>()
+
     fun updateFood() {
         if (this.user == null) return
 
@@ -96,7 +92,7 @@ class ListsViewModel(
         // Get current data to update optimistically
         val originalFoodsState = foodRepo.uiState.value.foodsUiState
 
-        // Only proceed if there is data
+        // Only proceed if there is ui state data
         if (originalFoodsState !is UiState.Success) return
 
         // Extract data from state
@@ -290,24 +286,25 @@ class ListsViewModel(
                         if (currentFoodsState is UiState.Success) {
                             val currentFoods = currentFoodsState.data
 
-                            val revertedFoods = (currentFoods + _foodFailedDeletions.map { it.second })
-                                .distinctBy { it.information.id }
-                                .sortedBy { food ->
-                                    // First check failed deletions
-                                    val failedPosition = _foodFailedDeletions.find {
-                                        it.second.information.id == food.information.id
-                                    }?.first
+                            val revertedFoods =
+                                (currentFoods + _foodFailedDeletions.map { it.second })
+                                    .distinctBy { it.information.id }
+                                    .sortedBy { food ->
+                                        // First check failed deletions
+                                        val failedPosition = _foodFailedDeletions.find {
+                                            it.second.information.id == food.information.id
+                                        }?.first
 
 
-                                    if (failedPosition != null) {
-                                        failedPosition
-                                    } else {
-                                        // For foods still in the list, use their absolute original position
-                                        _foodsBeforeSuccessfulDeletion?.indexOfFirst {
-                                            it.information.id == food.information.id
-                                        } ?: Int.MAX_VALUE
+                                        if (failedPosition != null) {
+                                            failedPosition
+                                        } else {
+                                            // For foods still in the list, use their absolute original position
+                                            _foodsBeforeSuccessfulDeletion?.indexOfFirst {
+                                                it.information.id == food.information.id
+                                            } ?: Int.MAX_VALUE
+                                        }
                                     }
-                                }
 
                             foodRepo.updateState {
                                 it.copy(foodsUiState = UiState.Success(data = revertedFoods))
@@ -321,6 +318,8 @@ class ListsViewModel(
         }
 
     }
+
+    private var originalFoodBeforeUpdate: FoodInformation? = null
 
     fun updateFoodFavoriteStatus(isFavorite: Boolean) {
         val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
@@ -342,9 +341,6 @@ class ListsViewModel(
             originalFoodBeforeUpdate = latestFood
         }
 
-        // Cancel previous job
-        updateFoodFavoriteStatusJob?.cancel()
-
         // Create optimistic food
         val optimisticFood = latestFood.copy(
             metadata = latestFood.metadata.copy(
@@ -365,7 +361,7 @@ class ListsViewModel(
 
         // Send request
         val request = FoodFavoriteStatusUpdateRequest(selectedFoodId, isFavorite)
-        updateFoodFavoriteStatusJob = viewModelScope.launch {
+        viewModelScope.launch {
             foodRepo.updateFoodFavoriteStatus(request).collect { state ->
                 when (state) {
                     is UiState.Success -> {

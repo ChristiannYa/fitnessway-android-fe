@@ -1,7 +1,7 @@
 package com.example.fitnessway.data.repository.food
 
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
@@ -15,7 +15,9 @@ import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.food.IFoodApiService
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
@@ -104,13 +106,28 @@ class FoodRepositoryImpl(
         )
     }
 
+    private var updateFoodFavoriteStatusJob: Job? = null
+
+    // `MutableSharedFlow` with `replay = 1` caches the last emitted state so that new collectors
+    // (e.g., ViewModels that start collecting after the state was emitted) immediately receive
+    // the most recent value. This ensures all ViewModels stay in sync with the latest update status.
+    private val _favoriteUpdateFlow = MutableSharedFlow<UiState<FoodInformation>>(replay = 1)
+
     override fun updateFoodFavoriteStatus(
         request: FoodFavoriteStatusUpdateRequest
     ): Flow<UiState<FoodInformation>> {
-        return httpClient.makeRequest(
-            apiCall = { apiService.updateFoodFavoriteStatus(request) },
-            extractData = { it.foodUpdated }
-        )
+        updateFoodFavoriteStatusJob?.cancel()
+
+        updateFoodFavoriteStatusJob = repositoryScope.launch {
+            httpClient.makeRequest(
+                apiCall = { apiService.updateFoodFavoriteStatus(request) },
+                extractData = { it.foodUpdated }
+            ).collect { state ->
+                _favoriteUpdateFlow.emit(state)
+            }
+        }
+
+        return _favoriteUpdateFlow
     }
 
     private fun fetchFoodSort(): Flow<UiState<String>> {

@@ -117,9 +117,7 @@ fun FoodEditionScreen(
                 header = {
                     Header(
                         onBackClick = {
-                            if (foodUpdateState is UiState.Error) {
-                                viewModel.resetFoodUpdateState()
-                            }
+                            if (foodUpdateState !is UiState.Idle) viewModel.resetFoodUpdateState()
 
                             viewModel.resetDeletedNutrients()
                             onBackClick()
@@ -128,9 +126,13 @@ fun FoodEditionScreen(
                     ) {
                         Clickables.HeaderDoneButton(
                             onClick = {
+                                if (foodUpdateState !is UiState.Idle) {
+                                    viewModel.resetFoodUpdateState()
+                                }
+
                                 focusManager.clearFocus()
-                                viewModel.updateFood()
                                 viewModel.resetDeletedNutrients()
+                                viewModel.updateFood()
                             },
                             enabled = viewModel.isFoodEditionFormValid
                         )
@@ -152,21 +154,19 @@ fun FoodEditionScreen(
                     ) {
                         FieldSection(
                             title = "Details",
-                            fields = detailFields,
-                            content = { FoodDetailsField(it) }
-                        )
+                            fields = detailFields
+                        ) { FoodDetailsField(it) }
 
                         nutrientFields.forEach { (_, fields, title) ->
                             FieldSection(
                                 title = title,
-                                fields = fields,
-                                content = {
-                                    FoodDetailsField(
-                                        field = it,
-                                        onRemoveNutrient = viewModel::filterNutrientFromForm
-                                    )
-                                }
-                            )
+                                fields = fields
+                            ) {
+                                FoodDetailsField(
+                                    field = it,
+                                    onRemoveNutrient = viewModel::filterNutrientFromForm
+                                )
+                            }
                         }
                     }
                 }
@@ -181,7 +181,7 @@ fun FoodEditionScreen(
 }
 
 @Composable
-private fun<T> FieldSection(
+private fun <T> FieldSection(
     title: String,
     fields: List<T>,
     content: @Composable (T) -> Unit

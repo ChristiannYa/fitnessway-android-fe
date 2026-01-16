@@ -8,11 +8,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.example.fitnessway.ui.shared.Clickables
+import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
+import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
-import com.example.fitnessway.ui.shared.Clickables
-import com.example.fitnessway.util.Ui
-import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
 
 @Composable
 fun <T : FormFieldName.IFoodEdition> FoodDetailsField(

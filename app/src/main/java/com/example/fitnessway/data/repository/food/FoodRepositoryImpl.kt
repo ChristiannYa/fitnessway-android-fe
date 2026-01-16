@@ -76,24 +76,31 @@ class FoodRepositoryImpl(
         }
     }
 
-    private var updateFoodJob: Job? = null
-    private val updateFoodFlow = MutableSharedFlow<UiState<FoodInformation>>(replay = 1)
+    private var _updateFoodJob: Job? = null
+    private val _updateFoodFlow = MutableSharedFlow<UiState<FoodInformation>>()
 
     override suspend fun updateFood(
         request: FoodUpdateRequest
     ): Flow<UiState<FoodInformation>> {
-        return httpClient.makeRequest(
-            apiCall = { apiService.updateFood(request) },
-            extractData = { it.foodUpdated },
-            errMsg = "Failed to update food",
-            invalidatedUrls = listOf(
-                ApiUrls.Food.FOODS,
-                ApiUrls.Food.ALL_LOGS
-            )
-        )
+        _updateFoodJob?.cancel()
+
+        _updateFoodJob = repositoryScope.launch {
+            httpClient.makeRequest(
+                apiCall = { apiService.updateFood(request) },
+                extractData = { it.foodUpdated },
+                errMsg = "Failed to update food",
+                invalidatedUrls = listOf(
+                    ApiUrls.Food.FOODS,
+                    ApiUrls.Food.ALL_LOGS
+                )
+            ).collect { state ->
+                _updateFoodFlow.emit(state)
+            }
+        }
+
+        return _updateFoodFlow
     }
 
-    // @TODO: Re-fetch food logs data when deleting the food, and make the request optimistic
     override suspend fun deleteFood(
         foodId: Int
     ): Flow<UiState<FoodInformation>> {
@@ -108,19 +115,15 @@ class FoodRepositoryImpl(
         )
     }
 
-    private var updateFoodFavoriteStatusJob: Job? = null
-
-    // `MutableSharedFlow` with `replay = 1` caches the last emitted state so that new collectors
-    // (e.g., ViewModels that start collecting after the state was emitted) immediately receive
-    // the most recent value. This ensures all ViewModels stay in sync with the latest update status.
-    private val _updateFoodFavoriteStatusFlow = MutableSharedFlow<UiState<FoodInformation>>(replay = 1)
+    private var _updateFoodFavoriteStatusJob: Job? = null
+    private val _updateFoodFavoriteStatusFlow = MutableSharedFlow<UiState<FoodInformation>>()
 
     override fun updateFoodFavoriteStatus(
         request: FoodFavoriteStatusUpdateRequest
     ): Flow<UiState<FoodInformation>> {
-        updateFoodFavoriteStatusJob?.cancel()
+        _updateFoodFavoriteStatusJob?.cancel()
 
-        updateFoodFavoriteStatusJob = repositoryScope.launch {
+        _updateFoodFavoriteStatusJob = repositoryScope.launch {
             httpClient.makeRequest(
                 apiCall = { apiService.updateFoodFavoriteStatus(request) },
                 extractData = { it.foodUpdated }

@@ -45,6 +45,10 @@ class ProfileViewModel(
 
     val nutrientRepoUiState = nutrientRepo.uiState
 
+    fun refreshNutrients() {
+        nutrientRepo.refreshNutrients()
+    }
+
     fun getNutrients() {
         nutrientRepo.loadNutrients()
     }

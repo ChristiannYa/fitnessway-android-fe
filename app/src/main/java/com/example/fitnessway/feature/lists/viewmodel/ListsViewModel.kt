@@ -46,6 +46,10 @@ class ListsViewModel(
 
     val user = userStateHolder.userState.value.user
 
+    fun refreshListsData() {
+        foodRepo.refreshFoods()
+    }
+
     fun getFoods() {
         foodRepo.loadFoods()
     }

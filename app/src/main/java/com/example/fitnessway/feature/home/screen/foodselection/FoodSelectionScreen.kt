@@ -11,6 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,6 +27,7 @@ import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.ScreenOverlay
@@ -76,6 +79,10 @@ fun FoodSelectionScreen(
         onTimeOut = viewModel::resetFoodSortUpdateState
     )
 
+    val pullToRefreshState = rememberPullToRefreshState()
+    val pullToRefreshThresholdReached = pullToRefreshState.distanceFraction >= 1f
+    val isRefreshing = pullToRefreshThresholdReached && foodsUiState is UiState.Loading
+
     if (user != null) {
         val selectedFoodSortCopy = selectedFoodSort
         val foodLogCategoryCopy = foodLogCategory
@@ -91,84 +98,99 @@ fun FoodSelectionScreen(
                         title = "$categoryString selection",
                         isOnBackEnabled = foodSortUpdateState !is UiState.Loading
                     ) {
-                        when (foodSortUiState) {
-                            is UiState.Success -> {
-                                Clickables.AppPngIconButton(
-                                    onClick = moreOptionsState::toggle,
-                                    enabled = foodSortUpdateState !is UiState.Loading,
-                                    contentDescription = "Filter sort display",
-                                    icon = AppIconButtonSource.Vector(Icons.Default.FilterList)
-                                )
-                            }
+                        if (user.isPremium) {
+                            when (foodSortUiState) {
+                                is UiState.Success -> {
+                                    Clickables.AppPngIconButton(
+                                        onClick = moreOptionsState::toggle,
+                                        enabled = foodSortUpdateState !is UiState.Loading,
+                                        contentDescription = "Filter sort display",
+                                        icon = AppIconButtonSource.Vector(Icons.Default.FilterList)
+                                    )
+                                }
 
-                            is UiState.Loading -> {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE),
-                                    strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
-                                )
-                            }
+                                is UiState.Loading -> {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE),
+                                        strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
+                                    )
+                                }
 
-                            else -> {}
+                                else -> {}
+                            }
                         }
                     }
                 }
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        ErrorBannerAnimated(
-                            isVisible = foodSortErrorMessage != null,
-                            text = foodSortErrorMessage ?: ""
-                        )
-
-                        Box {
-                            Foods(
-                                state = foodsUiState,
-                                onFoodClick = { food ->
-                                    viewModel.setSelectedFoodToLog(food)
-                                    onNavigateToSelectedFood()
-                                }
-                            )
-
-                            ScreenOverlay.Loading(
-                                isVisible = (foodSortUpdateState is UiState.Loading ||
-                                        foodsUiState is UiState.Loading) &&
-                                        foodsUiState is UiState.Success
+                    PullToRefreshBox(
+                        isRefreshing = isRefreshing,
+                        state = pullToRefreshState,
+                        onRefresh = viewModel::refreshFoodSelectionScreenData,
+                        indicator = {
+                            Loading.RefreshByPullIndicator(
+                                isRefreshing = isRefreshing,
+                                state = pullToRefreshState,
+                                modifier = Modifier.align(Alignment.TopCenter)
                             )
                         }
-                    }
-
-                    if (foodSortUiState is UiState.Success) {
-                        DarkOverlay(
-                            isVisible = moreOptionsState.isVisible,
-                            onClick = moreOptionsState::hide
-                        )
-
-                        val options = enumValues<FoodSort>().map { sortType ->
-                            val isSelected = sortType.name.equals(selectedFoodSortCopy, true)
-                            val tint = if (isSelected) WhiteFont else null
-
-                            Structure.MoreOptionsConfig(
-                                text = sortType.name.lowercase().snakeToReadableText(),
-                                backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else null,
-                                icon = sortType.icon,
-                                iconTint = tint,
-                                iconModifier = Modifier.size(16.dp),
-                                textColor = tint,
-                                onClick = {
-                                    moreOptionsState.hide()
-                                    viewModel.updateFoodSort(foodSort = sortType.name.lowercase())
-                                }
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            ErrorBannerAnimated(
+                                isVisible = foodSortErrorMessage != null,
+                                text = foodSortErrorMessage ?: ""
                             )
-                        }.toTypedArray()
 
-                        Structure.MoreOptions(
-                            state = moreOptionsState,
-                            options = options,
-                            modifier = Modifier.align(Alignment.TopEnd)
-                        )
+                            Box {
+                                Foods(
+                                    state = foodsUiState,
+                                    onFoodClick = { food ->
+                                        viewModel.setSelectedFoodToLog(food)
+                                        onNavigateToSelectedFood()
+                                    }
+                                )
+
+                                ScreenOverlay.Loading(
+                                    isVisible = (foodSortUpdateState is UiState.Loading ||
+                                            foodsUiState is UiState.Loading) &&
+                                            foodsUiState is UiState.Success
+                                )
+                            }
+                        }
+
+                        if (foodSortUiState is UiState.Success) {
+                            DarkOverlay(
+                                isVisible = moreOptionsState.isVisible,
+                                onClick = moreOptionsState::hide
+                            )
+
+                            val options = enumValues<FoodSort>().map { sortType ->
+                                val isSelected = sortType.name.equals(selectedFoodSortCopy, true)
+                                val tint = if (isSelected) WhiteFont else null
+
+                                Structure.MoreOptionsConfig(
+                                    text = sortType.name.lowercase().snakeToReadableText(),
+                                    backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else null,
+                                    icon = sortType.icon,
+                                    iconTint = tint,
+                                    iconModifier = Modifier.size(16.dp),
+                                    textColor = tint,
+                                    onClick = {
+                                        moreOptionsState.hide()
+                                        viewModel.updateFoodSort(foodSort = sortType.name.lowercase())
+                                    }
+                                )
+                            }.toTypedArray()
+
+                            Structure.MoreOptions(
+                                state = moreOptionsState,
+                                options = options,
+                                modifier = Modifier.align(Alignment.TopEnd)
+                            )
+                        }
                     }
                 }
             }

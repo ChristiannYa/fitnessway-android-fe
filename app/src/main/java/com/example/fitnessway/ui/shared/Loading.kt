@@ -16,11 +16,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
@@ -59,15 +62,17 @@ object Loading {
     @Composable
     fun Composable(
         height: Dp,
-        text: String? = null
+        text: String? = null,
+        areaColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier: Modifier = Modifier
     ) {
         val infiniteTransition = rememberInfiniteTransition(label = "pulse_loading")
         val alpha by infiniteTransition.animateFloat(
-            initialValue = 0.2f,
+            initialValue = 0.1f,
             targetValue = 0.3f,
             animationSpec = infiniteRepeatable(
                 animation = tween(
-                    durationMillis = 800,
+                    durationMillis = 600,
                     easing = FastOutSlowInEasing
                 ),
                 repeatMode = RepeatMode.Reverse
@@ -77,10 +82,10 @@ object Loading {
 
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier
+            modifier = modifier
                 .alpha(alpha)
                 .areaContainer(
-                    areaColor = MaterialTheme.colorScheme.surfaceVariant
+                    areaColor = areaColor
                 )
                 .height(height)
         ) {
@@ -91,5 +96,22 @@ object Loading {
                 )
             }
         }
+    }
+
+    @Composable
+    fun RefreshByPullIndicator(
+        isRefreshing: Boolean,
+        state: PullToRefreshState,
+        containerColor: Color = MaterialTheme.colorScheme.surfaceTint,
+        color: Color = MaterialTheme.colorScheme.primary,
+        modifier: Modifier = Modifier
+    ) {
+        Indicator(
+            isRefreshing = isRefreshing,
+            state = state,
+            containerColor = containerColor,
+            color = color,
+            modifier = modifier
+        )
     }
 }

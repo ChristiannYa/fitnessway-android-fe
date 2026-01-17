@@ -18,8 +18,8 @@ import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.Area
+import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
-import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.combine
@@ -140,9 +140,10 @@ fun ProfileColorsScreen(
                 else -> {}
             }
 
-            NotFoundMessageAnimated(
+            Messages.NotFoundMessageWithRetryAnimated(
                 isVisible = nutrientsState is UiState.Error,
-                message = formatUiErrorMessage(nutrientsState)
+                message = formatUiErrorMessage(nutrientsState),
+                onRetry = viewModel::refreshNutrients
             )
 
         } else NotFoundMessage("User not found")

@@ -57,6 +57,14 @@ class HomeViewModel(
         foodRepo.refreshFoodLogs(date)
     }
 
+    fun refreshFoodSelectionScreenData() {
+        foodRepo.refreshFoods()
+
+        if (this.user != null && this.user.isPremium) {
+            foodRepo.refreshFoodSort()
+        }
+    }
+
     fun getNutrientIntakes() {
         val date = managers.date.getApiFormattedDate()
         nutrientRepo.loadNutrientIntakes(date)

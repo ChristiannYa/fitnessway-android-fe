@@ -15,6 +15,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,7 +30,7 @@ import com.example.fitnessway.data.model.MFood.Enum.ListOption
 import com.example.fitnessway.feature.lists.screen.main.composables.SupplementList
 import com.example.fitnessway.feature.lists.screen.main.composables.ToggleListViewButtons
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
-import com.example.fitnessway.ui.shared.Clickables
+import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.UFood.foodsListWithState
@@ -50,38 +52,56 @@ fun ListsScreen(
         viewModel.getFoods()
     }
 
+    val pullToRefreshState = rememberPullToRefreshState()
+    val pullToRefreshThresholdReached = pullToRefreshState.distanceFraction >= 1f
+    val isRefreshing = pullToRefreshThresholdReached && foodsUiState is UiState.Loading
+
     val view = LocalView.current
 
     Screen {
         Box(modifier = Modifier.fillMaxWidth()) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                stickyHeader {
-                    ToggleListViewButtons(
-                        onToggleSelectedList = {
-                            view.playSoundEffect(SoundEffectConstants.CLICK)
-                            viewModel.setSelectedList(it)
-                        },
-                        selectedOption = selectedList
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                state = pullToRefreshState,
+                onRefresh = viewModel::refreshListsData,
+                indicator = {
+                    Loading.RefreshByPullIndicator(
+                        isRefreshing = isRefreshing,
+                        state = pullToRefreshState,
+                        modifier = Modifier.align(Alignment.TopCenter)
                     )
                 }
-
-                when (selectedList) {
-                    ListOption.Food -> {
-                        foodsListWithState(
-                            state = foodsUiState,
-                            onFoodClick = { food ->
-                                viewModel.setSelectedFood(food)
-                                onViewFoodDetails()
-                            }
+            ) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxHeight()
+                ) {
+                    stickyHeader {
+                        ToggleListViewButtons(
+                            onToggleSelectedList = {
+                                view.playSoundEffect(SoundEffectConstants.CLICK)
+                                viewModel.setSelectedList(it)
+                            },
+                            selectedOption = selectedList
                         )
                     }
 
-                    ListOption.Supplement -> {
-                        item {
-                            SupplementList()
+                    when (selectedList) {
+                        ListOption.Food -> {
+                            foodsListWithState(
+                                state = foodsUiState,
+                                onFoodClick = { food ->
+                                    viewModel.setSelectedFood(food)
+                                    onViewFoodDetails()
+                                },
+                                loadingVerticalSpace = 16.dp
+                            )
+                        }
+
+                        ListOption.Supplement -> {
+                            item {
+                                SupplementList()
+                            }
                         }
                     }
                 }

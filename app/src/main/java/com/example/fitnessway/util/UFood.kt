@@ -34,7 +34,7 @@ import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
-import com.example.fitnessway.ui.shared.Loading.Area
+import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Structure
@@ -225,9 +225,16 @@ object UFood {
         state: UiState<List<FoodInformation>>,
         showsNutrientPreview: Boolean = false,
         onFoodClick: (FoodInformation) -> Unit,
+        loadingVerticalSpace: Dp = 16.dp,
     ) {
         when (state) {
-            is UiState.Loading -> item { Area("Loading foods") }
+            is UiState.Loading -> item {
+                Column(verticalArrangement = Arrangement.spacedBy(loadingVerticalSpace)) {
+                    repeat(12) {
+                        Loading.Composable(height = 32.dp)
+                    }
+                }
+            }
 
             is UiState.Success -> {
                 val foods = state.data

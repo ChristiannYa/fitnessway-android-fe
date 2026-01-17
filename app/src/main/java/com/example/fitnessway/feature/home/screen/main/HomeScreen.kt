@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -34,6 +32,7 @@ import com.example.fitnessway.feature.home.screen.main.composables.OtherNutrient
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.DarkOverlay
+import com.example.fitnessway.ui.shared.Loading.RefreshByPullIndicator
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
@@ -106,12 +105,10 @@ fun HomeScreen(
                     state = pullToRefreshState,
                     modifier = Modifier.fillMaxSize(),
                     indicator = {
-                        Indicator(
-                            modifier = Modifier.align(Alignment.TopCenter),
+                        RefreshByPullIndicator(
                             isRefreshing = isRefreshing,
                             state = pullToRefreshState,
-                            containerColor = MaterialTheme.colorScheme.surfaceTint,
-                            color = MaterialTheme.colorScheme.primary
+                            modifier = Modifier.align(Alignment.TopCenter)
                         )
                     }
                 ) {

@@ -42,9 +42,10 @@ fun FoodDetailsScreen(
     onNavigateToEditionScreen: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
 
-    val userCopy = viewModel.user
+    val user = userFlow
     val selectedFoodCopy = selectedFood
     val foodDeleteState = uiState.foodDeleteState
     val foodFavoriteStatusUpdateState = uiState.foodFavoriteStatusUpdateState
@@ -57,7 +58,7 @@ fun FoodDetailsScreen(
 
     val view = LocalView.current
 
-    if (selectedFoodCopy == null || userCopy == null) {
+    if (selectedFoodCopy == null || user == null) {
         NotFoundScreen(
             onBackClick = onBackClick,
             title = title,
@@ -156,7 +157,7 @@ fun FoodDetailsScreen(
                     FoodInformation(
                         food = selectedFoodCopy,
                         isFoodDeletionSuccess = foodDeleteState is UiState.Success,
-                        user = userCopy
+                        user = user
                     )
                 }
 

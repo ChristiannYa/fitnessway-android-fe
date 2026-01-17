@@ -120,4 +120,8 @@ class NutrientRepositoryImpl(
     override fun updateState(update: (NutrientRepositoryUiState) -> NutrientRepositoryUiState) {
         _uiState.update(update)
     }
+
+    override fun clearRepository() {
+        _uiState.update { NutrientRepositoryUiState() }
+    }
 }

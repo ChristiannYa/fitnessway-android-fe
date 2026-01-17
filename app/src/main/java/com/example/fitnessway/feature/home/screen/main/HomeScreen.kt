@@ -50,11 +50,13 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
-
     val selectedDate by viewModel.selectedDate.collectAsState()
     val areFoodLogsVisible by viewModel.areFoodLogsVisible.collectAsState()
+
+    val user = userFlow
 
     val deleteFoodLogErrMsg = handleTempApiErrorMessage(
         uiState = uiState.foodLogDeleteState,
@@ -95,9 +97,7 @@ fun HomeScreen(
 
     Screen {
 
-        if (viewModel.user != null) {
-            val user = viewModel.user
-
+        if (user != null) {
             Box(modifier = Modifier.fillMaxSize()) {
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,

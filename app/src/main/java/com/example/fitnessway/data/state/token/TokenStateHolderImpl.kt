@@ -51,7 +51,8 @@ class TokenStateHolderImpl(
         // Persist it to DataStore
         scope.launch {
             dataStore.updateData { currentTokens ->
-                currentTokens.toBuilder()
+                currentTokens
+                    .toBuilder()
                     .setAccessToken(accessToken)
                     .setRefreshToken(refreshToken)
                     .build()

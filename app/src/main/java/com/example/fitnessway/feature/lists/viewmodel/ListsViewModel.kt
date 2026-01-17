@@ -10,6 +10,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
+import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
@@ -23,8 +24,11 @@ import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -44,7 +48,13 @@ class ListsViewModel(
     val foodRepoUiState = foodRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
 
-    val user = userStateHolder.userState.value.user
+    val userFlow: StateFlow<MUser.Model.User?> = userStateHolder.userState
+        .map { it.user }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 
     fun refreshListsData() {
         foodRepo.refreshFoods()

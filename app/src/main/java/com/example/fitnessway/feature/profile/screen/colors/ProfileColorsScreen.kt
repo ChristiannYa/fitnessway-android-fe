@@ -35,11 +35,12 @@ fun ProfileColorsScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val colorsEditionFormState by viewModel.colorsEditionFormState.collectAsState()
     val isColorsFormValid by viewModel.isColorsFormValid.collectAsState()
 
-    val user = viewModel.user
+    val user = userFlow
     val nutrientsState = nutrientRepoUiState.nutrientsUiState
     val nutrientColorsSetUiState = uiState.nutrientColorsSetUiState
 

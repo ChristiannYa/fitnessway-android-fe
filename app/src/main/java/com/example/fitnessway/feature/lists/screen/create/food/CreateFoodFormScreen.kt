@@ -57,10 +57,12 @@ fun CreateFoodFormScreen(
     onBackClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val currentStep by viewModel.currentStep.collectAsState()
     val foodCreationFormState by viewModel.foodCreationFormState.collectAsState()
 
+    val user = userFlow
     val foodAddState = uiState.foodAddState
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
@@ -117,7 +119,7 @@ fun CreateFoodFormScreen(
         }
     }
 
-    if (viewModel.user != null) {
+    if (user != null) {
         Screen(
             header = {
                 Header(
@@ -175,7 +177,7 @@ fun CreateFoodFormScreen(
                                         .fillMaxHeight()
                                         .imePadding(),
                                 ) {
-                                    val isUserPremium = viewModel.user.isPremium
+                                    val isUserPremium = user.isPremium
                                     val nutrients = nutrientsUiState.data
 
                                     val foodBaseFields = listOf(

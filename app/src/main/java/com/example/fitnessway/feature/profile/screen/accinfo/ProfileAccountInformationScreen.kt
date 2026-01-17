@@ -7,13 +7,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import org.koin.androidx.compose.koinViewModel
@@ -23,7 +25,9 @@ fun ProfileAccountInformationScreen(
     onBackClick: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
-    val user = viewModel.user
+    val userFlow by viewModel.userFlow.collectAsState()
+
+    val user = userFlow
 
     Screen(
         header = {
@@ -32,26 +36,20 @@ fun ProfileAccountInformationScreen(
                 title = "Account"
             )
         },
+    ) {
+        if (user != null) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.areaContainer(size = AreaContainerSize.SMALL),
+            ) {
+                val userInformation = getUserAccountInformation(user)
 
-        content = {
-            if (user == null) {
-                NotFoundMessage(message = "No user found")
-            } else {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier
-                        .areaContainer(size = AreaContainerSize.SMALL),
-                    content = {
-                        val userInformation = getUserAccountInformation(user)
-
-                        userInformation.forEach {
-                            ProfileAccInfoRow(key = it.first, value = it.second)
-                        }
-                    }
-                )
+                userInformation.forEach {
+                    ProfileAccInfoRow(key = it.first, value = it.second)
+                }
             }
-        }
-    )
+        } else NotFoundScreen(message = "No user found")
+    }
 }
 
 @Composable

@@ -33,10 +33,11 @@ fun FoodLogDetailsScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val selectedFoodLog by viewModel.selectedFoodLog.collectAsState()
     val foodLogDetailsFormState by viewModel.foodLogEditionFormState.collectAsState()
 
-    val user = viewModel.user
+    val user = userFlow
     val foodLog = selectedFoodLog
     val foodLogUpdateState = uiState.foodLogUpdateState
     val focusManager = LocalFocusManager.current

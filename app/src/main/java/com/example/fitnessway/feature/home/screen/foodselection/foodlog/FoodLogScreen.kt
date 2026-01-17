@@ -48,12 +48,13 @@ fun FoodLogScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val foodLogFormState by viewModel.foodLogFormState.collectAsState()
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
     val selectedFoodToLog by viewModel.selectedFoodToLog.collectAsState()
 
+    val user = userFlow
     val foodLogAddState = uiState.foodLogAddState
-    val user = viewModel.user
     val time = viewModel.getCurrentTime()
 
     DisposableEffect(Unit) {

@@ -1,8 +1,9 @@
 package com.example.fitnessway.data.repository.auth
 
 import com.example.fitnessway.data.model.MAuth.Api.Req.LoginRequest
-import com.example.fitnessway.data.model.MAuth.Api.Req.RegisterRequest
 import com.example.fitnessway.data.model.MAuth.Api.Req.LogoutRequest
+import com.example.fitnessway.data.model.MAuth.Api.Req.RegisterRequest
+import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.RetrofitService.IAuthorized
 import com.example.fitnessway.data.network.RetrofitService.IUnauthorized
 import com.example.fitnessway.data.state.token.ITokensStateHolder
@@ -18,7 +19,8 @@ class AuthRepositoryImpl(
     private val authApiService: IUnauthorized,
     private val authApiAuthorizedService: IAuthorized,
     private val tokensStateHolder: ITokensStateHolder,
-    private val userStateHolder: IUserStateHolder
+    private val userStateHolder: IUserStateHolder,
+    private val cacheManager: CacheManager
 ) : IAuthRepository {
     override suspend fun register(
         name: String,
@@ -41,9 +43,7 @@ class AuthRepositoryImpl(
             )
 
             when {
-                response.code() == 409 -> {
-                    emit(UiState.Error("This email is already in use"))
-                }
+                response.code() == 409 -> emit(UiState.Error("This email is already in use"))
 
                 response.isSuccessful -> {
                     val body = response.body()
@@ -54,14 +54,12 @@ class AuthRepositoryImpl(
                             accessToken = body.data.accessToken
                         )
                         emit(UiState.Success(Unit))
-                    } else {
-                        emit(UiState.Error("Registration failed"))
-                    }
+                    } else emit(UiState.Error("Registration failed"))
                 }
 
                 else -> {
                     val errMsg = response.errorBody()?.string()
-                    logcat(errMsg.toString())
+                    logcat("registration failed: $errMsg")
                     emit(UiState.Error("Registration failed"))
                 }
             }
@@ -88,26 +86,30 @@ class AuthRepositoryImpl(
 
                 if (body != null && body.data != null) {
                     tokensStateHolder.setTokens(
-                        // Success is only true when the api returns both tokens, so we are
-                        // use assert operators because we are sure that both tokens are present
                         refreshToken = body.data.refreshToken,
                         accessToken = body.data.accessToken
                     )
-                    emit(
-                        UiState.Success(data = Unit)
-                    )
+                    emit(UiState.Success(data = Unit))
                 } else {
                     // Handle edge cases when there is a dependency error e.g., Retrofit bug,
                     // Serialization fail
                     emit(UiState.Error("Login failed"))
                 }
             } else { // HTTP 400/401/500 error codes
-                val errMsg = response.message()
-                if (errMsg == "invalid email or password") {
-                    emit(UiState.Error(errMsg))
-                } else {
-                    emit(UiState.Error("Login failed"))
+                val responseCode = response.code()
+
+                if (responseCode != 400 && responseCode != 401) {
+                    logcat("login error: ${response.message()}")
                 }
+
+                val errorMessage = when (responseCode) {
+                    400 -> "Bad request"
+                    401 -> "Invalid email or password"
+                    500 -> "Server error"
+                    else -> "Login failed"
+                }
+
+                emit(UiState.Error(errorMessage))
             }
         } catch (e: Exception) {
             // Network errors
@@ -123,11 +125,8 @@ class AuthRepositoryImpl(
         val refreshToken = tokensStateHolder.tokensState.value.refreshToken
 
         if (refreshToken == null) {
-            tokensStateHolder.clearTokens()
-            userStateHolder.clearUser()
             emit(UiState.Success(Unit))
-            // complete `flow {` lambda above
-            // The code below this block won't be called
+            clearCachedData()
             return@flow
         }
 
@@ -140,29 +139,27 @@ class AuthRepositoryImpl(
                 val body = response.body()
 
                 if (body?.success == true) {
-                    hardLogout()
                     emit(UiState.Success(Unit))
+                    clearCachedData()
                 } else {
                     // Still clear auth even if API returns an error
-                    hardLogout()
-                    emit(UiState.Error("Logout failed"))
+                    clearCachedData()
                 }
             } else {
                 // Still clear auth even on HTTP error
                 logcat(response.message())
-                hardLogout()
-                emit(UiState.Error("Logout failed"))
+                clearCachedData()
             }
         } catch (e: Exception) {
             logcat("logout exception: ${e.message}")
             // Still clear auth even on network error
-            hardLogout()
-            emit(UiState.Error("Logout network error"))
+            clearCachedData()
         }
     }.flowOn(Dispatchers.IO)
 
-    private val hardLogout = {
+    private val clearCachedData = {
         tokensStateHolder.clearTokens()
         userStateHolder.clearUser()
+        cacheManager.evictAll()
     }
 }

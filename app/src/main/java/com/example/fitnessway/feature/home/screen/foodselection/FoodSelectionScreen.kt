@@ -51,11 +51,12 @@ fun FoodSelectionScreen(
     onNavigateToSelectedFood: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val selectedFoodSort by viewModel.selectedFoodSort.collectAsState()
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
 
-    val user = viewModel.user
+    val user = userFlow
     val foodsUiState = foodRepoUiState.foodsUiState
     val foodSortUiState = foodRepoUiState.foodSortUiState
     val foodSortUpdateState = uiState.foodSortUpdateState
@@ -63,9 +64,7 @@ fun FoodSelectionScreen(
     LaunchedEffect(Unit) {
         viewModel.getFoods()
 
-        if (user?.isPremium == true) {
-            viewModel.getFoodSort()
-        }
+        user?.let { if (it.isPremium) viewModel.getFoodSort() }
     }
 
     LaunchedEffect(foodSortUiState) {

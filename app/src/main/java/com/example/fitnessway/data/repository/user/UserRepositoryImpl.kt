@@ -13,7 +13,7 @@ class UserRepositoryImpl(
 
     override suspend fun getUser(): Flow<UiState<User>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.getUser() },
+            apiCall = apiService::getUser,
             extractData = { it.user },
             errMsg = "Failed to get user data"
         )

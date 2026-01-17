@@ -34,11 +34,12 @@ fun FoodEditionScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
     val deletedNutrients by viewModel.deletedNutrients.collectAsState()
 
-    val user = viewModel.user
+    val user = userFlow
     val foodUpdateState = uiState.foodUpdateState
 
     val foodUpdateErrorMessage = handleTempApiErrorMessage(

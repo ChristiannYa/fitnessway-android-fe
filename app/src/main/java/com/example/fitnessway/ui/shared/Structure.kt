@@ -108,17 +108,19 @@ object Structure {
 
     @Composable
     fun NotFoundScreen(
-        onBackClick: () -> Unit,
+        onBackClick: (() -> Unit)? = null,
         title: String? = null,
         message: String
     ) {
         Screen(
-            header = {
-                Header(
-                    onBackClick = onBackClick,
-                    title = title
-                )
-            }
+            header = if (onBackClick != null) {
+                {
+                    Header(
+                        onBackClick = onBackClick,
+                        title = title
+                    )
+                }
+            } else null
         ) { NotFoundMessage(message) }
     }
 

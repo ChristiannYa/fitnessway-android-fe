@@ -21,4 +21,6 @@ interface INutrientRepository {
     fun setNutrientColors(request: NutrientColorsPostRequest): Flow<UiState<List<NutrientIdWithColor>>>
 
     fun updateState(update: (NutrientRepositoryUiState) -> NutrientRepositoryUiState)
+
+    fun clearRepository()
 }

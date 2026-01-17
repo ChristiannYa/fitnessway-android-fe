@@ -9,8 +9,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,8 +26,6 @@ fun ProfileSettingsScreen(
     onBackClick: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     Screen(
         header = {
             Header(
@@ -37,33 +33,29 @@ fun ProfileSettingsScreen(
                 title = "Settings"
             )
         },
+    ) {
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("")
 
-        content = {
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween,
-                content = {
-                    Text("")
-
-                    TextButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { viewModel.logout() },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = ImperialRed,
-                            contentColor = WhiteFont
-                        ),
-                        content = {
-                            Text(
-                                text = "Log out",
-                                fontFamily = robotoSerifFamily,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    )
-                }
-            )
+            TextButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = viewModel::logout,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ImperialRed,
+                    contentColor = WhiteFont
+                )
+            ) {
+                Text(
+                    text = "Log out",
+                    fontFamily = robotoSerifFamily,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
-    )
+    }
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)

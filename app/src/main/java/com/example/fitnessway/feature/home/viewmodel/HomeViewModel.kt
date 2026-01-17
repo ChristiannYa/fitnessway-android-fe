@@ -7,6 +7,7 @@ import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
+import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
@@ -23,8 +24,11 @@ import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UFood.mapFoodLogs
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -38,7 +42,13 @@ class HomeViewModel(
     IDateManager by managers.date,
     IUiManager by managers.ui {
 
-    val user = appStateStore.userStateHolder.userState.value.user
+    val userFlow: StateFlow<MUser.Model.User?> = appStateStore.userStateHolder.userState
+        .map { it.user }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
@@ -60,8 +70,10 @@ class HomeViewModel(
     fun refreshFoodSelectionScreenData() {
         foodRepo.refreshFoods()
 
-        if (this.user != null && this.user.isPremium) {
-            foodRepo.refreshFoodSort()
+        userFlow.value?.let { user ->
+            if (user.isPremium) {
+                foodRepo.refreshFoodSort()
+            }
         }
     }
 
@@ -84,7 +96,7 @@ class HomeViewModel(
     }
 
     fun addFoodLog() {
-        val user = this.user ?: return
+        val user = this.userFlow.value ?: return
         val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
         val selectedFoodId = managers.foodLog.selectedFoodToLog.value?.information?.id ?: return
         val category = managers.foodLog.foodLogCategory.value ?: return

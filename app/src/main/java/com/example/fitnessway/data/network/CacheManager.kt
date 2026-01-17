@@ -24,19 +24,18 @@ class CacheManager(private val cache: Cache) {
             // We will just log the error instead of showing it in the UI because a cache error
             // is independent of the app's functionality.
             logcat(
-                message = "evictUrl -> Failed to evict cache for $url: ${e.message}",
+                message = "CacheManager.evictUrl, failed to evict cache for $url: ${e.message}",
                 level = Constants.LogLevel.ERROR
             )
         }
     }
 
-    // @TODO: This should be used for clearing the cached data when logging out
-    fun clearAll() {
+    fun evictAll() {
         try {
             cache.evictAll()
         } catch (e: Exception) {
             logcat(
-                message = "clearAll -> Failed to clear all cache: ${e.message}",
+                message = "CacheManager.evictAll, failed to clear all cache: ${e.message}",
                 level = Constants.LogLevel.ERROR
             )
         }

@@ -2,6 +2,7 @@ package com.example.fitnessway.di.init
 
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import com.example.fitnessway.data.state.user.IUserStateHolder
@@ -13,13 +14,12 @@ import kotlinx.coroutines.launch
 class AppInitializer(
     private val tokensStateHolder: ITokensStateHolder,
     private val userStateHolder: IUserStateHolder,
-    private val userRepo: IUserRepository
+    private val userRepo: IUserRepository,
+    private val cacheManager: CacheManager,
 ) {
     fun initialize() {
         ProcessLifecycleOwner.get().lifecycleScope.launch {
             tokensStateHolder.tokensState.collect { tokensState ->
-                logcat(message = tokensState.accessToken.toString())
-
                 val userState = userStateHolder.userState.value
 
                 // Fetch user if authenticated but user is not loaded
@@ -37,19 +37,21 @@ class AppInitializer(
                                     message = "error collecting user state",
                                     level = Constants.LogLevel.ERROR
                                 )
-                                tokensStateHolder.clearTokens()
-                                userStateHolder.clearUser()
+                                clearCachedData()
                             }
                         }
                     }
                 }
 
-                // Clear user if not authenticated
-                if (!tokensState.isAuthenticated && userState.user != null) {
-                    tokensStateHolder.clearTokens()
-                    userStateHolder.clearUser()
-                }
+                // Clear user data if not authenticated
+                if (!tokensState.isAuthenticated && userState.user != null) clearCachedData
             }
         }
+    }
+
+    val clearCachedData = {
+        tokensStateHolder.clearTokens()
+        userStateHolder.clearUser()
+        cacheManager.evictAll()
     }
 }

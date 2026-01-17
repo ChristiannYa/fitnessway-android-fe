@@ -252,4 +252,8 @@ class FoodRepositoryImpl(
     override fun updateState(update: (FoodRepositoryUiState) -> FoodRepositoryUiState) {
         _uiState.update(update)
     }
+
+    override fun clearRepository() {
+        _uiState.update { FoodRepositoryUiState() }
+    }
 }

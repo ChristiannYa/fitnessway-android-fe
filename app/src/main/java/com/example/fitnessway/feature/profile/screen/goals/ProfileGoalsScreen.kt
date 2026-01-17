@@ -40,11 +40,12 @@ fun ProfileGoalsScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val goalsEditionFormState by viewModel.goalsEditionFormState.collectAsState()
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
 
-    val user = viewModel.user
+    val user = userFlow
     val nutrientsState = nutrientRepoUiState.nutrientsUiState
     val nutrientGoalsSetUiState = uiState.nutrientGoalsSetUiState
 

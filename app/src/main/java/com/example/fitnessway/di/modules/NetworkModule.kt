@@ -4,12 +4,12 @@ import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.interceptors.AuthInterceptor
 import com.example.fitnessway.data.network.interceptors.CacheInterceptor
-import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
-import com.example.fitnessway.data.network.auth.IAuthApiService
+import com.example.fitnessway.data.network.RetrofitService.IAuthorized
+import com.example.fitnessway.data.network.RetrofitService.IUnauthorized
 import com.example.fitnessway.data.network.TokenAuthenticator
-import com.example.fitnessway.data.network.food.IFoodApiService
-import com.example.fitnessway.data.network.nutrient.INutrientApiService
-import com.example.fitnessway.data.network.user.IUserApiService
+import com.example.fitnessway.data.network.RetrofitService.IFoodApiService
+import com.example.fitnessway.data.network.RetrofitService.INutrientApiService
+import com.example.fitnessway.data.network.RetrofitService.IUser
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
 import okhttp3.MediaType.Companion.toMediaType
@@ -99,24 +99,24 @@ val networkModule = module {
     }
 
     // For welcoming users to either login or register
-    single<IAuthApiService> {
+    single<IUnauthorized> {
         get<Retrofit>(
             named(AUTH_NO)
-        ).create(IAuthApiService::class.java)
+        ).create(IUnauthorized::class.java)
     }
 
     // For users who are already logged in
-    single<IAuthApiAuthorizedService> {
+    single<IAuthorized> {
         get<Retrofit>(
             named(AUTH_YES)
-        ).create(IAuthApiAuthorizedService::class.java)
+        ).create(IAuthorized::class.java)
     }
 
     // User related
-    single<IUserApiService> {
+    single<IUser> {
         get<Retrofit>(
             named(AUTH_YES)
-        ).create(IUserApiService::class.java)
+        ).create(IUser::class.java)
     }
 
     // Nutrient related

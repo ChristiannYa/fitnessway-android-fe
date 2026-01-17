@@ -2,12 +2,12 @@ package com.example.fitnessway.data.repository.user
 
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.data.network.HttpClient
-import com.example.fitnessway.data.network.user.IUserApiService
+import com.example.fitnessway.data.network.RetrofitService.IUser
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 
 class UserRepositoryImpl(
-    private val apiService: IUserApiService,
+    private val apiService: IUser,
     private val httpClient: HttpClient
 ) : IUserRepository {
 

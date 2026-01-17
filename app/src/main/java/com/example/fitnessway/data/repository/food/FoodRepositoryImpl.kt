@@ -12,7 +12,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient
-import com.example.fitnessway.data.network.food.IFoodApiService
+import com.example.fitnessway.data.network.RetrofitService.IFoodApiService
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

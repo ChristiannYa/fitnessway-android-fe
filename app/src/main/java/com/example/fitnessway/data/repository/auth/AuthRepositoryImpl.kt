@@ -3,8 +3,8 @@ package com.example.fitnessway.data.repository.auth
 import com.example.fitnessway.data.model.MAuth.Api.Req.LoginRequest
 import com.example.fitnessway.data.model.MAuth.Api.Req.RegisterRequest
 import com.example.fitnessway.data.model.MAuth.Api.Req.LogoutRequest
-import com.example.fitnessway.data.network.auth.IAuthApiAuthorizedService
-import com.example.fitnessway.data.network.auth.IAuthApiService
+import com.example.fitnessway.data.network.RetrofitService.IAuthorized
+import com.example.fitnessway.data.network.RetrofitService.IUnauthorized
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.util.Formatters.logcat
@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class AuthRepositoryImpl(
-    private val authApiService: IAuthApiService,
-    private val authApiAuthorizedService: IAuthApiAuthorizedService,
+    private val authApiService: IUnauthorized,
+    private val authApiAuthorizedService: IAuthorized,
     private val tokensStateHolder: ITokensStateHolder,
     private val userStateHolder: IUserStateHolder
 ) : IAuthRepository {

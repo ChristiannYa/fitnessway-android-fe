@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
@@ -28,6 +32,7 @@ import com.example.fitnessway.ui.shared.Banners.SuccessBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
@@ -105,6 +110,15 @@ fun FoodLogScreen(
                         isOnBackEnabled = foodLogAddState !is UiState.Loading,
                         title = "Log Submission"
                     ) {
+                        if (selectedFoodToLogCopy.metadata.isFavorite) {
+                            Structure.AppIconDynamic(
+                                source = Structure.AppIconButtonSource.Vector(
+                                    imageVector = Icons.Default.Star
+                                ),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
                         AppLabel(
                             text = foodLogCategoryString,
                             size = Ui.LabelSize.MEDIUM,

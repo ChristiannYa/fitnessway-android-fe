@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -56,6 +56,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
+import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
@@ -98,7 +99,11 @@ fun FoodLogs(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .areaContainer(
-                    areaColor = MaterialTheme.colorScheme.surfaceVariant
+                    areaColor = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = RoundedCornerShape(
+                        topStart = 32.dp,
+                        topEnd = 32.dp
+                    )
                 )
                 .fillMaxHeight()
         ) {
@@ -187,6 +192,7 @@ private fun FoodLogCategory(
         modifier = Modifier
             .areaContainer(
                 size = AreaContainerSize.MEDIUM,
+                shape = RoundedCornerShape(28.dp),
                 areaColor = getFoodLogsContainerColor()
             )
             .graphicsLayer(clip = true),
@@ -235,8 +241,6 @@ private fun FoodLog(
     onRemoveFoodLog: (FoodLogData) -> Unit,
     isDeletionError: Boolean
 ) {
-    val food = foodLog.food.information
-
     val swipeToRemoveLogState = rememberSwipeToDismissBoxState(
         initialValue = SwipeToDismissBoxValue.Settled
     )
@@ -266,11 +270,7 @@ private fun FoodLog(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(
-                                color = lerp(
-                                    start = getFoodLogsContainerColor(),
-                                    stop = MaterialTheme.colorScheme.errorContainer,
-                                    fraction = swipeToRemoveLogState.progress
-                                ),
+                                color = MaterialTheme.colorScheme.errorContainer,
                                 shape = RoundedCornerShape(16.dp)
                             )
                             .wrapContentSize(Alignment.CenterEnd)
@@ -281,98 +281,108 @@ private fun FoodLog(
 
                 else -> {}
             }
-        },
-        content = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = getFoodLogsContainerColor(),
+        }
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = getFoodLogsContainerColor(),
+                )
+                .padding(
+                    end = 2.dp,
+                    start = 2.dp
+                )
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { onViewFoodLogDetails(foodLog) },
+                )
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                val foodBrandColor = getFoodBrandColor()
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = foodLog.food.information.name,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, false)
                     )
-                    .padding(
-                        end = 2.dp,
-                        start = 2.dp
-                    )
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { onViewFoodLogDetails(foodLog) },
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
-                content = {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+
+                    if (foodLog.foodStatus == FoodLogFoodStatus.PRESENT &&
+                        foodLog.food.metadata.isFavorite
                     ) {
-                        val foodBrandColor = getFoodBrandColor()
-
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            content = {
-                                Text(
-                                    text = food.name,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
-                                val dotInfoColor = when (foodLog.foodStatus) {
-                                    FoodLogFoodStatus.DELETED -> OrangeWarning
-                                    FoodLogFoodStatus.UPDATED -> MaterialTheme.colorScheme.secondary
-                                    else -> Color.Transparent
-                                }
-
-                                if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(5.dp)
-                                            .background(
-                                                color = dotInfoColor,
-                                                shape = CircleShape
-                                            )
-                                    )
-                                }
-                            }
-                        )
-
-                        Text(
-                            text = getFoodBrandText(food.brand),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = foodBrandColor
-                        )
-
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontFamily = FontFamily.Default
-                                    ),
-                                    block = {
-                                        append(
-                                            text = doubleFormatter(foodLog.servings, 3)
-                                        )
-                                    }
-                                )
-                                append(
-                                    text = " Servings"
-                                )
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = foodBrandColor
+                        Structure.AppIconDynamic(
+                            source = Structure.AppIconButtonSource.Vector(
+                                imageVector = Icons.Default.Star
+                            ),
+                            modifier = Modifier.size(12.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    AppLabel(
-                        text = foodLog.time,
-                        size = Ui.LabelSize.SMALL
-                    )
+                    if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
+                        Box(
+                            modifier = Modifier
+                                .size(5.dp)
+                                .background(
+                                    color = when (foodLog.foodStatus) {
+                                        FoodLogFoodStatus.DELETED -> OrangeWarning
+                                        FoodLogFoodStatus.UPDATED -> MaterialTheme.colorScheme.onSurfaceVariant
+                                        else -> Color.Transparent
+                                    },
+                                    shape = CircleShape
+                                )
+                        )
+                    }
                 }
+
+                Text(
+                    text = getFoodBrandText(foodLog.food.information.brand),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = foodBrandColor
+                )
+
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontFamily = FontFamily.Default
+                            ),
+                            block = {
+                                append(
+                                    text = doubleFormatter(foodLog.servings, 3)
+                                )
+                            }
+                        )
+                        append(
+                            text = run {
+                                " " + if (foodLog.servings == 1.0) "serving" else "servings"
+                            }
+                        )
+                    },
+                    style = MaterialTheme.typography.labelLarge,
+                    color = foodBrandColor
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            AppLabel(
+                text = foodLog.time,
+                textStyle = MaterialTheme.typography.labelSmall,
+                size = Ui.LabelSize.XS,
             )
         }
-    )
+    }
 }

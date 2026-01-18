@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -12,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
@@ -19,6 +23,7 @@ import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
@@ -74,14 +79,24 @@ fun FoodLogDetailsScreen(
                         isOnBackEnabled = !formState.isEditing,
                         title = "Log Details"
                     ) {
+                        if (foodLog.foodStatus == FoodLogFoodStatus.PRESENT &&
+                            foodLog.food.metadata.isFavorite) {
+                            Structure.AppIconDynamic(
+                                source = Structure.AppIconButtonSource.Vector(
+                                    imageVector = Icons.Default.Star
+                                ),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
                         AppLabel(
                             text = foodLog.category.replaceFirstChar { it.uppercase() },
-                            size = Ui.LabelSize.MEDIUM
+                            size = Ui.LabelSize.SMALL
                         )
 
                         AppLabel(
                             text = foodLog.time,
-                            size = Ui.LabelSize.MEDIUM
+                            size = Ui.LabelSize.SMALL
                         )
 
                         Clickables.HeaderDoneButton(
@@ -138,9 +153,7 @@ fun FoodLogDetailsScreen(
                             )
                         }
                     }
-                } else {
-                    NotFoundMessage("User not found")
-                }
+                } else NotFoundMessage("User not found")
             }
         }
     }

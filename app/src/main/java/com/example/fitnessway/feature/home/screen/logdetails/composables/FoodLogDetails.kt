@@ -52,7 +52,7 @@ fun FoodLogDetails(
         content = {
             val (foodStatusMsg, foodStatusAccent) = when (foodLog.foodStatus) {
                 FoodLogFoodStatus.DELETED -> deletedFoodMessage to OrangeWarning
-                FoodLogFoodStatus.UPDATED -> updatedFoodMessage to MaterialTheme.colorScheme.secondary
+                FoodLogFoodStatus.UPDATED -> updatedFoodMessage to MaterialTheme.colorScheme.onSurfaceVariant
                 else -> "" to MaterialTheme.colorScheme.onSurfaceVariant
             }
 

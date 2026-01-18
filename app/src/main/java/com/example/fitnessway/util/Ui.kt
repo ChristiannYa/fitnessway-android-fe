@@ -34,9 +34,10 @@ object Ui {
         val paddingX: Dp,
         val paddingY: Dp
     ) {
-        LARGE(60, 14.dp, 10.dp),
+        LARGE(50, 14.dp, 10.dp),
         MEDIUM(50, 12.dp, 8.dp),
-        SMALL(40, 10.dp, 6.dp)
+        SMALL(40, 10.dp, 8.dp),
+        XS(40, 8.dp, 6.dp)
     }
 
     object Measurements {
@@ -46,7 +47,7 @@ object Ui {
         val LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH = 2.dp
         val LOADING_CIRCLE_IN_SCREEN_SIZE = 32.dp
         val LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH = 3.dp
-        val UPWARDS_SLIDEABLE_HEIGHT_SMALL = 460.dp
+        val UPWARDS_SLIDEABLE_HEIGHT_SMALL = 480.dp
     }
 
     object InputUi {

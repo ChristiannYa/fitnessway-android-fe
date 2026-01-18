@@ -60,6 +60,16 @@ fun FoodLogDetails(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
+                    if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
+                        item {
+                            Text(
+                                text = foodStatusMsg,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = foodStatusAccent
+                            )
+                        }
+                    }
+
                     item {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -126,18 +136,6 @@ fun FoodLogDetails(
                     item {
                         foodComposables.RemainingNutrients()
                     }
-
-                    if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
-                        item {
-                            Text(
-                                text = foodStatusMsg,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = foodStatusAccent
-                            )
-                        }
-                    }
-
-
                 }
             )
 

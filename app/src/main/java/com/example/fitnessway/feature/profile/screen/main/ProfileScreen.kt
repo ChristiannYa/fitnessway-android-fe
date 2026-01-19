@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.FitnessCenter
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -40,8 +41,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.feature.profile.screen.main.composables.UpgradePromptDialog
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
@@ -147,33 +146,30 @@ fun ProfileScreen(
                             verticalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier.clip(RoundedCornerShape(16.dp)),
                         ) {
-                            ProfileScreenMainButton(
-                                text = "My Goals",
-                                imageVector = Icons.Outlined.FitnessCenter,
-                                onClick = {
-                                    if (nutrientsUiState is UiState.Success) {
+                            if (nutrientsUiState is UiState.Success) {
+                                ProfileScreenMainButton(
+                                    text = "My Goals",
+                                    imageVector = Icons.Outlined.FitnessCenter,
+                                    onClick = {
                                         viewModel.initNutrientGoalsForm(nutrientsUiState.data)
                                         onNavigateToGoals()
-                                    }
-                                },
-                                nutrientsUiState = nutrientsUiState,
-                                isButtonPremium = false,
-                                isUserPremium = user.isPremium,
-                            )
+                                    },
+                                    isButtonPremium = false,
+                                    isUserPremium = user.isPremium,
+                                )
 
-                            ProfileScreenMainButton(
-                                text = "Color Palette",
-                                imageVector = Icons.Outlined.FitnessCenter,
-                                onClick = {
-                                    if (nutrientsUiState is UiState.Success) {
+                                ProfileScreenMainButton(
+                                    text = "Color Palette",
+                                    imageVector = Icons.Outlined.Palette,
+                                    onClick = {
                                         viewModel.initNutrientColorsForm(nutrientsUiState.data)
                                         onNavigateToColors()
-                                    }
-                                },
-                                nutrientsUiState = nutrientsUiState,
-                                isButtonPremium = false,
-                                isUserPremium = user.isPremium
-                            )
+                                    },
+                                    isButtonPremium = false,
+                                    isUserPremium = user.isPremium
+                                )
+
+                            }
 
                             ProfileScreenMainButton(
                                 text = "Account",
@@ -209,67 +205,58 @@ private fun ProfileScreenMainButton(
     text: String,
     imageVector: ImageVector,
     onClick: () -> Unit,
-    nutrientsUiState: UiState<NutrientsByType<NutrientWithPreferences>>? = null,
     isButtonPremium: Boolean = false,
     isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
 
-    when (nutrientsUiState) {
-        is UiState.Loading -> {}
-
-        is UiState.Error -> {}
-
-        else -> {
-            Box(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        onClick = {
-                            view.playSoundEffect(SoundEffectConstants.CLICK)
-                            onClick()
-                        },
-                    )
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(SCREEN_HORIZONTAL_PADDING.times(1.2f))
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = {
+                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                    onClick()
+                },
+            )
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(SCREEN_HORIZONTAL_PADDING.times(1.2f))
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
-                    ) {
-                        Structure.AppIconDynamic(
-                            source = Structure.AppIconButtonSource.Vector(imageVector),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(18.dp)
-                        )
+                Structure.AppIconDynamic(
+                    source = Structure.AppIconButtonSource.Vector(imageVector),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
+                )
 
-                        Text(
-                            text = text,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontFamily = robotoSerifFamily,
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
+                Text(
+                    text = text,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = robotoSerifFamily,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (isButtonPremium && !isUserPremium) PremiumIcon(size = 18.dp)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isButtonPremium && !isUserPremium) PremiumIcon(size = 18.dp)
 
-                        Structure.AppIconDynamic(
-                            source = Structure.AppIconButtonSource.Vector(Icons.Default.ChevronRight),
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
+                Structure.AppIconDynamic(
+                    source = Structure.AppIconButtonSource.Vector(Icons.Default.ChevronRight),
+                    modifier = Modifier.size(18.dp)
+                )
             }
         }
     }

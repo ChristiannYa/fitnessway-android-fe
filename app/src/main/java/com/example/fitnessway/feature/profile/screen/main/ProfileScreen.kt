@@ -154,7 +154,6 @@ fun ProfileScreen(
                                         viewModel.initNutrientGoalsForm(nutrientsUiState.data)
                                         onNavigateToGoals()
                                     },
-                                    isButtonPremium = false,
                                     isUserPremium = user.isPremium,
                                 )
 
@@ -162,13 +161,14 @@ fun ProfileScreen(
                                     text = "Color Palette",
                                     imageVector = Icons.Outlined.Palette,
                                     onClick = {
-                                        viewModel.initNutrientColorsForm(nutrientsUiState.data)
-                                        onNavigateToColors()
+                                        if (user.isPremium) {
+                                            viewModel.initNutrientColorsForm(nutrientsUiState.data)
+                                            onNavigateToColors()
+                                        } else isUpgradePromptDialogDisplayed = true
                                     },
-                                    isButtonPremium = false,
+                                    isButtonPremium = true,
                                     isUserPremium = user.isPremium
                                 )
-
                             }
 
                             ProfileScreenMainButton(

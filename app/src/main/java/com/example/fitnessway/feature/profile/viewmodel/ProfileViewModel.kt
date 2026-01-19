@@ -157,6 +157,9 @@ class ProfileViewModel(
                     is UiState.Success -> {
                         _uiState.update { it.copy(nutrientColorsSetUiState = state) }
 
+                        // Update UI immediately
+                        managers.colors.initNutrientColorsForm(optimisticNutrientsData)
+
                         nutrientRepo.updateState {
                             it.copy(nutrientsUiState = UiState.Success(optimisticNutrientsData))
                         }

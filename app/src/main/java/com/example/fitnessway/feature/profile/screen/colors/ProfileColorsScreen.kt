@@ -18,10 +18,8 @@ import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading.Area
-import com.example.fitnessway.ui.shared.Messages
-import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.util.Formatters.formatUiErrorMessage
+import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
@@ -41,7 +39,7 @@ fun ProfileColorsScreen(
     val isColorsFormValid by viewModel.isColorsFormValid.collectAsState()
 
     val user = userFlow
-    val nutrientsState = nutrientRepoUiState.nutrientsUiState
+    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val nutrientColorsSetUiState = uiState.nutrientColorsSetUiState
 
     val nutrientColorsUpdateErrMsg = handleTempApiErrorMessage(
@@ -49,10 +47,12 @@ fun ProfileColorsScreen(
         onTimeOut = viewModel::resetNutrientColorsUpdateState
     )
 
-    LaunchedEffect(nutrientsState) {
-        if (nutrientsState is UiState.Success) {
+    val title = "Color Palette"
+
+    LaunchedEffect(nutrientsUiState) {
+        if (nutrientsUiState is UiState.Success) {
             viewModel.initNutrientColorsForm(
-                nutrientsData = nutrientsState.data
+                nutrientsData = nutrientsUiState.data
             )
         }
     }
@@ -61,92 +61,82 @@ fun ProfileColorsScreen(
         viewModel.getNutrients()
     }
 
-    Screen(
-        header = {
-            Header(
-                onBackClick = {
-                    if (nutrientColorsSetUiState is UiState.Error) {
-                        viewModel.resetNutrientColorsUpdateState()
+    if (user != null) {
+        Screen(
+            header = {
+                Header(
+                    onBackClick = {
+                        if (nutrientColorsSetUiState is UiState.Error) {
+                            viewModel.resetNutrientColorsUpdateState()
+                        }
+
+                        onBackClick()
+                    },
+                    isOnBackEnabled = nutrientColorsSetUiState !is UiState.Loading,
+                    title = title,
+                    extraContent = {
+                        if (nutrientsUiState is UiState.Success) {
+                            Clickables.HeaderDoneButton(
+                                onClick = {
+                                    viewModel.setColorsThatChanged()
+                                    viewModel.setNutrientColors()
+                                },
+                                enabled = isColorsFormValid,
+                                isLoading = nutrientColorsSetUiState is UiState.Loading
+                            )
+                        }
                     }
+                )
+            }
+        ) { focusManager ->
+            if (nutrientsUiState is UiState.Success) {
+                val nutrients = nutrientsUiState.data
 
-                    onBackClick()
-                },
-                isOnBackEnabled = nutrientColorsSetUiState !is UiState.Loading,
-                title = "Color Palette",
-                extraContent = {
-                    if (nutrientsState is UiState.Success) {
-                        Clickables.HeaderDoneButton(
-                            onClick = {
-                                viewModel.setColorsThatChanged()
-                                viewModel.setNutrientColors()
-                            },
-                            enabled = isColorsFormValid,
-                            isLoading = nutrientColorsSetUiState is UiState.Loading
-                        )
-                    }
-                }
-            )
-        }
-    ) { focusManager ->
-        if (user != null) {
-            when (nutrientsState) {
-                is UiState.Loading -> Area("Loading nutrient colors")
+                colorsEditionFormState?.let { formState ->
+                    val fieldsProvider = NutrientColorsFieldsProvider(
+                        formState = formState,
+                        isFormSubmitting = nutrientColorsSetUiState is UiState.Loading,
+                        focusManager = focusManager,
+                        onFieldUpdate = { fieldName, value ->
+                            viewModel.updateColorsEditionFormField(
+                                fieldName = fieldName,
+                                input = value
+                            )
+                        }
+                    )
 
-                is UiState.Success -> {
-                    val nutrients = nutrientsState.data
-
-                    colorsEditionFormState?.let { formState ->
-                        val fieldsProvider = NutrientColorsFieldsProvider(
-                            formState = formState,
-                            isFormSubmitting = nutrientColorsSetUiState is UiState.Loading,
-                            focusManager = focusManager,
-                            onFieldUpdate = { fieldName, value ->
-                                viewModel.updateColorsEditionFormField(
-                                    fieldName = fieldName,
-                                    input = value
+                    val fields = NutrientType.entries.associateWith { type ->
+                        filterNutrientsByType(nutrientsUiState.data, type)
+                            .map {
+                                fieldsProvider.nutrientColor(
+                                    nutrientData = it,
+                                    isLastField = nutrients.combine().last() == it
                                 )
                             }
+                    }
+
+                    val scrollState = rememberScrollState()
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.imePadding()
+                    ) {
+                        ErrorBannerAnimated(
+                            isVisible = nutrientColorsUpdateErrMsg != null,
+                            text = nutrientColorsUpdateErrMsg ?: ""
                         )
 
-                        val fields = NutrientType.entries.associateWith { type ->
-                            filterNutrientsByType(nutrientsState.data, type)
-                                .map {
-                                    fieldsProvider.nutrientColor(
-                                        nutrientData = it,
-                                        isLastField = nutrients.combine().last() == it
-                                    )
-                                }
-                        }
-
-                        val scrollState = rememberScrollState()
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.imePadding()
-                        ) {
-                            ErrorBannerAnimated(
-                                isVisible = nutrientColorsUpdateErrMsg != null,
-                                text = nutrientColorsUpdateErrMsg ?: ""
-                            )
-
-                            NutrientColorsContent(
-                                fields = fields,
-                                modifier = Modifier
-                                    .verticalScroll(scrollState)
-                            )
-                        }
-                    } ?: Area()
-                }
-
-                else -> {}
+                        NutrientColorsContent(
+                            fields = fields,
+                            modifier = Modifier.verticalScroll(scrollState)
+                        )
+                    }
+                } ?: Area()
             }
-
-            Messages.NotFoundMessageWithRetryAnimated(
-                isVisible = nutrientsState is UiState.Error,
-                message = formatUiErrorMessage(nutrientsState),
-                onRetry = viewModel::refreshNutrients
-            )
-
-        } else NotFoundMessage("User not found")
-    }
+        }
+    } else NotFoundScreen(
+        onBackClick = onBackClick,
+        message = "User not found",
+        title = title
+    )
 }

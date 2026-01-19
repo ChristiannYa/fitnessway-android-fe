@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -19,11 +18,8 @@ import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
-import com.example.fitnessway.ui.shared.Loading.Area
-import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
-import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.filterOutNonPremiumNutrients
@@ -46,7 +42,7 @@ fun ProfileGoalsScreen(
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
 
     val user = userFlow
-    val nutrientsState = nutrientRepoUiState.nutrientsUiState
+    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val nutrientGoalsSetUiState = uiState.nutrientGoalsSetUiState
 
     val nutrientGoalsSetErrorMessage = handleTempApiErrorMessage(
@@ -54,20 +50,7 @@ fun ProfileGoalsScreen(
         onTimeOut = viewModel::resetNutrientGoalsUpdateState
     )
 
-    LaunchedEffect(nutrientsState) {
-        if (nutrientsState is UiState.Success) {
-            viewModel.initNutrientGoalsForm(
-                nutrientsData = nutrientsState.data
-            )
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.getNutrients()
-    }
-
     val title = "My Goals"
-    val loadingText = "Loading nutrient goals"
     val goalsEditionFormStateCopy = goalsEditionFormState
 
     val scrollState = rememberScrollState()
@@ -86,109 +69,93 @@ fun ProfileGoalsScreen(
                     isOnBackEnabled = nutrientGoalsSetUiState !is UiState.Loading,
                     title = "My Goals"
                 ) {
-                    if (nutrientsState is UiState.Success) {
-                        Clickables.HeaderDoneButton(
-                            onClick = {
-                                viewModel.setGoalsThatChanged()
-                                viewModel.setNutrientGoals()
-                            },
-                            enabled = isGoalsFormValid,
-                            isLoading = nutrientGoalsSetUiState is UiState.Loading
-                        )
-                    }
+                    Clickables.HeaderDoneButton(
+                        onClick = {
+                            viewModel.setGoalsThatChanged()
+                            viewModel.setNutrientGoals()
+                        },
+                        enabled = isGoalsFormValid,
+                        isLoading = nutrientGoalsSetUiState is UiState.Loading
+                    )
                 }
             }
         ) { focusManager ->
-            when (nutrientsState) {
-                is UiState.Loading -> Area(loadingText)
+            if (nutrientsUiState is UiState.Success && goalsEditionFormStateCopy != null) {
+                val nutrients = nutrientsUiState.data
 
-                is UiState.Success -> {
-                    if (goalsEditionFormStateCopy != null) {
-                        val nutrients = nutrientsState.data
+                val goalFields = NutrientType.entries.associateWith { type ->
+                    val nutrientsByType = remember(
+                        key1 = nutrients,
+                        key2 = user.isPremium
+                    ) {
+                        filterNutrientsByType(nutrients, type)
+                            .filterOutPremiumNutrients(user.isPremium)
+                    }
 
-                        val goalFields = NutrientType.entries.associateWith { type ->
-                            val nutrientsByType = remember(
-                                key1 = nutrients,
-                                key2 = user.isPremium
-                            ) {
-                                filterNutrientsByType(nutrients, type)
-                                    .filterOutPremiumNutrients(user.isPremium)
-                            }
-
-                            val fieldsProvider = remember(
-                                goalsEditionFormStateCopy,
-                                nutrientGoalsSetUiState
-                            ) {
-                                NutrientGoalsFieldsProvider(
-                                    formState = goalsEditionFormStateCopy,
-                                    isFormSubmitting = nutrientGoalsSetUiState is UiState.Loading,
-                                    focusManager = focusManager,
-                                    onFieldUpdate = { fieldName, value ->
-                                        viewModel.updateGoalEditionFormField(
-                                            fieldName = fieldName,
-                                            input = value
-                                        )
-                                    }
+                    val fieldsProvider = remember(
+                        goalsEditionFormStateCopy,
+                        nutrientGoalsSetUiState
+                    ) {
+                        NutrientGoalsFieldsProvider(
+                            formState = goalsEditionFormStateCopy,
+                            isFormSubmitting = nutrientGoalsSetUiState is UiState.Loading,
+                            focusManager = focusManager,
+                            onFieldUpdate = { fieldName, value ->
+                                viewModel.updateGoalEditionFormField(
+                                    fieldName = fieldName,
+                                    input = value
                                 )
                             }
+                        )
+                    }
 
-                            nutrientsByType.map { nutrientDataByType ->
-                                val isLastField = nutrients.combine().map { nutrientData ->
-                                    nutrientData.nutrient
-                                }.last() == nutrientDataByType.nutrient
+                    nutrientsByType.map { nutrientDataByType ->
+                        val isLastField = nutrients.combine().map { nutrientData ->
+                            nutrientData.nutrient
+                        }.last() == nutrientDataByType.nutrient
 
-                                fieldsProvider.nutrientGoal(
-                                    nutrientData = nutrientDataByType,
-                                    isLastField = isLastField
-                                )
-                            }
-                        }
-
-                        val premiumNutrientsMap = NutrientType.entries.associateWith { type ->
-                            filterNutrientsByType(
-                                nutrients = nutrientsState.data.mapNutrients { _, nutrients ->
-                                    nutrients.filterOutNonPremiumNutrients(user.isPremium)
-                                },
-                                type = type
-                            ).map { it.nutrient }
-                        }
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.imePadding()
-                        ) {
-                            ErrorBannerAnimated(
-                                isVisible = nutrientGoalsSetErrorMessage != null,
-                                text = nutrientGoalsSetErrorMessage ?: ""
-                            )
-
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(24.dp),
-                                modifier = Modifier.verticalScroll(scrollState)
-                            ) {
-                                NutrientFields(
-                                    nutrientFields = goalFields,
-                                    isUserPremium = user.isPremium
-                                )
-
-                                if (!user.isPremium) {
-                                    UpgradePromptSection(
-                                        premiumNutrientsMap = premiumNutrientsMap
-                                    )
-                                }
-                            }
-                        }
-                    } else Area()
+                        fieldsProvider.nutrientGoal(
+                            nutrientData = nutrientDataByType,
+                            isLastField = isLastField
+                        )
+                    }
                 }
 
-                else -> {}
-            }
+                val premiumNutrientsMap = NutrientType.entries.associateWith { type ->
+                    filterNutrientsByType(
+                        nutrients = nutrientsUiState.data.mapNutrients { _, nutrients ->
+                            nutrients.filterOutNonPremiumNutrients(user.isPremium)
+                        },
+                        type = type
+                    ).map { it.nutrient }
+                }
 
-            Messages.NotFoundMessageWithRetryAnimated(
-                isVisible = nutrientsState is UiState.Error,
-                message = formatUiErrorMessage(nutrientsState),
-                onRetry = viewModel::refreshNutrients
-            )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.imePadding()
+                ) {
+                    ErrorBannerAnimated(
+                        isVisible = nutrientGoalsSetErrorMessage != null,
+                        text = nutrientGoalsSetErrorMessage ?: ""
+                    )
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                        modifier = Modifier.verticalScroll(scrollState)
+                    ) {
+                        NutrientFields(
+                            nutrientFields = goalFields,
+                            isUserPremium = user.isPremium
+                        )
+
+                        if (!user.isPremium) {
+                            UpgradePromptSection(
+                                premiumNutrientsMap = premiumNutrientsMap
+                            )
+                        }
+                    }
+                }
+            }
         }
 
     } else NotFoundScreen(

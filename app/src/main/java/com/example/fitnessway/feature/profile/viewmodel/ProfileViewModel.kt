@@ -78,7 +78,7 @@ class ProfileViewModel(
 
         val modifiedGoals = managers.goals.modifiedGoals.value
 
-        // Store updated nutrient goal data
+        // Store updated nutrient goal data to avoid refreshing nutrients
         val optimisticNutrientData = currentNutrients.mapNutrients { _, nutrients ->
             updateNutrientGoals(nutrients, modifiedGoals)
         }

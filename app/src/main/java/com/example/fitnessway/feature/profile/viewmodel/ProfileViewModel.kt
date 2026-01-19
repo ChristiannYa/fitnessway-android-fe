@@ -99,6 +99,8 @@ class ProfileViewModel(
                         _uiState.update { it.copy(nutrientGoalsSetUiState = state) }
 
                         // Update UI immediately
+                        managers.goals.initNutrientGoalsForm(optimisticNutrientData)
+
                         nutrientRepo.updateState {
                             it.copy(nutrientsUiState = UiState.Success(optimisticNutrientData))
                         }

@@ -37,8 +37,8 @@ import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Formatters.snakeToReadableText
+import com.example.fitnessway.util.UFood.Ui.foodsListWithState
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
-import com.example.fitnessway.util.UFood.foodsListWithState
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
@@ -146,6 +146,7 @@ fun FoodSelectionScreen(
                             Box {
                                 Foods(
                                     state = foodsUiState,
+                                    isUserPremium = user.isPremium,
                                     onFoodClick = { food ->
                                         viewModel.setSelectedFoodToLog(food)
                                         onNavigateToSelectedFood()
@@ -209,6 +210,7 @@ fun FoodSelectionScreen(
 private fun Foods(
     state: UiState<List<FoodInformation>>,
     onFoodClick: (FoodInformation) -> Unit,
+    isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -217,6 +219,7 @@ private fun Foods(
     ) {
         foodsListWithState(
             state = state,
+            isUserPremium = isUserPremium,
             showsNutrientPreview = true,
             onFoodClick = onFoodClick
         )

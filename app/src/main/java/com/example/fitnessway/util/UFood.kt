@@ -143,54 +143,70 @@ object UFood {
         fun getFoodBrandColor(): Color {
             return MaterialTheme.colorScheme.onBackground.copy(0.6f)
         }
-    }
 
-    @Composable
-    fun FoodPreview(
-        food: FoodInformation,
-        user: User? = null,
-        showsNutrientPreview: Boolean = false,
-        onClick: (() -> Unit)? = null
-    ) {
-        val view = LocalView.current
-        val missingBrand = food.information.brand == null || food.information.brand.isEmpty()
-
-        Box(
-            modifier = Modifier
-                .areaContainer(
-                    size = AreaContainerSize.MEDIUM,
-                    borderColor = MaterialTheme.colorScheme.surfaceVariant,
-                    showsIndication = true,
-                    onClickEnabled = onClick != null,
-                    onClick = {
-                        if (onClick != null) {
-                            view.playSoundEffect(SoundEffectConstants.CLICK)
-                            onClick()
-                        }
-                    }
-                ),
+        @Composable
+        fun FoodPreview(
+            food: FoodInformation,
+            isUserPremium: Boolean? = null,
+            showsNutrientPreview: Boolean = false,
+            onClick: (() -> Unit)? = null
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            val view = LocalView.current
+            val missingBrand = food.information.brand == null || food.information.brand.isEmpty()
+
+            Box(
+                modifier = Modifier
+                    .areaContainer(
+                        size = AreaContainerSize.MEDIUM,
+                        borderColor = MaterialTheme.colorScheme.surfaceVariant,
+                        showsIndication = true,
+                        onClickEnabled = onClick != null,
+                        onClick = {
+                            if (onClick != null) {
+                                view.playSoundEffect(SoundEffectConstants.CLICK)
+                                onClick()
+                            }
+                        }
+                    ),
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = food.information.name,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = if (missingBrand) "~" else food.information.brand,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(
+                                text = food.information.name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = if (missingBrand) "~" else food.information.brand,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        if (isUserPremium == true && showsNutrientPreview) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                food.nutrients.basic.forEach { (nutrientData, amount) ->
+                                    val nutrientColor = getColor(nutrientData.preferences.hexColor)
+
+                                    if (nutrientColor != null) {
+                                        Text(
+                                            text = doubleFormatter(amount),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = nutrientColor
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     if (food.metadata.isFavorite) {
@@ -201,71 +217,58 @@ object UFood {
                         )
                     }
                 }
+            }
+        }
 
-                if (user != null && user.isPremium && showsNutrientPreview) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        food.nutrients.basic.forEach { (nutrientData, amount) ->
-                            val nutrientColor = getColor(nutrientData.preferences.hexColor)
-
-                            if (nutrientColor != null) {
-                                Text(
-                                    text = doubleFormatter(amount),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = nutrientColor
-                                )
-                            }
+        fun LazyListScope.foodsListWithState(
+            state: UiState<List<FoodInformation>>,
+            isUserPremium: Boolean? = null,
+            showsNutrientPreview: Boolean = false,
+            onFoodClick: (FoodInformation) -> Unit,
+            loadingVerticalSpace: Dp = 16.dp,
+        ) {
+            when (state) {
+                is UiState.Loading -> item {
+                    Column(verticalArrangement = Arrangement.spacedBy(loadingVerticalSpace)) {
+                        repeat(12) {
+                            Loading.Composable(height = 32.dp)
                         }
                     }
                 }
-            }
-        }
-    }
 
-    fun LazyListScope.foodsListWithState(
-        state: UiState<List<FoodInformation>>,
-        showsNutrientPreview: Boolean = false,
-        onFoodClick: (FoodInformation) -> Unit,
-        loadingVerticalSpace: Dp = 16.dp,
-    ) {
-        when (state) {
-            is UiState.Loading -> item {
-                Column(verticalArrangement = Arrangement.spacedBy(loadingVerticalSpace)) {
-                    repeat(12) {
-                        Loading.Composable(height = 32.dp)
+                is UiState.Success -> {
+                    val foods = state.data
+
+                    if (foods.isEmpty()) {
+                        item {
+                            NotFoundMessage("Foods that you add to your list will appear here")
+                        }
+                    } else {
+                        items(
+                            items = foods,
+                            key = { food -> food.information.id }
+                        ) { food ->
+                            FoodPreview(
+                                food = food,
+                                isUserPremium = isUserPremium,
+                                showsNutrientPreview = showsNutrientPreview,
+                                onClick = { onFoodClick(food) }
+                            )
+                        }
                     }
                 }
+
+                else -> {}
             }
 
-            is UiState.Success -> {
-                val foods = state.data
-
-                if (foods.isEmpty()) {
-                    item {
-                        NotFoundMessage("Foods that you add to your list will appear here")
-                    }
-                } else {
-                    items(
-                        items = foods,
-                        key = { food -> food.information.id }
-                    ) { food ->
-                        FoodPreview(
-                            food = food,
-                            showsNutrientPreview = showsNutrientPreview,
-                            onClick = { onFoodClick(food) }
-                        )
-                    }
-                }
+            item("foodListState_errorMessage") {
+                NotFoundMessageAnimated(
+                    isVisible = state is UiState.Error,
+                    message = formatUiErrorMessage(state)
+                )
             }
-
-            else -> {}
         }
 
-        item("foodListState_errorMessage") {
-            NotFoundMessageAnimated(
-                isVisible = state is UiState.Error,
-                message = formatUiErrorMessage(state)
-            )
-        }
     }
 
     data class FoodInformationComposables(

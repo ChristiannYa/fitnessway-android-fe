@@ -33,7 +33,7 @@ import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.WhiteFont
-import com.example.fitnessway.util.UFood.foodsListWithState
+import com.example.fitnessway.util.UFood.Ui.foodsListWithState
 import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
 

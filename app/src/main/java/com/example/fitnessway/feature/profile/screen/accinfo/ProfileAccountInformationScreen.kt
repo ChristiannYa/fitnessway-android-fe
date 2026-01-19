@@ -45,33 +45,27 @@ fun ProfileAccountInformationScreen(
                 val userInformation = getUserAccountInformation(user)
 
                 userInformation.forEach {
-                    ProfileAccInfoRow(key = it.first, value = it.second)
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val textStyle = MaterialTheme.typography.bodyMedium
+
+                        Text(
+                            text = it.first,
+                            style = textStyle
+                        )
+
+                        Text(
+                            text = it.second,
+                            style = textStyle,
+                            color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
+                        )
+                    }
                 }
             }
         } else NotFoundScreen(message = "No user found")
     }
-}
-
-@Composable
-private fun ProfileAccInfoRow(key: String, value: String) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth(),
-        content = {
-            val textStyle = MaterialTheme.typography.bodyLarge
-
-            Text(
-                text = key,
-                style = textStyle
-            )
-
-            Text(
-                text = value,
-                style = textStyle,
-                color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
-            )
-        }
-    )
 }
 
 private fun getUserAccountInformation(user: User): List<Pair<String, String>> {

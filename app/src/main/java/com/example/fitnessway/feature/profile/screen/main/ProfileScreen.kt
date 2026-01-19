@@ -197,19 +197,20 @@ private fun ProfileScreenMainButton(
                 horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
             ) {
                 Structure.AppIconDynamic(
-                    source = Structure.AppIconButtonSource.Vector(imageVector)
+                    source = Structure.AppIconButtonSource.Vector(imageVector),
+                    modifier = Modifier.size(18.dp)
                 )
 
                 Text(
                     text = text,
                     color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     fontFamily = robotoSerifFamily,
                     fontWeight = FontWeight.Medium,
                 )
             }
 
-            if (isButtonPremium && !isUserPremium) PremiumIcon(size = 20.dp)
+            if (isButtonPremium && !isUserPremium) PremiumIcon(size = 18.dp)
         }
     }
 }

@@ -3,8 +3,6 @@ package com.example.fitnessway.feature.lists.screen.create.food.composables
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -14,8 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
-import com.example.fitnessway.ui.shared.Clickables
-import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
 import com.example.fitnessway.util.UNutrient.hasDailyValue
 import com.example.fitnessway.util.Ui
@@ -81,24 +77,19 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
             } else null,
             trailingIcon = if (nutrient != null && nutrient.hasDailyValue) {
                 {
-                    val iconTint = if (isInPercentagesMap) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    } else MaterialTheme.colorScheme.onSurfaceVariant.copy(0.2f)
-
-                    Clickables.AppPngIconButton(
-                        icon = Structure.AppIconButtonSource.Vector(Icons.Default.Percent),
-                        contentDescription = "Enter ${nutrient.name} value as percentage",
-                        onClick = {
-                            if (isInPercentagesMap) {
+                    NutrientUnitToggle(
+                        isInPercentagesMap = isInPercentagesMap,
+                        enabled = field.textFieldValue.text.isNotEmpty(),
+                        onToggle = { shouldBeInMap ->
+                            if (shouldBeInMap) {
+                                onAddToPercentagesMap?.invoke(
+                                    nutrient.id,
+                                    field.textFieldValue.text
+                                )
+                            } else {
                                 onRemoveFromPercentagesMap?.invoke(nutrient.id)
-                            } else onAddToPercentagesMap?.invoke(
-                                nutrient.id,
-                                field.textFieldValue.text
-                            )
-                        },
-                        enabled = field.textFieldValue.text.isNotEmpty() || isInPercentagesMap,
-                        iconTintOverridesDisabledTint = true,
-                        iconTint = iconTint
+                            }
+                        }
                     )
                 }
             } else null,

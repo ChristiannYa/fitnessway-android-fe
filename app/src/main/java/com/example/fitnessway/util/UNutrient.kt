@@ -678,18 +678,14 @@ object UNutrient {
 
                             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                 Text(
-                                    text = doubleFormatter(
-                                        nutrientData.amount
-                                    ),
+                                    text = doubleFormatter(nutrientData.amount, 2),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Default,
                                 )
                                 Text(
                                     text = nutrient.unit,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(
-                                        0.5f
-                                    )
+                                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
                                 )
                             }
                         }
@@ -706,6 +702,7 @@ object UNutrient {
                                     drawStopIndicator = { },
                                     modifier = Modifier.weight(1f),
                                 )
+
                                 Text(
                                     text = "${doubleFormatter(percentage.toDouble())}%",
                                     style = MaterialTheme.typography.bodyMedium,
@@ -809,6 +806,97 @@ object UNutrient {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    object Mock {
+        object Nutrient {
+            object Basic {
+                val carbs = Nutrient(
+                    id = 2,
+                    name = "Carbs",
+                    symbol = "",
+                    unit = "g",
+                    type = NutrientType.BASIC,
+                    isPremium = false
+                )
+
+                val protein = Nutrient(
+                    id = 6,
+                    name = "Protein",
+                    symbol = "",
+                    unit = "g",
+                    type = NutrientType.BASIC,
+                    isPremium = false
+                )
+
+                val fiber = Nutrient(
+                    id = 5,
+                    name = "Fiber",
+                    symbol = "",
+                    unit = "g",
+                    type = NutrientType.BASIC,
+                    isPremium = true
+                )
+            }
+
+            object Vitamin {
+                val vitaminA = Nutrient(
+                    id = 9,
+                    name = "A",
+                    symbol = "A",
+                    unit = "mcg",
+                    type = NutrientType.VITAMIN,
+                    isPremium = true
+                )
+
+                val vitaminC = Nutrient(
+                    id = 11,
+                    name = "C",
+                    symbol = "C",
+                    unit = "mg",
+                    type = NutrientType.VITAMIN,
+                    isPremium = false
+                )
+
+                val vitaminD = Nutrient(
+                    id = 12,
+                    name = "D",
+                    symbol = "D",
+                    unit = "mcg",
+                    type = NutrientType.VITAMIN,
+                    isPremium = false
+                )
+            }
+
+            object Mineral {
+                val calcium = Nutrient(
+                    id = 13,
+                    name = "Calcium",
+                    symbol = "Ca",
+                    unit = "mg",
+                    type = NutrientType.MINERAL,
+                    isPremium = true
+                )
+
+                val iron = Nutrient(
+                    id = 14,
+                    name = "Iron",
+                    symbol = "Fe",
+                    unit = "mg",
+                    type = NutrientType.MINERAL,
+                    isPremium = false
+                )
+
+                val potassium = Nutrient(
+                    id = 16,
+                    name = "Potassium",
+                    symbol = "K",
+                    unit = "mg",
+                    type = NutrientType.MINERAL,
+                    isPremium = false
+                )
             }
         }
     }

@@ -72,6 +72,7 @@ dependencies {
     // Datastore
     implementation(libs.androidx.datastore)
     implementation(libs.protobuf.javalite)
+    implementation(libs.androidx.compose.animation.core)
 
     testImplementation(libs.junit)
 

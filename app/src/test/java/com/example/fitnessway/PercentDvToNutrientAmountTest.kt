@@ -39,6 +39,7 @@ class PercentDvToNutrientAmountTest {
         // DV = 2.4 mcg
         assertEquals(0.48, percentDvToNutrientAmount(10, 20.0), 0.0001)
         assertEquals(2.4, percentDvToNutrientAmount(10, 100.0), 0.0001)
+        assertEquals(0.12, percentDvToNutrientAmount(10, 5.0), 0.0)
     }
 
     @Test

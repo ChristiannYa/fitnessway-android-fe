@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.SortByAlpha
+import com.example.fitnessway.R
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
@@ -60,9 +61,11 @@ object MFood {
             RECENTLY_LOGGED(Structure.AppIconButtonSource.Vector(Icons.Default.History)),
         }
 
-        enum class ListOption {
-            Food,
-            Supplement
+        enum class ListOption(
+            val icon: Structure.AppIconButtonSource
+        ) {
+            Food(Structure.AppIconButtonSource.Resource(R.drawable.food)),
+            Supplement(Structure.AppIconButtonSource.Resource(R.drawable.energy))
         }
     }
 

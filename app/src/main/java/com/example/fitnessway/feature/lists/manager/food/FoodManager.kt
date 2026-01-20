@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 class FoodManager : IFoodManager {
     private val emptyFoodCreationFormState = FormStates.FoodCreation(
-        name = "",
-        brand = "",
-        amountPerServing = "",
-        servingUnit = ""
+        name = "Cereal",
+        brand = "Kelogs",
+        amountPerServing = "46",
+        servingUnit = "g"
     )
 
     private val _foodCreationFormState = MutableStateFlow(emptyFoodCreationFormState)

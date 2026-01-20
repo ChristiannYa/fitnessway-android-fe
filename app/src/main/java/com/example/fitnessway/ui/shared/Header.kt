@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Header(
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit,
+    onBackClick: (() -> Unit)? = null,
     title: String? = null,
     isOnBackEnabled: Boolean? = true,
     extraContent: (@Composable () -> Unit)? = null,
@@ -34,29 +34,35 @@ fun Header(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxWidth()
-            .padding(end = 16.dp)
+            .padding(
+                start = if (onBackClick != null) 0.dp else 16.dp,
+                end = 16.dp,
+                bottom = 2.dp
+            )
     ) {
         val enabled = isOnBackEnabled == true
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(
-                onClick = {
-                    view.playSoundEffect(SoundEffectConstants.NAVIGATION_LEFT)
-                    onBackClick()
-                },
-                enabled = enabled
-            ) {
-                val iconTint by animateColorAsState(
-                    targetValue = if (enabled) {
-                        MaterialTheme.colorScheme.onBackground
-                    } else MaterialTheme.colorScheme.surfaceVariant
-                )
+            if (onBackClick != null) {
+                IconButton(
+                    onClick = {
+                        view.playSoundEffect(SoundEffectConstants.NAVIGATION_LEFT)
+                        onBackClick()
+                    },
+                    enabled = enabled
+                ) {
+                    val iconTint by animateColorAsState(
+                        targetValue = if (enabled) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else MaterialTheme.colorScheme.surfaceVariant
+                    )
 
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Go Back",
-                    tint = iconTint
-                )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Go Back",
+                        tint = iconTint
+                    )
+                }
             }
 
             if (title != null) {

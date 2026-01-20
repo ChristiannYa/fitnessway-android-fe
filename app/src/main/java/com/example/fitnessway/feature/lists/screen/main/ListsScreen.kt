@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,16 +25,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import com.example.fitnessway.R
 import com.example.fitnessway.data.model.MFood.Enum.ListOption
 import com.example.fitnessway.feature.lists.screen.main.composables.SupplementList
-import com.example.fitnessway.feature.lists.screen.main.composables.ToggleListViewButtons
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
+import com.example.fitnessway.ui.shared.Clickables
+import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.ui.shared.ScreenOverlay
+import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.util.Formatters.snakeToReadableText
 import com.example.fitnessway.util.UFood.Ui.foodsListWithState
-import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.isLoading
+import com.example.fitnessway.util.isSuccess
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -44,21 +52,50 @@ fun ListsScreen(
     onNavigateToFoodCreationForm: () -> Unit
 ) {
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
+    val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
 
+    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val foodsUiState = foodRepoUiState.foodsUiState
+    val isUiDataReady = nutrientsUiState.isSuccess && foodsUiState.isSuccess
 
     LaunchedEffect(Unit) {
         viewModel.getFoods()
+        viewModel.getNutrients()
     }
+
+    val moreOptionsState = Structure.rememberMoreOptionsState()
 
     val pullToRefreshState = rememberPullToRefreshState()
     val pullToRefreshThresholdReached = pullToRefreshState.distanceFraction >= 1f
-    val isRefreshing = pullToRefreshThresholdReached && foodsUiState is UiState.Loading
+    val isRefreshing = pullToRefreshThresholdReached && foodsUiState.isLoading
 
     val view = LocalView.current
 
-    Screen {
+    val title = when (selectedList) {
+        ListOption.Food -> "Foods"
+        ListOption.Supplement -> "Supplements"
+    }
+
+    Screen(
+        header = {
+            Header(
+                title = title,
+                extraContent = if (isUiDataReady) {
+                    {
+                        Clickables.AppPngIconButton(
+                            icon = Structure.AppIconButtonSource.Vector(Icons.Default.Menu),
+                            contentDescription = "View list options",
+                            onClick = {
+                                view.playSoundEffect(SoundEffectConstants.CLICK)
+                                moreOptionsState.toggle()
+                            }
+                        )
+                    }
+                } else null
+            )
+        }
+    ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             PullToRefreshBox(
                 isRefreshing = isRefreshing,
@@ -76,16 +113,6 @@ fun ListsScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxHeight()
                 ) {
-                    stickyHeader {
-                        ToggleListViewButtons(
-                            onToggleSelectedList = {
-                                view.playSoundEffect(SoundEffectConstants.CLICK)
-                                viewModel.setSelectedList(it)
-                            },
-                            selectedOption = selectedList
-                        )
-                    }
-
                     when (selectedList) {
                         ListOption.Food -> {
                             foodsListWithState(
@@ -107,22 +134,56 @@ fun ListsScreen(
                 }
             }
 
-            if (foodsUiState is UiState.Success) {
+            val options = enumValues<ListOption>().map { option ->
+                val isSelected = selectedList == option
+                val tint = if (isSelected) WhiteFont else null
+
+                Structure.MoreOptionsConfig(
+                    text = option.name.lowercase().snakeToReadableText(),
+                    backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else null,
+                    icon = option.icon,
+                    iconTint = tint,
+                    onClick = {
+                        moreOptionsState.hide()
+                        viewModel.setSelectedList(option)
+                    }
+                )
+            }.toTypedArray()
+
+            if (isUiDataReady) {
+                Structure.MoreOptions(
+                    state = moreOptionsState,
+                    options = options,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .zIndex(1f)
+                )
+
                 IconButton(
                     onClick = onNavigateToFoodCreationForm,
                     modifier = Modifier
                         .clip(CircleShape)
-                        .size(46.dp)
-                        .background(MaterialTheme.colorScheme.primary)
+                        .size(52.dp)
+                        .background(MaterialTheme.colorScheme.inverseSurface)
                         .align(Alignment.BottomCenter)
                 ) {
+                    val imageId = when (selectedList) {
+                        ListOption.Food -> R.drawable.food
+                        ListOption.Supplement -> R.drawable.energy
+                    }
+
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        painter = painterResource(imageId),
                         contentDescription = "Create",
-                        tint = WhiteFont,
-                        modifier = Modifier.fillMaxSize(0.8f)
+                        tint = MaterialTheme.colorScheme.background,
+                        modifier = Modifier.fillMaxSize(0.7f)
                     )
                 }
+
+                ScreenOverlay.DarkOverlay(
+                    isVisible = moreOptionsState.isVisible,
+                    onClick = moreOptionsState::hide
+                )
             }
         }
     }

@@ -14,14 +14,18 @@ import kotlinx.coroutines.flow.StateFlow
 
 class FoodManager : IFoodManager {
     private val emptyFoodCreationFormState = FormStates.FoodCreation(
-        name = "Cereal",
-        brand = "Kelogs",
-        amountPerServing = "46",
-        servingUnit = "g"
+        name = "",
+        brand = "",
+        amountPerServing = "",
+        servingUnit = ""
     )
 
     private val _foodCreationFormState = MutableStateFlow(emptyFoodCreationFormState)
     override val foodCreationFormState: StateFlow<FormStates.FoodCreation> = _foodCreationFormState
+
+    private val _foodCreationNutrientsAsPercentages = MutableStateFlow<Map<Int, String>>(emptyMap())
+    override val foodCreationNutrientsAsPercentages: StateFlow<Map<Int, String>> =
+        _foodCreationNutrientsAsPercentages
 
     private val _currentStep = MutableStateFlow(1)
     override val currentStep: StateFlow<Int> = _currentStep
@@ -171,5 +175,21 @@ class FoodManager : IFoodManager {
         }
 
         return !isAnyInvalid
+    }
+
+    override fun addNutrientValueToPercentagesMap(nutrientId: Int, value: String) {
+        val amount = _foodCreationNutrientsAsPercentages.value.toMutableMap().apply {
+            put(nutrientId, value)
+        }
+
+        _foodCreationNutrientsAsPercentages.value = amount
+    }
+
+    override fun removeNutrientValueFromPercentagesMap(nutrientId: Int) {
+        val removedValue = _foodCreationNutrientsAsPercentages.value.toMutableMap().apply {
+            remove(nutrientId)
+        }
+
+        _foodCreationNutrientsAsPercentages.value = removedValue
     }
 }

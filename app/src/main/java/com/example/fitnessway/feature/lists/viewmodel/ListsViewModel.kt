@@ -19,6 +19,7 @@ import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.feature.lists.manager.toggle.ISelectionManager
 import com.example.fitnessway.util.UFood.getFoodById
+import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.buildNutrientsByType
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
@@ -70,6 +71,21 @@ class ListsViewModel(
 
     fun addFood() {
         val formState = managers.food.foodCreationFormState.value
+        val nutrientsAsPercentagesMap = managers.food.foodCreationNutrientsAsPercentages.value
+
+        val nutrients = formState.nutrients.filter { (_, amount) ->
+            (amount.toDoubleOrNull() ?: 0.0) > 0
+        }.map {
+            val nutrientId = it.key
+            val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
+
+            // Check if this nutrient should be converted from percentage
+            val amount = if (nutrientsAsPercentagesMap.containsKey(nutrientId)) {
+                UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
+            } else amountLiteral
+
+            NutrientIdWithAmount(nutrientId, amount)
+        }
 
         val request = FoodAddRequest(
             information = FoodBaseInfo(
@@ -79,13 +95,7 @@ class ListsViewModel(
                 amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
                 servingUnit = formState.servingUnit
             ),
-            nutrients = formState.nutrients.filter { (_, amount) ->
-                (amount.toDoubleOrNull() ?: 0.0) > 0
-            }.map { (nutrientId, amount) ->
-                NutrientIdWithAmount(
-                    nutrientId = nutrientId, amount = amount.toDoubleOrNull() ?: 0.0
-                )
-            }
+            nutrients = nutrients
         )
 
         viewModelScope.launch {

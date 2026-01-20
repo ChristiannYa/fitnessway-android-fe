@@ -73,6 +73,89 @@ object UNutrient {
         val isOverGoal: Boolean
     )
 
+    // Look at the nutrients' schema from the database
+    val NUTRIENT_IDS_WITH_DV = setOf(
+        // Fiber
+        5,
+
+        // Vitamins
+        9,  // Vitamin A
+        10, // Vitamin B12
+        11, // Vitamin C
+        12, // Vitamin D
+
+        // Minerals
+        13, // Calcium
+        14, // Iron
+        15, // Magnesium
+        16  // Potassium
+    )
+
+    val Nutrient.hasDailyValue: Boolean get() = this.id in NUTRIENT_IDS_WITH_DV
+
+    fun percentDvToNutrientAmount(
+        nutrientId: Int,
+        amount: Double
+    ): Double {
+        return when (nutrientId) {
+
+            // ========== Fiber ==========
+            5 -> { // Fiber
+                val dv = 28.0 // g
+                dv * (amount / 100.0)
+            }
+
+            // ========== Vitamins ==========
+            9 -> { // Vitamin A
+                val dv = 900.0 // mcg
+                dv * (amount / 100.0)
+            }
+
+            10 -> { // Vitamin B12
+                val dv = 2.4 // mcg
+                dv * (amount / 100.0)
+            }
+
+            11 -> { // Vitamin C
+                val dv = 90.0 // mg
+                dv * (amount / 100.0)
+            }
+
+            12 -> { // Vitamin D
+                val dv = 20.0 // mcg
+                dv * (amount / 100.0)
+            }
+
+            // ========== Minerals ==========
+            13 -> { // Calcium
+                val dv = 1300.0 // mg
+                dv * (amount / 100.0)
+            }
+
+            14 -> { // Iron
+                val dv = 18.0 // mg
+                dv * (amount / 100.0)
+            }
+
+            15 -> { // Magnesium
+                val dv = 420.0 // mg
+                dv * (amount / 100.0)
+            }
+
+            16 -> { // Potassium
+                val dv = 4700.0 // mg
+                dv * (amount / 100.0)
+            }
+
+            // ========== Not supported ==========
+            else -> {
+                throw IllegalArgumentException(
+                    "Nutrient with id=$nutrientId does not support %DV conversion"
+                )
+            }
+        }
+    }
+
     fun calcNutrientIntakeData(intakeData: NutrientDataWithAmount): NutrientData {
         val intake = intakeData.amount
         val goal = intakeData.nutrientWithPreferences.preferences.goal ?: 0.0
@@ -137,37 +220,29 @@ object UNutrient {
     fun List<NutrientWithPreferences>.sortPremiumNutrients(
         isPremiumUser: Boolean
     ): List<NutrientWithPreferences> {
-        return if (!isPremiumUser) {
-            this.sortedBy { it.nutrient.isPremium }
-        } else {
-            this
-        }
+        return if (!isPremiumUser) this.sortedBy { it.nutrient.isPremium } else this
     }
 
+    // @TODO: Rename to `filterNonPremium`
     fun List<NutrientWithPreferences>.filterOutPremiumNutrients(
         isUserPremium: Boolean
     ): List<NutrientWithPreferences> {
-        return if (!isUserPremium) {
-            this.filter { !it.nutrient.isPremium }
-        } else {
-            this
-        }
+        return if (!isUserPremium) this.filter { !it.nutrient.isPremium } else this
     }
 
+    // @TODO: Rename to `filterPremium`
     fun List<NutrientWithPreferences>.filterOutNonPremiumNutrients(
         isUserPremium: Boolean
     ): List<NutrientWithPreferences> {
-        return if (!isUserPremium) {
-            this.filter { it.nutrient.isPremium }
-        } else {
-            this
-        }
+        return if (!isUserPremium) this.filter { it.nutrient.isPremium } else this
     }
 
+    // @TODO: Rename to `filterWithGoal`
     fun List<NutrientWithPreferences>.filterOutNutrientsWithoutGoal(): List<NutrientWithPreferences> {
         return this.filter { it.preferences.goal != null }
     }
 
+    // @TODO: Rename to `filterWithoutGoal`
     fun List<NutrientWithPreferences>.filterOutNutrientsWithGoal(): List<NutrientWithPreferences> {
         return this.filter { it.preferences.goal == null }
     }
@@ -252,7 +327,8 @@ object UNutrient {
         @Composable
         fun NutrientFieldLabel(
             nutrient: Nutrient,
-            isFocused: Boolean
+            isFocused: Boolean,
+            extraFieldText: String? = null
         ) {
             val inputOutlinedColors = InputUi.getOutlinedColors()
 
@@ -285,7 +361,7 @@ object UNutrient {
                         style = SpanStyle(
                             color = extraFieldContentColor
                         ),
-                        block = { append(text = nutrient.unit) }
+                        block = { append(extraFieldText ?: nutrient.unit) }
                     )
                 },
                 style = MaterialTheme.typography.bodyMedium

@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
-import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Ui
 
 object Clickables {
@@ -35,6 +34,10 @@ object Clickables {
         SMALL(28.dp)
     }
 
+    /**
+     * - Default `iconTint` is `MaterialTheme.colorScheme.onSurfaceVariant`
+     * - When disabled `iconTint`'s value is `MaterialTheme.colorScheme.surfaceVariant`
+     */
     @Composable
     fun AppPngIconButton(
         size: AppIconButtonSize = AppIconButtonSize.LARGE,
@@ -42,12 +45,14 @@ object Clickables {
         enabled: Boolean = true,
         icon: AppIconButtonSource,
         iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+        iconTintOverridesDisabledTint: Boolean = false,
         contentDescription: String,
-        onClick: () -> Unit
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier
+            modifier = modifier
                 .clip(CircleShape)
                 .size(size.size)
                 .clickable(
@@ -60,11 +65,11 @@ object Clickables {
                 )
         ) {
             val tint by animateColorAsState(
-                targetValue = if (enabled) iconTint else {
-                    MaterialTheme.colorScheme.surfaceVariant
-                },
-                animationSpec = Animation.colorSpec,
-                label = "AppIconVectorButtonColorAnimation_$contentDescription"
+                targetValue = if (iconTintOverridesDisabledTint) iconTint else {
+                    if (enabled) iconTint else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    }
+                }
             )
 
             val padding = (size.size.value / 6).dp

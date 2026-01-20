@@ -10,22 +10,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.util.form.field.FoodCreationNutrientField
-import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow
 import com.example.fitnessway.util.UNutrient.getNutrientCategoryTitle
+import com.example.fitnessway.util.form.field.FoodCreationNutrientField
 
 @Composable
 fun SetNutrients(
     fields: List<FoodCreationNutrientField>,
-    nutrientsWithoutGoal: Pair<NutrientType, List<Nutrient>>
-) {
+    nutrientsWithoutGoal: Pair<NutrientType, List<Nutrient>>,
+    foodCreationNutrientsAsPercentages: Map<Int, String>? = null,
+    onAddToPercentagesMap: ((nutrientId: Int, amount: String) -> Unit)? = null,
+    onRemoveFromPercentagesMap: ((nutrientId: Int) -> Unit)? = null,
+
+    ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         fields.forEach { field ->
-            FoodCreationFormField(field)
+            FoodCreationFormField(
+                field = field,
+                foodCreationNutrientsAsPercentages = foodCreationNutrientsAsPercentages,
+                onAddToPercentagesMap = onAddToPercentagesMap,
+                onRemoveFromPercentagesMap = onRemoveFromPercentagesMap
+            )
         }
 
         if (nutrientsWithoutGoal.second.isNotEmpty()) {

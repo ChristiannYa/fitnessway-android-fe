@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +22,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.feature.lists.screen.details.composables.ConfirmFoodDeletionPopup
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
-import com.example.fitnessway.feature.lists.screen.details.composables.FoodMoreOptionsButton
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
@@ -112,7 +112,9 @@ fun FoodDetailsScreen(
                             }
                         )
 
-                        FoodMoreOptionsButton(
+                        Clickables.AppPngIconButton(
+                            icon = Structure.AppIconButtonSource.Vector(Icons.Default.MoreHoriz),
+                            contentDescription = "More options",
                             onClick = {
                                 view.playSoundEffect(SoundEffectConstants.CLICK)
 
@@ -120,14 +122,14 @@ fun FoodDetailsScreen(
                                     && !isConfirmDeletionPopupVisible
                                 ) {
                                     moreOptionsState.show()
-                                    return@FoodMoreOptionsButton
+                                    return@AppPngIconButton
                                 }
 
                                 if (moreOptionsState.isVisible
                                     && !isConfirmDeletionPopupVisible
                                 ) {
                                     moreOptionsState.hide()
-                                    return@FoodMoreOptionsButton
+                                    return@AppPngIconButton
                                 }
 
                                 if (!moreOptionsState.isVisible

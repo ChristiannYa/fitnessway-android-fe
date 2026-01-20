@@ -14,9 +14,7 @@ fun SetBasicData(fields: List<FoodCreationBaseField>) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 content = {
-                    fields.forEach { field ->
-                        FoodCreationFormField(field)
-                    }
+                    fields.forEach { FoodCreationFormField(it) }
                 }
             )
         }

@@ -3,22 +3,31 @@ package com.example.fitnessway.feature.lists.screen.create.food.composables
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
+import com.example.fitnessway.ui.shared.Clickables
+import com.example.fitnessway.ui.shared.Structure
+import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
+import com.example.fitnessway.util.UNutrient.hasDailyValue
+import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
-import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
-import com.example.fitnessway.util.Ui
 
 @Composable
 fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     field: FormField<T>,
+    foodCreationNutrientsAsPercentages: Map<Int, String>? = null,
+    onAddToPercentagesMap: ((nutrientId: Int, amount: String) -> Unit)? = null,
+    onRemoveFromPercentagesMap: ((nutrientId: Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val isNutrient = field.name is FormFieldName.FoodCreation.NutrientField
@@ -30,23 +39,36 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     val inputShape = Ui.InputUi.shape
     val inputTextStyle = Ui.InputUi.getTextStyle()
 
+    val nutrient = if (isNutrient) field.name.nutrientWithPreferences.nutrient else null
+    val isInPercentagesMap = nutrient?.let {
+        foodCreationNutrientsAsPercentages?.containsKey(it.id) ?: false
+    } ?: false
+
+    if (nutrient != null &&
+        nutrient.hasDailyValue &&
+        field.textFieldValue != null
+    ) {
+        LaunchedEffect(field.textFieldValue.text, isInPercentagesMap) {
+            if (isInPercentagesMap && field.textFieldValue.text.isEmpty()) {
+                onRemoveFromPercentagesMap?.invoke(nutrient.id)
+            }
+        }
+    }
+
     if (field.textFieldValue != null && field.updateTextFieldValueState != null) {
         OutlinedTextField(
             value = field.textFieldValue,
             onValueChange = field.updateTextFieldValueState,
             enabled = field.enabled,
             label = {
-                if (isNutrient) {
-                    NutrientFieldLabel(
-                        nutrient = field.name.nutrientWithPreferences.nutrient,
-                        isFocused = isFocused
-                    )
-                } else {
-                    Text(
-                        text = field.label,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                if (nutrient != null) NutrientFieldLabel(
+                    nutrient = nutrient,
+                    isFocused = isFocused,
+                    extraFieldText = if (isInPercentagesMap) "(%DV)" else null
+                ) else Text(
+                    text = field.label,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             },
             supportingText = if (field.errorMessage != null) {
                 {
@@ -57,8 +79,32 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                     )
                 }
             } else null,
+            trailingIcon = if (nutrient != null && nutrient.hasDailyValue) {
+                {
+                    val iconTint = if (isInPercentagesMap) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else MaterialTheme.colorScheme.onSurfaceVariant.copy(0.2f)
+
+                    Clickables.AppPngIconButton(
+                        icon = Structure.AppIconButtonSource.Vector(Icons.Default.Percent),
+                        contentDescription = "Enter ${nutrient.name} value as percentage",
+                        onClick = {
+                            if (isInPercentagesMap) {
+                                onRemoveFromPercentagesMap?.invoke(nutrient.id)
+                            } else onAddToPercentagesMap?.invoke(
+                                nutrient.id,
+                                field.textFieldValue.text
+                            )
+                        },
+                        enabled = field.textFieldValue.text.isNotEmpty() || isInPercentagesMap,
+                        iconTintOverridesDisabledTint = true,
+                        iconTint = iconTint
+                    )
+                }
+            } else null,
             keyboardOptions = field.keyboardOptions,
             keyboardActions = field.keyboardActions,
+            interactionSource = interactionSource,
             textStyle = inputTextStyle,
             singleLine = true,
             shape = inputShape,

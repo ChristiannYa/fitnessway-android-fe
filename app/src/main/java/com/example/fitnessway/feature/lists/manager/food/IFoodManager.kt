@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodManager {
     val foodCreationFormState: StateFlow<FormStates.FoodCreation>
+    val foodCreationNutrientsAsPercentages: StateFlow<Map<Int, String>>
     val currentStep: StateFlow<Int>
     val createFormNameError: String?
     val createFormBrandError: String?
@@ -26,6 +27,9 @@ interface IFoodManager {
 
     fun validateRequiredNutrients(nutrientIds: Set<Int>): Boolean
     fun validateOptionalNutrients(nutrientIds: Set<Int>): Boolean
+
+    fun addNutrientValueToPercentagesMap(nutrientId: Int, value: String)
+    fun removeNutrientValueFromPercentagesMap(nutrientId: Int)
 
     fun resetFoodFormState()
 }

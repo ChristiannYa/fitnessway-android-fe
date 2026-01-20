@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -26,13 +25,12 @@ fun FormProgressIndicator(
     isStepOneValid: Boolean,
     isStepTwoValid: Boolean,
     isStepThreeValid: Boolean,
-    isStepFourValid: Boolean
+    isStepFourValid: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(
-            10.dp, Alignment.CenterHorizontally
-        ),
+        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+        modifier = modifier,
         content = {
             ProgressIndicator(
                 isCurrentStep = currentStep == 1,

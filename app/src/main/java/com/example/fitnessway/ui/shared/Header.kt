@@ -35,34 +35,32 @@ fun Header(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                start = if (onBackClick != null) 0.dp else 16.dp,
+                start = 16.dp + if (onBackClick != null) 0.dp else 8.dp,
                 end = 16.dp,
                 bottom = 2.dp
             )
     ) {
         val enabled = isOnBackEnabled == true
 
+        // Back button with title
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (onBackClick != null) {
-                IconButton(
+                val iconTint by animateColorAsState(
+                    targetValue = if (enabled) {
+                        MaterialTheme.colorScheme.onBackground
+                    } else MaterialTheme.colorScheme.surfaceVariant
+                )
+
+                Clickables.AppPngIconButton(
+                    icon = Structure.AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowBack),
+                    enabled = enabled,
+                    contentDescription = "Go back",
                     onClick = {
                         view.playSoundEffect(SoundEffectConstants.NAVIGATION_LEFT)
                         onBackClick()
                     },
-                    enabled = enabled
-                ) {
-                    val iconTint by animateColorAsState(
-                        targetValue = if (enabled) {
-                            MaterialTheme.colorScheme.onBackground
-                        } else MaterialTheme.colorScheme.surfaceVariant
-                    )
-
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Go Back",
-                        tint = iconTint
-                    )
-                }
+                    iconTint = iconTint
+                )
             }
 
             if (title != null) {
@@ -73,6 +71,7 @@ fun Header(
             }
         }
 
+        // Extra content
         if (extraContent != null) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),

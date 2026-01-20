@@ -79,7 +79,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 {
                     NutrientUnitToggle(
                         isInPercentagesMap = isInPercentagesMap,
-                        enabled = field.textFieldValue.text.isNotEmpty(),
+                        enabled = field.textFieldValue.text.isNotEmpty() && field.enabled,
                         onToggle = { shouldBeInMap ->
                             if (shouldBeInMap) {
                                 onAddToPercentagesMap?.invoke(

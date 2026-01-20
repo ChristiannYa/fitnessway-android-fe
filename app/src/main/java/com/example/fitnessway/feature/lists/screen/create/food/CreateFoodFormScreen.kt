@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -152,17 +151,20 @@ fun CreateFoodFormScreen(
                             else -> {}
                         }
                     },
-                    isOnBackEnabled = foodAddState !is UiState.Loading,
-                    title = title
-                ) {
-                    FormProgressIndicator(
-                        currentStep = currentStep,
-                        isStepOneValid = viewModel.isBasicDataValid,
-                        isStepTwoValid = areNsValid,
-                        isStepThreeValid = areVsValid,
-                        isStepFourValid = areMsValid
-                    )
-                }
+                    isOnBackEnabled = !foodAddState.isLoading,
+                    title = title,
+                    extraContent = if (!foodAddState.isSuccess) {
+                        {
+                            FormProgressIndicator(
+                                currentStep = currentStep,
+                                isStepOneValid = viewModel.isBasicDataValid,
+                                isStepTwoValid = areNsValid,
+                                isStepThreeValid = areVsValid,
+                                isStepFourValid = areMsValid
+                            )
+                        }
+                    } else null
+                )
             }
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {

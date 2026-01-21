@@ -21,6 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,8 +56,8 @@ fun ListsScreen(
 ) {
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
-    val selectedList by viewModel.selectedList.collectAsState()
 
+    var selectedList by remember { mutableStateOf(ListOption.Food) }
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val foodsUiState = foodRepoUiState.foodsUiState
     val isUiDataReady = nutrientsUiState.isSuccess && foodsUiState.isSuccess
@@ -145,7 +148,7 @@ fun ListsScreen(
                     iconTint = tint,
                     onClick = {
                         moreOptionsState.hide()
-                        viewModel.setSelectedList(option)
+                        selectedList = option
                     }
                 )
             }.toTypedArray()

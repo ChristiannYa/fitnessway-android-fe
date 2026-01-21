@@ -1,10 +1,10 @@
-package com.example.fitnessway.feature.lists.manager.food
+package com.example.fitnessway.feature.lists.manager.creation
 
 import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.FormStates
 import kotlinx.coroutines.flow.StateFlow
 
-interface IFoodManager {
+interface ICreationManager {
     val foodCreationFormState: StateFlow<FormStates.FoodCreation>
     val foodCreationNutrientsAsPercentages: StateFlow<Map<Int, String>>
     val currentStep: StateFlow<Int>

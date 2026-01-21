@@ -15,9 +15,8 @@ import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
+import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
-import com.example.fitnessway.feature.lists.manager.food.IFoodManager
-import com.example.fitnessway.feature.lists.manager.toggle.ISelectionManager
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.buildNutrientsByType
@@ -39,9 +38,8 @@ class ListsViewModel(
     private val managers: IListsManagers,
     userStateHolder: IUserStateHolder
 ) : ViewModel(),
-    ISelectionManager by managers.selection,
     IEditionManager by managers.edition,
-    IFoodManager by managers.food {
+    ICreationManager by managers.food {
 
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()

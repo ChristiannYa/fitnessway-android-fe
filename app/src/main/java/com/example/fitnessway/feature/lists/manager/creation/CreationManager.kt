@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.manager.food
+package com.example.fitnessway.feature.lists.manager.creation
 
 import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
 import com.example.fitnessway.util.Formatters.toInputDouble
@@ -12,7 +12,7 @@ import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class FoodManager : IFoodManager {
+class CreationManager : ICreationManager {
     private val emptyFoodCreationFormState = FormStates.FoodCreation(
         name = "",
         brand = "",

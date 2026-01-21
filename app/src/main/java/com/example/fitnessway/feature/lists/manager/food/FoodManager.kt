@@ -1,10 +1,10 @@
 package com.example.fitnessway.feature.lists.manager.food
 
 import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
-import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.Formatters.toInputDouble
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
@@ -191,5 +191,9 @@ class FoodManager : IFoodManager {
         }
 
         _foodCreationNutrientsAsPercentages.value = removedValue
+    }
+
+    override fun resetNutrientValuesFromPercentagesMap() {
+        _foodCreationNutrientsAsPercentages.value = emptyMap()
     }
 }

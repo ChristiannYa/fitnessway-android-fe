@@ -30,6 +30,7 @@ interface IFoodManager {
 
     fun addNutrientValueToPercentagesMap(nutrientId: Int, value: String)
     fun removeNutrientValueFromPercentagesMap(nutrientId: Int)
+    fun resetNutrientValuesFromPercentagesMap()
 
     fun resetFoodFormState()
 }

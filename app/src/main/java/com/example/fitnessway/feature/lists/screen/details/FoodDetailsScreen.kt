@@ -58,13 +58,7 @@ fun FoodDetailsScreen(
 
     val view = LocalView.current
 
-    if (selectedFoodCopy == null || user == null) {
-        NotFoundScreen(
-            onBackClick = onBackClick,
-            title = title,
-            message = "Food data not found"
-        )
-    } else {
+    if (selectedFoodCopy != null && user != null) {
         val moreOptionsState = Structure.rememberMoreOptionsState()
         var isConfirmDeletionPopupVisible by remember { mutableStateOf(false) }
         val isOverlayVisible = moreOptionsState.isVisible || isConfirmDeletionPopupVisible
@@ -207,5 +201,9 @@ fun FoodDetailsScreen(
                 )
             }
         }
-    }
+    } else NotFoundScreen(
+        onBackClick = onBackClick,
+        title = title,
+        message = "Food data not found"
+    )
 }

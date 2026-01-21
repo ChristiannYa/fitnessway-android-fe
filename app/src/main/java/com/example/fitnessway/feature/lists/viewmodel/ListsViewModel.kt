@@ -101,6 +101,7 @@ class ListsViewModel(
         viewModelScope.launch {
             foodRepo.addFood(request).collect { state ->
                 _uiState.update { it.copy(foodAddState = state) }
+                managers.food.resetNutrientValuesFromPercentagesMap()
             }
         }
     }

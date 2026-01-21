@@ -133,6 +133,10 @@ fun CreateFoodFormScreen(
                         val onScreenLeave = {
                             onBackClick()
                             viewModel.resetFoodCreationScreenStates()
+
+                            if (foodCreationNutrientsAsPercentages.isNotEmpty()) {
+                                viewModel.resetNutrientValuesFromPercentagesMap()
+                            }
                         }
 
                         val goBackOnIdle = {

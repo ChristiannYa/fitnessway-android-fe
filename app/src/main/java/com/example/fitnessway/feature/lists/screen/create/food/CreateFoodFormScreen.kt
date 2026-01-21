@@ -58,7 +58,7 @@ fun CreateFoodFormScreen(
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val currentStep by viewModel.currentStep.collectAsState()
     val foodCreationFormState by viewModel.foodCreationFormState.collectAsState()
-    val foodCreationNutrientsAsPercentages by viewModel.foodCreationNutrientsAsPercentages.collectAsState()
+    val foodNutrientsAsPercentages by viewModel.foodNutrientsAsPercentages.collectAsState()
 
     val user = userFlow
     val foodAddState = uiState.foodAddState
@@ -134,7 +134,7 @@ fun CreateFoodFormScreen(
                             onBackClick()
                             viewModel.resetFoodCreationScreenStates()
 
-                            if (foodCreationNutrientsAsPercentages.isNotEmpty()) {
+                            if (foodNutrientsAsPercentages.isNotEmpty()) {
                                 viewModel.resetNutrientValuesFromPercentagesMap()
                             }
                         }
@@ -310,7 +310,7 @@ fun CreateFoodFormScreen(
                                         2 -> SetNutrients(
                                             fields = nutrientFields,
                                             nutrientsWithoutGoal = nutrientsWithoutGoal,
-                                            foodCreationNutrientsAsPercentages = foodCreationNutrientsAsPercentages,
+                                            foodNutrientsAsPercentages = foodNutrientsAsPercentages,
                                             onAddToPercentagesMap = viewModel::addNutrientValueToPercentagesMap,
                                             onRemoveFromPercentagesMap = viewModel::removeNutrientValueFromPercentagesMap
                                         )
@@ -318,7 +318,7 @@ fun CreateFoodFormScreen(
                                         3 -> SetNutrients(
                                             fields = vitaminFields,
                                             nutrientsWithoutGoal = vitaminsWithoutGoal,
-                                            foodCreationNutrientsAsPercentages = foodCreationNutrientsAsPercentages,
+                                            foodNutrientsAsPercentages = foodNutrientsAsPercentages,
                                             onAddToPercentagesMap = viewModel::addNutrientValueToPercentagesMap,
                                             onRemoveFromPercentagesMap = viewModel::removeNutrientValueFromPercentagesMap
                                         )
@@ -326,7 +326,7 @@ fun CreateFoodFormScreen(
                                         4 -> SetNutrients(
                                             fields = mineralFields,
                                             nutrientsWithoutGoal = mineralsWithoutGoal,
-                                            foodCreationNutrientsAsPercentages = foodCreationNutrientsAsPercentages,
+                                            foodNutrientsAsPercentages = foodNutrientsAsPercentages,
                                             onAddToPercentagesMap = viewModel::addNutrientValueToPercentagesMap,
                                             onRemoveFromPercentagesMap = viewModel::removeNutrientValueFromPercentagesMap
                                         )

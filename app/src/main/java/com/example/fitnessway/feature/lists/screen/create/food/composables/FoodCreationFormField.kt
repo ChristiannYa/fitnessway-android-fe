@@ -21,7 +21,7 @@ import com.example.fitnessway.util.form.field.FormFieldName
 @Composable
 fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     field: FormField<T>,
-    foodCreationNutrientsAsPercentages: Map<Int, String>? = null,
+    foodNutrientsAsPercentages: Map<Int, String>? = null,
     onAddToPercentagesMap: ((nutrientId: Int, amount: String) -> Unit)? = null,
     onRemoveFromPercentagesMap: ((nutrientId: Int) -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -37,7 +37,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
 
     val nutrient = if (isNutrient) field.name.nutrientWithPreferences.nutrient else null
     val isInPercentagesMap = nutrient?.let {
-        foodCreationNutrientsAsPercentages?.containsKey(it.id) ?: false
+        foodNutrientsAsPercentages?.containsKey(it.id) ?: false
     } ?: false
 
     if (nutrient != null &&

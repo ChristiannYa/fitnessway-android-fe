@@ -17,6 +17,7 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
+import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.buildNutrientsByType
@@ -39,7 +40,8 @@ class ListsViewModel(
     userStateHolder: IUserStateHolder
 ) : ViewModel(),
     IEditionManager by managers.edition,
-    ICreationManager by managers.food {
+    ICreationManager by managers.creation,
+    IFoodManager by managers.food {
 
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
@@ -68,22 +70,22 @@ class ListsViewModel(
     }
 
     fun addFood() {
-        val formState = managers.food.foodCreationFormState.value
-        val nutrientsAsPercentagesMap = managers.food.foodCreationNutrientsAsPercentages.value
+        val formState = managers.creation.foodCreationFormState.value
+        val foodNutrientsAsPercentages = managers.food.foodNutrientsAsPercentages.value
 
-        val nutrients = formState.nutrients.filter { (_, amount) ->
-            (amount.toDoubleOrNull() ?: 0.0) > 0
-        }.map {
-            val nutrientId = it.key
-            val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
+        val nutrients = formState.nutrients
+            .filter { (it.value.toDoubleOrNull() ?: 0.0) > 0 }
+            .map {
+                val nutrientId = it.key
+                val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
 
-            // Check if this nutrient should be converted from percentage
-            val amount = if (nutrientsAsPercentagesMap.containsKey(nutrientId)) {
-                UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
-            } else amountLiteral
+                // Check if this nutrient should be converted from percentage
+                val amount = if (foodNutrientsAsPercentages.containsKey(nutrientId)) {
+                    UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
+                } else amountLiteral
 
-            NutrientIdWithAmount(nutrientId, amount)
-        }
+                NutrientIdWithAmount(nutrientId, amount)
+            }
 
         val request = FoodAddRequest(
             information = FoodBaseInfo(

@@ -23,10 +23,6 @@ class CreationManager : ICreationManager {
     private val _foodCreationFormState = MutableStateFlow(emptyFoodCreationFormState)
     override val foodCreationFormState: StateFlow<FormStates.FoodCreation> = _foodCreationFormState
 
-    private val _foodCreationNutrientsAsPercentages = MutableStateFlow<Map<Int, String>>(emptyMap())
-    override val foodCreationNutrientsAsPercentages: StateFlow<Map<Int, String>> =
-        _foodCreationNutrientsAsPercentages
-
     private val _currentStep = MutableStateFlow(1)
     override val currentStep: StateFlow<Int> = _currentStep
 
@@ -175,25 +171,5 @@ class CreationManager : ICreationManager {
         }
 
         return !isAnyInvalid
-    }
-
-    override fun addNutrientValueToPercentagesMap(nutrientId: Int, value: String) {
-        val amount = _foodCreationNutrientsAsPercentages.value.toMutableMap().apply {
-            put(nutrientId, value)
-        }
-
-        _foodCreationNutrientsAsPercentages.value = amount
-    }
-
-    override fun removeNutrientValueFromPercentagesMap(nutrientId: Int) {
-        val removedValue = _foodCreationNutrientsAsPercentages.value.toMutableMap().apply {
-            remove(nutrientId)
-        }
-
-        _foodCreationNutrientsAsPercentages.value = removedValue
-    }
-
-    override fun resetNutrientValuesFromPercentagesMap() {
-        _foodCreationNutrientsAsPercentages.value = emptyMap()
     }
 }

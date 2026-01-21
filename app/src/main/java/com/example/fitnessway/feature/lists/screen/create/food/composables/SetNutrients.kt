@@ -22,7 +22,7 @@ import com.example.fitnessway.util.form.field.FoodCreationNutrientField
 fun SetNutrients(
     fields: List<FoodCreationNutrientField>,
     nutrientsWithoutGoal: Pair<NutrientType, List<Nutrient>>,
-    foodCreationNutrientsAsPercentages: Map<Int, String>? = null,
+    foodNutrientsAsPercentages: Map<Int, String>? = null,
     onAddToPercentagesMap: ((nutrientId: Int, amount: String) -> Unit)? = null,
     onRemoveFromPercentagesMap: ((nutrientId: Int) -> Unit)? = null,
 
@@ -31,7 +31,7 @@ fun SetNutrients(
         fields.forEach { field ->
             FoodCreationFormField(
                 field = field,
-                foodCreationNutrientsAsPercentages = foodCreationNutrientsAsPercentages,
+                foodNutrientsAsPercentages = foodNutrientsAsPercentages,
                 onAddToPercentagesMap = onAddToPercentagesMap,
                 onRemoveFromPercentagesMap = onRemoveFromPercentagesMap
             )

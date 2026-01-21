@@ -1,12 +1,11 @@
 package com.example.fitnessway.feature.lists.manager.creation
 
-import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FormFieldName
 import kotlinx.coroutines.flow.StateFlow
 
 interface ICreationManager {
     val foodCreationFormState: StateFlow<FormStates.FoodCreation>
-    val foodCreationNutrientsAsPercentages: StateFlow<Map<Int, String>>
     val currentStep: StateFlow<Int>
     val createFormNameError: String?
     val createFormBrandError: String?
@@ -27,10 +26,6 @@ interface ICreationManager {
 
     fun validateRequiredNutrients(nutrientIds: Set<Int>): Boolean
     fun validateOptionalNutrients(nutrientIds: Set<Int>): Boolean
-
-    fun addNutrientValueToPercentagesMap(nutrientId: Int, value: String)
-    fun removeNutrientValueFromPercentagesMap(nutrientId: Int)
-    fun resetNutrientValuesFromPercentagesMap()
 
     fun resetFoodFormState()
 }

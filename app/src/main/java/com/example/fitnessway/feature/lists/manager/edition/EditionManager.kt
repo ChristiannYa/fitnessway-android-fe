@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.lists.manager.edition
 
 import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
+import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.UNutrient.combine
@@ -12,10 +13,18 @@ import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInli
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
-class EditionManager : IEditionManager {
+class EditionManager(
+    private val foodManager: IFoodManager
+) : IEditionManager {
+    private lateinit var scope: CoroutineScope
+
     private val _selectedFood = MutableStateFlow<FoodInformation?>(null)
     override val selectedFood: StateFlow<FoodInformation?> = _selectedFood
 
@@ -76,48 +85,68 @@ class EditionManager : IEditionManager {
             }
         }
 
-    override val isFoodEditionFormValid: Boolean
-        get() = _foodEditionFormState.value?.let { formState ->
-            val hasAnyChange = (formState.data.name != _originalFormName.value) ||
-                    (formState.data.brand != _originalFormBrand.value) ||
-                    (formState.data.amountPerServing != _originalAmountPerServing.value) ||
-                    (formState.data.servingUnit != _originalServingUnit.value) ||
-                    formState.data.nutrients.any { (id, value) ->
+    override val isFoodEditionFormValid: StateFlow<Boolean> by lazy {
+        combine(
+            _foodEditionFormState,
+            foodManager.nutrientDvControls.nutrientDvMap
+        ) { formState, nutrientDvMap ->
+            formState?.let {
+                val hasAnyChange = run {
+                    val nameChanged = formState.data.name != _originalFormName.value
+                    val brandChanged = formState.data.brand != _originalFormBrand.value
+                    val amountPerServingChanged = formState.data.amountPerServing != _originalAmountPerServing.value
+                    val servingUnitChanged = formState.data.servingUnit != _originalServingUnit.value
+                    val basicDataUpdate = nameChanged || brandChanged || amountPerServingChanged || servingUnitChanged
+
+                    val anyNutrientChanged = formState.data.nutrients.any { (id, value) ->
                         _originalNutrients.value?.get(id) != value
-                    } ||
-                    (_originalNutrients.value?.any { (id, _) ->
+                    }
+                    val anyNutrientRemoved = _originalNutrients.value?.any { (id, _) ->
                         !formState.data.nutrients.contains(id)
-                    } ?: false)
+                    } ?: false
+                    val anyNutrientToggledToDv = nutrientDvMap.isNotEmpty()
 
-            val hasNoErrors = _editFormNameError == null &&
-                    _editFormBrandError == null &&
-                    _editFormAmountPerServingError == null &&
-                    _editFormServingUnitError == null
+                    val anyNutrientUpdate = anyNutrientChanged || anyNutrientRemoved || anyNutrientToggledToDv
 
-            val requiredFieldsProvided = formState.data.name.isNotEmpty() &&
-                    formState.data.amountPerServing.isNotEmpty() &&
-                    formState.data.servingUnit.isNotEmpty()
-
-            val nutrientsAreValid = run {
-                val formNutrients = formState.data.nutrients
-
-                val areAllAmountsValid = formNutrients.values.all {
-                    val amount = it.toDoubleOrNull()
-                    amount != null && amount > 0.0
+                    basicDataUpdate || anyNutrientUpdate
                 }
 
-                val basicNutrients = _selectedFood.value?.nutrients?.basic ?: return@let false
+                val hasNoErrors = _editFormNameError == null &&
+                        _editFormBrandError == null &&
+                        _editFormAmountPerServingError == null &&
+                        _editFormServingUnitError == null
 
-                val hasBasicNutrient = basicNutrients.any {
-                    it.nutrientWithPreferences.nutrient.id in formNutrients.keys
+                val requiredFieldsProvided = formState.data.name.isNotEmpty() &&
+                        formState.data.amountPerServing.isNotEmpty() &&
+                        formState.data.servingUnit.isNotEmpty()
+
+                val nutrientsAreValid = run {
+                    val formNutrients = formState.data.nutrients
+
+                    val areAllAmountsValid = formNutrients.values.all {
+                        val amount = it.toDoubleOrNull()
+                        amount != null && amount > 0.0
+                    }
+
+                    val basicNutrients = _selectedFood.value?.nutrients?.basic ?: return@let false
+
+                    val hasBasicNutrient = basicNutrients.any {
+                        it.nutrientWithPreferences.nutrient.id in formNutrients.keys
+                    }
+
+                    areAllAmountsValid && hasBasicNutrient
                 }
 
-                areAllAmountsValid && hasBasicNutrient
-            }
+                val v = hasAnyChange && hasNoErrors && requiredFieldsProvided && nutrientsAreValid
+                v
+            } ?: false
 
-            val v = hasAnyChange && hasNoErrors && requiredFieldsProvided && nutrientsAreValid
-            v
-        } ?: false
+        }.stateIn(
+            scope = scope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+    }
 
     override fun initializeFoodForm(food: FoodInformation) {
         val nutrients = food.nutrients.combine().associate {
@@ -206,5 +235,9 @@ class EditionManager : IEditionManager {
 
     override fun resetDeletedNutrients() {
         _deletedNutrients.value = emptyList()
+    }
+
+    fun init(scope: CoroutineScope) {
+        this.scope = scope
     }
 }

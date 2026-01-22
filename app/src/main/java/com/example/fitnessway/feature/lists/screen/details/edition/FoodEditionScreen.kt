@@ -38,6 +38,7 @@ fun FoodEditionScreen(
     val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
     val deletedNutrients by viewModel.deletedNutrients.collectAsState()
+    val isFoodEditionFormValid by viewModel.isFoodEditionFormValid.collectAsState()
 
     val user = userFlow
     val foodUpdateState = uiState.foodUpdateState
@@ -127,15 +128,11 @@ fun FoodEditionScreen(
                         Clickables.HeaderDoneButton(
                             onClick = {
                                 focusManager.clearFocus()
-
-                                if (foodUpdateState !is UiState.Idle) {
-                                    viewModel.resetFoodUpdateState()
-                                }
-
+                                if (foodUpdateState !is UiState.Idle) viewModel.resetFoodUpdateState()
                                 viewModel.resetDeletedNutrients()
                                 viewModel.updateFood()
                             },
-                            enabled = viewModel.isFoodEditionFormValid
+                            enabled = isFoodEditionFormValid
                         )
                     }
                 }

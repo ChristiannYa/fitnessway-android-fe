@@ -26,10 +26,12 @@ val managersModule = module {
     }
 
     single<IListsManagers> {
+        val foodManager = FoodManager()
+
         ListsManagersImpl(
-            edition = EditionManager(),
+            edition = EditionManager(foodManager),
             creation = CreationManager(),
-            food = FoodManager()
+            food = foodManager
         )
     }
 

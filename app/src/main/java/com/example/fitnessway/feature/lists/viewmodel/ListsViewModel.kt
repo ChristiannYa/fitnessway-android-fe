@@ -42,6 +42,10 @@ class ListsViewModel(
     ICreationManager by managers.creation,
     IFoodManager by managers.food {
 
+    init {
+        managers.edition.init(viewModelScope)
+    }
+
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
 
@@ -193,6 +197,7 @@ class ListsViewModel(
 
         managers.edition.initializeFoodForm(optimisticFood)
         managers.edition.setSelectedFood(optimisticFood)
+        managers.food.nutrientDvControls.onClearData()
 
         // Create request
         val request = FoodUpdateRequest(

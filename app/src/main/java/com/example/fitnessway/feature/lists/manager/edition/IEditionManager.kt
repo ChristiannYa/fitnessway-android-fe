@@ -10,7 +10,7 @@ interface IEditionManager {
     val selectedFood: StateFlow<FoodInformation?>
     val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?>
     val deletedNutrients: StateFlow<List<Int>>
-    val isFoodEditionFormValid: Boolean
+    val isFoodEditionFormValid: StateFlow<Boolean>
 
     fun setSelectedFood(food: FoodInformation)
     fun initializeFoodForm(food: FoodInformation)

@@ -42,6 +42,8 @@ import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
+import com.example.fitnessway.util.Formatters.logcat
+import com.example.fitnessway.util.UNutrient.Debug.logNutrientDataWithAmountData
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UNutrient.combine
@@ -409,6 +411,32 @@ object UFood {
                         }
                     }
                 )
+            }
+        }
+    }
+
+    object Debug {
+        fun FoodInformation.logFoodInformation() {
+            logcat("[${this.information.id}] food information:")
+            logcat("  ${this.information.id}")
+            logcat("  ${this.information.name}")
+            logcat("  ${this.information.brand}")
+            logcat("  ${this.information.amountPerServing}")
+            logcat("  ${this.information.servingUnit}")
+        }
+
+        fun FoodInformation.logFoodMetadata() {
+            logcat("[${this.information.id}] food metadata:")
+            logcat("  ${this.metadata.isFavorite}")
+            logcat("  ${this.metadata.lastLoggedAt}")
+            logcat("  ${this.metadata.updatedAt}")
+            logcat("  ${this.metadata.createdAt}")
+        }
+
+        fun FoodInformation.logFoodNutrients() {
+            logcat("[${this.information.id}] food nutrients:")
+            this.nutrients.combine().forEach {
+                logcat("  ${it.logNutrientDataWithAmountData()}")
             }
         }
     }

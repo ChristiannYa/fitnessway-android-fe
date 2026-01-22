@@ -53,6 +53,7 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.InputUi
 import com.example.fitnessway.util.Ui.LabelSize
@@ -807,6 +808,16 @@ object UNutrient {
                     }
                 }
             }
+        }
+    }
+
+    object Debug {
+        fun Nutrient.logNutrientData() {
+            logcat("[${this.id}]: ${this.name}")
+        }
+
+        fun NutrientDataWithAmount.logNutrientDataWithAmountData() {
+            logcat("[${this.nutrientWithPreferences.nutrient.id}] ${this.nutrientWithPreferences.nutrient.name}: ${this.amount}")
         }
     }
 

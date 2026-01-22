@@ -113,7 +113,8 @@ class ListsViewModel(
     fun updateFood() {
         val formState = managers.edition.foodEditionFormState.value ?: return
         val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
-        val nutrientDvMap = managers.food.nutrientDvControls.nutrientDvMap.value
+        val nutrientDvControlsThis = managers.food.nutrientDvControls // Added 'This' to avoid name matching from the manager
+        val nutrientDvMap = nutrientDvControlsThis.nutrientDvMap.value
 
         // Get current data to update optimistically
         val originalFoodsState = foodRepo.uiState.value.foodsUiState
@@ -190,7 +191,7 @@ class ListsViewModel(
         // Update UI immediately
         managers.edition.setSelectedFood(optimisticFood)
         managers.edition.initializeFoodForm(optimisticFood)
-        managers.food.nutrientDvControls.onClearData()
+        if (nutrientDvMap.isNotEmpty()) nutrientDvControlsThis.onClearData()
 
         _uiState.update { it.copy(foodUpdateState = UiState.Success(optimisticFood)) }
         foodRepo.updateState { it.copy(foodsUiState = UiState.Success(optimisticFoods)) }

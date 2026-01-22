@@ -26,6 +26,7 @@ import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
+import com.example.fitnessway.util.isIdle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -126,14 +127,13 @@ fun FoodEditionScreen(
                         title = title
                     ) {
                         Clickables.HeaderDoneButton(
-                            onClick = {
-                                focusManager.clearFocus()
-                                if (foodUpdateState !is UiState.Idle) viewModel.resetFoodUpdateState()
-                                viewModel.resetDeletedNutrients()
-                                viewModel.updateFood()
-                            },
                             enabled = isFoodEditionFormValid
-                        )
+                        ) {
+                            focusManager.clearFocus()
+                            if (!foodUpdateState.isIdle) viewModel.resetFoodUpdateState()
+                            viewModel.resetDeletedNutrients()
+                            viewModel.updateFood()
+                        }
                     }
                 }
             ) {

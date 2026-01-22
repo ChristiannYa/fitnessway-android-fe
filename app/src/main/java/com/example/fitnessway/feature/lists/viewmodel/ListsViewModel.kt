@@ -163,7 +163,7 @@ class ListsViewModel(
         }
 
         // Filter updated nutrients by type
-        val filteredUpdatedFoodNutrientsData = buildNutrientsByType(
+        val updatedNutrientsByType = buildNutrientsByType(
             nutrients = updatedFoodNutrientData
         ) { type, nutrients ->
             nutrients.filter { it.nutrientWithPreferences.nutrient.type == type }
@@ -179,7 +179,7 @@ class ListsViewModel(
                 servingUnit = formState.data.servingUnit
             ),
             metadata = latestFood.metadata,
-            nutrients = filteredUpdatedFoodNutrientsData
+            nutrients = updatedNutrientsByType
         )
 
         // Create optimistic foods
@@ -188,16 +188,12 @@ class ListsViewModel(
         }
 
         // Update UI immediately
-        _uiState.update { state ->
-            state.copy(foodUpdateState = UiState.Success(optimisticFood))
-        }
-        foodRepo.updateState {
-            it.copy(foodsUiState = UiState.Success(optimisticFoods))
-        }
-
-        managers.edition.initializeFoodForm(optimisticFood)
         managers.edition.setSelectedFood(optimisticFood)
+        managers.edition.initializeFoodForm(optimisticFood)
         managers.food.nutrientDvControls.onClearData()
+
+        _uiState.update { it.copy(foodUpdateState = UiState.Success(optimisticFood)) }
+        foodRepo.updateState { it.copy(foodsUiState = UiState.Success(optimisticFoods)) }
 
         // Create request
         val request = FoodUpdateRequest(

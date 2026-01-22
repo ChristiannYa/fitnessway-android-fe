@@ -417,7 +417,7 @@ object UFood {
 
     object Debug {
         fun FoodInformation.logFoodInformation() {
-            logcat("[${this.information.id}] food information:")
+            logcat("[${this.information.id}] - food information:")
             logcat("  ${this.information.id}")
             logcat("  ${this.information.name}")
             logcat("  ${this.information.brand}")
@@ -426,7 +426,7 @@ object UFood {
         }
 
         fun FoodInformation.logFoodMetadata() {
-            logcat("[${this.information.id}] food metadata:")
+            logcat("[${this.information.id}] - food metadata:")
             logcat("  ${this.metadata.isFavorite}")
             logcat("  ${this.metadata.lastLoggedAt}")
             logcat("  ${this.metadata.updatedAt}")
@@ -434,7 +434,7 @@ object UFood {
         }
 
         fun FoodInformation.logFoodNutrients() {
-            logcat("[${this.information.id}] food nutrients:")
+            logcat("[${this.information.id}] - food nutrients:")
             this.nutrients.combine().forEach {
                 logcat("  ${it.logNutrientDataWithAmountData()}")
             }

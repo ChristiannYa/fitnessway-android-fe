@@ -87,23 +87,21 @@ object Clickables {
 
     @Composable
     fun HeaderDoneButton(
-        onClick: () -> Unit,
         enabled: Boolean,
-        isLoading: Boolean = false
+        isLoading: Boolean = false,
+        onClick: () -> Unit,
     ) {
         if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE),
                 strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
             )
-        } else {
-            AppPngIconButton(
-                icon = AppIconButtonSource.Vector(Icons.Default.Done),
-                contentDescription = "Done",
-                onClick = onClick,
-                enabled = enabled,
-                iconTint = MaterialTheme.colorScheme.primary
-            )
-        }
+        } else AppPngIconButton(
+            icon = AppIconButtonSource.Vector(Icons.Default.Done),
+            contentDescription = "Done",
+            onClick = onClick,
+            enabled = enabled,
+            iconTint = MaterialTheme.colorScheme.primary
+        )
     }
 }

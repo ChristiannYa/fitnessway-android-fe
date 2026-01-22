@@ -7,13 +7,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
+import com.example.fitnessway.feature.lists.manager.food.IFoodManager
+import com.example.fitnessway.feature.lists.screen.composables.NutrientDvTrailingIcon
+import com.example.fitnessway.feature.lists.screen.composables.rememberNutrientDvState
 import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
-import com.example.fitnessway.util.UNutrient.hasDailyValue
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
@@ -21,13 +22,9 @@ import com.example.fitnessway.util.form.field.FormFieldName
 @Composable
 fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     field: FormField<T>,
-    foodNutrientsAsPercentages: Map<Int, String>? = null,
-    onAddToPercentagesMap: ((nutrientId: Int, amount: String) -> Unit)? = null,
-    onRemoveFromPercentagesMap: ((nutrientId: Int) -> Unit)? = null,
+    nutrientDvControls: IFoodManager.NutrientDvControls? = null,
     modifier: Modifier = Modifier
 ) {
-    val isNutrient = field.name is FormFieldName.FoodCreation.NutrientField
-
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -35,21 +32,15 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     val inputShape = Ui.InputUi.shape
     val inputTextStyle = Ui.InputUi.getTextStyle()
 
-    val nutrient = if (isNutrient) field.name.nutrientWithPreferences.nutrient else null
-    val isInPercentagesMap = nutrient?.let {
-        foodNutrientsAsPercentages?.containsKey(it.id) ?: false
-    } ?: false
-
-    if (nutrient != null &&
-        nutrient.hasDailyValue &&
-        field.textFieldValue != null
-    ) {
-        LaunchedEffect(field.textFieldValue.text, isInPercentagesMap) {
-            if (isInPercentagesMap && field.textFieldValue.text.isEmpty()) {
-                onRemoveFromPercentagesMap?.invoke(nutrient.id)
-            }
+    val nutrientDvState = rememberNutrientDvState(
+        field = field,
+        nutrientDvControls = nutrientDvControls,
+        getNutrient = { name ->
+            if (name is FormFieldName.FoodCreation.NutrientField) {
+                name.nutrientWithPreferences.nutrient
+            } else null
         }
-    }
+    )
 
     if (field.textFieldValue != null && field.updateTextFieldValueState != null) {
         OutlinedTextField(
@@ -57,10 +48,10 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
             onValueChange = field.updateTextFieldValueState,
             enabled = field.enabled,
             label = {
-                if (nutrient != null) NutrientFieldLabel(
-                    nutrient = nutrient,
+                if (nutrientDvState.nutrient != null) NutrientFieldLabel(
+                    nutrient = nutrientDvState.nutrient,
                     isFocused = isFocused,
-                    extraFieldText = if (isInPercentagesMap) "(%DV)" else null
+                    extraFieldText = if (nutrientDvState.isInNutrientDvMap) "(%DV)" else null
                 ) else Text(
                     text = field.label,
                     style = MaterialTheme.typography.bodyMedium
@@ -75,24 +66,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                     )
                 }
             } else null,
-            trailingIcon = if (nutrient != null && nutrient.hasDailyValue) {
-                {
-                    NutrientUnitToggle(
-                        isInPercentagesMap = isInPercentagesMap,
-                        enabled = field.textFieldValue.text.isNotEmpty() && field.enabled,
-                        onToggle = { shouldBeInMap ->
-                            if (shouldBeInMap) {
-                                onAddToPercentagesMap?.invoke(
-                                    nutrient.id,
-                                    field.textFieldValue.text
-                                )
-                            } else {
-                                onRemoveFromPercentagesMap?.invoke(nutrient.id)
-                            }
-                        }
-                    )
-                }
-            } else null,
+            trailingIcon = NutrientDvTrailingIcon(nutrientDvState, field.textFieldValue.text),
             keyboardOptions = field.keyboardOptions,
             keyboardActions = field.keyboardActions,
             interactionSource = interactionSource,

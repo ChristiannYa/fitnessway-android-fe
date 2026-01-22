@@ -58,11 +58,11 @@ fun CreateFoodFormScreen(
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val currentStep by viewModel.currentStep.collectAsState()
     val foodCreationFormState by viewModel.foodCreationFormState.collectAsState()
-    val foodNutrientsAsPercentages by viewModel.foodNutrientsAsPercentages.collectAsState()
 
     val user = userFlow
     val foodAddState = uiState.foodAddState
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
+    val nutrientDvControls = viewModel.nutrientDvControls
 
     val finalTitle = if (foodAddState is UiState.Success) {
         "Go home"
@@ -132,26 +132,19 @@ fun CreateFoodFormScreen(
                     onBackClick = {
                         val onScreenLeave = {
                             onBackClick()
-                            viewModel.resetFoodCreationScreenStates()
-
-                            if (foodNutrientsAsPercentages.isNotEmpty()) {
-                                viewModel.resetNutrientValuesFromPercentagesMap()
-                            }
+                            viewModel.resetFoodCreationStates()
                         }
 
-                        val goBackOnIdle = {
+                        val goBackOnFoodAddIdleState = {
                             if (currentStep == 1) onScreenLeave() else {
-                                viewModel.updateStep(
-                                    step = currentStep,
-                                    goesBack = true
-                                )
+                                viewModel.updateStep(currentStep, true)
                             }
                         }
 
                         when (foodAddState) {
                             is UiState.Success -> onScreenLeave()
-                            is UiState.Error -> goBackOnIdle()
-                            is UiState.Idle -> goBackOnIdle()
+                            is UiState.Error -> goBackOnFoodAddIdleState()
+                            is UiState.Idle -> goBackOnFoodAddIdleState()
                             else -> {}
                         }
                     },
@@ -310,25 +303,19 @@ fun CreateFoodFormScreen(
                                         2 -> SetNutrients(
                                             fields = nutrientFields,
                                             nutrientsWithoutGoal = nutrientsWithoutGoal,
-                                            foodNutrientsAsPercentages = foodNutrientsAsPercentages,
-                                            onAddToPercentagesMap = viewModel::addNutrientValueToPercentagesMap,
-                                            onRemoveFromPercentagesMap = viewModel::removeNutrientValueFromPercentagesMap
+                                            nutrientDvControls = nutrientDvControls
                                         )
 
                                         3 -> SetNutrients(
                                             fields = vitaminFields,
                                             nutrientsWithoutGoal = vitaminsWithoutGoal,
-                                            foodNutrientsAsPercentages = foodNutrientsAsPercentages,
-                                            onAddToPercentagesMap = viewModel::addNutrientValueToPercentagesMap,
-                                            onRemoveFromPercentagesMap = viewModel::removeNutrientValueFromPercentagesMap
+                                            nutrientDvControls = nutrientDvControls
                                         )
 
                                         4 -> SetNutrients(
                                             fields = mineralFields,
                                             nutrientsWithoutGoal = mineralsWithoutGoal,
-                                            foodNutrientsAsPercentages = foodNutrientsAsPercentages,
-                                            onAddToPercentagesMap = viewModel::addNutrientValueToPercentagesMap,
-                                            onRemoveFromPercentagesMap = viewModel::removeNutrientValueFromPercentagesMap
+                                            nutrientDvControls = nutrientDvControls
                                         )
                                     }
                                 }
@@ -336,20 +323,18 @@ fun CreateFoodFormScreen(
                         }
 
                         NextButton(
-                            onClick = {
-                                viewModel.updateStep(
-                                    step = currentStep,
-                                    goesBack = false,
-                                    onSubmit = {
-                                        focusManager.clearFocus()
-                                        viewModel.addFood()
-                                    }
-                                )
-                            },
                             enabled = isCurrentStepValid,
                             isSubmitting = foodAddState.isLoading,
                             text = nextButtonText
-                        )
+                        ) {
+                            viewModel.updateStep(
+                                step = currentStep,
+                                goesBack = false
+                            ) {
+                                focusManager.clearFocus()
+                                viewModel.addFood()
+                            }
+                        }
                     }
                 }
             }

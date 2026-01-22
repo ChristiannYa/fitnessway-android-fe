@@ -1,5 +1,7 @@
 package com.example.fitnessway.feature.lists.screen.details.edition.composables
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -7,24 +9,43 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.example.fitnessway.feature.lists.manager.food.IFoodManager
+import com.example.fitnessway.feature.lists.screen.composables.NutrientDvTrailingIcon
+import com.example.fitnessway.feature.lists.screen.composables.rememberNutrientDvState
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
+import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
 
 @Composable
-fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
+fun <T : FormFieldName.IFoodEdition> FoodEditionFormField(
     field: FormField<T>,
     onRemoveNutrient: ((nutrientId: Int) -> Unit)? = null,
+    nutrientDvControls: IFoodManager.NutrientDvControls? = null,
     modifier: Modifier = Modifier
 ) {
-    val isNutrient = field.name is FormFieldName.FoodEdition.NutrientField
-
     val outlinedColors = Ui.InputUi.getOutlinedColors()
     val inputShape = Ui.InputUi.shape
     val inputTextStyle = Ui.InputUi.getTextStyle()
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val isNutrient = field.name is FormFieldName.FoodEdition.NutrientField
+    val nutrientDvState = rememberNutrientDvState(
+        field = field,
+        nutrientDvControls = nutrientDvControls,
+        getNutrient = { name ->
+            if (name is FormFieldName.FoodEdition.NutrientField) {
+                name.nutrient
+            } else null
+        }
+    )
 
     if (field.textFieldValue != null && field.updateTextFieldValueState != null) {
         OutlinedTextField(
@@ -32,29 +53,31 @@ fun <T : FormFieldName.IFoodEdition> FoodDetailsField(
             onValueChange = field.updateTextFieldValueState,
             enabled = field.enabled,
             label = {
-                Text(
+                if (nutrientDvState.nutrient != null) UNutrient.Ui.NutrientFieldLabel(
+                    nutrient = nutrientDvState.nutrient,
+                    isFocused = isFocused,
+                    extraFieldText = if (nutrientDvState.isInNutrientDvMap) "(%DV)" else null
+                ) else Text(
                     text = field.label,
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
-            trailingIcon = if (isNutrient) {
+            leadingIcon = if (isNutrient) {
                 {
                     val nutrient = field.name.nutrient
 
                     Clickables.AppPngIconButton(
-                        size = Clickables.AppIconButtonSize.SMALL,
                         icon = AppIconButtonSource.Vector(Icons.Default.Delete),
                         contentDescription = "Delete ${nutrient.name} from food",
-                        onClick = {
-                            onRemoveNutrient?.invoke(nutrient.id)
-                        },
-                        enabled = field.enabled,
-                        showsClickIndication = false
+                        onClick = { onRemoveNutrient?.invoke(nutrient.id) },
+                        enabled = field.enabled
                     )
                 }
             } else null,
+            trailingIcon = NutrientDvTrailingIcon(nutrientDvState, field.textFieldValue.text),
             keyboardOptions = field.keyboardOptions,
             keyboardActions = field.keyboardActions,
+            interactionSource = interactionSource,
             textStyle = inputTextStyle,
             singleLine = true,
             shape = inputShape,

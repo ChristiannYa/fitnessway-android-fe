@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.create.food.composables
+package com.example.fitnessway.feature.lists.screen.composables
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
@@ -34,15 +34,15 @@ import androidx.compose.ui.zIndex
 import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.Animation
 
-private const val OUTER_PADDING = 8
+private const val OUTER_PADDING = 10
 private const val INNER_PADDING = OUTER_PADDING / 2
 
-private const val TOGGLE_BUTTON_WIDTH = 42
-private const val TOGGLE_BUTTON_HEIGHT = 32
+private const val TOGGLE_BUTTON_WIDTH = 36
+private const val TOGGLE_BUTTON_HEIGHT = 27
 
 @Composable
-fun NutrientUnitToggle(
-    isInPercentagesMap: Boolean,
+fun NutrientDvToggleButton(
+    isInNutrientDvMap: Boolean,
     enabled: Boolean,
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -62,7 +62,7 @@ fun NutrientUnitToggle(
             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceTint)
         ) {
             val offsetX by animateFloatAsState(
-                targetValue = if (isInPercentagesMap) 1f else 0f,
+                targetValue = if (isInNutrientDvMap) 1f else 0f,
                 animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
                 label = "NutrientUnitToggle_offsetX"
             )
@@ -81,7 +81,7 @@ fun NutrientUnitToggle(
                     }
                     .background(
                         color = if (enabled) {
-                            if (isInPercentagesMap) MaterialTheme.colorScheme.onSurfaceVariant else {
+                            if (isInNutrientDvMap) MaterialTheme.colorScheme.onSurfaceVariant else {
                                 MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f)
                             }
                         } else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
@@ -94,7 +94,7 @@ fun NutrientUnitToggle(
                     .zIndex(2f) // Row should be on top so text is visible
                     .clickable(
                         enabled = enabled,
-                        onClick = { onToggle(!isInPercentagesMap) },
+                        onClick = { onToggle(!isInNutrientDvMap) },
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     )
@@ -103,13 +103,13 @@ fun NutrientUnitToggle(
             ) {
                 ToggleButton(
                     text = "",
-                    isSelected = !isInPercentagesMap,
+                    isSelected = !isInNutrientDvMap,
                     enabled = enabled
                 )
 
                 ToggleButton(
                     text = "%",
-                    isSelected = isInPercentagesMap,
+                    isSelected = isInNutrientDvMap,
                     enabled = enabled
                 )
             }
@@ -149,10 +149,10 @@ private fun ToggleButton(
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun NutrientUnitTogglePreview() {
+private fun NutrientDvToggleButtonPreview() {
     FitnesswayTheme {
-        NutrientUnitToggle(
-            isInPercentagesMap = false,
+        NutrientDvToggleButton(
+            isInNutrientDvMap = false,
             enabled = true,
             onToggle = {}
         )

@@ -1,11 +1,21 @@
 package com.example.fitnessway.feature.lists.manager.food
 
+import com.example.fitnessway.data.model.MNutrient
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodManager {
-    val foodNutrientsAsPercentages: StateFlow<Map<Int, String>>
+    data class NutrientDvControls(
+        val nutrientDvMap: StateFlow<Map<Int, String>>,
+        val onAdd: (nutrientId: Int, amount: String) -> Unit,
+        val onRemove: (nutrientId: Int) -> Unit,
+        val onClearData: () -> Unit,
+    )
 
-    fun addNutrientValueToPercentagesMap(nutrientId: Int, value: String)
-    fun removeNutrientValueFromPercentagesMap(nutrientId: Int)
-    fun resetNutrientValuesFromPercentagesMap()
+    data class NutrientDvState(
+        val nutrient: MNutrient.Model.Nutrient?,
+        val isInNutrientDvMap: Boolean,
+        val nutrientDvControls: NutrientDvControls?
+    )
+
+    val nutrientDvControls: NutrientDvControls
 }

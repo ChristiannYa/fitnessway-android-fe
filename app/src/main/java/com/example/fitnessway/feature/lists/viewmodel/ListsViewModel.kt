@@ -23,7 +23,6 @@ import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.buildNutrientsByType
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -71,7 +70,7 @@ class ListsViewModel(
 
     fun addFood() {
         val formState = managers.creation.foodCreationFormState.value
-        val foodNutrientsAsPercentages = managers.food.foodNutrientsAsPercentages.value
+        val nutrientDvMap = managers.food.nutrientDvControls.nutrientDvMap.value
 
         val nutrients = formState.nutrients
             .filter { (it.value.toDoubleOrNull() ?: 0.0) > 0 }
@@ -80,7 +79,7 @@ class ListsViewModel(
                 val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
 
                 // Check if this nutrient should be converted from percentage
-                val amount = if (foodNutrientsAsPercentages.containsKey(nutrientId)) {
+                val amount = if (nutrientDvMap.containsKey(nutrientId)) {
                     UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
                 } else amountLiteral
 
@@ -101,7 +100,6 @@ class ListsViewModel(
         viewModelScope.launch {
             foodRepo.addFood(request).collect { state ->
                 _uiState.update { it.copy(foodAddState = state) }
-                managers.food.resetNutrientValuesFromPercentagesMap()
             }
         }
     }
@@ -111,6 +109,7 @@ class ListsViewModel(
     fun updateFood() {
         val formState = managers.edition.foodEditionFormState.value ?: return
         val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
+        val nutrientDvMap = managers.food.nutrientDvControls.nutrientDvMap.value
 
         // Get current data to update optimistically
         val originalFoodsState = foodRepo.uiState.value.foodsUiState
@@ -132,11 +131,16 @@ class ListsViewModel(
         // Gather updated nutrient data
         val deletedNutrients = managers.edition.deletedNutrients.value
         val upsertedNutrients = formState.data.nutrients
-            .map { (nutrientId, amount) ->
-                NutrientIdWithAmount(
-                    nutrientId = nutrientId,
-                    amount = amount.toDouble()
-                )
+            .map {
+                val nutrientId = it.key
+                val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
+
+                // Check if this nutrient should be converted from percentage
+                val amount = if (nutrientDvMap.containsKey(nutrientId)) {
+                    UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
+                } else amountLiteral
+
+                NutrientIdWithAmount(nutrientId, amount)
             }
 
         // Create a map of all original nutrients
@@ -452,11 +456,33 @@ class ListsViewModel(
         _uiState.update { it.copy(foodFavoriteStatusUpdateState = UiState.Idle) }
     }
 
-    fun resetFoodCreationScreenStates() {
-        viewModelScope.launch {
-            delay(500)
-            resetFoodFormState()
-            resetFoodAddState()
-        }
+    /**
+     * `resetFoodCreationStates` resets the following food creation related states
+     * - food add state
+     * - food form state
+     * - nutrients in daily value map
+     */
+    fun resetFoodCreationStates() {
+        if (_uiState.value.foodAddState !is UiState.Idle) resetFoodAddState()
+        resetFoodFormState()
+        resetFoodNutrientDvMap()
+    }
+
+    /**
+     * `resetFoodEditionStates` resets the following food edition related states
+     * - food update state
+     * - deleted nutrients
+     * - nutrients in daily value map
+     */
+    fun resetFoodEditionStates() {
+        if (_uiState.value.foodUpdateState !is UiState.Idle) resetFoodUpdateState()
+        resetDeletedNutrients()
+        resetFoodNutrientDvMap()
+    }
+
+    private fun resetFoodNutrientDvMap() {
+        val nutrientDvControls = managers.food.nutrientDvControls
+        val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
+        if (nutrientDvMap.isNotEmpty()) nutrientDvControls.onClearData()
     }
 }

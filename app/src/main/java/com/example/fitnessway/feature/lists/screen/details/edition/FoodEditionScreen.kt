@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
-import com.example.fitnessway.feature.lists.screen.details.edition.composables.FoodDetailsField
+import com.example.fitnessway.feature.lists.screen.details.edition.composables.FoodEditionFormField
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
@@ -41,6 +41,7 @@ fun FoodEditionScreen(
 
     val user = userFlow
     val foodUpdateState = uiState.foodUpdateState
+    val nutrientDvControls = viewModel.nutrientDvControls
 
     val foodUpdateErrorMessage = handleTempApiErrorMessage(
         uiState = foodUpdateState,
@@ -118,20 +119,19 @@ fun FoodEditionScreen(
                 header = {
                     Header(
                         onBackClick = {
-                            if (foodUpdateState !is UiState.Idle) viewModel.resetFoodUpdateState()
-
-                            viewModel.resetDeletedNutrients()
+                            viewModel.resetFoodEditionStates()
                             onBackClick()
                         },
                         title = title
                     ) {
                         Clickables.HeaderDoneButton(
                             onClick = {
+                                focusManager.clearFocus()
+
                                 if (foodUpdateState !is UiState.Idle) {
                                     viewModel.resetFoodUpdateState()
                                 }
 
-                                focusManager.clearFocus()
                                 viewModel.resetDeletedNutrients()
                                 viewModel.updateFood()
                             },
@@ -156,16 +156,17 @@ fun FoodEditionScreen(
                         FieldSection(
                             title = "Details",
                             fields = detailFields
-                        ) { FoodDetailsField(it) }
+                        ) { FoodEditionFormField(it) }
 
                         nutrientFields.forEach { (_, fields, title) ->
                             FieldSection(
                                 title = title,
                                 fields = fields
                             ) {
-                                FoodDetailsField(
+                                FoodEditionFormField(
                                     field = it,
-                                    onRemoveNutrient = viewModel::filterNutrientFromForm
+                                    onRemoveNutrient = viewModel::filterNutrientFromForm,
+                                    nutrientDvControls = nutrientDvControls
                                 )
                             }
                         }

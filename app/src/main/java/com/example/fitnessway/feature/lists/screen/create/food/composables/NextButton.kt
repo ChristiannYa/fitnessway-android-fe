@@ -25,10 +25,10 @@ import com.example.fitnessway.util.Animation
 
 @Composable
 fun NextButton(
-    onClick: () -> Unit,
+    text: String,
     enabled: Boolean = false,
     isSubmitting: Boolean,
-    text: String,
+    onClick: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),

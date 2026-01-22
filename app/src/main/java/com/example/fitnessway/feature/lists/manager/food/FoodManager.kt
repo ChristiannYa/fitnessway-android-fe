@@ -1,13 +1,11 @@
 package com.example.fitnessway.feature.lists.manager.food
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 class FoodManager : IFoodManager {
     private val _foodNutrientsAsPercentages = MutableStateFlow<Map<Int, String>>(emptyMap())
-    override val foodNutrientsAsPercentages: StateFlow<Map<Int, String>> = _foodNutrientsAsPercentages
 
-    override fun addNutrientValueToPercentagesMap(nutrientId: Int, value: String) {
+    private fun addNutrientValueToPercentagesMap(nutrientId: Int, value: String) {
         val nutrientToAdd = _foodNutrientsAsPercentages.value.toMutableMap().apply {
             put(nutrientId, value)
         }
@@ -15,7 +13,7 @@ class FoodManager : IFoodManager {
         _foodNutrientsAsPercentages.value = nutrientToAdd
     }
 
-    override fun removeNutrientValueFromPercentagesMap(nutrientId: Int) {
+    private fun removeNutrientValueFromPercentagesMap(nutrientId: Int) {
         val nutrientToRemove = _foodNutrientsAsPercentages.value.toMutableMap().apply {
             remove(nutrientId)
         }
@@ -23,7 +21,14 @@ class FoodManager : IFoodManager {
         _foodNutrientsAsPercentages.value = nutrientToRemove
     }
 
-    override fun resetNutrientValuesFromPercentagesMap() {
+    private fun resetNutrientPercentageConfigData() {
         _foodNutrientsAsPercentages.value = emptyMap()
     }
+
+    override val nutrientDvControls = IFoodManager.NutrientDvControls(
+        nutrientDvMap = _foodNutrientsAsPercentages,
+        onAdd = ::addNutrientValueToPercentagesMap,
+        onRemove = ::removeNutrientValueFromPercentagesMap,
+        onClearData = ::resetNutrientPercentageConfigData
+    )
 }

@@ -93,13 +93,9 @@ fun ProfileColorsScreen(
                     )
 
                     val fields = NutrientType.entries.associateWith { type ->
-                        filterNutrientsByType(nutrientsUiState.data, type)
-                            .map {
-                                fieldsProvider.nutrientColor(
-                                    nutrientData = it,
-                                    isLastField = nutrients.combine().last() == it
-                                )
-                            }
+                        nutrientsUiState.data
+                            .filterNutrientsByType(type)
+                            .map { fieldsProvider.nutrientColor(it, nutrients.combine().last() == it) }
                     }
 
                     val scrollState = rememberScrollState()

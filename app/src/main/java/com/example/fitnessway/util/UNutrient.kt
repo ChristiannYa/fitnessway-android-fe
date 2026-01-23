@@ -176,18 +176,12 @@ object UNutrient {
         )
     }
 
-    fun <T> NutrientsByType<T>.combine(): List<T> {
-        return this.basic + this.vitamin + this.mineral
-    }
-
-    fun <T> filterNutrientsByType(
-        nutrients: NutrientsByType<T>,
-        type: NutrientType
-    ): List<T> {
+    // @TODO: Rename to filterNutrientsByType
+    fun <T>NutrientsByType<T>.filterNutrientsByType(type: NutrientType): List<T> {
         return when (type) {
-            NutrientType.BASIC -> nutrients.basic
-            NutrientType.VITAMIN -> nutrients.vitamin
-            NutrientType.MINERAL -> nutrients.mineral
+            NutrientType.BASIC -> this.basic
+            NutrientType.VITAMIN -> this.vitamin
+            NutrientType.MINERAL -> this.mineral
         }
     }
 
@@ -218,36 +212,45 @@ object UNutrient {
         )
     }
 
+    fun <T> NutrientsByType<T>.combine(): List<T> {
+        return this.basic + this.vitamin + this.mineral
+    }
+
     fun List<NutrientWithPreferences>.sortPremiumNutrients(
         isPremiumUser: Boolean
     ): List<NutrientWithPreferences> {
         return if (!isPremiumUser) this.sortedBy { it.nutrient.isPremium } else this
     }
 
-    // @TODO: Rename to `filterNonPremium`
-    fun List<NutrientWithPreferences>.filterOutPremiumNutrients(
+    fun List<NutrientWithPreferences>.filterNonPremiumPreferences(
         isUserPremium: Boolean
     ): List<NutrientWithPreferences> {
         return if (!isUserPremium) this.filter { !it.nutrient.isPremium } else this
     }
 
-    // @TODO: Rename to `filterPremium`
-    fun List<NutrientWithPreferences>.filterOutNonPremiumNutrients(
+    fun List<NutrientDataWithAmount>.filterNonPremiumAmounts(
+        isUserPremium: Boolean
+    ): List<NutrientDataWithAmount> {
+        return if (!isUserPremium) this.filter { !it.nutrientWithPreferences.nutrient.isPremium } else this
+    }
+
+    fun List<NutrientWithPreferences>.filterPremium(
         isUserPremium: Boolean
     ): List<NutrientWithPreferences> {
         return if (!isUserPremium) this.filter { it.nutrient.isPremium } else this
     }
 
-    // @TODO: Rename to `filterWithGoal`
-    fun List<NutrientWithPreferences>.filterOutNutrientsWithoutGoal(): List<NutrientWithPreferences> {
+    fun List<NutrientWithPreferences>.filterGoalSetPreferences(): List<NutrientWithPreferences> {
         return this.filter { it.preferences.goal != null }
     }
 
-    // @TODO: Rename to `filterWithoutGoal`
-    fun List<NutrientWithPreferences>.filterOutNutrientsWithGoal(): List<NutrientWithPreferences> {
-        return this.filter { it.preferences.goal == null }
+    fun List<NutrientDataWithAmount>.filterGoalSetAmounts(): List<NutrientDataWithAmount> {
+        return this.filter { it.nutrientWithPreferences.preferences.goal != null }
     }
 
+    fun List<NutrientWithPreferences>.filterGoalNotSet(): List<NutrientWithPreferences> {
+        return this.filter { it.preferences.goal == null }
+    }
 
     fun List<Nutrient>.getIds(): List<Int> = this.map { it.id }
 
@@ -260,7 +263,6 @@ object UNutrient {
             null
         }
     }
-
 
     @Composable
     fun getUserNutrientColor(color: String?, isUserPremium: Boolean): Color {
@@ -813,7 +815,7 @@ object UNutrient {
 
     object Debug {
         fun Nutrient.logNutrientData() {
-            logcat("[${this.id}]: ${this.name}")
+            logcat("[${this.id}]: ${if (this.isPremium) "✨" else "🆓"} ${this.name}")
         }
 
         fun NutrientDataWithAmount.logNutrientDataWithAmountData() {

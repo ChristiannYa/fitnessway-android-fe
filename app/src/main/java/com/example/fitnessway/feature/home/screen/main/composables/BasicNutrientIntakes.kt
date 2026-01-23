@@ -20,6 +20,8 @@ import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
+import com.example.fitnessway.util.UNutrient.filterGoalSetAmounts
+import com.example.fitnessway.util.UNutrient.filterNonPremiumAmounts
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 
@@ -34,15 +36,12 @@ fun BasicNutrientIntakes(
         is UiState.Loading -> Composable(210.dp, "Loading nutrient intakes")
 
         is UiState.Success -> {
-            val nutrients = filterNutrientsByType(
-                nutrients = state.data,
-                type = NutrientType.BASIC
-            ).filter {
-                it.nutrientWithPreferences.preferences.goal != null &&
-                        (!it.nutrientWithPreferences.nutrient.isPremium || user.isPremium)
-            }
+            val basicNutrientsWithGoals = state.data
+                .filterNutrientsByType(NutrientType.BASIC)
+                .filterNonPremiumAmounts(user.isPremium)
+                .filterGoalSetAmounts()
 
-            val isEmpty = nutrients.isEmpty()
+            val isEmpty = basicNutrientsWithGoals.isEmpty()
 
             Box(
                 contentAlignment = Alignment.Center,
@@ -71,7 +70,7 @@ fun BasicNutrientIntakes(
                         )
 
                         PagedNutrients(
-                            nutrients = nutrients,
+                            nutrients = basicNutrientsWithGoals,
                             displayFormat = UNutrient.ScrollableNutrientsFormat.BOX,
                             isUserPremium = user.isPremium
                         )

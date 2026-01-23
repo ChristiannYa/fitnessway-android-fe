@@ -36,9 +36,9 @@ import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
-import com.example.fitnessway.util.UNutrient.filterOutNutrientsWithGoal
-import com.example.fitnessway.util.UNutrient.filterOutNutrientsWithoutGoal
-import com.example.fitnessway.util.UNutrient.filterOutPremiumNutrients
+import com.example.fitnessway.util.UNutrient.filterGoalNotSet
+import com.example.fitnessway.util.UNutrient.filterGoalSetPreferences
+import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.getIds
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
@@ -195,14 +195,11 @@ fun CreateFoodFormScreen(
                         )
 
                         val nutrientFieldsData = NutrientType.entries.associateWith { type ->
-                            val nutrientsByType = filterNutrientsByType(
-                                nutrients = nutrients,
-                                type = type
-                            )
-                                .filterOutPremiumNutrients(isUserPremium)
+                            val nutrientList = nutrients
+                                .filterNutrientsByType(type)
+                                .filterNonPremiumPreferences(isUserPremium)
 
-                            val nutrientsWithGoal = nutrientsByType
-                                .filterOutNutrientsWithoutGoal()
+                            val nutrientsWithGoal = nutrientList.filterGoalSetPreferences()
 
                             val fields = nutrientsWithGoal
                                 .mapIndexed { index, nutrientWithPrefs ->
@@ -222,8 +219,8 @@ fun CreateFoodFormScreen(
                                     )
                                 }
 
-                            val withoutGoal = nutrientsByType
-                                .filterOutNutrientsWithGoal()
+                            val withoutGoal = nutrientList
+                                .filterGoalNotSet()
                                 .map { it.nutrient }
 
                             Pair(fields, withoutGoal)

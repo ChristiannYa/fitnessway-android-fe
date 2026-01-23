@@ -23,6 +23,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.UNutrient.combine
+import com.example.fitnessway.util.UNutrient.getIds
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
@@ -98,21 +99,21 @@ fun FoodEditionScreen(
                 fieldsProvider.servingUnit()
             )
 
-            val allNutrientIds = selectedFoodCopy.nutrients.combine().map {
-                it.nutrientWithPreferences.nutrient.id
-            }.filter { it !in deletedNutrients }
+            val allNutrientIds = selectedFoodCopy.nutrients
+                .combine()
+                .map { it.nutrientWithPreferences.nutrient }
+                .getIds()
+                .filter { it !in deletedNutrients }
 
-            val nutrientFields = nutrients.map { (type, ns, title) ->
-                val fields = ns
-                    .filter { it.nutrientWithPreferences.nutrient.id !in deletedNutrients }
-                    .map { nutrientData ->
-                        val nutrient = nutrientData.nutrientWithPreferences.nutrient
-
-                        fieldsProvider.nutrient(
-                            nutrient = nutrientData.nutrientWithPreferences.nutrient,
-                            isLastField = nutrient.id == allNutrientIds.last()
-                        )
-                    }
+            val nutrientFields = nutrients.map { (type, innerNutrients, title) ->
+                val fields = innerNutrients
+                    // Iterate over `innerNutrients` with `mapNotNull` so that null values are omitted.
+                    // In order to obtain these values we use `takeIf` (which can return null values) to select
+                    // items that meet its conditional, where in this case are the nutrients that are not in the
+                    // `deletedNutrients` list
+                    .mapNotNull { it.nutrientWithPreferences.nutrient.takeIf { n -> n.id !in deletedNutrients } }
+                    // Finally, just create `fieldsProvider.nutrient` with the leftover data
+                    .map { fieldsProvider.nutrient(it, it.id == allNutrientIds.last()) }
 
                 Triple(type, fields, title)
             }

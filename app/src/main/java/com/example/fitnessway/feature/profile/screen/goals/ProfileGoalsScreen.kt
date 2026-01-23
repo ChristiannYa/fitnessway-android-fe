@@ -21,9 +21,9 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.UNutrient.combine
+import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
-import com.example.fitnessway.util.UNutrient.filterOutNonPremiumNutrients
-import com.example.fitnessway.util.UNutrient.filterOutPremiumNutrients
+import com.example.fitnessway.util.UNutrient.filterPremium
 import com.example.fitnessway.util.UNutrient.mapNutrients
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
@@ -88,8 +88,9 @@ fun ProfileGoalsScreen(
                         key1 = nutrients,
                         key2 = user.isPremium
                     ) {
-                        filterNutrientsByType(nutrients, type)
-                            .filterOutPremiumNutrients(user.isPremium)
+                        nutrients
+                            .filterNutrientsByType(type)
+                            .filterNonPremiumPreferences(user.isPremium)
                     }
 
                     val fieldsProvider = remember(
@@ -122,12 +123,10 @@ fun ProfileGoalsScreen(
                 }
 
                 val premiumNutrientsMap = NutrientType.entries.associateWith { type ->
-                    filterNutrientsByType(
-                        nutrients = nutrientsUiState.data.mapNutrients { _, nutrients ->
-                            nutrients.filterOutNonPremiumNutrients(user.isPremium)
-                        },
-                        type = type
-                    ).map { it.nutrient }
+                    nutrientsUiState.data
+                        .mapNutrients { _, nutrients -> nutrients.filterPremium(user.isPremium) }
+                        .filterNutrientsByType(type)
+                        .map { it.nutrient }
                 }
 
                 Column(

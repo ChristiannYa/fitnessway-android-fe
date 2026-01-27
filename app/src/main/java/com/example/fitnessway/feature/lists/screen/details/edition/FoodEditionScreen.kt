@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -291,6 +292,7 @@ private fun AvailableNutrientsPopup(
             modifier = Modifier
                 .areaContainer(
                     areaColor = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = RoundedCornerShape(32.dp),
                     hugsContent = true
                 )
         ) {

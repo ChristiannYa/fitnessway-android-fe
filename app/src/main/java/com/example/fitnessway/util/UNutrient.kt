@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -46,6 +47,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
@@ -339,6 +341,42 @@ object UNutrient {
 
     object Ui {
         @Composable
+        fun buildAnnotatedString(
+            nutrient: MNutrient.Model.Nutrient,
+            isInDvMode: Boolean = false,
+            nameColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+            informationColor: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f),
+        ): AnnotatedString {
+            return buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium,
+                        color = nameColor
+                    ),
+                    block = { append("${nutrient.name} ") }
+                )
+
+                if (nutrient.type == NutrientType.MINERAL) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = informationColor
+                        ),
+                        block = { append(text = "(${nutrient.symbol}) ") }
+                    )
+                }
+
+                withStyle(
+                    style = SpanStyle(
+                        color = informationColor
+                    ),
+                    block = {
+                        append(if (isInDvMode) "(%DV)" else nutrient.unit)
+                    }
+                )
+            }
+        }
+
+        @Composable
         fun NutrientLabelsFlowRow(
             nutrients: List<Nutrient>,
             getColor: ((Nutrient) -> Color)? = null,
@@ -352,14 +390,12 @@ object UNutrient {
                 verticalArrangement = Arrangement.spacedBy(size.paddingY)
             ) {
                 nutrients.forEachIndexed { index, nutrient ->
-                    val name = if (nutrient.type == NutrientType.MINERAL) {
-                        "${nutrient.name} (${nutrient.symbol})"
-                    } else nutrient.name
-
                     val color = if (getColor != null) getColor(nutrient) else MaterialTheme.colorScheme.surfaceVariant
 
                     AppLabel(
-                        text = name,
+                        text = UNutrient.Ui.buildAnnotatedString(
+                            nutrient = nutrient,
+                        ).text,
                         color = color,
                         size = size,
                         textStyle = textStyle,
@@ -391,7 +427,7 @@ object UNutrient {
         fun NutrientFieldLabel(
             nutrient: Nutrient,
             isFocused: Boolean,
-            extraFieldText: String? = null
+            isInDvMode: Boolean = false
         ) {
             val inputOutlinedColors = InputUi.getOutlinedColors()
 
@@ -400,33 +436,14 @@ object UNutrient {
             } else inputOutlinedColors.unfocusedLabelColor.copy(0.6f)
 
             Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontWeight = FontWeight.Medium,
-                            color = if (isFocused) inputOutlinedColors.focusedLabelColor else {
-                                inputOutlinedColors.unfocusedLabelColor
-                            }
-                        ),
-                        block = { append("${nutrient.name} ") }
-                    )
-
-                    if (nutrient.type == NutrientType.MINERAL) {
-                        withStyle(
-                            style = SpanStyle(
-                                color = extraFieldContentColor
-                            ),
-                            block = { append(text = "(${nutrient.symbol}) ") }
-                        )
-                    }
-
-                    withStyle(
-                        style = SpanStyle(
-                            color = extraFieldContentColor
-                        ),
-                        block = { append(extraFieldText ?: nutrient.unit) }
-                    )
-                },
+                text = UNutrient.Ui.buildAnnotatedString(
+                    nutrient = nutrient,
+                    isInDvMode = isInDvMode,
+                    nameColor = if (isFocused) inputOutlinedColors.focusedLabelColor else {
+                        inputOutlinedColors.unfocusedLabelColor
+                    },
+                    informationColor = extraFieldContentColor
+                ),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

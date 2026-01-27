@@ -51,7 +51,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                 if (nutrientDvState.nutrient != null) NutrientFieldLabel(
                     nutrient = nutrientDvState.nutrient,
                     isFocused = isFocused,
-                    extraFieldText = if (nutrientDvState.isInNutrientDvMap) "(%DV)" else null
+                    isInDvMode = nutrientDvState.isInNutrientDvMap
                 ) else Text(
                     text = field.label,
                     style = MaterialTheme.typography.bodyMedium

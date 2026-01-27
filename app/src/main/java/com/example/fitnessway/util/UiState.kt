@@ -15,5 +15,3 @@ val <T> UiState<T>.isSuccess: Boolean get() = this is UiState.Success
 val <T> UiState<T>.isLoading: Boolean get() = this is UiState.Loading
 val <T> UiState<T>.isError: Boolean get() = this is UiState.Error
 val <T> UiState<T>.isIdle: Boolean get() = this is UiState.Idle
-
-fun <T> T.asSuccess(): UiState.Success<T> = UiState.Success(this)

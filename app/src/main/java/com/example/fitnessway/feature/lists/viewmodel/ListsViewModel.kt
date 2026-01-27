@@ -22,7 +22,6 @@ import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.asSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -113,9 +112,8 @@ class ListsViewModel(
     fun updateFood() {
         val formState = managers.edition.foodEditionFormState.value ?: return
         val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
-        val nutrientDvControlsThis =
-            managers.food.nutrientDvControls // Added 'This' to avoid name matching from the manager
-        val nutrientDvMap = nutrientDvControlsThis.nutrientDvMap.value
+        val nutrientDvControls = managers.food.nutrientDvControls
+        val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
 
         // Get current data to update optimistically
         val originalFoodsState = foodRepo.uiState.value.foodsUiState
@@ -130,9 +128,7 @@ class ListsViewModel(
         val latestFood = originalFoods.getFoodById(selectedFoodId) ?: return
 
         // Store original food if first update
-        if (_originalFoodBeforeUpdate == null) {
-            _originalFoodBeforeUpdate = latestFood
-        }
+        if (_originalFoodBeforeUpdate == null) _originalFoodBeforeUpdate = latestFood
 
         // Gather updated nutrient data
         val deletedNutrients = managers.edition.deletedNutrients.value
@@ -191,7 +187,7 @@ class ListsViewModel(
         // Update UI immediately
         managers.edition.setSelectedFood(optimisticFood)
         managers.edition.initializeFoodForm(optimisticFood)
-        if (nutrientDvMap.isNotEmpty()) nutrientDvControlsThis.onClearData()
+        resetFoodEditionStates()
 
         _uiState.update { it.copy(foodUpdateState = UiState.Success(optimisticFood)) }
         foodRepo.updateState { it.copy(foodsUiState = UiState.Success(optimisticFoods)) }
@@ -238,7 +234,7 @@ class ListsViewModel(
                                     if (it.information.id == revertedFood.information.id) revertedFood else it
                                 }
 
-                                foodRepo.updateState { it.copy(foodsUiState = revertedFoods.asSuccess()) }
+                                foodRepo.updateState { it.copy(foodsUiState = UiState.Success(revertedFoods)) }
 
                                 managers.edition.initializeFoodForm(revertedFood)
                                 managers.edition.setSelectedFood(revertedFood)

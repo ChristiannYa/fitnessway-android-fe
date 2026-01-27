@@ -43,7 +43,7 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Formatters.logcat
-import com.example.fitnessway.util.UNutrient.Debug.logNutrientDataWithAmountData
+import com.example.fitnessway.util.UNutrient.Debug.logNutrientWithAmountData
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UNutrient.combine
@@ -439,7 +439,7 @@ object UFood {
         fun FoodInformation.logFoodNutrients() {
             logcat("[${this.information.id}] - food nutrients:")
             this.nutrients.combine().forEach {
-                it.logNutrientDataWithAmountData()
+                it.logNutrientWithAmountData()
             }
         }
     }

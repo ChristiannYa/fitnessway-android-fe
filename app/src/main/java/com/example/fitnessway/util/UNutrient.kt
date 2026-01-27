@@ -903,9 +903,9 @@ object UNutrient {
             logcat("    [${id}]: ${if (this.isPremium) "✨" else "🆓"} $type ${this.name}")
         }
 
-        fun NutrientDataWithAmount.logNutrientDataWithAmountData() {
+        fun NutrientDataWithAmount.logNutrientWithAmountData() {
             val nutrient = this.nutrientWithPreferences.nutrient
-            logcat("[${nutrient.id}] ${nutrient.name}: ${this.amount}")
+            logcat("    [${nutrient.id}] ${nutrient.name}: ${this.amount}")
         }
     }
 

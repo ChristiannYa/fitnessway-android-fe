@@ -80,8 +80,7 @@ fun FoodEditionScreen(
 
     val selectedFoodCopy = selectedFood
     val foodEditionFormStateCopy = foodEditionFormState
-    val areDelegatesPresent = selectedFoodCopy != null &&
-            foodEditionFormStateCopy != null
+    val areDelegatesPresent = selectedFoodCopy != null && foodEditionFormStateCopy != null
 
     val title = "Food Edition"
     val focusManager = LocalFocusManager.current
@@ -126,22 +125,21 @@ fun FoodEditionScreen(
                 fieldsProvider.amountPerServing(),
                 fieldsProvider.servingUnit()
             )
+            var nutrientIdsPresent: List<Int>
 
             val foodWithAddedNutrients = (selectedFoodCopy.nutrients
                 .combine()
                 .map { n -> n.nutrientWithPreferences.nutrient } + addedNutrients)
                 .distinctBy { it.id }
                 .filter { it.id !in deletedNutrients }
+                .also { nutrientIdsPresent = it.map { n -> n.id } }
 
             val editableNutrients = UNutrient.buildNutrientsByType2(
                 nutrients = foodWithAddedNutrients,
                 getType = { it.type }
             ).toTypedList()
 
-            val nutrientIdsPresent = foodWithAddedNutrients.map { it.id }.filter { it !in deletedNutrients }
-
             val nutrientFields = editableNutrients.map { (type, nutrients) ->
-                // @TODO: Check if we can replace `nutrientIdsPresent` with `nutrients.map { it.id }.last()`
                 type to nutrients.map { fieldsProvider.nutrient(it, it.id == nutrientIdsPresent.last()) }
             }
 

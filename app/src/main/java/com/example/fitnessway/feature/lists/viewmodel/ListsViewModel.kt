@@ -20,9 +20,9 @@ import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
-import com.example.fitnessway.util.UNutrient.buildNutrientsByType
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.asSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -165,9 +165,10 @@ class ListsViewModel(
         }
 
         // Filter updated nutrients by type
-        val updatedNutrientsByType = buildNutrientsByType(updatedFoodNutrientData) { type, nutrients ->
-            nutrients.filter { it.nutrientWithPreferences.nutrient.type == type }
-        }
+        val updatedNutrientsByType = UNutrient.buildNutrientsByType2(
+            nutrients = updatedFoodNutrientData,
+            getType = { it.nutrientWithPreferences.nutrient.type }
+        )
 
         // Create the new food
         val optimisticFood = FoodInformation(
@@ -234,16 +235,10 @@ class ListsViewModel(
                                 val currentFoods = currentFoodsState.data
 
                                 val revertedFoods = currentFoods.map {
-                                    if (it.information.id == revertedFood.information.id) {
-                                        revertedFood
-                                    } else it
+                                    if (it.information.id == revertedFood.information.id) revertedFood else it
                                 }
 
-                                foodRepo.updateState {
-                                    it.copy(
-                                        foodsUiState = UiState.Success(revertedFoods)
-                                    )
-                                }
+                                foodRepo.updateState { it.copy(foodsUiState = revertedFoods.asSuccess()) }
 
                                 managers.edition.initializeFoodForm(revertedFood)
                                 managers.edition.setSelectedFood(revertedFood)
@@ -477,6 +472,7 @@ class ListsViewModel(
      */
     fun resetFoodEditionStates() {
         if (_uiState.value.foodUpdateState !is UiState.Idle) resetFoodUpdateState()
+        resetAddedNutrients()
         resetDeletedNutrients()
         resetFoodNutrientDvMap()
     }

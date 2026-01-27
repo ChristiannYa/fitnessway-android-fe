@@ -887,7 +887,8 @@ object UNutrient {
         }
 
         fun NutrientDataWithAmount.logNutrientDataWithAmountData() {
-            logcat("[${this.nutrientWithPreferences.nutrient.id}] ${this.nutrientWithPreferences.nutrient.name}: ${this.amount}")
+            val nutrient = this.nutrientWithPreferences.nutrient
+            logcat("[${nutrient.id}] ${nutrient.name}: ${this.amount}")
         }
     }
 

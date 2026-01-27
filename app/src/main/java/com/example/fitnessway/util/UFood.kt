@@ -439,7 +439,7 @@ object UFood {
         fun FoodInformation.logFoodNutrients() {
             logcat("[${this.information.id}] - food nutrients:")
             this.nutrients.combine().forEach {
-                logcat("  ${it.logNutrientDataWithAmountData()}")
+                it.logNutrientDataWithAmountData()
             }
         }
     }

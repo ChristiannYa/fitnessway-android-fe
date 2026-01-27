@@ -245,7 +245,7 @@ class EditionManager(
     }
 
     private fun removeAddedNutrient(nutrient: MNutrient.Model.Nutrient) {
-        _addedNutrients.update { it - nutrient }
+        if (nutrient in _addedNutrients.value) _addedNutrients.update { it - nutrient }
     }
 
     private fun addNutrientIdToDeletedList(nutrientId: Int) {

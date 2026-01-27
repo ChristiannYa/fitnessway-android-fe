@@ -42,7 +42,6 @@ import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.UNutrient
-import com.example.fitnessway.util.UNutrient.Debug.logNutrientData
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.toReadable
@@ -106,7 +105,6 @@ fun FoodEditionScreen(
                     ) {
                         focusManager.clearFocus()
                         if (!foodUpdateState.isIdle) viewModel.resetFoodUpdateState()
-                        viewModel.resetDeletedNutrients()
                         viewModel.updateFood()
                     }
                 }
@@ -142,10 +140,7 @@ fun FoodEditionScreen(
             val nutrientIdsPresent = foodWithAddedNutrients.map { it.id }.filter { it !in deletedNutrients }
 
             val nutrientFields = editableNutrients.map { (type, nutrients) ->
-                nutrients.forEach {
-                    it.logNutrientData()
-                }
-
+                // @TODO: Check if we can replace `nutrientIdsPresent` with `nutrients.map { it.id }.last()`
                 type to nutrients.map { fieldsProvider.nutrient(it, it.id == nutrientIdsPresent.last()) }
             }
 

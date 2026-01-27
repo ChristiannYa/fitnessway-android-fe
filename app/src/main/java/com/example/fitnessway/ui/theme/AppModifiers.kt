@@ -66,22 +66,4 @@ object AppModifiers {
             shape = shape
         )
         .padding(size.padding)
-
-    @Composable
-    fun Modifier.blurPremiumItem(
-        shouldBlur: Boolean
-    ) = this
-        .blur(if (!shouldBlur) 0.dp else 2.dp)
-
-    @Composable
-    fun Modifier.clickableNoIndication(
-        onClick: () -> Unit,
-        enabled: Boolean
-    ) = this
-        .clickable(
-            onClick = onClick,
-            enabled = enabled,
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null
-        )
 }

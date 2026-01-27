@@ -87,8 +87,8 @@ object Banners {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = Animation.ComposableTransition.PopUpV2.enter,
-            exit = Animation.ComposableTransition.PopUpV2.exit,
+            enter = Animation.ComposableTransition.VerticalSlideExtra.enter,
+            exit = Animation.ComposableTransition.VerticalSlideExtra.exit,
             modifier = modifier
         ) { ErrorBanner(text) }
     }
@@ -115,8 +115,8 @@ object Banners {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = Animation.ComposableTransition.PopUpV3.enter,
-            exit = Animation.ComposableTransition.PopUpV3.exit,
+            enter = Animation.ComposableTransition.VerticalSlideFromBottom.enter,
+            exit = Animation.ComposableTransition.VerticalSlideFromBottom.exit,
             modifier = modifier
         ) { SuccessBanner(text) }
     }

@@ -47,8 +47,8 @@ object Clickables {
         iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
         iconTintOverridesDisabledTint: Boolean = false,
         contentDescription: String,
+        modifier: Modifier = Modifier,
         onClick: () -> Unit,
-        modifier: Modifier = Modifier
     ) {
         Box(
             contentAlignment = Alignment.Center,

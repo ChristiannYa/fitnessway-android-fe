@@ -2,8 +2,11 @@ package com.example.fitnessway.feature.lists.manager.edition
 
 import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
+import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.feature.lists.manager.food.IFoodManager
+import com.example.fitnessway.util.Debug.logMap
 import com.example.fitnessway.util.Formatters.doubleFormatter
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.form.FormState
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 class EditionManager(
     private val foodManager: IFoodManager
@@ -35,7 +39,8 @@ class EditionManager(
     private val _deletedNutrients = MutableStateFlow<List<Int>>(emptyList())
     override val deletedNutrients: StateFlow<List<Int>> = _deletedNutrients
 
-    private val _originalFormState = MutableStateFlow<FormStates.FoodEdition?>(null)
+    private val _addedNutrients = MutableStateFlow<List<MNutrient.Model.Nutrient>>(emptyList())
+    override val addedNutrients: StateFlow<List<MNutrient.Model.Nutrient>> = _addedNutrients
 
     private val _editFormNameError: String?
         get() = _foodEditionFormState.value?.let { formState ->
@@ -80,6 +85,8 @@ class EditionManager(
                 }
             }
         }
+
+    private val _originalFormState = MutableStateFlow<FormStates.FoodEdition?>(null)
 
     override val isFoodEditionFormValid: StateFlow<Boolean> by lazy {
         combine(
@@ -144,21 +151,8 @@ class EditionManager(
         )
     }
 
-    override fun initializeFoodForm(food: FoodInformation) {
-        val nutrients = food.nutrients.combine().associate {
-            it.nutrientWithPreferences.nutrient.id to doubleFormatter(it.amount, 4)
-        }
-
-        val data = FormStates.FoodEdition(
-            name = food.information.name,
-            brand = food.information.brand ?: "",
-            amountPerServing = doubleFormatter(food.information.amountPerServing, 4),
-            servingUnit = food.information.servingUnit,
-            nutrients = nutrients
-        )
-
-        _originalFormState.value = data
-        _foodEditionFormState.value = FormState(data)
+    override fun setSelectedFood(food: FoodInformation) {
+        _selectedFood.value = food
     }
 
     override fun updateFoodEditionFormField(
@@ -199,16 +193,45 @@ class EditionManager(
         }
     }
 
-    override fun filterNutrientFromForm(nutrientId: Int) {
-        val currentList = _deletedNutrients.value
+    override fun initializeFoodForm(food: FoodInformation) {
+        val foodNutrientsMap = food.nutrients
+            .combine()
+            .associate { it.nutrientWithPreferences.nutrient.id to doubleFormatter(it.amount, 4) }
 
-        if (nutrientId !in currentList) {
-            _deletedNutrients.value = currentList + nutrientId
+        val data = FormStates.FoodEdition(
+            name = food.information.name,
+            brand = food.information.brand ?: "",
+            amountPerServing = doubleFormatter(food.information.amountPerServing, 4),
+            servingUnit = food.information.servingUnit,
+            nutrients = foodNutrientsMap
+        )
+
+        _originalFormState.value = data
+        _foodEditionFormState.value = FormState(data)
+    }
+
+    override fun addNutrientToForm(nutrient: MNutrient.Model.Nutrient) {
+        removeNutrientIdFromDeletedList(nutrient.id)
+        addAddedNutrient(nutrient)
+
+        _foodEditionFormState.value?.let { formState ->
+            val updatedNutrients = formState.data.nutrients
+                .toMutableMap()
+                .apply { put(nutrient.id, "0") }
+
+            _foodEditionFormState.value = formState.copy(
+                data = formState.data.copy(nutrients = updatedNutrients)
+            )
         }
+    }
+
+    override fun filterOutNutrientFromForm(nutrient: MNutrient.Model.Nutrient) {
+        addNutrientIdToDeletedList(nutrient.id)
+        removeAddedNutrient(nutrient)
 
         _foodEditionFormState.value?.let { formState ->
             val updatedNutrients = formState.data.nutrients.toMutableMap().apply {
-                remove(nutrientId)
+                remove(nutrient.id)
             }
 
             _foodEditionFormState.value = formState.copy(
@@ -217,12 +240,29 @@ class EditionManager(
         }
     }
 
-    override fun setSelectedFood(food: FoodInformation) {
-        _selectedFood.value = food
+    private fun addAddedNutrient(nutrient: MNutrient.Model.Nutrient) {
+        _addedNutrients.update { it + nutrient }
+    }
+
+    private fun removeAddedNutrient(nutrient: MNutrient.Model.Nutrient) {
+        _addedNutrients.update { it - nutrient }
+    }
+
+    private fun addNutrientIdToDeletedList(nutrientId: Int) {
+        // _deletedNutrients.value = _deletedNutrients.value+ nutrientId
+        if (nutrientId !in _deletedNutrients.value) _deletedNutrients.value += nutrientId
+    }
+
+    private fun removeNutrientIdFromDeletedList(nutrientId: Int) {
+        if (nutrientId in _deletedNutrients.value) _deletedNutrients.value -= nutrientId
     }
 
     override fun resetDeletedNutrients() {
         _deletedNutrients.value = emptyList()
+    }
+
+    override fun resetAddedNutrients() {
+        _addedNutrients.value = emptyList()
     }
 
     fun init(scope: CoroutineScope) {

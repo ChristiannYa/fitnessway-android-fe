@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.feature.lists.screen.composables.NutrientDvTrailingIcon
 import com.example.fitnessway.feature.lists.screen.composables.rememberNutrientDvState
@@ -25,7 +26,7 @@ import com.example.fitnessway.util.form.field.FormFieldName
 @Composable
 fun <T : FormFieldName.IFoodEdition> FoodEditionFormField(
     field: FormField<T>,
-    onRemoveNutrient: ((nutrientId: Int) -> Unit)? = null,
+    onRemoveNutrient: ((nutrient: MNutrient.Model.Nutrient) -> Unit)? = null,
     nutrientDvControls: IFoodManager.NutrientDvControls? = null,
     modifier: Modifier = Modifier
 ) {
@@ -69,7 +70,7 @@ fun <T : FormFieldName.IFoodEdition> FoodEditionFormField(
                     Clickables.AppPngIconButton(
                         icon = AppIconButtonSource.Vector(Icons.Default.Delete),
                         contentDescription = "Delete ${nutrient.name} from food",
-                        onClick = { onRemoveNutrient?.invoke(nutrient.id) },
+                        onClick = { onRemoveNutrient?.invoke(nutrient) },
                         enabled = field.enabled
                     )
                 }

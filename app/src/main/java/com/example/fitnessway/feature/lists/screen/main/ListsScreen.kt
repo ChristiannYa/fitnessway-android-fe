@@ -54,13 +54,16 @@ fun ListsScreen(
     onViewFoodDetails: () -> Unit,
     onNavigateToFoodCreationForm: () -> Unit
 ) {
+    val userFlow by viewModel.userFlow.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
-    var selectedList by remember { mutableStateOf(ListOption.Food) }
+    val user = userFlow
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val foodsUiState = foodRepoUiState.foodsUiState
-    val isUiDataReady = nutrientsUiState.isSuccess && foodsUiState.isSuccess
+    val areListsDataReady = nutrientsUiState.isSuccess && foodsUiState.isSuccess
+
+    var selectedList by remember { mutableStateOf(ListOption.Food) }
 
     LaunchedEffect(Unit) {
         viewModel.getFoods()
@@ -84,7 +87,7 @@ fun ListsScreen(
         header = {
             Header(
                 title = title,
-                extraContent = if (isUiDataReady) {
+                extraContent = if (areListsDataReady) {
                     {
                         Clickables.AppPngIconButton(
                             icon = Structure.AppIconButtonSource.Vector(Icons.Default.Menu),
@@ -153,7 +156,7 @@ fun ListsScreen(
                 )
             }.toTypedArray()
 
-            if (isUiDataReady) {
+            if (areListsDataReady) {
                 Structure.MoreOptions(
                     state = moreOptionsState,
                     options = options,

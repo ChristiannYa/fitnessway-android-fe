@@ -63,7 +63,7 @@ fun UpgradePromptSection(
                         fontWeight = FontWeight.SemiBold
                     )
 
-                    NutrientLabelsFlowRow(nutrients, color = sectionAccent)
+                    NutrientLabelsFlowRow(nutrients, getColor = { sectionAccent })
                 }
             }
         }

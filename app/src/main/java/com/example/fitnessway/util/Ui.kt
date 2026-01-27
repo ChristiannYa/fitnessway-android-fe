@@ -1,6 +1,9 @@
 package com.example.fitnessway.util
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -34,10 +38,11 @@ object Ui {
         val paddingX: Dp,
         val paddingY: Dp
     ) {
-        LARGE(50, 14.dp, 10.dp),
-        MEDIUM(50, 12.dp, 8.dp),
-        SMALL(40, 10.dp, 8.dp),
-        XS(40, 8.dp, 6.dp)
+        Xl(40, 16.dp, 12.dp),
+        LARGE(40, 14.dp, 10.dp),
+        MEDIUM(40, 12.dp, 8.dp),
+        SMALL(40, 10.dp, 6.dp),
+        XS(40, 8.dp, 4.dp)
     }
 
     object Measurements {
@@ -196,17 +201,32 @@ object Ui {
 
 
     @Composable
-    fun AppLabel(
+    fun <T> AppLabel(
         text: String,
         color: Color = MaterialTheme.colorScheme.surfaceVariant,
         size: LabelSize = LabelSize.MEDIUM,
         textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+        clickableConfiguration: ClickableConfiguration<T>? = null,
+        data: T? = null,
         modifier: Modifier = Modifier
     ) {
         Surface(
             shape = RoundedCornerShape(size.cornerRadius),
             color = color,
             modifier = modifier
+                .clip(RoundedCornerShape(size.cornerRadius))
+                .then(
+                    if (clickableConfiguration != null && data != null) {
+                        Modifier.clickable(
+                            interactionSource = if (clickableConfiguration.showsClickIndication(data)) null else {
+                                remember { MutableInteractionSource() }
+                            },
+                            indication = if (clickableConfiguration.showsClickIndication(data)) LocalIndication.current else null,
+                            enabled = clickableConfiguration.enabled(data),
+                            onClick = { clickableConfiguration.onClick(data) }
+                        )
+                    } else Modifier
+                )
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
@@ -221,4 +241,10 @@ object Ui {
             }
         }
     }
+
+    data class ClickableConfiguration<T>(
+        val onClick: (T) -> Unit,
+        val enabled: (T) -> Boolean = { true },
+        val showsClickIndication: (T) -> Boolean = { true }
+    )
 }

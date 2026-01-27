@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -55,6 +56,7 @@ import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Ui.AppLabel
+import com.example.fitnessway.util.Ui.ClickableConfiguration
 import com.example.fitnessway.util.Ui.InputUi
 import com.example.fitnessway.util.Ui.LabelSize
 
@@ -176,8 +178,7 @@ object UNutrient {
         )
     }
 
-    // @TODO: Rename to filterNutrientsByType
-    fun <T>NutrientsByType<T>.filterNutrientsByType(type: NutrientType): List<T> {
+    fun <T> NutrientsByType<T>.filterNutrientsByType(type: NutrientType): List<T> {
         return when (type) {
             NutrientType.BASIC -> this.basic
             NutrientType.VITAMIN -> this.vitamin
@@ -198,6 +199,14 @@ object UNutrient {
         )
     }
 
+    fun <T> NutrientsByType<T>.toTypedList(): List<Pair<NutrientType, List<T>>> {
+        return listOf(
+            NutrientType.BASIC to this.basic,
+            NutrientType.VITAMIN to this.vitamin,
+            NutrientType.MINERAL to this.mineral
+        )
+    }
+
     fun <T, R> buildNutrientsByType(
         nutrients: List<T>,
         transform: (
@@ -209,6 +218,19 @@ object UNutrient {
             basic = transform(NutrientType.BASIC, nutrients),
             vitamin = transform(NutrientType.VITAMIN, nutrients),
             mineral = transform(NutrientType.MINERAL, nutrients)
+        )
+    }
+
+    fun <T> buildNutrientsByType2(
+        nutrients: List<T>,
+        getType: (T) -> NutrientType
+    ): NutrientsByType<T> {
+        val grouped = nutrients.groupBy(getType)  // Single iteration
+
+        return NutrientsByType(
+            basic = grouped[NutrientType.BASIC] ?: emptyList(),
+            vitamin = grouped[NutrientType.VITAMIN] ?: emptyList(),
+            mineral = grouped[NutrientType.MINERAL] ?: emptyList()
         )
     }
 
@@ -252,6 +274,10 @@ object UNutrient {
         return this.filter { it.preferences.goal == null }
     }
 
+    fun Int.getNutrientById(nutrients: List<Nutrient>): Nutrient? {
+        return nutrients.find { it.id == this }
+    }
+
     fun List<Nutrient>.getIds(): List<Int> = this.map { it.id }
 
     fun getColor(color: String?): Color? {
@@ -281,6 +307,7 @@ object UNutrient {
         }
     }
 
+    // @TODO: Replace usages with the `NutrientType.asTitle()` method
     fun getNutrientCategoryTitle(type: NutrientType): String {
         return when (type) {
             NutrientType.BASIC -> "Nutrients"
@@ -292,38 +319,71 @@ object UNutrient {
         }
     }
 
+    /**
+     * `toReadable` formats the nutrient's type to be lowercase, and makes the first char uppercase.
+     * `NutrientType.BASIC` has a more user friendly format of "Nutrients"
+     */
+    fun NutrientType.toReadable(
+        isPlural: Boolean = true,
+        isLowercase: Boolean = false,
+    ): String {
+        val typeLowercased = when (this) {
+            NutrientType.BASIC -> "nutrient"
+            else -> this.name
+        }.lowercase().replaceFirstChar {
+            if (isLowercase) it.toString() else it.uppercase()
+        }
+
+        return typeLowercased + if (isPlural) "s" else ""
+    }
+
     object Ui {
         @Composable
         fun NutrientLabelsFlowRow(
             nutrients: List<Nutrient>,
+            getColor: ((Nutrient) -> Color)? = null,
+            size: LabelSize = LabelSize.SMALL,
             textStyle: TextStyle = MaterialTheme.typography.labelMedium,
-            color: Color = MaterialTheme.colorScheme.surfaceVariant
+            clickableConfiguration: ClickableConfiguration<Nutrient>? = null,
+            labelModifier: (Nutrient) -> Modifier = { Modifier },
         ) {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.spacedBy(size.paddingY)
             ) {
-                nutrients.forEach {
+                nutrients.forEachIndexed { index, nutrient ->
+                    val name = if (nutrient.type == NutrientType.MINERAL) {
+                        "${nutrient.name} (${nutrient.symbol})"
+                    } else nutrient.name
+
+                    val color = if (getColor != null) getColor(nutrient) else MaterialTheme.colorScheme.surfaceVariant
+
                     AppLabel(
-                        text = it.name,
+                        text = name,
                         color = color,
-                        size = LabelSize.SMALL,
-                        textStyle = textStyle
+                        size = size,
+                        textStyle = textStyle,
+                        clickableConfiguration = clickableConfiguration,
+                        data = nutrient,
+                        modifier = labelModifier(nutrient)
                     )
+
+                    if (index != nutrients.lastIndex) Spacer(modifier = Modifier.width(size.paddingX))
                 }
             }
         }
 
         @Composable
         fun NutrientCategoryTitle(
-            type: NutrientType
+            type: NutrientType,
+            style: TextStyle = MaterialTheme.typography.titleSmall,
+            modifier: Modifier = Modifier
         ) {
-            val title = getNutrientCategoryTitle(type)
-
             Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold
+                text = type.toReadable(),
+                style = style,
+                fontWeight = FontWeight.SemiBold,
+                modifier = modifier
             )
         }
 
@@ -815,7 +875,15 @@ object UNutrient {
 
     object Debug {
         fun Nutrient.logNutrientData() {
-            logcat("[${this.id}]: ${if (this.isPremium) "✨" else "🆓"} ${this.name}")
+            val id = if (this.id < 10) "0${this.id}" else this.id
+
+            val type = when (this.type) {
+                NutrientType.BASIC -> "Ba"
+                NutrientType.VITAMIN -> "Vi"
+                NutrientType.MINERAL -> "Mi"
+            }
+
+            logcat("    [${id}]: ${if (this.isPremium) "✨" else "🆓"} $type ${this.name}")
         }
 
         fun NutrientDataWithAmount.logNutrientDataWithAmountData() {

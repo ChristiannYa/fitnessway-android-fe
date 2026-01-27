@@ -89,8 +89,8 @@ fun FoodLogs(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = Animation.ComposableTransition.SlideVerticallyFromBottom.enter,
-        exit = Animation.ComposableTransition.SlideVerticallyFromBottom.exit,
+        enter = Animation.ComposableTransition.VerticalSlideFromTop.enter,
+        exit = Animation.ComposableTransition.VerticalSlideFromTop.exit,
         modifier = modifier
             .height(Ui.Measurements.UPWARDS_SLIDEABLE_HEIGHT_SMALL)
             .zIndex(2f)
@@ -378,7 +378,7 @@ private fun FoodLog(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            AppLabel(
+            AppLabel<Unit>(
                 text = foodLog.time,
                 textStyle = MaterialTheme.typography.labelSmall,
                 size = Ui.LabelSize.XS,

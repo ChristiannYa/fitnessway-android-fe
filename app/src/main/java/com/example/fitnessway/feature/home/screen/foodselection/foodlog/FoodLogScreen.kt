@@ -119,7 +119,7 @@ fun FoodLogScreen(
                             )
                         }
 
-                        AppLabel(
+                        AppLabel<Unit>(
                             text = foodLogCategoryString,
                             size = Ui.LabelSize.MEDIUM,
                         )

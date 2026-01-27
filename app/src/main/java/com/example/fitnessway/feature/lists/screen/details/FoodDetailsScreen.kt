@@ -33,6 +33,8 @@ import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.isIdle
+import com.example.fitnessway.util.isSuccess
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -47,15 +49,16 @@ fun FoodDetailsScreen(
 
     val user = userFlow
     val selectedFoodCopy = selectedFood
+
     val foodDeleteState = uiState.foodDeleteState
     val foodFavoriteStatusUpdateState = uiState.foodFavoriteStatusUpdateState
-    val title = "Food Details"
 
     val foodDeleteErrorMessage = handleTempApiErrorMessage(
         uiState = foodDeleteState,
         onTimeOut = viewModel::resetFoodDeleteState
     )
 
+    val title = "Food Details"
     val view = LocalView.current
 
     if (selectedFoodCopy != null && user != null) {
@@ -63,27 +66,22 @@ fun FoodDetailsScreen(
         var isConfirmDeletionPopupVisible by remember { mutableStateOf(false) }
         val isOverlayVisible = moreOptionsState.isVisible || isConfirmDeletionPopupVisible
 
-        val onCancelFoodDeletion = {
+        fun onCancelFoodDeletion() {
             isConfirmDeletionPopupVisible = false
             moreOptionsState.show()
         }
 
-        val onOverlayClick = {
-            if (moreOptionsState.isVisible) {
-                moreOptionsState.hide()
-            }
-
-            if (isConfirmDeletionPopupVisible) {
-                onCancelFoodDeletion()
-            }
+        fun onOverlayClick() {
+            if (moreOptionsState.isVisible) moreOptionsState.hide()
+            if (isConfirmDeletionPopupVisible) onCancelFoodDeletion()
         }
 
         Screen(
             header = {
                 Header(
                     onBackClick = {
-                        if (foodDeleteState !is UiState.Idle) viewModel.resetFoodDeleteState()
-                        if (foodFavoriteStatusUpdateState !is UiState.Idle) viewModel.resetFoodFavoriteStatusUpdateState()
+                        if (!foodDeleteState.isIdle) viewModel.resetFoodDeleteState()
+                        if (!foodFavoriteStatusUpdateState.isIdle) viewModel.resetFoodFavoriteStatusUpdateState()
 
                         onBackClick()
                     },
@@ -91,7 +89,7 @@ fun FoodDetailsScreen(
                 ) {
                     val isFavorite = selectedFoodCopy.metadata.isFavorite
 
-                    if (foodDeleteState !is UiState.Success) {
+                    if (!foodDeleteState.isSuccess) {
                         val favoriteIcon = if (isFavorite) {
                             Icons.Default.Star
                         } else Icons.Default.StarBorder
@@ -159,7 +157,7 @@ fun FoodDetailsScreen(
 
                 DarkOverlay(
                     isVisible = isOverlayVisible,
-                    onClick = onOverlayClick
+                    onClick = ::onOverlayClick
                 )
 
                 Structure.MoreOptions(

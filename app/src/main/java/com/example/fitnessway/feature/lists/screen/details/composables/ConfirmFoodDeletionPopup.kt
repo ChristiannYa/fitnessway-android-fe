@@ -35,8 +35,8 @@ fun ConfirmFoodDeletionPopup(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = Animation.ComposableTransition.PopUpV1.enter,
-        exit = Animation.ComposableTransition.PopUpV1.exit,
+        enter = Animation.ComposableTransition.ScaleInWithSpring.enter,
+        exit = Animation.ComposableTransition.ScaleInWithSpring.exit,
         modifier = modifier
     ) {
         Box(

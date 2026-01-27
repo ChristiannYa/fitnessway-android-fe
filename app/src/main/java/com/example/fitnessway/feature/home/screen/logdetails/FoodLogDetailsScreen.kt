@@ -89,12 +89,12 @@ fun FoodLogDetailsScreen(
                             )
                         }
 
-                        AppLabel(
+                        AppLabel<Unit>(
                             text = foodLog.category.replaceFirstChar { it.uppercase() },
                             size = Ui.LabelSize.SMALL
                         )
 
-                        AppLabel(
+                        AppLabel<Unit>(
                             text = foodLog.time,
                             size = Ui.LabelSize.SMALL
                         )

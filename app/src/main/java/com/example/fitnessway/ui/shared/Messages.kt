@@ -21,13 +21,19 @@ import com.example.fitnessway.util.Animation
 
 object Messages {
     @Composable
-    fun NotFoundMessage(message: String = "Data not found") {
+    fun NotFoundMessage(
+        message: String = "Data not found",
+        fillsWidth: Boolean = true,
+    ) {
         Text(
             text = message,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground.copy(0.8f),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .then(
+                    if (fillsWidth) Modifier.fillMaxWidth() else Modifier
+                ),
         )
     }
 
@@ -39,8 +45,8 @@ object Messages {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = Animation.ComposableTransition.PopUpV2.enter,
-            exit = Animation.ComposableTransition.PopUpV2.exit,
+            enter = Animation.ComposableTransition.VerticalSlideExtra.enter,
+            exit = Animation.ComposableTransition.VerticalSlideExtra.exit,
             modifier = modifier
         ) { NotFoundMessage(message) }
     }
@@ -54,8 +60,8 @@ object Messages {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = Animation.ComposableTransition.PopUpV2.enter,
-            exit = Animation.ComposableTransition.PopUpV2.exit,
+            enter = Animation.ComposableTransition.VerticalSlideExtra.enter,
+            exit = Animation.ComposableTransition.VerticalSlideExtra.exit,
             modifier = modifier
         ) {
             Column(
@@ -107,8 +113,8 @@ object Messages {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = Animation.ComposableTransition.PopUpV2.enter,
-            exit = Animation.ComposableTransition.PopUpV2.exit,
+            enter = Animation.ComposableTransition.VerticalSlideExtra.enter,
+            exit = Animation.ComposableTransition.VerticalSlideExtra.exit,
             modifier = modifier
         ) { SuccessMessage(message) }
     }

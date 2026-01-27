@@ -113,7 +113,8 @@ class ListsViewModel(
     fun updateFood() {
         val formState = managers.edition.foodEditionFormState.value ?: return
         val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
-        val nutrientDvControlsThis = managers.food.nutrientDvControls // Added 'This' to avoid name matching from the manager
+        val nutrientDvControlsThis =
+            managers.food.nutrientDvControls // Added 'This' to avoid name matching from the manager
         val nutrientDvMap = nutrientDvControlsThis.nutrientDvMap.value
 
         // Get current data to update optimistically
@@ -164,9 +165,7 @@ class ListsViewModel(
         }
 
         // Filter updated nutrients by type
-        val updatedNutrientsByType = buildNutrientsByType(
-            nutrients = updatedFoodNutrientData
-        ) { type, nutrients ->
+        val updatedNutrientsByType = buildNutrientsByType(updatedFoodNutrientData) { type, nutrients ->
             nutrients.filter { it.nutrientWithPreferences.nutrient.type == type }
         }
 

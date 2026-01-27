@@ -54,7 +54,7 @@ object Animation {
         val fadeIn = fadeIn(animationSpec = tween(300))
         val fadeOut = fadeOut(animationSpec = tween(300))
 
-        object PopUpV1 {
+        object ScaleInWithSpring {
             val enter = fadeIn + scaleIn(
                 initialScale = 0.2f,
                 transformOrigin = TransformOrigin(1f, 0f),
@@ -71,7 +71,7 @@ object Animation {
             )
         }
 
-        object PopUpV2 {
+        object VerticalSlideExtra {
             val enter = slideInVertically(
                 // Start the slide from 40 (pixels) above where the content is supposed to go, to
                 // produce a parallax effect
@@ -87,13 +87,20 @@ object Animation {
                     ) +
                     fadeIn(initialAlpha = 0.3f)
 
-            val exit = slideOutVertically() +
-                    shrinkVertically() +
-                    fadeOut() +
-                    scaleOut(targetScale = 1.2f)
+            val exit = slideOutVertically(
+                targetOffsetY = { -40 }
+            ) +
+                    shrinkVertically(shrinkTowards = Alignment.Top) +
+                    scaleOut(
+                        transformOrigin = TransformOrigin(
+                            pivotFractionX = .5f,
+                            pivotFractionY = 0f
+                        )
+                    ) +
+                    fadeOut(targetAlpha = 0.3f)
         }
 
-        object PopUpV3 {
+        object VerticalSlideFromBottom {
             val enter = slideInVertically(
                 initialOffsetY = { it }, // Start from bottom (full height offset)
                 animationSpec = tween(durationMillis = 300)
@@ -105,7 +112,7 @@ object Animation {
             ) + fadeOut
         }
 
-        object SlideVerticallyFromBottom {
+        object VerticalSlideFromTop {
             val enter = slideInVertically(
                 initialOffsetY = { fullHeight -> fullHeight },
                 animationSpec = tween(durationMillis = 300)

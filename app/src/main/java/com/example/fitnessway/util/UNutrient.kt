@@ -240,6 +240,12 @@ object UNutrient {
         return this.basic + this.vitamin + this.mineral
     }
 
+    fun List<MNutrient.Model.NutrientWithPreferences>.findByNutrientId(
+        nutrientId: Int
+    ): MNutrient.Model.NutrientWithPreferences? {
+        return this.find { it.nutrient.id == nutrientId }
+    }
+
     fun List<NutrientWithPreferences>.sortPremiumNutrients(
         isPremiumUser: Boolean
     ): List<NutrientWithPreferences> {

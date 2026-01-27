@@ -21,6 +21,7 @@ import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
+import com.example.fitnessway.util.UNutrient.findByNutrientId
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -116,13 +117,19 @@ class ListsViewModel(
         val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
 
         // Get current data to update optimistically
-        val originalFoodsState = foodRepo.uiState.value.foodsUiState
+        val originalFoodsUiState = foodRepo.uiState.value.foodsUiState
 
-        // Only proceed if there is ui state data
-        if (originalFoodsState !is UiState.Success) return
+        // Obtain nutrient data
+        val nutrientsUiState = nutrientRepoUiState.value.nutrientsUiState
 
-        // Extract data from state
-        val originalFoods = originalFoodsState.data
+        // Only proceed if there is UI state data
+        if (originalFoodsUiState !is UiState.Success ||
+            nutrientsUiState !is UiState.Success
+        ) return
+
+        // Extract data from states
+        val originalFoods = originalFoodsUiState.data
+        val nutrientsWithPreferences = nutrientsUiState.data
 
         // Obtain most recent version of the food from the repository
         val latestFood = originalFoods.getFoodById(selectedFoodId) ?: return
@@ -131,6 +138,7 @@ class ListsViewModel(
         if (_originalFoodBeforeUpdate == null) _originalFoodBeforeUpdate = latestFood
 
         // Gather updated nutrient data
+        val addedNutrients = managers.edition.addedNutrients.value
         val deletedNutrients = managers.edition.deletedNutrients.value
         val upsertedNutrients = formState.data.nutrients
             .map {
@@ -145,16 +153,22 @@ class ListsViewModel(
                 NutrientIdWithAmount(nutrientId, amount)
             }
 
-        // Create a map of all original nutrients
-        val originalNutrients = latestFood.nutrients
+        // Obtain added nutrients if they are present
+        val addedNutrientsWithPreferences = addedNutrients.mapNotNull { addedNutrient ->
+            nutrientsWithPreferences.combine().findByNutrientId(addedNutrient.id)
+        }
+
+        // Create a list of all original nutrients and added nutrients (if any)'s preferences metadata
+        val allNutrientsWithPreferences = (latestFood.nutrients
             .combine()
-            .associateBy { it.nutrientWithPreferences.nutrient.id }
+            .map { it.nutrientWithPreferences } + addedNutrientsWithPreferences)
+            .associateBy { it.nutrient.id }
 
         // Create updated nutrient data
         val updatedFoodNutrientData = upsertedNutrients.mapNotNull { upsertedNutrient ->
-            originalNutrients[upsertedNutrient.nutrientId]?.let { originalNutrient ->
+            allNutrientsWithPreferences[upsertedNutrient.nutrientId]?.let {
                 NutrientDataWithAmount(
-                    nutrientWithPreferences = originalNutrient.nutrientWithPreferences,
+                    nutrientWithPreferences = it,
                     amount = upsertedNutrient.amount
                 )
             }

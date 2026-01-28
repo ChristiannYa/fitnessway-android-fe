@@ -10,13 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow
-import com.example.fitnessway.util.UNutrient.getNutrientCategoryTitle
+import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.Ui.Measurements.TEXT_ICON_HORIZONTAL_SPACE
 
 @Composable
@@ -58,7 +58,7 @@ fun UpgradePromptSection(
             premiumNutrientsMap.forEach { (type, nutrients) ->
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(
-                        text = getNutrientCategoryTitle(type),
+                        text = type.toReadable(),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold
                     )

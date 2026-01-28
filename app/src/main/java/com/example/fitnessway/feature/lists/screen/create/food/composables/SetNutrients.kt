@@ -16,7 +16,7 @@ import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow
-import com.example.fitnessway.util.UNutrient.getNutrientCategoryTitle
+import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.form.field.FoodCreationNutrientField
 
 @Composable
@@ -35,8 +35,7 @@ fun SetNutrients(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     val moreThanOne = nutrientsWithoutGoal.second.size > 1
-                    val category = getNutrientCategoryTitle(nutrientsWithoutGoal.first)
-                    val nutrientsType = category.lowercase().dropLast(if (moreThanOne) 0 else 1)
+                    val nutrientsType = nutrientsWithoutGoal.first.toReadable(moreThanOne, true)
 
                     val messageText = if (moreThanOne) {
                         "These $nutrientsType are missing goals. Setting their goal will allow them to be " +

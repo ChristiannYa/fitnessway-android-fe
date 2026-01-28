@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
@@ -45,6 +44,7 @@ import com.example.fitnessway.util.Ui.handleApiSuccessTempState
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
+import com.example.fitnessway.util.isLoading
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -101,13 +101,10 @@ fun FoodLogScreen(
                 header = {
                     Header(
                         onBackClick = {
-                            if (foodLogAddState is UiState.Error) {
-                                viewModel.resetFoodLogAddState()
-                            }
-
+                            if (foodLogAddState is UiState.Error) viewModel.resetFoodLogAddState()
                             onBackClick()
                         },
-                        isOnBackEnabled = foodLogAddState !is UiState.Loading,
+                        isOnBackEnabled = !foodLogAddState.isLoading,
                         title = "Log Submission"
                     ) {
                         if (selectedFoodToLogCopy.metadata.isFavorite) {
@@ -132,6 +129,8 @@ fun FoodLogScreen(
                     }
                 }
             ) {
+                val scrollState = rememberScrollState()
+
                 val fieldsProvider = FoodLogFieldsProvider(
                     formState = foodLogFormStateCopy,
                     focusManager = focusManager,
@@ -141,12 +140,11 @@ fun FoodLogScreen(
                     }
                 )
 
-                val nutrients = remember(
+                val foodNutrients = remember(
                     selectedFoodToLogCopy.nutrients,
                     foodLogFormStateCopy.data.servings
                 ) {
-                    val servings = foodLogFormStateCopy.data
-                        .servings.toDoubleOrNull() ?: 0.0
+                    val servings = foodLogFormStateCopy.data.servings.toDoubleOrNull() ?: 0.0
 
                     calcNutrientIntakesFromFoodLogServings(
                         nutrients = selectedFoodToLogCopy.nutrients,
@@ -154,8 +152,6 @@ fun FoodLogScreen(
                         newServings = servings
                     )
                 }
-
-                val scrollState = rememberScrollState()
 
                 Box(modifier = Modifier.fillMaxSize()) {
                     Column(
@@ -177,7 +173,7 @@ fun FoodLogScreen(
                             timeField = fieldsProvider.time()
                         )
 
-                        val sections = getNutrientSectionsConfig(nutrients)
+                        val sections = getNutrientSectionsConfig(foodNutrients)
 
                         sections.forEach { section ->
                             if (section.shouldShow) {

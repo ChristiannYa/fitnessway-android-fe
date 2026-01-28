@@ -23,7 +23,7 @@ import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UNutrient.filterGoalSetAmounts
 import com.example.fitnessway.util.UNutrient.filterNonPremiumAmounts
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
-import com.example.fitnessway.util.UNutrient.getNutrientCategoryTitle
+import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.UiState
 
 
@@ -68,10 +68,8 @@ fun OtherNutrientIntakes(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        val nutrientCategory = getNutrientCategoryTitle(nutrientType)
-
                         Text(
-                            text = nutrientCategory,
+                            text = nutrientType.toReadable(),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold
                         )

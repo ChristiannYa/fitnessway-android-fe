@@ -288,6 +288,10 @@ object UNutrient {
 
     fun List<Nutrient>.getIds(): List<Int> = this.map { it.id }
 
+    fun List<Nutrient>.validateFreeUserAccess(isUserPremium: Boolean): Boolean {
+        return if (!isUserPremium) { !this.any { it.isPremium } } else true
+    }
+
     fun getColor(color: String?): Color? {
         if (color.isNullOrEmpty()) return null
 
@@ -312,18 +316,6 @@ object UNutrient {
         return nutrientsData.combine().associate {
             val value = propertySelector(it.preferences)
             it.nutrient.id to value
-        }
-    }
-
-    // @TODO: Replace usages with the `NutrientType.asTitle()` method
-    fun getNutrientCategoryTitle(type: NutrientType): String {
-        return when (type) {
-            NutrientType.BASIC -> "Nutrients"
-            else -> "${
-                type.name
-                    .lowercase()
-                    .replaceFirstChar { it.uppercase() }
-            }s"
         }
     }
 

@@ -79,7 +79,7 @@ class TokenAuthenticator(
             ).toRequestBody("application/json".toMediaType())
 
             val request = Request.Builder()
-                .url("${baseUrl}auth/refresh")
+                .url("${baseUrl}${ApiUrls.Auth.REFRESH_PATH}")
                 .post(refreshData)
                 .build()
 

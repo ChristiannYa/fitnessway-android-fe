@@ -44,7 +44,7 @@ class NutrientRepositoryImpl(
     }
 
     override fun refreshNutrientIntakes(date: String) {
-        cacheManager.evictUrl(ApiUrls.Nutrient.getIntakes(date))
+        cacheManager.evictUrl(ApiUrls.Nutrient.getIntakesByDateUrl(date))
 
         repositoryScope.launch {
             fetchNutrientIntakes(date).collect { state ->
@@ -68,7 +68,7 @@ class NutrientRepositoryImpl(
     }
 
     override fun refreshNutrients() {
-        cacheManager.evictUrl(ApiUrls.Nutrient.NUTRIENTS)
+        cacheManager.evictUrl(ApiUrls.Nutrient.NUTRIENT_LIST_URL)
         _uiState.update { it.copy(nutrientsUiState = UiState.Loading) }
 
         repositoryScope.launch {
@@ -92,10 +92,10 @@ class NutrientRepositoryImpl(
             extractData = { it.upsertedGoals },
             errMsg = "Failed to set nutrient goals",
             invalidatedUrls = listOf(
-                ApiUrls.Nutrient.ALL_INTAKES,
-                ApiUrls.Nutrient.NUTRIENTS,
-                ApiUrls.Food.ALL_LOGS,
-                ApiUrls.Food.FOODS
+                ApiUrls.Nutrient.NUTRIENT_INTAKES_URL,
+                ApiUrls.Nutrient.NUTRIENT_LIST_URL,
+                ApiUrls.Food.FOOD_LOG_LIST_URL,
+                ApiUrls.Food.FOOD_USER_LIST_URL
             )
         )
     }
@@ -109,10 +109,10 @@ class NutrientRepositoryImpl(
             extractData = { it.updatedColors },
             errMsg = "Failed to update nutrient colors",
             invalidatedUrls = listOf(
-                ApiUrls.Nutrient.ALL_INTAKES,
-                ApiUrls.Nutrient.NUTRIENTS,
-                ApiUrls.Food.ALL_LOGS,
-                ApiUrls.Food.FOODS
+                ApiUrls.Nutrient.NUTRIENT_INTAKES_URL,
+                ApiUrls.Nutrient.NUTRIENT_LIST_URL,
+                ApiUrls.Food.FOOD_LOG_LIST_URL,
+                ApiUrls.Food.FOOD_USER_LIST_URL
             )
         )
     }

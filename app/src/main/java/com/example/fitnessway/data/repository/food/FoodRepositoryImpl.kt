@@ -43,7 +43,7 @@ class FoodRepositoryImpl(
     }
 
     override fun refreshFoods() {
-        cacheManager.evictUrl(ApiUrls.Food.FOODS)
+        cacheManager.evictUrl(ApiUrls.Food.FOOD_USER_LIST_URL)
         _uiState.update { it.copy(foodsUiState = UiState.Loading) }
 
         repositoryScope.launch {
@@ -67,7 +67,7 @@ class FoodRepositoryImpl(
             extractData = { it.foodCreated },
             errMsg = "Failed to add food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.FOODS
+                ApiUrls.Food.FOOD_USER_LIST_URL
             )
         ).onEach { state ->
             if (state is UiState.Success) {
@@ -90,8 +90,8 @@ class FoodRepositoryImpl(
                 extractData = { it.foodUpdated },
                 errMsg = "Failed to update food",
                 invalidatedUrls = listOf(
-                    ApiUrls.Food.FOODS,
-                    ApiUrls.Food.ALL_LOGS
+                    ApiUrls.Food.FOOD_USER_LIST_URL,
+                    ApiUrls.Food.FOOD_LOG_LIST_URL
                 )
             ).collect { state ->
                 _updateFoodFlow.emit(state)
@@ -109,8 +109,8 @@ class FoodRepositoryImpl(
             extractData = { it.foodDeleted },
             errMsg = "Failed to delete food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.FOODS,
-                ApiUrls.Food.ALL_LOGS
+                ApiUrls.Food.FOOD_USER_LIST_URL,
+                ApiUrls.Food.FOOD_LOG_LIST_URL
             )
         )
     }
@@ -144,7 +144,7 @@ class FoodRepositoryImpl(
     }
 
     override fun refreshFoodSort() {
-        cacheManager.evictUrl(ApiUrls.Food.FOOD_SORT)
+        cacheManager.evictUrl(ApiUrls.Food.FOOD_USER_SORT_GET_URL)
         _uiState.update { it.copy(foodSortUiState = UiState.Loading) }
 
         repositoryScope.launch {
@@ -168,8 +168,8 @@ class FoodRepositoryImpl(
             extractData = { it.foodSort },
             errMsg = "Failed to update food sort",
             invalidatedUrls = listOf(
-                ApiUrls.Food.FOOD_SORT,
-                ApiUrls.Food.FOODS
+                ApiUrls.Food.FOOD_USER_SORT_GET_URL,
+                ApiUrls.Food.FOOD_USER_LIST_URL
             )
         )
     }
@@ -187,7 +187,7 @@ class FoodRepositoryImpl(
     }
 
     override fun refreshFoodLogs(date: String) {
-        cacheManager.evictUrl(ApiUrls.Food.getLogs(date))
+        cacheManager.evictUrl(ApiUrls.Food.getLogsByDateUrl(date))
 
         repositoryScope.launch {
             fetchFoodLogs(date).collect { state ->
@@ -213,8 +213,8 @@ class FoodRepositoryImpl(
             extractData = { it.foodLogAdded },
             errMsg = "Failed to add log",
             invalidatedUrls = listOf(
-                ApiUrls.Nutrient.getIntakes(date),
-                ApiUrls.Food.getLogs(date)
+                ApiUrls.Nutrient.getIntakesByDateUrl(date),
+                ApiUrls.Food.getLogsByDateUrl(date)
             )
         )
     }
@@ -228,8 +228,8 @@ class FoodRepositoryImpl(
             extractData = { it.updatedFoodLog },
             errMsg = "Failed to update log",
             invalidatedUrls = listOf(
-                ApiUrls.Food.getLogs(date),
-                ApiUrls.Nutrient.getIntakes(date)
+                ApiUrls.Food.getLogsByDateUrl(date),
+                ApiUrls.Nutrient.getIntakesByDateUrl(date)
             )
         )
     }
@@ -243,8 +243,8 @@ class FoodRepositoryImpl(
             extractData = { it.foodLogDeleted },
             errMsg = "Failed to delete log",
             invalidatedUrls = listOf(
-                ApiUrls.Nutrient.getIntakes(date),
-                ApiUrls.Food.getLogs(date)
+                ApiUrls.Nutrient.getIntakesByDateUrl(date),
+                ApiUrls.Food.getLogsByDateUrl(date)
             )
         )
     }

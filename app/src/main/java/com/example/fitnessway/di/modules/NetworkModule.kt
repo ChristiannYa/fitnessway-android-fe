@@ -1,5 +1,6 @@
 package com.example.fitnessway.di.modules
 
+import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.interceptors.AuthInterceptor
@@ -20,7 +21,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.io.File
-import com.example.fitnessway.data.network.ApiUrls.BASE_URL
+import com.example.fitnessway.data.network.ApiUrls.BASE_URL_GO
 
 private const val AUTH_YES = "authYes"
 private const val AUTH_NO = "authNo"
@@ -56,7 +57,7 @@ val networkModule = module {
     single<TokenAuthenticator> {
         TokenAuthenticator(
             authStateHolder = get(),
-            baseUrl = BASE_URL
+            baseUrl = ApiUrls.BASE_URL_KT
         )
     }
 
@@ -66,7 +67,7 @@ val networkModule = module {
         val contentType = "application/json".toMediaType()
 
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL_GO)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
     }
@@ -88,7 +89,7 @@ val networkModule = module {
             .build()
 
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL_GO)
             .client(authenticatedClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

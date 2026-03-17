@@ -81,9 +81,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.compose.animation.core)
 
-    testImplementation(libs.junit)
 
     // Added
+    testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.0")
 
     androidTestImplementation(libs.androidx.junit)

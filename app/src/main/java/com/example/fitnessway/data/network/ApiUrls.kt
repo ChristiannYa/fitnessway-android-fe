@@ -2,7 +2,7 @@ package com.example.fitnessway.data.network
 
 object ApiUrls {
     const val BASE_URL_GO = "http://10.0.0.4:5050/api/go/"
-    const val BASE_URL_KT = "http://0.0.0.0:1144/api/kt/"
+    const val BASE_URL_KT = "http://10.0.0.4:1144/api/kt/"
 
     object Auth {
         const val REGISTER_PATH = "auth/register"
@@ -24,7 +24,7 @@ object ApiUrls {
     }
 
     object Nutrient {
-        const val NUTRIENT_LIST_PATH = "nutrients/get-nutrients"
+        const val NUTRIENT_LIST_PATH = "nutrient/get-nutrients"
         const val NUTRIENT_LIST_URL = "$BASE_URL_GO$NUTRIENT_LIST_PATH"
 
         const val NUTRIENT_INTAKES_PATH = "nutrient/get-intakes"

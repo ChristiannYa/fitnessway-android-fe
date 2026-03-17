@@ -29,7 +29,7 @@ class HttpClient {
 
         } catch (e: Exception) {
             logcat(
-                message = "makeRequest exception: ${e.message}",
+                message = "makeRequest exception: $e",
                 level = Constants.LogLevel.ERROR
             )
             emit(UiState.Error(errMsg))

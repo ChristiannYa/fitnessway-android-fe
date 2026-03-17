@@ -25,7 +25,8 @@ class AuthRepositoryImpl(
             extractData = {
                 tokensStateHolder.setAccessToken(it.accessToken)
                 tokensStateHolder.setRefreshToken(it.refreshToken)
-            }
+            },
+            errMsg = "Failed to register"
         )
 
     override suspend fun login(req: MAuth.Api.Req.LoginRequest): Flow<UiState<Unit>> =
@@ -34,7 +35,8 @@ class AuthRepositoryImpl(
             extractData = {
                 tokensStateHolder.setAccessToken(it.accessToken)
                 tokensStateHolder.setRefreshToken(it.refreshToken)
-            }
+            },
+            errMsg = "Failed to login"
         )
 
     override suspend fun logout(): Flow<UiState<Unit>> = flow {

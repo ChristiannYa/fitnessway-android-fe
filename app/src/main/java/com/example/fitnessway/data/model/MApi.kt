@@ -14,7 +14,7 @@ object MApi {
         data class ApiResponseWithContent<T>(
             val success: Boolean,
             val message: String,
-            val data: T?
+            val data: T
         )
     }
 }

@@ -42,12 +42,12 @@ class AppInitializer(
                 }
 
                 // Clear user data if not authenticated
-                if (!tokensState.isAuthenticated && userState.user != null) clearCachedData
+                if (!tokensState.isAuthenticated && userState.user != null) clearCachedData()
             }
         }
     }
 
-    val clearCachedData = {
+    fun clearCachedData() {
         tokensStateHolder.clearTokens()
         userStateHolder.clearUser()
     }

@@ -8,8 +8,7 @@ val appModule = module {
         AppInitializer(
             tokensStateHolder = get(),
             userStateHolder = get(),
-            userRepo = get(),
-            cacheManager = get()
+            userRepo = get()
         )
     }
 }

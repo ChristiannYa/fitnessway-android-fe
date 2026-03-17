@@ -65,9 +65,6 @@ object MAuth {
 
             @Serializable
             data class RefreshTokenApiResponse(
-                @SerialName("refresh_token")
-                val refreshToken: String,
-
                 @SerialName("access_token")
                 val accessToken: String,
             )

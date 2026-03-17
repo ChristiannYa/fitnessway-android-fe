@@ -10,9 +10,8 @@ import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.network.ApiUrls
-import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient
-import com.example.fitnessway.data.network.RetrofitService.IFoodApiService
+import com.example.fitnessway.data.network.ktor_client.FoodApiClient
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -25,25 +24,22 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FoodRepositoryImpl(
-    private val apiService: IFoodApiService,
     private val httpClient: HttpClient,
+    private val apiClient: FoodApiClient,
     private val repositoryScope: CoroutineScope,
-    private val cacheManager: CacheManager
 ) : IFoodRepository {
 
     private val _uiState = MutableStateFlow(FoodRepositoryUiState())
     override val uiState: StateFlow<FoodRepositoryUiState> = _uiState
 
-    private fun fetchFoods(): Flow<UiState<List<FoodInformation>>> {
-        return httpClient.makeRequest(
-            apiCall = { apiService.getFoods() },
+    private fun fetchFoods(): Flow<UiState<List<FoodInformation>>> =
+        httpClient.makeRequest(
+            apiCall = apiClient::getFoods,
             extractData = { it.foods ?: emptyList() },
             errMsg = "Failed to get foods"
         )
-    }
 
     override fun refreshFoods() {
-        cacheManager.evictUrl(ApiUrls.Food.FOOD_USER_LIST_URL)
         _uiState.update { it.copy(foodsUiState = UiState.Loading) }
 
         repositoryScope.launch {
@@ -63,7 +59,7 @@ class FoodRepositoryImpl(
         request: FoodAddRequest
     ): Flow<UiState<FoodInformation>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.addFood(request) },
+            apiCall = { apiClient.addFood(request) },
             extractData = { it.foodCreated },
             errMsg = "Failed to add food",
             invalidatedUrls = listOf(
@@ -86,7 +82,7 @@ class FoodRepositoryImpl(
 
         _updateFoodJob = repositoryScope.launch {
             httpClient.makeRequest(
-                apiCall = { apiService.updateFood(request) },
+                apiCall = { apiClient.updateFood(request) },
                 extractData = { it.foodUpdated },
                 errMsg = "Failed to update food",
                 invalidatedUrls = listOf(
@@ -105,7 +101,7 @@ class FoodRepositoryImpl(
         foodId: Int
     ): Flow<UiState<FoodInformation>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.deleteFood(foodId) },
+            apiCall = { apiClient.deleteFood(foodId) },
             extractData = { it.foodDeleted },
             errMsg = "Failed to delete food",
             invalidatedUrls = listOf(
@@ -125,7 +121,7 @@ class FoodRepositoryImpl(
 
         _updateFoodFavoriteStatusJob = repositoryScope.launch {
             httpClient.makeRequest(
-                apiCall = { apiService.updateFoodFavoriteStatus(request) },
+                apiCall = { apiClient.updateFoodFavoriteStatus(request) },
                 extractData = { it.foodUpdated }
             ).collect { state ->
                 _updateFoodFavoriteStatusFlow.emit(state)
@@ -137,14 +133,13 @@ class FoodRepositoryImpl(
 
     private fun fetchFoodSort(): Flow<UiState<String>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.getFoodSort() },
+            apiCall = apiClient::getFoodSort,
             extractData = { it.foodSort },
             errMsg = "Failed to get food sort"
         )
     }
 
     override fun refreshFoodSort() {
-        cacheManager.evictUrl(ApiUrls.Food.FOOD_USER_SORT_GET_URL)
         _uiState.update { it.copy(foodSortUiState = UiState.Loading) }
 
         repositoryScope.launch {
@@ -164,7 +159,7 @@ class FoodRepositoryImpl(
         request: FoodSortUpdateRequest
     ): Flow<UiState<String>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.updateFoodSort(request) },
+            apiCall = { apiClient.updateFoodSort(request) },
             extractData = { it.foodSort },
             errMsg = "Failed to update food sort",
             invalidatedUrls = listOf(
@@ -176,7 +171,7 @@ class FoodRepositoryImpl(
 
     private fun fetchFoodLogs(date: String): Flow<UiState<FoodLogsByCategory>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.getFoodLogs(date) },
+            apiCall = { apiClient.getFoodLogs(date) },
             extractData = { it.foodLogs },
             errMsg = "Failed to get logs"
         )
@@ -187,8 +182,6 @@ class FoodRepositoryImpl(
     }
 
     override fun refreshFoodLogs(date: String) {
-        cacheManager.evictUrl(ApiUrls.Food.getLogsByDateUrl(date))
-
         repositoryScope.launch {
             fetchFoodLogs(date).collect { state ->
                 _uiState.update { it.copy(foodLogsCache = it.foodLogsCache + (date to state)) }
@@ -209,7 +202,7 @@ class FoodRepositoryImpl(
         date: String
     ): Flow<UiState<FoodLogData>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.addFoodLog(request) },
+            apiCall = { apiClient.addFoodLog(request) },
             extractData = { it.foodLogAdded },
             errMsg = "Failed to add log",
             invalidatedUrls = listOf(
@@ -224,7 +217,7 @@ class FoodRepositoryImpl(
         date: String
     ): Flow<UiState<FoodLogData>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.updateFoodLog(request) },
+            apiCall = { apiClient.updateFoodLog(request) },
             extractData = { it.updatedFoodLog },
             errMsg = "Failed to update log",
             invalidatedUrls = listOf(
@@ -239,7 +232,7 @@ class FoodRepositoryImpl(
         date: String
     ): Flow<UiState<FoodLogData>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.deleteFoodLog(foodLogId) },
+            apiCall = { apiClient.deleteFoodLog(foodLogId) },
             extractData = { it.foodLogDeleted },
             errMsg = "Failed to delete log",
             invalidatedUrls = listOf(

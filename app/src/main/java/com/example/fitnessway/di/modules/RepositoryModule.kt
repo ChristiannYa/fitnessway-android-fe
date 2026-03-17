@@ -14,17 +14,16 @@ import org.koin.dsl.module
 val repositoryModule = module {
     single<IAuthRepository> {
         AuthRepositoryImpl(
-            authApiService = get(),
-            authApiAuthorizedService = get(),
+            apiClient = get(),
+            httpClient = get(),
             tokensStateHolder = get(),
-            userStateHolder = get(),
-            cacheManager = get()
+            userStateHolder = get()
         )
     }
 
     single<IUserRepository> {
         UserRepositoryImpl(
-            apiService = get(),
+            apiClient = get(),
             httpClient = get()
         )
     }
@@ -32,18 +31,16 @@ val repositoryModule = module {
     single<INutrientRepository> {
         NutrientRepositoryImpl(
             httpClient = get(),
-            apiService = get(),
-            repositoryScope = get(named("repositoryScope")),
-            cacheManager = get()
+            apiClient = get(),
+            repositoryScope = get(named("repositoryScope"))
         )
     }
 
     single<IFoodRepository> {
         FoodRepositoryImpl(
-            apiService = get(),
+            apiClient = get(),
             httpClient = get(),
-            repositoryScope = get(named("repositoryScope")),
-            cacheManager = get()
+            repositoryScope = get(named("repositoryScope"))
         )
     }
 }

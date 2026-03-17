@@ -1,16 +1,15 @@
 package com.example.fitnessway.data.repository.nutrient
 
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
+import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.network.ApiUrls
-import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.network.HttpClient
-import com.example.fitnessway.data.network.RetrofitService.INutrientApiService
+import com.example.fitnessway.data.network.ktor_client.NutrientApiClient
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -22,10 +21,9 @@ import kotlinx.coroutines.launch
 
 
 class NutrientRepositoryImpl(
-    private val apiService: INutrientApiService,
     private val httpClient: HttpClient,
+    private val apiClient: NutrientApiClient,
     private val repositoryScope: CoroutineScope,
-    private val cacheManager: CacheManager
 ) : INutrientRepository {
 
     private val _uiState = MutableStateFlow(NutrientRepositoryUiState())
@@ -33,7 +31,7 @@ class NutrientRepositoryImpl(
 
     private fun fetchNutrientIntakes(date: String): Flow<UiState<NutrientsByType<NutrientDataWithAmount>>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.getNutrientIntakes(date) },
+            apiCall = { apiClient.getNutrientIntakes(date) },
             extractData = { it.nutrientIntakes },
             errMsg = "Failed to get nutrient intakes"
         )
@@ -44,8 +42,6 @@ class NutrientRepositoryImpl(
     }
 
     override fun refreshNutrientIntakes(date: String) {
-        cacheManager.evictUrl(ApiUrls.Nutrient.getIntakesByDateUrl(date))
-
         repositoryScope.launch {
             fetchNutrientIntakes(date).collect { state ->
                 _uiState.update { it.copy(nutrientIntakesCache = it.nutrientIntakesCache + (date to state)) }
@@ -61,14 +57,13 @@ class NutrientRepositoryImpl(
 
     private fun fetchNutrients(): Flow<UiState<NutrientsByType<NutrientWithPreferences>>> {
         return httpClient.makeRequest(
-            apiCall = apiService::getNutrients,
+            apiCall = apiClient::getNutrients,
             extractData = { it.nutrients },
             errMsg = "Failed to get nutrients"
         )
     }
 
     override fun refreshNutrients() {
-        cacheManager.evictUrl(ApiUrls.Nutrient.NUTRIENT_LIST_URL)
         _uiState.update { it.copy(nutrientsUiState = UiState.Loading) }
 
         repositoryScope.launch {
@@ -88,7 +83,7 @@ class NutrientRepositoryImpl(
         request: NutrientGoalsPostRequest
     ): Flow<UiState<List<NutrientIdWithGoal>>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.setNutrientGoals(request) },
+            apiCall = { apiClient.setNutrientGoals(request) },
             extractData = { it.upsertedGoals },
             errMsg = "Failed to set nutrient goals",
             invalidatedUrls = listOf(
@@ -105,7 +100,7 @@ class NutrientRepositoryImpl(
         request: NutrientColorsPostRequest
     ): Flow<UiState<List<NutrientIdWithColor>>> {
         return httpClient.makeRequest(
-            apiCall = { apiService.setNutrientColors(request) },
+            apiCall = { apiClient.setNutrientColors(request) },
             extractData = { it.updatedColors },
             errMsg = "Failed to update nutrient colors",
             invalidatedUrls = listOf(

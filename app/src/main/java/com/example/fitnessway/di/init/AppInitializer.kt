@@ -2,7 +2,6 @@ package com.example.fitnessway.di.init
 
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.example.fitnessway.data.network.CacheManager
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import com.example.fitnessway.data.state.user.IUserStateHolder
@@ -15,7 +14,6 @@ class AppInitializer(
     private val tokensStateHolder: ITokensStateHolder,
     private val userStateHolder: IUserStateHolder,
     private val userRepo: IUserRepository,
-    private val cacheManager: CacheManager,
 ) {
     fun initialize() {
         ProcessLifecycleOwner.get().lifecycleScope.launch {
@@ -52,6 +50,5 @@ class AppInitializer(
     val clearCachedData = {
         tokensStateHolder.clearTokens()
         userStateHolder.clearUser()
-        cacheManager.evictAll()
     }
 }

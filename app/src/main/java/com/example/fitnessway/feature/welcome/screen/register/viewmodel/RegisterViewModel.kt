@@ -8,13 +8,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.data.model.MAuth
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.form.field.InlineRules.AuthForm.NameInlineRules
+import com.example.fitnessway.util.form.field.InlineRules.AuthForm.PasswordInlineRules
 import com.example.fitnessway.util.form.field.Rules.AuthForm.nameRules
 import com.example.fitnessway.util.form.field.Rules.AuthForm.passwordRules
-import com.example.fitnessway.util.form.field.InlineRules.AuthForm.PasswordInlineRules
-import com.example.fitnessway.util.form.field.InlineRules.AuthForm.NameInlineRules
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -150,11 +151,13 @@ class RegisterViewModel(
             val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
 
             repo.register(
-                name,
-                email,
-                password,
-                confirmPassword,
-                deviceName
+                MAuth.Api.Req.RegisterRequest(
+                    name,
+                    email,
+                    password,
+                    confirmPassword,
+                    deviceName
+                )
             ).collect { state ->
                 _registerUiState.value = state
             }

@@ -1,8 +1,14 @@
 package com.example.fitnessway.data.model
 
 import com.example.fitnessway.data.model.MUser.Model.User
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Serializable
+enum class UserType {
+    ADMIN,
+    CONTRIBUTOR,
+    USER
+}
 
 object MUser {
     object Model {
@@ -11,15 +17,10 @@ object MUser {
             val id: String,
             val name: String,
             val email: String,
-
-            @SerialName("is_premium")
             val isPremium: Boolean,
-
-            @SerialName("created_at")
             val createdAt: String,
-
-            @SerialName("updated_at")
-            val updatedAt: String
+            val updatedAt: String,
+            val type: UserType
         )
     }
 

@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.MApi
 import com.example.fitnessway.data.model.MAuth
 import com.example.fitnessway.data.state.token.ITokensStateHolder
 import com.example.fitnessway.util.Formatters.logcat
+import com.example.fitnessway.util.UUIDSerializer
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -18,11 +19,26 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNamingStrategy
+import kotlinx.serialization.modules.SerializersModule
+import java.util.UUID
 import io.ktor.client.HttpClient as KtorHttpClient
 
+@OptIn(ExperimentalSerializationApi::class)
 fun createKtorHttpClient(tokensStateHolder: ITokensStateHolder): KtorHttpClient {
-    val json = Json { ignoreUnknownKeys = true }
+    val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        namingStrategy = JsonNamingStrategy.SnakeCase
+        decodeEnumsCaseInsensitive = true
+        explicitNulls = true
+        encodeDefaults = true
+        serializersModule = SerializersModule {
+            contextual(UUID::class, UUIDSerializer)
+        }
+    }
 
     return KtorHttpClient(Android) {
         install(ContentNegotiation) {

@@ -13,5 +13,7 @@ inline fun <reified T> KtorHttpRequestBuilder.jsonBody(req: T) {
     setBody(req)
 }
 
-suspend inline fun <reified T> KtorHttpResponse.extractApiData(): T =
-    body<MApi.Model.ApiResponseWithContent<T>>().data
+suspend inline fun <reified T> KtorHttpResponse.extractApiData(): T {
+    val response = body<MApi.Model.ApiResponseWithContent<T>>()
+    return response.data ?: throw Exception("Response data was null: ${response.message}")
+}

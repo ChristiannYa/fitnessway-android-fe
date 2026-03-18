@@ -23,7 +23,6 @@ class FoodApiClient(private val client: KtorHttpClient) {
             jsonBody(req)
         }.extractApiData()
 
-
     suspend fun updateFood(
         req: MFood.Api.Req.FoodUpdateRequest
     ): MFood.Api.Res.FoodUpdateApiResponse =

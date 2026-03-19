@@ -30,10 +30,10 @@ import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
-import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
+import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated

@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MNutrient
+import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.lists.screen.details.edition.composables.FoodEditionFormField
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
@@ -87,7 +88,7 @@ fun FoodEditionScreen(
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val scrollState = rememberScrollState()
 
-    var availableNutrientsType by remember { mutableStateOf(MNutrient.Enum.NutrientType.BASIC) }
+    var availableNutrientsType by remember { mutableStateOf(NutrientType.BASIC) }
     var isAvailableNutrientsVisible by remember { mutableStateOf(false) }
 
     if (user != null && areDelegatesPresent && nutrientUiState is UiState.Success) {
@@ -275,7 +276,7 @@ private fun <T> FieldSection(
 private fun AvailableNutrientsPopup(
     isVisible: Boolean,
     availableNutrients: List<MNutrient.Model.Nutrient>,
-    nutrientType: MNutrient.Enum.NutrientType,
+    nutrientType: NutrientType,
     clickableConfiguration: Ui.ClickableConfiguration<MNutrient.Model.Nutrient>,
     modifier: Modifier = Modifier
 ) {

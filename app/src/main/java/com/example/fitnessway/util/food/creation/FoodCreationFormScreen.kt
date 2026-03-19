@@ -24,7 +24,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MNutrient
-import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.shared.Banners
 import com.example.fitnessway.ui.shared.FormProgress
 import com.example.fitnessway.ui.shared.Header

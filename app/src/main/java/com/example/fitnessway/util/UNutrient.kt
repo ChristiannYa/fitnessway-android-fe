@@ -48,12 +48,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.MNutrient
-import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.logcat
@@ -289,7 +289,9 @@ object UNutrient {
     fun List<Nutrient>.getIds(): List<Int> = this.map { it.id }
 
     fun List<Nutrient>.validateFreeUserAccess(isUserPremium: Boolean): Boolean {
-        return if (!isUserPremium) { !this.any { it.isPremium } } else true
+        return if (!isUserPremium) {
+            !this.any { it.isPremium }
+        } else true
     }
 
     fun getColor(color: String?): Color? {
@@ -321,7 +323,7 @@ object UNutrient {
 
     /**
      * `toReadable` formats the nutrient's type to be lowercase, and makes the first char uppercase.
-     * `NutrientType.BASIC` has a more user friendly format of "Nutrients"
+     * `NutrientType.BASIC` has a more user-friendly format of "Nutrients"
      */
     fun NutrientType.toReadable(
         isPlural: Boolean = true,

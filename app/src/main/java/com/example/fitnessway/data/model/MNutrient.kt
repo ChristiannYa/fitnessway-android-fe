@@ -1,6 +1,5 @@
 package com.example.fitnessway.data.model
 
-import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
@@ -10,20 +9,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 object MNutrient {
-    object Enum {
-        @Serializable
-        enum class NutrientType {
-            @SerialName("basic")
-            BASIC,
-
-            @SerialName("vitamin")
-            VITAMIN,
-
-            @SerialName("mineral")
-            MINERAL
-        }
-    }
-
     object Model {
         @Serializable
         data class NutrientsByType<T>(
@@ -38,7 +23,7 @@ object MNutrient {
             val name: String,
             val symbol: String?,
             val unit: String,
-            val type: NutrientType,
+            val type: com.example.fitnessway.data.model.m_26.NutrientType,
 
             @SerialName("is_premium")
             val isPremium: Boolean

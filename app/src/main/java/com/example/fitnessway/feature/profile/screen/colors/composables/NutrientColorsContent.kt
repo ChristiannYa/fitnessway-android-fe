@@ -17,18 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.util.form.field.NutrientColorUpdateField
-import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient.Ui.NutrientCategoryTitle
 import com.example.fitnessway.util.UNutrient.getColor
+import com.example.fitnessway.util.form.field.NutrientColorUpdateField
 
 @Composable
 fun NutrientColorsContent(
     fields: Map<NutrientType, List<NutrientColorUpdateField>>,
     modifier: Modifier = Modifier
 ) {
-    Column (
+    Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier

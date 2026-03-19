@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientFields
 import com.example.fitnessway.feature.profile.screen.goals.composables.UpgradePromptSection
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel

@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
+import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
 import com.example.fitnessway.feature.home.screen.main.composables.DatePicker
 import com.example.fitnessway.feature.home.screen.main.composables.FoodLogs

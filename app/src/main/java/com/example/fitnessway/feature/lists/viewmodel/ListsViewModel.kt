@@ -17,7 +17,6 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
-import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
@@ -39,8 +38,7 @@ class ListsViewModel(
     userStateHolder: IUserStateHolder
 ) : ViewModel(),
     IEditionManager by managers.edition,
-    ICreationManager by managers.creation,
-    IFoodManager by managers.food {
+    ICreationManager by managers.creation {
 
     init {
         managers.edition.init(viewModelScope)
@@ -74,7 +72,7 @@ class ListsViewModel(
 
     fun addFood() {
         val formState = managers.creation.foodCreationFormState.value
-        val nutrientDvMap = managers.food.nutrientDvControls.nutrientDvMap.value
+        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
 
         val nutrients = formState.nutrients
             .filter { (it.value.toDoubleOrNull() ?: 0.0) > 0 }
@@ -113,7 +111,7 @@ class ListsViewModel(
     fun updateFood() {
         val formState = managers.edition.foodEditionFormState.value ?: return
         val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
-        val nutrientDvControls = managers.food.nutrientDvControls
+        val nutrientDvControls = managers.creation.nutrientDvControls
         val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
 
         // Get current data to update optimistically
@@ -488,7 +486,7 @@ class ListsViewModel(
     }
 
     private fun resetFoodNutrientDvMap() {
-        val nutrientDvControls = managers.food.nutrientDvControls
+        val nutrientDvControls = managers.creation.nutrientDvControls
         val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
         if (nutrientDvMap.isNotEmpty()) nutrientDvControls.onClearData()
     }

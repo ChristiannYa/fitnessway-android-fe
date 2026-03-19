@@ -9,7 +9,6 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.ListsManagersImpl
 import com.example.fitnessway.feature.lists.manager.creation.CreationManager
 import com.example.fitnessway.feature.lists.manager.edition.EditionManager
-import com.example.fitnessway.feature.lists.manager.food.FoodManager
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.ProfileManagersImpl
 import com.example.fitnessway.feature.profile.manager.colors.ColorsManager
@@ -26,12 +25,9 @@ val managersModule = module {
     }
 
     single<IListsManagers> {
-        val foodManager = FoodManager()
-
         ListsManagersImpl(
-            edition = EditionManager(foodManager),
+            edition = EditionManager(),
             creation = CreationManager(),
-            food = foodManager
         )
     }
 

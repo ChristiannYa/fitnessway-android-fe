@@ -64,6 +64,16 @@ data class PendingFood(
 )
 
 @Serializable
+data class UserFood(
+    val id: Int,
+    val information: FoodInformation<NutrientInFood>,
+    val isFavorite: Boolean,
+    val lastLoggedAt: String?,
+    val createdAt: String,
+    val updatedAt: String
+)
+
+@Serializable
 data class FoodSearchResult(
     val id: Int,
     val base: FoodBase

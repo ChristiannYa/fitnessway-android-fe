@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -24,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
@@ -49,7 +49,8 @@ fun SearchAppFood(
         SearchBar(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .semantics { traversalIndex = 0f },
+                .semantics { traversalIndex = 0f }
+                .clip(RoundedCornerShape(16.dp)),
             inputField = {
                 SearchBarDefaults.InputField(
                     query = query.text.toString(),
@@ -64,14 +65,6 @@ fun SearchAppFood(
                     expanded = isSearching,
                     onExpandedChange = { isSearching = it },
                     placeholder = { Text("Search") },
-                    leadingIcon = {
-                        Clickables.AppPngIconButton(
-                            icon = Structure.AppIconButtonSource.Vector(Icons.Default.Info),
-                            contentDescription = "Not found what you're looking for?",
-                            size = Clickables.AppIconButtonSize.SMALL,
-                            onClick = {}
-                        )
-                    },
                     trailingIcon = {
                         if (isSearching) {
                             Clickables.AppPngIconButton(
@@ -84,14 +77,20 @@ fun SearchAppFood(
                             )
                         }
                     },
-                    modifier = Modifier.padding(12.dp)
+                    modifier = Modifier.padding(if (isSearching) 8.dp else 0.dp)
                 )
             },
             expanded = isSearching,
             onExpandedChange = { isSearching = it },
             windowInsets = WindowInsets(top = 0.dp),
             colors = SearchBarDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                containerColor = run {
+                    if (isSearching) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else {
+                        Color.Transparent
+                    }
+                },
                 dividerColor = MaterialTheme.colorScheme.surfaceVariant
             ),
             shape = RoundedCornerShape(16.dp)

@@ -25,20 +25,20 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
-import com.example.fitnessway.feature.lists.screen.create.food.composables.FormProgressIndicator
 import com.example.fitnessway.feature.lists.screen.create.food.composables.NextButton
 import com.example.fitnessway.feature.lists.screen.create.food.composables.SetBasicData
 import com.example.fitnessway.feature.lists.screen.create.food.composables.SetNutrients
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
+import com.example.fitnessway.ui.shared.FormProgress
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.filterGoalNotSet
 import com.example.fitnessway.util.UNutrient.filterGoalSetPreferences
 import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
+import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.getIds
 import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
 import com.example.fitnessway.util.UiState
@@ -152,12 +152,14 @@ fun CreateFoodFormScreen(
                     title = title,
                     extraContent = if (!foodAddState.isSuccess) {
                         {
-                            FormProgressIndicator(
+                            FormProgress(
                                 currentStep = currentStep,
-                                isStepOneValid = viewModel.isBasicDataValid,
-                                isStepTwoValid = areNsValid,
-                                isStepThreeValid = areVsValid,
-                                isStepFourValid = areMsValid
+                                stepValidations = listOf(
+                                    viewModel.isBasicDataValid,
+                                    areNsValid,
+                                    areVsValid,
+                                    areMsValid
+                                )
                             )
                         }
                     } else null

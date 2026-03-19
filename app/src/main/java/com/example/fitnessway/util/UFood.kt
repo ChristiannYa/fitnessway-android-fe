@@ -49,6 +49,7 @@ import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.getColor
 import com.example.fitnessway.util.UNutrient.mapNutrients
+import com.example.fitnessway.util.form.FormStates
 
 object UFood {
     enum class FoodNutrientIntakesOperation {
@@ -416,6 +417,16 @@ object UFood {
                 )
             }
         }
+    }
+
+    @Composable
+    fun FoodFormScreen(
+        title: String,
+        currentStep: Int,
+        formState: FormStates.FoodCreation,
+        nutrientDvControls: INutrientDvControls.NutrientDvControls
+    ) {
+
     }
 
     object Debug {

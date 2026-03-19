@@ -12,9 +12,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MNutrient.Enum.NutrientType
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
-import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow
 import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.form.field.FoodCreationNutrientField
@@ -23,7 +23,7 @@ import com.example.fitnessway.util.form.field.FoodCreationNutrientField
 fun SetNutrients(
     fields: List<FoodCreationNutrientField>,
     nutrientsWithoutGoal: Pair<NutrientType, List<Nutrient>>,
-    nutrientDvControls: IFoodManager.NutrientDvControls? = null,
+    nutrientDvControls: INutrientDvControls.NutrientDvControls? = null,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         fields.forEach { FoodCreationFormField(it, nutrientDvControls) }

@@ -3,11 +3,9 @@ package com.example.fitnessway.feature.lists.manager.edition
 import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient
-import com.example.fitnessway.feature.lists.manager.food.IFoodManager
-import com.example.fitnessway.util.Debug.logMap
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
+import com.example.fitnessway.util.NutrientDvControls
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
@@ -24,9 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-class EditionManager(
-    private val foodManager: IFoodManager
-) : IEditionManager {
+class EditionManager : IEditionManager, NutrientDvControls() {
     private lateinit var scope: CoroutineScope
 
     private val _selectedFood = MutableStateFlow<FoodInformation?>(null)
@@ -92,7 +88,7 @@ class EditionManager(
         combine(
             _foodEditionFormState,
             _originalFormState,
-            foodManager.nutrientDvControls.nutrientDvMap
+            nutrientDvControls.nutrientDvMap
         ) { editionFormState, originalFormState, nutrientDvMap ->
             if (editionFormState == null || originalFormState == null) return@combine false
 
@@ -265,7 +261,7 @@ class EditionManager(
         _addedNutrients.value = emptyList()
     }
 
-    fun init(scope: CoroutineScope) {
+    override fun init(scope: CoroutineScope) {
         this.scope = scope
     }
 }

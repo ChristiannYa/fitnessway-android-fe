@@ -2,12 +2,12 @@ package com.example.fitnessway.feature.lists.screen.composables
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.fitnessway.feature.lists.manager.food.IFoodManager
+import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient.hasDailyValue
 
 @Composable
 fun NutrientDvTrailingIcon(
-    nutrientDvState: IFoodManager.NutrientDvState,
+    nutrientDvState: INutrientDvControls.NutrientDvState,
     fieldValue: String,
     modifier: Modifier = Modifier
 ): (@Composable () -> Unit)? {

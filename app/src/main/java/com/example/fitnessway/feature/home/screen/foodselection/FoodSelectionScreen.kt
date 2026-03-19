@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ClearAll
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -37,7 +40,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun FoodSelectionScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onBackClick: () -> Unit,
-    onNavigateToSelectedFood: () -> Unit
+    onNavigateToSelectedFood: () -> Unit,
+    onNavigateToFoodRequest: () -> Unit,
 ) {
     val userFlow by viewModel.userFlow.collectAsState()
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
@@ -52,6 +56,9 @@ fun FoodSelectionScreen(
     val pullToRefreshThresholdReached = pullToRefreshState.distanceFraction >= 1f
     val isRefreshing = pullToRefreshThresholdReached
 
+    val searchResults = emptyList<String>()
+    val userFoodsToggled by remember { mutableStateOf(false) }
+
     if (user != null) {
         val foodLogCategoryCopy = foodLogCategory
 
@@ -64,6 +71,13 @@ fun FoodSelectionScreen(
                         onBackClick = onBackClick,
                         title = "$categoryString selection",
                     ) {
+                        Clickables.AppPngIconButton(
+                            icon = AppIconButtonSource.Vector(Icons.Default.Info),
+                            contentDescription = "Not found what you're looking for?",
+                            enabled = true,
+                            onClick = onNavigateToFoodRequest
+                        )
+
                         Clickables.AppPngIconButton(
                             onClick = {},
                             contentDescription = "View My Foods",
@@ -94,12 +108,13 @@ fun FoodSelectionScreen(
                                     onSearch = { query ->
                                         focusManager.clearFocus()
                                     },
-                                    searchResults = listOf("food 1", "food 2"),
+                                    searchResults = searchResults,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
                         }
                     }
+
                 }
             }
 

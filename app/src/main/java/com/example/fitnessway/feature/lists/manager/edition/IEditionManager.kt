@@ -2,11 +2,10 @@ package com.example.fitnessway.feature.lists.manager.edition
 
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
 interface IEditionManager {
@@ -23,4 +22,6 @@ interface IEditionManager {
     fun filterOutNutrientFromForm(nutrient: MNutrient.Model.Nutrient)
     fun resetDeletedNutrients()
     fun resetAddedNutrients()
+
+    fun init(scope: CoroutineScope)
 }

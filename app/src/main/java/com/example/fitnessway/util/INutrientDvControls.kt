@@ -1,9 +1,9 @@
-package com.example.fitnessway.feature.lists.manager.food
+package com.example.fitnessway.util
 
 import com.example.fitnessway.data.model.MNutrient
 import kotlinx.coroutines.flow.StateFlow
 
-interface IFoodManager {
+interface INutrientDvControls {
     data class NutrientDvControls(
         val nutrientDvMap: StateFlow<Map<Int, String>>,
         val onAdd: (nutrientId: Int, amount: String) -> Unit,

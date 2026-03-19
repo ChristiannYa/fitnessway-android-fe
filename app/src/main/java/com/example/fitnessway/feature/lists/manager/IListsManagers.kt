@@ -1,11 +1,9 @@
 package com.example.fitnessway.feature.lists.manager
 
-import com.example.fitnessway.feature.lists.manager.creation.CreationManager
-import com.example.fitnessway.feature.lists.manager.edition.EditionManager
-import com.example.fitnessway.feature.lists.manager.food.FoodManager
+import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
+import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 
 interface IListsManagers {
-    val edition: EditionManager
-    val creation: CreationManager
-    val food: FoodManager
+    val edition: IEditionManager
+    val creation: ICreationManager
 }

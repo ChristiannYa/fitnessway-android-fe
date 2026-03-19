@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.fitnessway.feature.home.screen.foodselection.FoodSelectionScreen
+import com.example.fitnessway.feature.home.screen.foodselection.food_request.FoodRequestScreen
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoodLogScreen
 import com.example.fitnessway.feature.home.screen.logdetails.FoodLogDetailsScreen
 import com.example.fitnessway.feature.home.screen.main.HomeScreen
@@ -20,6 +21,9 @@ object HomeMainDest
 
 @Serializable
 private object FoodSelection
+
+@Serializable
+private object FoodRequest
 
 @Serializable
 private object FoodLogDetails
@@ -54,8 +58,22 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
 
             FoodSelectionScreen(
                 viewModel,
-                onBackClick = { navController.popBackStack() },
-                onNavigateToSelectedFood = { navController.navigate(FoodLog) }
+                onBackClick = navController::popBackStack,
+                onNavigateToSelectedFood = { navController.navigate(FoodLog) },
+                onNavigateToFoodRequest = { navController.navigate(FoodRequest) }
+            )
+        }
+
+        composable<FoodRequest> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<HomeGraph>()
+            }
+
+            val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
+            FoodRequestScreen(
+                viewModel,
+                onBackClick = navController::popBackStack
             )
         }
 
@@ -68,7 +86,7 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
 
             FoodLogDetailsScreen(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = navController::popBackStack
             )
         }
 
@@ -80,7 +98,7 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
             val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
             FoodLogScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = navController::popBackStack,
                 viewModel
             )
         }

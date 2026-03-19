@@ -11,9 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
-import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.feature.lists.screen.composables.NutrientDvTrailingIcon
 import com.example.fitnessway.feature.lists.screen.composables.rememberNutrientDvState
+import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
@@ -22,7 +22,7 @@ import com.example.fitnessway.util.form.field.FormFieldName
 @Composable
 fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
     field: FormField<T>,
-    nutrientDvControls: IFoodManager.NutrientDvControls? = null,
+    nutrientDvControls: INutrientDvControls.NutrientDvControls? = null,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }

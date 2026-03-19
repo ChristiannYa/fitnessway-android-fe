@@ -13,11 +13,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.example.fitnessway.data.model.MNutrient
-import com.example.fitnessway.feature.lists.manager.food.IFoodManager
 import com.example.fitnessway.feature.lists.screen.composables.NutrientDvTrailingIcon
 import com.example.fitnessway.feature.lists.screen.composables.rememberNutrientDvState
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
+import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
@@ -27,7 +27,7 @@ import com.example.fitnessway.util.form.field.FormFieldName
 fun <T : FormFieldName.IFoodEdition> FoodEditionFormField(
     field: FormField<T>,
     onRemoveNutrient: ((nutrient: MNutrient.Model.Nutrient) -> Unit)? = null,
-    nutrientDvControls: IFoodManager.NutrientDvControls? = null,
+    nutrientDvControls: INutrientDvControls.NutrientDvControls? = null,
     modifier: Modifier = Modifier
 ) {
     val outlinedColors = Ui.InputUi.getOutlinedColors()

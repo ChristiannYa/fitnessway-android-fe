@@ -13,8 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.example.fitnessway.data.model.MNutrient
-import com.example.fitnessway.feature.lists.screen.composables.NutrientDvTrailingIcon
-import com.example.fitnessway.feature.lists.screen.composables.rememberNutrientDvState
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
 import com.example.fitnessway.util.INutrientDvControls
@@ -22,6 +20,8 @@ import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.nutrient.DvTrailingIcon
+import com.example.fitnessway.util.nutrient.rememberNutrientDvState
 
 @Composable
 fun <T : FormFieldName.IFoodEdition> FoodEditionFormField(
@@ -75,7 +75,7 @@ fun <T : FormFieldName.IFoodEdition> FoodEditionFormField(
                     )
                 }
             } else null,
-            trailingIcon = NutrientDvTrailingIcon(nutrientDvState, field.textFieldValue.text),
+            trailingIcon = DvTrailingIcon(nutrientDvState, field.textFieldValue.text),
             keyboardOptions = field.keyboardOptions,
             keyboardActions = field.keyboardActions,
             interactionSource = interactionSource,

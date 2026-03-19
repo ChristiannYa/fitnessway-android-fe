@@ -21,12 +21,12 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
     )
 
     private val _foodCreationFormState = MutableStateFlow(emptyFoodCreationFormState)
-    override val foodCreationFormState: StateFlow<FormStates.FoodCreation> = _foodCreationFormState
+    override val formState: StateFlow<FormStates.FoodCreation> = _foodCreationFormState
 
     private val _currentStep = MutableStateFlow(1)
     override val currentStep: StateFlow<Int> = _currentStep
 
-    override val createFormNameError: String?
+    override val nameError: String?
         get() = _foodCreationFormState.value.name.let { value ->
             if (value.isEmpty()) null else {
                 val result = NameInlineRules(value.trim()) checkWith nameRules
@@ -34,7 +34,7 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
             }
         }
 
-    override val createFormBrandError: String?
+    override val brandError: String?
         get() = _foodCreationFormState.value.brand.let { value ->
             if (value.isEmpty()) null else {
                 val result = BrandInlineRules(value.trim()) checkWith brandRules
@@ -42,7 +42,7 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
             }
         }
 
-    override val createFormAmountPerServingError: String?
+    override val amountPerServingError: String?
         get() = _foodCreationFormState.value.amountPerServing.let { value ->
             validateDoubleAsString(
                 doubleAsString = value,
@@ -50,7 +50,7 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
             )
         }
 
-    override val createFormServingUnitError: String?
+    override val servingUnitError: String?
         get() = _foodCreationFormState.value.servingUnit.let { value ->
             if (value.isEmpty()) null else {
                 val isValid = when (value) {
@@ -65,12 +65,12 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
         }
 
     override val isBasicDataValid: Boolean
-        get() = _foodCreationFormState.value.name.isNotEmpty() && createFormNameError == null &&
-                createFormBrandError == null &&
-                _foodCreationFormState.value.amountPerServing.isNotEmpty() && createFormAmountPerServingError == null &&
-                _foodCreationFormState.value.servingUnit.isNotEmpty() && createFormServingUnitError == null
+        get() = _foodCreationFormState.value.name.isNotEmpty() && nameError == null &&
+                brandError == null &&
+                _foodCreationFormState.value.amountPerServing.isNotEmpty() && amountPerServingError == null &&
+                _foodCreationFormState.value.servingUnit.isNotEmpty() && servingUnitError == null
 
-    override fun updateFoodCreationFormField(
+    override fun updateFormField(
         fieldName: FormFieldName.IFoodCreation,
         input: String
     ) {
@@ -130,7 +130,7 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
         }
     }
 
-    override fun resetFoodFormState() {
+    override fun resetFormState() {
         _currentStep.value = 1
         _foodCreationFormState.value = emptyFoodCreationFormState
     }

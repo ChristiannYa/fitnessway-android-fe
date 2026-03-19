@@ -5,17 +5,17 @@ import com.example.fitnessway.util.form.field.FormFieldName
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodCreation : INutrientDvControls {
-    val foodCreationFormState: StateFlow<FormStates.FoodCreation>
+    val formState: StateFlow<FormStates.FoodCreation>
     val currentStep: StateFlow<Int>
 
-    val createFormNameError: String?
-    val createFormBrandError: String?
-    val createFormAmountPerServingError: String?
-    val createFormServingUnitError: String?
+    val nameError: String?
+    val brandError: String?
+    val amountPerServingError: String?
+    val servingUnitError: String?
 
     val isBasicDataValid: Boolean
 
-    fun updateFoodCreationFormField(
+    fun updateFormField(
         fieldName: FormFieldName.IFoodCreation,
         input: String
     )
@@ -29,5 +29,5 @@ interface IFoodCreation : INutrientDvControls {
     fun validateRequiredNutrients(nutrientIds: Set<Int>): Boolean
     fun validateOptionalNutrients(nutrientIds: Set<Int>): Boolean
 
-    fun resetFoodFormState()
+    fun resetFormState()
 }

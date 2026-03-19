@@ -71,7 +71,7 @@ class ListsViewModel(
     }
 
     fun addFood() {
-        val formState = managers.creation.foodCreationFormState.value
+        val formState = managers.creation.formState.value
         val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
 
         val nutrients = formState.nutrients
@@ -468,7 +468,7 @@ class ListsViewModel(
      */
     fun resetFoodCreationStates() {
         if (_uiState.value.foodAddState !is UiState.Idle) resetFoodAddState()
-        resetFoodFormState()
+        resetFormState()
         resetFoodNutrientDvMap()
     }
 

@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.composables
+package com.example.fitnessway.util.nutrient
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
@@ -41,7 +41,7 @@ private const val TOGGLE_BUTTON_WIDTH = 36
 private const val TOGGLE_BUTTON_HEIGHT = 27
 
 @Composable
-fun NutrientDvToggleButton(
+fun DvToggleButton(
     isInNutrientDvMap: Boolean,
     enabled: Boolean,
     onToggle: (Boolean) -> Unit,
@@ -149,9 +149,9 @@ private fun ToggleButton(
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun NutrientDvToggleButtonPreview() {
+private fun DvToggleButtonPreview() {
     FitnesswayTheme {
-        NutrientDvToggleButton(
+        DvToggleButton(
             isInNutrientDvMap = false,
             enabled = true,
             onToggle = {}

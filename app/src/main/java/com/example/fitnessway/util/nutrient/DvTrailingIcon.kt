@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.composables
+package com.example.fitnessway.util.nutrient
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -6,14 +6,14 @@ import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient.hasDailyValue
 
 @Composable
-fun NutrientDvTrailingIcon(
+fun DvTrailingIcon(
     nutrientDvState: INutrientDvControls.NutrientDvState,
     fieldValue: String,
     modifier: Modifier = Modifier
 ): (@Composable () -> Unit)? {
     return if (nutrientDvState.nutrient != null && nutrientDvState.nutrient.hasDailyValue) {
         {
-            NutrientDvToggleButton(
+            DvToggleButton(
                 isInNutrientDvMap = nutrientDvState.isInNutrientDvMap,
                 enabled = fieldValue.isNotEmpty() || nutrientDvState.isInNutrientDvMap,
                 onToggle = { shouldBeInMap ->

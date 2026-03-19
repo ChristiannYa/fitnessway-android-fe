@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.composables
+package com.example.fitnessway.util.nutrient
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +17,6 @@ fun <T : FormFieldName> rememberNutrientDvState(
 ): INutrientDvControls.NutrientDvState {
     val nutrient = getNutrient(field.name)
 
-    // `by` delegate isn't used here because `dvConfig` is nullable
     val nutrientDvMap = nutrientDvControls?.nutrientDvMap?.collectAsState()?.value
 
     val isInNutrientDvMap = nutrient?.let {

@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.create.food.composables
+package com.example.fitnessway.util.food.creation
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -11,13 +11,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
-import com.example.fitnessway.feature.lists.screen.composables.NutrientDvTrailingIcon
-import com.example.fitnessway.feature.lists.screen.composables.rememberNutrientDvState
 import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.nutrient.DvTrailingIcon
+import com.example.fitnessway.util.nutrient.rememberNutrientDvState
 
 @Composable
 fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
@@ -66,7 +66,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                     )
                 }
             } else null,
-            trailingIcon = NutrientDvTrailingIcon(nutrientDvState, field.textFieldValue.text),
+            trailingIcon = DvTrailingIcon(nutrientDvState, field.textFieldValue.text),
             keyboardOptions = field.keyboardOptions,
             keyboardActions = field.keyboardActions,
             interactionSource = interactionSource,

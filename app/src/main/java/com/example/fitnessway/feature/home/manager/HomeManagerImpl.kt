@@ -2,10 +2,12 @@ package com.example.fitnessway.feature.home.manager
 
 import com.example.fitnessway.feature.home.manager.date.DateManager
 import com.example.fitnessway.feature.home.manager.foodlog.FoodLogManager
+import com.example.fitnessway.feature.home.manager.foodrequest.FoodRequestManager
 import com.example.fitnessway.feature.home.manager.ui.UiManager
 
-class HomeManagersImpl (
+class HomeManagerImpl(
     override val date: DateManager,
     override val foodLog: FoodLogManager,
+    override val foodRequest: FoodRequestManager,
     override val ui: UiManager
-) : IHomeManagers
+) : IHomeManager

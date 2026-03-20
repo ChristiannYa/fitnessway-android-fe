@@ -1,14 +1,13 @@
-package com.example.fitnessway.util
+package com.example.fitnessway.util.food.creation
 
-import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
+import com.example.fitnessway.data.model.MFood
+import com.example.fitnessway.util.Formatters
 import com.example.fitnessway.util.Formatters.toInputDouble
-import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
-import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
-import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
-import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
-import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
+import com.example.fitnessway.util.form.field.InlineRules
+import com.example.fitnessway.util.form.field.Rules
+import com.example.fitnessway.util.nutrient.NutrientDvControls
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -29,7 +28,8 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
     override val nameError: String?
         get() = _foodCreationFormState.value.name.let { value ->
             if (value.isEmpty()) null else {
-                val result = NameInlineRules(value.trim()) checkWith nameRules
+                val result =
+                    InlineRules.FoodCreation.NameInlineRules(value.trim()) checkWith Rules.FoodCreation.nameRules
                 result.exceptionOrNull()?.message
             }
         }
@@ -37,14 +37,15 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
     override val brandError: String?
         get() = _foodCreationFormState.value.brand.let { value ->
             if (value.isEmpty()) null else {
-                val result = BrandInlineRules(value.trim()) checkWith brandRules
+                val result =
+                    InlineRules.FoodCreation.BrandInlineRules(value.trim()) checkWith Rules.FoodCreation.brandRules
                 result.exceptionOrNull()?.message
             }
         }
 
     override val amountPerServingError: String?
         get() = _foodCreationFormState.value.amountPerServing.let { value ->
-            validateDoubleAsString(
+            Formatters.validateDoubleAsString(
                 doubleAsString = value,
                 itemToBeValidated = "Amount Per Servings"
             )
@@ -54,11 +55,11 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
         get() = _foodCreationFormState.value.servingUnit.let { value ->
             if (value.isEmpty()) null else {
                 val isValid = when (value) {
-                    in ServingUnits.units -> true
+                    in MFood.Enum.ServingUnits.Companion.units -> true
                     else -> false
                 }
 
-                val servingUnits = ServingUnits.units.joinToString(separator = ", ")
+                val servingUnits = MFood.Enum.ServingUnits.Companion.units.joinToString(separator = ", ")
 
                 if (isValid) null else "Must be one of $servingUnits"
             }

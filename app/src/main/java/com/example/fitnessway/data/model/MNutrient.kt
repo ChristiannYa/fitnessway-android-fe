@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.model.m_26.NutrientType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,7 +24,7 @@ object MNutrient {
             val name: String,
             val symbol: String?,
             val unit: String,
-            val type: com.example.fitnessway.data.model.m_26.NutrientType,
+            val type: NutrientType,
 
             @SerialName("is_premium")
             val isPremium: Boolean
@@ -53,14 +54,6 @@ object MNutrient {
     }
 
     object Helpers {
-        @Serializable
-        data class NutrientIdWithAmount(
-            @SerialName("nutrient_id")
-            val nutrientId: Int,
-
-            val amount: Double
-        )
-
         @Serializable
         data class NutrientIdWithGoal(
             @SerialName("nutrient_id")

@@ -1,4 +1,4 @@
-package com.example.fitnessway.util.food.creation
+package com.example.fitnessway.util.food.creation.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,10 +14,10 @@ import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient.Ui.NutrientLabelsFlowRow
 import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.form.field.FoodCreationNutrientField
+import com.example.fitnessway.util.nutrient.INutrientDvControls
 
 @Composable
 fun SetNutrients(

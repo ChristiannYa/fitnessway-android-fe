@@ -1,7 +1,8 @@
-package com.example.fitnessway.util
+package com.example.fitnessway.util.food.creation
 
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.nutrient.INutrientDvControls
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodCreation : INutrientDvControls {

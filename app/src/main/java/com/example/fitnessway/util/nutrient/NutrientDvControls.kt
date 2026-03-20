@@ -1,4 +1,4 @@
-package com.example.fitnessway.util
+package com.example.fitnessway.util.nutrient
 
 import kotlinx.coroutines.flow.MutableStateFlow
 

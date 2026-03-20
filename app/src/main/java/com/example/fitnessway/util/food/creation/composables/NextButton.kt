@@ -1,4 +1,4 @@
-package com.example.fitnessway.util.food.creation
+package com.example.fitnessway.util.food.creation.composables
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background

@@ -49,7 +49,7 @@ import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.UNutrient.toTypedList
 import com.example.fitnessway.util.Ui
-import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import com.example.fitnessway.util.isIdle
@@ -74,7 +74,7 @@ fun FoodEditionScreen(
     val foodUpdateState = uiState.foodUpdateState
     val nutrientDvControls = viewModel.nutrientDvControls
 
-    val foodUpdateErrorMessage = handleTempApiErrorMessage(
+    val foodUpdateErrorMessage = handleTempApiErrMsg(
         uiState = foodUpdateState,
         onTimeOut = viewModel::resetFoodUpdateState
     )

@@ -31,7 +31,7 @@ import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
-import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.isIdle
 import com.example.fitnessway.util.isSuccess
@@ -53,7 +53,7 @@ fun FoodDetailsScreen(
     val foodDeleteState = uiState.foodDeleteState
     val foodFavoriteStatusUpdateState = uiState.foodFavoriteStatusUpdateState
 
-    val foodDeleteErrorMessage = handleTempApiErrorMessage(
+    val foodDeleteErrorMessage = handleTempApiErrMsg(
         uiState = foodDeleteState,
         onTimeOut = viewModel::resetFoodDeleteState
     )

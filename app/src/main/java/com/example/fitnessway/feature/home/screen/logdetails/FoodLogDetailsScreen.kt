@@ -27,7 +27,7 @@ import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
-import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -47,7 +47,7 @@ fun FoodLogDetailsScreen(
     val foodLogUpdateState = uiState.foodLogUpdateState
     val focusManager = LocalFocusManager.current
 
-    val foodLogUpdateErrMsg = handleTempApiErrorMessage(
+    val foodLogUpdateErrMsg = handleTempApiErrMsg(
         uiState = foodLogUpdateState,
         onTimeOut = viewModel::resetFoodLogUpdateState
     )
@@ -80,7 +80,8 @@ fun FoodLogDetailsScreen(
                         title = "Log Details"
                     ) {
                         if (foodLog.foodStatus == FoodLogFoodStatus.PRESENT &&
-                            foodLog.food.metadata.isFavorite) {
+                            foodLog.food.metadata.isFavorite
+                        ) {
                             Structure.AppIconDynamic(
                                 source = Structure.AppIconButtonSource.Vector(
                                     imageVector = Icons.Default.Star

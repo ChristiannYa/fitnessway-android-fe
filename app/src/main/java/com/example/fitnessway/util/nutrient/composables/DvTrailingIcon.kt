@@ -1,9 +1,9 @@
-package com.example.fitnessway.util.nutrient
+package com.example.fitnessway.util.nutrient.composables
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient.hasDailyValue
+import com.example.fitnessway.util.nutrient.INutrientDvControls
 
 @Composable
 fun DvTrailingIcon(

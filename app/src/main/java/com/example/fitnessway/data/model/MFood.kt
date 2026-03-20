@@ -12,9 +12,9 @@ import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
-import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.ui.shared.Structure
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -208,8 +208,6 @@ object MFood {
         object Res {
             @Serializable
             data class FoodsGetApiResponse(
-                // There will be cases where the user will not have any foods created, so the
-                // list would be null
                 @SerialName("foods")
                 val foods: List<FoodInformation>?
             )

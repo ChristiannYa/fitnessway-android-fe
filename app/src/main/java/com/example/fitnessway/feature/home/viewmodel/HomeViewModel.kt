@@ -4,17 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
-import com.example.fitnessway.feature.home.manager.IHomeManagers
+import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
+import com.example.fitnessway.feature.home.manager.foodrequest.IFoodRequestManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
+import com.example.fitnessway.mappers.toNutrientIdAmountList
+import com.example.fitnessway.mappers.toPendingRequest
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.getCurrentDateInServerFormat
 import com.example.fitnessway.util.UFood
@@ -35,12 +37,13 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val nutrientRepo: INutrientRepository,
     private val foodRepo: IFoodRepository,
-    private val managers: IHomeManagers,
+    private val managers: IHomeManager,
     val appStateStore: IApplicationStateStore
 ) : ViewModel(),
     IFoodLogManager by managers.foodLog,
     IDateManager by managers.date,
-    IUiManager by managers.ui {
+    IUiManager by managers.ui,
+    IFoodRequestManager by managers.foodRequest {
 
     val userFlow: StateFlow<MUser.Model.User?> = appStateStore.userStateHolder.userState
         .map { it.user }
@@ -77,6 +80,10 @@ class HomeViewModel(
         }
     }
 
+    fun getNutrients() {
+        nutrientRepo.loadNutrients()
+    }
+
     fun getNutrientIntakes() {
         val date = managers.date.getApiFormattedDate()
         nutrientRepo.loadNutrientIntakes(date)
@@ -86,13 +93,23 @@ class HomeViewModel(
         foodRepo.loadFoods()
     }
 
-    fun getFoodSort() {
-        foodRepo.loadFoodSort()
-    }
-
     fun getFoodLogs() {
         val date = managers.date.getApiFormattedDate()
         foodRepo.loadFoodLogs(date)
+    }
+
+    fun addFoodRequest() {
+        val formState = managers.foodRequest.formState.value
+
+        val nutrientDvMap = managers.foodRequest.nutrientDvControls.nutrientDvMap.value
+        val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
+        val request = formState.toPendingRequest(nutrients)
+
+        viewModelScope.launch {
+            foodRepo.addPendingFood(request).collect { state ->
+                _uiState.update { it.copy(foodRequestState = state) }
+            }
+        }
     }
 
     fun addFoodLog() {
@@ -481,38 +498,8 @@ class HomeViewModel(
         }
     }
 
-    fun updateFoodSort(foodSort: String) {
-        // Capture original food sort
-        val originalFoodSort = managers.foodLog.selectedFoodSort.value ?: return
-
-        // Create request
-        val request = FoodSortUpdateRequest(foodSort)
-
-        // Update ui immediately
-        managers.foodLog.setSelectedFoodSort(foodSort)
-
-        viewModelScope.launch {
-            foodRepo.updateFoodSort(request).collect { state ->
-                when (state) {
-                    is UiState.Success -> {
-                        _uiState.update { it.copy(foodSortUpdateState = state) }
-                        foodRepo.updateState { it.copy(foodSortUiState = state) }
-                        foodRepo.refreshFoods()
-                    }
-
-                    is UiState.Error -> {
-                        _uiState.update { it.copy(foodSortUpdateState = state) }
-                        managers.foodLog.setSelectedFoodSort(originalFoodSort)
-                    }
-
-                    is UiState.Loading -> {
-                        _uiState.update { it.copy(foodSortUpdateState = state) }
-                    }
-
-                    else -> {}
-                }
-            }
-        }
+    fun resetFoodRequestState() {
+        _uiState.update { it.copy(foodRequestState = UiState.Idle) }
     }
 
     fun resetFoodLogAddState() {
@@ -525,9 +512,5 @@ class HomeViewModel(
 
     fun resetFoodLogDeleteState() {
         _uiState.update { it.copy(foodLogDeleteState = UiState.Idle) }
-    }
-
-    fun resetFoodSortUpdateState() {
-        _uiState.update { it.copy(foodSortUpdateState = UiState.Idle) }
     }
 }

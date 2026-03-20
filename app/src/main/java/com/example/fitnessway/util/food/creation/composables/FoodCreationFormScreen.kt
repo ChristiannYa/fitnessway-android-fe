@@ -1,4 +1,4 @@
-package com.example.fitnessway.util.food.creation
+package com.example.fitnessway.util.food.creation.composables
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -12,13 +12,17 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -31,13 +35,15 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.IFoodCreation
+import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.filterGoalNotSet
 import com.example.fitnessway.util.UNutrient.filterGoalSetPreferences
 import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.getIds
+import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.food.creation.IFoodCreation
 import com.example.fitnessway.util.form.field.provider.FoodCreationFieldsProvider
 import kotlinx.coroutines.delay
 
@@ -45,7 +51,7 @@ import kotlinx.coroutines.delay
 fun <T> FoodCreationFormScreen(
     onBackClick: () -> Unit,
     foodCreation: IFoodCreation,
-    nutrients: MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientWithPreferences>,
+    nutrientsUiState: UiState<MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientWithPreferences>>,
     isUserPremium: Boolean,
     onResetSubmissionState: () -> Unit,
     submissionState: UiState<T>,
@@ -80,22 +86,17 @@ fun <T> FoodCreationFormScreen(
         }
     }
 
-    val areNsValid = foodCreation.validateRequiredNutrients(
-        nutrientIds = nutrients.basic.map { it.nutrient }.getIds().toSet()
-    ) && foodCreation.currentStep.collectAsState().value >= 2
+    val lastStepTitle = if (submissionState is UiState.Success) {
+        "Go Back"
+    } else "Minerals"
 
-    val areVsValid = foodCreation.validateOptionalNutrients(
-        nutrientIds = nutrients.vitamin.map { it.nutrient }.getIds().toSet()
-    ) && foodCreation.currentStep.collectAsState().value >= 3
-
-    val areMsValid = foodCreation.validateOptionalNutrients(
-        nutrientIds = nutrients.mineral.map { it.nutrient }.getIds().toSet()
-    ) && foodCreation.currentStep.collectAsState().value >= 4
-
-    val (title, nextButtonText) = getFormTitle(
-        isSubmissionSuccessful = submissionState is UiState.Success,
-        currentStep = foodCreation.currentStep.collectAsState().value
-    )
+    val (screenTitle, nextButtonText) = when (foodCreation.currentStep.collectAsState().value) {
+        1 -> "Food Information" to "Add Nutrients"
+        2 -> "Nutrients" to "Add Vitamins"
+        3 -> "Vitamins" to "Add Minerals"
+        4 -> lastStepTitle to "Create Food"
+        else -> "" to ""
+    }
 
     Screen(
         header = {
@@ -128,8 +129,50 @@ fun <T> FoodCreationFormScreen(
                     }
                 },
                 isOnBackEnabled = submissionState !is UiState.Loading,
-                title = title,
-                extraContent = {
+                title = screenTitle
+            )
+        }
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            if (nutrientsUiState is UiState.Loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_SIZE)
+                        .align(Alignment.CenterHorizontally),
+                    strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH
+                )
+            }
+
+            Messages.SuccessMessageAnimated(
+                isVisible = submissionState is UiState.Success,
+                message = "Food submitted successfully!"
+            )
+
+            AnimatedVisibility(
+                visible = nutrientsUiState is UiState.Success && submissionState !is UiState.Success,
+                enter = Animation.ComposableTransition.fadeIn,
+                exit = Animation.ComposableTransition.fadeOut
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .imePadding(),
+                ) {
+                    val nutrients = (nutrientsUiState as UiState.Success).data
+
+                    val areNsValid = foodCreation.validateRequiredNutrients(
+                        nutrientIds = nutrients.basic.map { it.nutrient }.getIds().toSet()
+                    ) && foodCreation.currentStep.collectAsState().value >= 2
+
+                    val areVsValid = foodCreation.validateOptionalNutrients(
+                        nutrientIds = nutrients.vitamin.map { it.nutrient }.getIds().toSet()
+                    ) && foodCreation.currentStep.collectAsState().value >= 3
+
+                    val areMsValid = foodCreation.validateOptionalNutrients(
+                        nutrientIds = nutrients.mineral.map { it.nutrient }.getIds().toSet()
+                    ) && foodCreation.currentStep.collectAsState().value >= 4
+
                     if (submissionState !is UiState.Success) {
                         FormProgress(
                             currentStep = foodCreation.currentStep.collectAsState().value,
@@ -141,27 +184,7 @@ fun <T> FoodCreationFormScreen(
                             )
                         )
                     }
-                }
-            )
-        }
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Messages.SuccessMessageAnimated(
-                isVisible = submissionState is UiState.Success,
-                message = "Food submitted successfully!"
-            )
 
-            AnimatedVisibility(
-                visible = submissionState !is UiState.Success,
-                enter = Animation.ComposableTransition.fadeIn,
-                exit = Animation.ComposableTransition.fadeOut
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .imePadding(),
-                ) {
                     val foodBaseFields = listOf(
                         fieldsProvider.name(
                             focusRequester = focusRequesterName
@@ -311,6 +334,11 @@ fun <T> FoodCreationFormScreen(
                     }
                 }
             }
+
+            Messages.NotFoundMessageAnimated(
+                isVisible = nutrientsUiState is UiState.Error,
+                message = formatUiErrorMessage(nutrientsUiState)
+            )
         }
     }
 }

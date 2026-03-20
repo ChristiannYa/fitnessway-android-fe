@@ -9,10 +9,14 @@ import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
+import com.example.fitnessway.data.model.m_26.PaginationResult
+import com.example.fitnessway.data.model.m_26.PendingFood
+import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodApiClient
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.hasFetched
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -31,6 +35,37 @@ class FoodRepositoryImpl(
 
     private val _uiState = MutableStateFlow(FoodRepositoryUiState())
     override val uiState: StateFlow<FoodRepositoryUiState> = _uiState
+
+    private fun fetchPendingFoods(limit: Int, offset: Long): Flow<UiState<PaginationResult<PendingFood>>> =
+        httpClient.makeRequest(
+            apiCall = { apiClient.getPendingFoods(limit, offset) },
+            extractData = { it.pendingFoodsPagination },
+            errMsg = "Failed to fetch pending foods"
+        )
+
+    override fun refreshPendingFoods(limit: Int, offset: Long) {
+        _uiState.update { it.copy(pendingFoodsUiState = UiState.Loading) }
+
+        repositoryScope.launch {
+            fetchPendingFoods(limit, offset).collect { state ->
+                _uiState.update { it.copy(pendingFoodsUiState = state) }
+            }
+        }
+    }
+
+    override fun loadPendingFoods(limit: Int, offset: Long) {
+        val pendingFoodsUiState = _uiState.value.pendingFoodsUiState
+        if (pendingFoodsUiState.hasFetched) return
+        refreshPendingFoods(limit, offset)
+    }
+
+    override suspend fun addPendingFood(
+        request: PendingFoodAddRequest,
+    ): Flow<UiState<PendingFood>> = httpClient.makeRequest(
+        apiCall = { apiClient.addPendingFood(request) },
+        extractData = { it.pendingFoodSubmitted },
+        errMsg = "Failed to add food request"
+    )
 
     private fun fetchFoods(): Flow<UiState<List<FoodInformation>>> =
         httpClient.makeRequest(

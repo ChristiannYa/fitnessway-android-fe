@@ -30,17 +30,26 @@ object ApiUrls {
         const val NUTRIENT_INTAKES_PATH = "nutrient/get-intakes"
         const val NUTRIENT_INTAKES_URL = "$BASE_URL_GO/$NUTRIENT_INTAKES_PATH"
 
+        fun getIntakesByDatePath(date: String) = "$NUTRIENT_INTAKES_PATH?date=$date"
+        fun getIntakesByDateUrl(date: String) = BASE_URL_GO + getIntakesByDatePath(date)
+
         const val NUTRIENT_GOAL_SET_PATH = "nutrient/set-goal"
         const val NUTRIENT_GOAL_SET_URL = "$BASE_URL_GO$NUTRIENT_GOAL_SET_PATH"
 
         const val NUTRIENT_COLOR_SET_PATH = "nutrient/set-color"
         const val NUTRIENT_COLOR_SET_URL = "$BASE_URL_GO$NUTRIENT_COLOR_SET_PATH"
-
-        fun getIntakesByDatePath(date: String) = "$NUTRIENT_INTAKES_PATH?date=$date"
-        fun getIntakesByDateUrl(date: String) = BASE_URL_GO + getIntakesByDatePath(date)
     }
 
     object Food {
+        const val FOOD_PENDING_LIST_PATH = "food/pending/my-own"
+        const val FOOD_PENDING_LIST_URL = "$BASE_URL_KT$FOOD_PENDING_LIST_PATH"
+
+        fun getFoodPendingListPath(limit: Int, offset: Long) = "$FOOD_PENDING_LIST_PATH?limit=$limit&offset=$offset"
+        fun getFoodPendingListUrl(limit: Int, offset: Long) = BASE_URL_KT + getFoodPendingListPath(limit, offset)
+
+        const val FOOD_PENDING_ADD_PATH = "food/pending/add"
+        const val FOOD_PENDING_ADD_URL = "$BASE_URL_KT$FOOD_PENDING_ADD_PATH"
+
         const val FOOD_USER_LIST_PATH = "food/user/get-foods"
         const val FOOD_USER_LIST_URL = "$BASE_URL_GO$FOOD_USER_LIST_PATH"
 

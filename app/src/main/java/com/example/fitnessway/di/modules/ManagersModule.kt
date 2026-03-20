@@ -1,9 +1,10 @@
 package com.example.fitnessway.di.modules
 
-import com.example.fitnessway.feature.home.manager.HomeManagersImpl
-import com.example.fitnessway.feature.home.manager.IHomeManagers
+import com.example.fitnessway.feature.home.manager.HomeManagerImpl
+import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.DateManager
 import com.example.fitnessway.feature.home.manager.foodlog.FoodLogManager
+import com.example.fitnessway.feature.home.manager.foodrequest.FoodRequestManager
 import com.example.fitnessway.feature.home.manager.ui.UiManager
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.ListsManagersImpl
@@ -16,10 +17,11 @@ import com.example.fitnessway.feature.profile.manager.goals.GoalsManager
 import org.koin.dsl.module
 
 val managersModule = module {
-    single<IHomeManagers> {
-        HomeManagersImpl(
+    single<IHomeManager> {
+        HomeManagerImpl(
             date = DateManager(),
             foodLog = FoodLogManager(),
+            foodRequest = FoodRequestManager(),
             ui = UiManager()
         )
     }

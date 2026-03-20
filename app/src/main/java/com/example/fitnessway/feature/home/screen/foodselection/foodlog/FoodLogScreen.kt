@@ -41,7 +41,7 @@ import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleApiSuccessTempState
-import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import com.example.fitnessway.util.isLoading
@@ -85,7 +85,7 @@ fun FoodLogScreen(
         onTimeout = viewModel::resetFoodLogAddState
     )
 
-    val foodLogErrorMessage = handleTempApiErrorMessage(
+    val foodLogErrorMessage = handleTempApiErrMsg(
         uiState = foodLogAddState,
         onTimeOut = viewModel::resetFoodLogAddState
     )

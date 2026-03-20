@@ -1,4 +1,4 @@
-package com.example.fitnessway.util.nutrient
+package com.example.fitnessway.util.nutrient.composables
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState

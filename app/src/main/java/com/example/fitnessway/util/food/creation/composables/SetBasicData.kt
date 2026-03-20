@@ -1,4 +1,4 @@
-package com.example.fitnessway.util.food.creation
+package com.example.fitnessway.util.food.creation.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,19 +1,25 @@
 package com.example.fitnessway.data.repository.food
 
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
-import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
+import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
+import com.example.fitnessway.data.model.MFood.Model.FoodInformation
+import com.example.fitnessway.data.model.MFood.Model.FoodLogData
+import com.example.fitnessway.data.model.m_26.PendingFood
+import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodRepository {
     val uiState: StateFlow<FoodRepositoryUiState>
+
+    fun refreshPendingFoods(limit: Int, offset: Long)
+    fun loadPendingFoods(limit: Int, offset: Long)
+    suspend fun addPendingFood(request: PendingFoodAddRequest): Flow<UiState<PendingFood>>
 
     fun refreshFoods()
     fun loadFoods()

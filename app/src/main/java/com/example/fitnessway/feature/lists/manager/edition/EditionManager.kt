@@ -5,7 +5,6 @@ import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
-import com.example.fitnessway.util.NutrientDvControls
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
@@ -14,6 +13,7 @@ import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInli
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
+import com.example.fitnessway.util.nutrient.NutrientDvControls
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

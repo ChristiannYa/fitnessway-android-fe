@@ -4,9 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
-import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
-import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.food.creation.FoodCreationFormScreen
+import com.example.fitnessway.util.Ui.handleTempApiErrMsg
+import com.example.fitnessway.util.food.creation.composables.FoodCreationFormScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -22,16 +21,16 @@ fun CreateFoodFormScreen(
     val foodAddState = uiState.foodAddState
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
-    val foodAddErrMsg = handleTempApiErrorMessage(
+    val foodAddErrMsg = handleTempApiErrMsg(
         uiState = foodAddState,
         onTimeOut = viewModel::resetFoodAddState
     )
 
-    if (user != null && nutrientsUiState is UiState.Success) {
+    if (user != null) {
         FoodCreationFormScreen(
             onBackClick = onBackClick,
             foodCreation = viewModel,
-            nutrients = nutrientsUiState.data,
+            nutrientsUiState = nutrientsUiState,
             isUserPremium = user.isPremium,
             onResetSubmissionState = viewModel::resetFoodAddState,
             submissionState = uiState.foodAddState,

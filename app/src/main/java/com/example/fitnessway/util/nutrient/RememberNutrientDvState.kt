@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import com.example.fitnessway.data.model.MNutrient
-import com.example.fitnessway.util.INutrientDvControls
 import com.example.fitnessway.util.UNutrient.hasDailyValue
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName

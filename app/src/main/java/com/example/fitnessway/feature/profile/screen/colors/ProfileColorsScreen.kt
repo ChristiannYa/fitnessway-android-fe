@@ -21,7 +21,7 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
-import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientColorsFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -41,7 +41,7 @@ fun ProfileColorsScreen(
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val nutrientColorsSetUiState = uiState.nutrientColorsSetUiState
 
-    val nutrientColorsUpdateErrMsg = handleTempApiErrorMessage(
+    val nutrientColorsUpdateErrMsg = handleTempApiErrMsg(
         uiState = nutrientColorsSetUiState,
         onTimeOut = viewModel::resetNutrientColorsUpdateState
     )

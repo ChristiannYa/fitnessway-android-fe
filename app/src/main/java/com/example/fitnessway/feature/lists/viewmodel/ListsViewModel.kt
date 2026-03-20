@@ -2,13 +2,11 @@ package com.example.fitnessway.feature.lists.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.repository.food.IFoodRepository
@@ -17,6 +15,8 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
+import com.example.fitnessway.mappers.toNutrientIdAmountList
+import com.example.fitnessway.mappers.toUserFoodRequest
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
@@ -72,32 +72,10 @@ class ListsViewModel(
 
     fun addFood() {
         val formState = managers.creation.formState.value
-        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
 
-        val nutrients = formState.nutrients
-            .filter { (it.value.toDoubleOrNull() ?: 0.0) > 0 }
-            .map {
-                val nutrientId = it.key
-                val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
-
-                // Check if this nutrient should be converted from percentage
-                val amount = if (nutrientDvMap.containsKey(nutrientId)) {
-                    UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
-                } else amountLiteral
-
-                NutrientIdWithAmount(nutrientId, amount)
-            }
-
-        val request = FoodAddRequest(
-            information = FoodBaseInfo(
-                id = 0,
-                name = formState.name,
-                brand = formState.brand,
-                amountPerServing = formState.amountPerServing.toDoubleOrNull() ?: 0.0,
-                servingUnit = formState.servingUnit
-            ),
-            nutrients = nutrients
-        )
+        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap
+        val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap.value)
+        val request = formState.toUserFoodRequest(nutrients)
 
         viewModelScope.launch {
             foodRepo.addFood(request).collect { state ->
@@ -110,9 +88,8 @@ class ListsViewModel(
 
     fun updateFood() {
         val formState = managers.edition.foodEditionFormState.value ?: return
+        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
         val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
-        val nutrientDvControls = managers.creation.nutrientDvControls
-        val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
 
         // Get current data to update optimistically
         val originalFoodsUiState = foodRepo.uiState.value.foodsUiState
@@ -138,18 +115,7 @@ class ListsViewModel(
         // Gather updated nutrient data
         val addedNutrients = managers.edition.addedNutrients.value
         val deletedNutrients = managers.edition.deletedNutrients.value
-        val upsertedNutrients = formState.data.nutrients
-            .map {
-                val nutrientId = it.key
-                val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
-
-                // Check if this nutrient should be converted from percentage
-                val amount = if (nutrientDvMap.containsKey(nutrientId)) {
-                    UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
-                } else amountLiteral
-
-                NutrientIdWithAmount(nutrientId, amount)
-            }
+        val upsertedNutrients = formState.data.nutrients.toNutrientIdAmountList(nutrientDvMap)
 
         // Obtain added nutrients if they are present
         val addedNutrientsWithPreferences = addedNutrients.mapNotNull { addedNutrient ->
@@ -458,18 +424,6 @@ class ListsViewModel(
 
     fun resetFoodFavoriteStatusUpdateState() {
         _uiState.update { it.copy(foodFavoriteStatusUpdateState = UiState.Idle) }
-    }
-
-    /**
-     * `resetFoodCreationStates` resets the following food creation related states
-     * - food add state
-     * - food form state
-     * - nutrients in daily value map
-     */
-    fun resetFoodCreationStates() {
-        if (_uiState.value.foodAddState !is UiState.Idle) resetFoodAddState()
-        resetFormState()
-        resetFoodNutrientDvMap()
     }
 
     /**

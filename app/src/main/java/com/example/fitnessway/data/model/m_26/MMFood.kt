@@ -80,6 +80,11 @@ data class FoodSearchResult(
 )
 
 @Serializable
+data class PendingFoodsGetResponse(
+    val pendingFoodsPagination: PaginationResult<PendingFood>
+)
+
+@Serializable
 data class PendingFoodAddRequest(
     val base: FoodBase,
     val nutrients: List<NutrientIdWithAmount>

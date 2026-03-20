@@ -25,7 +25,7 @@ import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.filterPremium
 import com.example.fitnessway.util.UNutrient.mapNutrients
-import com.example.fitnessway.util.Ui.handleTempApiErrorMessage
+import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientGoalsFieldsProvider
 import org.koin.androidx.compose.koinViewModel
@@ -45,7 +45,7 @@ fun ProfileGoalsScreen(
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val nutrientGoalsSetUiState = uiState.nutrientGoalsSetUiState
 
-    val nutrientGoalsSetErrorMessage = handleTempApiErrorMessage(
+    val nutrientGoalsSetErrorMessage = handleTempApiErrMsg(
         uiState = nutrientGoalsSetUiState,
         onTimeOut = viewModel::resetNutrientGoalsUpdateState
     )

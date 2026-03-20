@@ -124,15 +124,15 @@ object Formatters {
         return (uiState as? UiState.Error)?.message ?: backupErrorMessage
     }
 
-    fun String.snakeToReadableText(): String {
-        return this.split("_").joinToString(" ") { outer ->
+    fun String.snakeCapitalized(): String = this
+        .split("_")
+        .joinToString(" ") { outer ->
             outer.replaceFirstChar { inner ->
                 if (inner.isLowerCase()) inner.titlecase(
                     getDefault()
                 ) else inner.toString()
             }
         }
-    }
 
     fun logcat(
         message: String,

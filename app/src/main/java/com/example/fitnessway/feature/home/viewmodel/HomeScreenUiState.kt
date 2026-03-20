@@ -5,7 +5,7 @@ import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.util.UiState
 
 data class HomeScreenUiState(
-    val foodRequestState: UiState<PendingFood> = UiState.Idle,
+    val foodRequestState: UiState<PendingFood> = UiState.Idle, // @TODO: Remove state
     val foodLogAddState: UiState<FoodLogData> = UiState.Idle,
     val foodLogUpdateState: UiState<FoodLogData> = UiState.Idle,
     val foodLogDeleteState: UiState<FoodLogData> = UiState.Idle,

@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.fitnessway.feature.home.screen.foodselection.FoodSelectionScreen
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoodLogScreen
-import com.example.fitnessway.feature.home.screen.foodselection.foodrequest.FoodRequestScreen
 import com.example.fitnessway.feature.home.screen.logdetails.FoodLogDetailsScreen
 import com.example.fitnessway.feature.home.screen.main.HomeScreen
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -21,9 +20,6 @@ object HomeMainDest
 
 @Serializable
 private object FoodSelection
-
-@Serializable
-private object FoodRequest
 
 @Serializable
 private object FoodLogDetails
@@ -60,20 +56,6 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
                 viewModel,
                 onBackClick = navController::popBackStack,
                 onNavigateToSelectedFood = { navController.navigate(FoodLog) },
-                onNavigateToFoodRequest = { navController.navigate(FoodRequest) }
-            )
-        }
-
-        composable<FoodRequest> { entry ->
-            val parentEntry = remember(entry) {
-                navController.getBackStackEntry<HomeGraph>()
-            }
-
-            val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
-
-            FoodRequestScreen(
-                viewModel,
-                onBackClick = navController::popBackStack
             )
         }
 

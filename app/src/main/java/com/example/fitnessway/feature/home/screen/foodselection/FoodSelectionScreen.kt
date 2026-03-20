@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ClearAll
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -41,7 +40,6 @@ fun FoodSelectionScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onBackClick: () -> Unit,
     onNavigateToSelectedFood: () -> Unit,
-    onNavigateToFoodRequest: () -> Unit,
 ) {
     val userFlow by viewModel.userFlow.collectAsState()
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
@@ -71,13 +69,6 @@ fun FoodSelectionScreen(
                         onBackClick = onBackClick,
                         title = "$categoryString selection",
                     ) {
-                        Clickables.AppPngIconButton(
-                            icon = AppIconButtonSource.Vector(Icons.Default.Info),
-                            contentDescription = "Not found what you're looking for?",
-                            enabled = true,
-                            onClick = onNavigateToFoodRequest
-                        )
-
                         Clickables.AppPngIconButton(
                             onClick = {},
                             contentDescription = "View My Foods",

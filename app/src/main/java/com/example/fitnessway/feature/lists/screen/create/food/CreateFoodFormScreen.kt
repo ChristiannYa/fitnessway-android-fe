@@ -3,6 +3,7 @@ package com.example.fitnessway.feature.lists.screen.create.food
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.food.creation.composables.FoodCreationFormScreen
@@ -30,6 +31,7 @@ fun CreateFoodFormScreen(
         FoodCreationFormScreen(
             onBackClick = onBackClick,
             foodCreation = viewModel,
+            foodSource = FoodSource.USER,
             nutrientsUiState = nutrientsUiState,
             isUserPremium = user.isPremium,
             onResetSubmissionState = viewModel::resetFoodAddState,

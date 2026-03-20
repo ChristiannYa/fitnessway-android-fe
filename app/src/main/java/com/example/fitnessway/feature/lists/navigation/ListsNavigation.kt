@@ -9,6 +9,7 @@ import com.example.fitnessway.feature.lists.screen.create.food.CreateFoodFormScr
 import com.example.fitnessway.feature.lists.screen.details.FoodDetailsScreen
 import com.example.fitnessway.feature.lists.screen.details.edition.FoodEditionScreen
 import com.example.fitnessway.feature.lists.screen.main.ListsScreen
+import com.example.fitnessway.feature.lists.screen.request.FoodRequestScreen
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.navigation.ListsGraph
 import kotlinx.serialization.Serializable
@@ -19,6 +20,9 @@ object ListsMainDest
 
 @Serializable
 private object DetailsDest
+
+@Serializable
+private object FoodRequestDest
 
 @Serializable
 private object FoodCreationDest
@@ -39,7 +43,21 @@ fun NavGraphBuilder.listsNavigationGraph(navController: NavController) {
             ListsScreen(
                 viewModel = viewModel,
                 onViewFoodDetails = { navController.navigate(DetailsDest) },
+                onNavigateToFoodRequestScreen = { navController.navigate(FoodRequestDest) },
                 onNavigateToFoodCreationForm = { navController.navigate(FoodCreationDest) }
+            )
+        }
+
+        composable<FoodRequestDest> { entry ->
+            val parentEntry = remember(entry) {
+                navController.getBackStackEntry<ListsGraph>()
+            }
+
+            val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+
+            FoodRequestScreen(
+                viewModel = viewModel,
+                onBackClick = navController::popBackStack
             )
         }
 

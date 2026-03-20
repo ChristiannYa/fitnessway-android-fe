@@ -16,6 +16,7 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.mappers.toNutrientIdAmountList
+import com.example.fitnessway.mappers.toPendingRequest
 import com.example.fitnessway.mappers.toUserFoodRequest
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
@@ -68,6 +69,20 @@ class ListsViewModel(
 
     fun getNutrients() {
         nutrientRepo.loadNutrients()
+    }
+
+    fun addFoodRequest() {
+        val formState = managers.creation.formState.value
+
+        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
+        val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
+        val request = formState.toPendingRequest(nutrients)
+
+        viewModelScope.launch {
+            foodRepo.addPendingFood(request).collect { state ->
+                _uiState.update { it.copy(foodRequestState = state) }
+            }
+        }
     }
 
     fun addFood() {
@@ -408,6 +423,10 @@ class ListsViewModel(
                 }
             }
         }
+    }
+
+    fun resetFoodRequestState() {
+        _uiState.update { it.copy(foodRequestState = UiState.Idle) }
     }
 
     fun resetFoodAddState() {

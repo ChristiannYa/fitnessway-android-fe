@@ -2,6 +2,10 @@
 
 package com.example.fitnessway.data.model.m_26
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import com.example.fitnessway.R
+import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.util.UUIDSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -26,6 +30,19 @@ enum class PendingFoodStatus {
     REJECTED;
 
     val isReviewed by lazy { this != PENDING }
+}
+
+enum class FoodSource {
+    APP,
+    USER
+}
+
+enum class ListOption(
+    val icon: Structure.AppIconButtonSource
+) {
+    PendingFood(Structure.AppIconButtonSource.Vector(Icons.Default.AccessTime)),
+    Food(Structure.AppIconButtonSource.Resource(R.drawable.food)),
+    Supplement(Structure.AppIconButtonSource.Resource(R.drawable.energy))
 }
 
 @Serializable

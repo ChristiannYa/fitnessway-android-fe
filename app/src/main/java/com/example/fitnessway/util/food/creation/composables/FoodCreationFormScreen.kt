@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MNutrient
+import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.shared.Banners
 import com.example.fitnessway.ui.shared.FormProgress
@@ -51,6 +53,7 @@ import kotlinx.coroutines.delay
 fun <T> FoodCreationFormScreen(
     onBackClick: () -> Unit,
     foodCreation: IFoodCreation,
+    foodSource: FoodSource,
     nutrientsUiState: UiState<MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientWithPreferences>>,
     isUserPremium: Boolean,
     onResetSubmissionState: () -> Unit,
@@ -58,6 +61,9 @@ fun <T> FoodCreationFormScreen(
     submissionErrorMessage: String?,
     onSubmit: () -> Unit,
 ) {
+    val formState by foodCreation.formState.collectAsState()
+    val currentStep by foodCreation.currentStep.collectAsState()
+
     val focusManager = LocalFocusManager.current
     val focusRequesterName = remember { FocusRequester() }
     val focusRequesterNutrient = remember { FocusRequester() }
@@ -65,14 +71,14 @@ fun <T> FoodCreationFormScreen(
     val focusRequesterMineral = remember { FocusRequester() }
 
     val fieldsProvider = FoodCreationFieldsProvider(
-        formState = foodCreation.formState.collectAsState().value,
+        formState = formState,
         onFieldUpdate = foodCreation::updateFormField,
         focusManager = focusManager,
         isFormSubmitting = submissionState is UiState.Loading
     )
 
-    LaunchedEffect(foodCreation.currentStep.collectAsState().value) {
-        val focusRequester = when (foodCreation.currentStep.value) {
+    LaunchedEffect(currentStep) {
+        val focusRequester = when (currentStep) {
             1 -> focusRequesterName
             2 -> focusRequesterNutrient
             3 -> focusRequesterVitamin
@@ -86,16 +92,27 @@ fun <T> FoodCreationFormScreen(
         }
     }
 
-    val lastStepTitle = if (submissionState is UiState.Success) {
-        "Go Back"
-    } else "Minerals"
+    val (stepTitle, nextButtonText) = run {
+        val lastStepTitle = if (submissionState is UiState.Success) null else "Minerals"
 
-    val (screenTitle, nextButtonText) = when (foodCreation.currentStep.collectAsState().value) {
-        1 -> "Food Information" to "Add Nutrients"
-        2 -> "Nutrients" to "Add Vitamins"
-        3 -> "Vitamins" to "Add Minerals"
-        4 -> lastStepTitle to "Create Food"
-        else -> "" to ""
+        when (currentStep) {
+            1 -> "Food Information" to "Add Nutrients"
+            2 -> "Nutrients" to "Add Vitamins"
+            3 -> "Vitamins" to "Add Minerals"
+            4 -> lastStepTitle to "Create Food"
+            else -> "" to ""
+        }
+    }
+
+    val titlePrefix: String? = when (foodSource) {
+        FoodSource.USER -> null
+        FoodSource.APP -> "App"
+    }
+
+    val screenTitle = run {
+        if (titlePrefix != null && stepTitle != null) {
+            "($titlePrefix) $stepTitle"
+        } else null
     }
 
     Screen(
@@ -113,18 +130,18 @@ fun <T> FoodCreationFormScreen(
                         if (nutrientDvMap.isNotEmpty()) nutrientDvControls.onClearData()
                     }
 
-                    fun onBackAddIdle() {
-                        if (foodCreation.currentStep.value == 1) {
+                    fun onBackSubmissionIdle() {
+                        if (currentStep == 1) {
                             onBack()
                         } else {
-                            foodCreation.updateStep(foodCreation.currentStep.value, true)
+                            foodCreation.updateStep(currentStep, true)
                         }
                     }
 
                     when (submissionState) {
                         is UiState.Success -> onBack()
-                        is UiState.Error -> onBackAddIdle()
-                        is UiState.Idle -> onBackAddIdle()
+                        is UiState.Error -> onBackSubmissionIdle()
+                        is UiState.Idle -> onBackSubmissionIdle()
                         else -> {}
                     }
                 },
@@ -163,19 +180,19 @@ fun <T> FoodCreationFormScreen(
 
                     val areNsValid = foodCreation.validateRequiredNutrients(
                         nutrientIds = nutrients.basic.map { it.nutrient }.getIds().toSet()
-                    ) && foodCreation.currentStep.collectAsState().value >= 2
+                    ) && currentStep >= 2
 
                     val areVsValid = foodCreation.validateOptionalNutrients(
                         nutrientIds = nutrients.vitamin.map { it.nutrient }.getIds().toSet()
-                    ) && foodCreation.currentStep.collectAsState().value >= 3
+                    ) && currentStep >= 3
 
                     val areMsValid = foodCreation.validateOptionalNutrients(
                         nutrientIds = nutrients.mineral.map { it.nutrient }.getIds().toSet()
-                    ) && foodCreation.currentStep.collectAsState().value >= 4
+                    ) && currentStep >= 4
 
                     if (submissionState !is UiState.Success) {
                         FormProgress(
-                            currentStep = foodCreation.currentStep.collectAsState().value,
+                            currentStep = currentStep,
                             stepValidations = listOf(
                                 foodCreation.isBasicDataValid,
                                 areNsValid,
@@ -228,7 +245,7 @@ fun <T> FoodCreationFormScreen(
                         Pair(fields, nutrientsWithoutGoal)
                     }
 
-                    val isCurrentStepValid = when (foodCreation.currentStep.collectAsState().value) {
+                    val isCurrentStepValid = when (currentStep) {
                         1 -> foodCreation.isBasicDataValid
                         2 -> areNsValid
                         3 -> areVsValid
@@ -249,7 +266,7 @@ fun <T> FoodCreationFormScreen(
 
                         Column {
                             AnimatedContent(
-                                targetState = foodCreation.currentStep.collectAsState().value,
+                                targetState = currentStep,
                                 transitionSpec = {
                                     val isForward = targetState > initialState
 
@@ -324,7 +341,7 @@ fun <T> FoodCreationFormScreen(
                         text = nextButtonText
                     ) {
                         foodCreation.updateStep(
-                            step = foodCreation.currentStep.value,
+                            step = currentStep,
                             goesBack = false,
                             onSubmit = {
                                 focusManager.clearFocus()

@@ -15,8 +15,6 @@ import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.foodrequest.IFoodRequestManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
-import com.example.fitnessway.mappers.toNutrientIdAmountList
-import com.example.fitnessway.mappers.toPendingRequest
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.getCurrentDateInServerFormat
 import com.example.fitnessway.util.UFood
@@ -80,10 +78,6 @@ class HomeViewModel(
         }
     }
 
-    fun getNutrients() {
-        nutrientRepo.loadNutrients()
-    }
-
     fun getNutrientIntakes() {
         val date = managers.date.getApiFormattedDate()
         nutrientRepo.loadNutrientIntakes(date)
@@ -96,20 +90,6 @@ class HomeViewModel(
     fun getFoodLogs() {
         val date = managers.date.getApiFormattedDate()
         foodRepo.loadFoodLogs(date)
-    }
-
-    fun addFoodRequest() {
-        val formState = managers.foodRequest.formState.value
-
-        val nutrientDvMap = managers.foodRequest.nutrientDvControls.nutrientDvMap.value
-        val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
-        val request = formState.toPendingRequest(nutrients)
-
-        viewModelScope.launch {
-            foodRepo.addPendingFood(request).collect { state ->
-                _uiState.update { it.copy(foodRequestState = state) }
-            }
-        }
     }
 
     fun addFoodLog() {
@@ -496,10 +476,6 @@ class HomeViewModel(
                 }
             }
         }
-    }
-
-    fun resetFoodRequestState() {
-        _uiState.update { it.copy(foodRequestState = UiState.Idle) }
     }
 
     fun resetFoodLogAddState() {

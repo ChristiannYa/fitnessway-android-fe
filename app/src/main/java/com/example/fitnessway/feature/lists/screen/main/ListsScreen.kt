@@ -12,9 +12,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -28,11 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.example.fitnessway.R
-import com.example.fitnessway.data.model.MFood.Enum.ListOption
+import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.feature.lists.screen.main.composables.SupplementList
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Clickables
@@ -42,23 +40,24 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.ScreenOverlay
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.WhiteFont
-import com.example.fitnessway.util.Formatters.snakeToReadableText
 import com.example.fitnessway.util.UFood.Ui.foodsListWithState
 import com.example.fitnessway.util.isLoading
 import com.example.fitnessway.util.isSuccess
+import com.example.fitnessway.util.plural
+import com.example.fitnessway.util.splitPascalCase
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ListsScreen(
     viewModel: ListsViewModel = koinViewModel(),
     onViewFoodDetails: () -> Unit,
+    onNavigateToFoodRequestScreen: () -> Unit,
     onNavigateToFoodCreationForm: () -> Unit
 ) {
     val userFlow by viewModel.userFlow.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
-    val user = userFlow
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val foodsUiState = foodRepoUiState.foodsUiState
     val areListsDataReady = nutrientsUiState.isSuccess && foodsUiState.isSuccess
@@ -78,15 +77,10 @@ fun ListsScreen(
 
     val view = LocalView.current
 
-    val title = when (selectedList) {
-        ListOption.Food -> "Foods"
-        ListOption.Supplement -> "Supplements"
-    }
-
     Screen(
         header = {
             Header(
-                title = title,
+                title = "My ${selectedList.name.splitPascalCase().plural()}",
                 extraContent = if (areListsDataReady) {
                     {
                         Clickables.AppPngIconButton(
@@ -120,6 +114,12 @@ fun ListsScreen(
                     modifier = Modifier.fillMaxHeight()
                 ) {
                     when (selectedList) {
+                        ListOption.PendingFood -> {
+                            item {
+                                Text("Pending Foods")
+                            }
+                        }
+
                         ListOption.Food -> {
                             foodsListWithState(
                                 state = foodsUiState,
@@ -145,7 +145,7 @@ fun ListsScreen(
                 val tint = if (isSelected) WhiteFont else null
 
                 Structure.MoreOptionsConfig(
-                    text = option.name.lowercase().snakeToReadableText(),
+                    text = option.name.splitPascalCase().plural(),
                     backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else null,
                     icon = option.icon,
                     iconTint = tint,
@@ -166,21 +166,22 @@ fun ListsScreen(
                 )
 
                 IconButton(
-                    onClick = onNavigateToFoodCreationForm,
+                    onClick = {
+                        when (selectedList) {
+                            ListOption.PendingFood -> onNavigateToFoodRequestScreen()
+                            ListOption.Food -> onNavigateToFoodCreationForm()
+                            else -> {}
+                        }
+                    },
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(52.dp)
                         .background(MaterialTheme.colorScheme.inverseSurface)
                         .align(Alignment.BottomCenter)
                 ) {
-                    val imageId = when (selectedList) {
-                        ListOption.Food -> R.drawable.food
-                        ListOption.Supplement -> R.drawable.energy
-                    }
-
-                    Icon(
-                        painter = painterResource(imageId),
-                        contentDescription = "Create",
+                    Structure.AppIconDynamic(
+                        source = selectedList.icon,
+                        contentDescription = "Create ${selectedList.name.splitPascalCase()}",
                         tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier.fillMaxSize(0.7f)
                     )

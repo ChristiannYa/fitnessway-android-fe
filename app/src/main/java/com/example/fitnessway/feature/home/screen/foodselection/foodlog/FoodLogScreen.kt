@@ -44,7 +44,6 @@ import com.example.fitnessway.util.Ui.handleApiSuccessTempState
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
-import com.example.fitnessway.util.isLoading
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -104,7 +103,7 @@ fun FoodLogScreen(
                             if (foodLogAddState is UiState.Error) viewModel.resetFoodLogAddState()
                             onBackClick()
                         },
-                        isOnBackEnabled = !foodLogAddState.isLoading,
+                        isOnBackEnabled = foodLogAddState !is UiState.Loading,
                         title = "Log Submission"
                     ) {
                         if (selectedFoodToLogCopy.metadata.isFavorite) {

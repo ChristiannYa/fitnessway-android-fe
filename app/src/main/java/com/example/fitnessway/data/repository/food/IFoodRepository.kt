@@ -17,8 +17,9 @@ import kotlinx.coroutines.flow.StateFlow
 interface IFoodRepository {
     val uiState: StateFlow<FoodRepositoryUiState>
 
-    fun refreshPendingFoods(limit: Int, offset: Long)
-    fun loadPendingFoods(limit: Int, offset: Long)
+    fun loadPendingFoods()
+    fun refreshPendingFoods()
+    fun loadMorePendingFoods()
     suspend fun addPendingFood(request: PendingFoodAddRequest): Flow<UiState<PendingFood>>
 
     fun refreshFoods()

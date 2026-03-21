@@ -52,7 +52,6 @@ import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
-import com.example.fitnessway.util.isIdle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -105,7 +104,7 @@ fun FoodEditionScreen(
                         enabled = isFoodEditionFormValid
                     ) {
                         focusManager.clearFocus()
-                        if (!foodUpdateState.isIdle) viewModel.resetFoodUpdateState()
+                        if (foodUpdateState !is UiState.Idle) viewModel.resetFoodUpdateState()
                         viewModel.updateFood()
                     }
                 }

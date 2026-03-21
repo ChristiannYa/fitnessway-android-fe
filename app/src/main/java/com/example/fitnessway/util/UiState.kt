@@ -1,19 +1,19 @@
 package com.example.fitnessway.util
 
+import com.example.fitnessway.data.model.m_26.PaginationResult
+
 sealed class UiState<out T> {
     data object Idle : UiState<Nothing>()
-    object Loading : UiState<Nothing>()
+    data object Loading : UiState<Nothing>()
     data class Success<T>(val data: T) : UiState<T>()
     data class Error(val message: String) : UiState<Nothing>()
+
+    val hasFetched get() = this is Success || this is Error
 }
 
-// usage: nutrientsUiState.isSuccess()
-// fun <T> UiState<T>.isSuccess(): Boolean = this is UiState.Success
+data class UiStatePager<T>(
+    val uiState: UiState<PaginationResult<T>> = UiState.Loading,
+    val isLoadingMore: Boolean = false
+)
 
-// usage: nutrientsUiState.isSuccess
-val <T> UiState<T>.isSuccess: Boolean get() = this is UiState.Success
-val <T> UiState<T>.isLoading: Boolean get() = this is UiState.Loading
-val <T> UiState<T>.isError: Boolean get() = this is UiState.Error
-val <T> UiState<T>.isIdle: Boolean get() = this is UiState.Idle
-
-val <T> UiState<T>.hasFetched: Boolean get() = this is UiState.Success || this is UiState.Error
+val <T> UiStatePager<T>.pagination get() = (uiState as? UiState.Success)?.data

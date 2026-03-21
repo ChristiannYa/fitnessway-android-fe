@@ -63,6 +63,14 @@ class ListsViewModel(
         foodRepo.refreshFoods()
     }
 
+    fun getPendingFoods() {
+        foodRepo.loadPendingFoods()
+    }
+
+    fun loadMorePendingFoods() {
+        foodRepo.loadMorePendingFoods()
+    }
+
     fun getFoods() {
         foodRepo.loadFoods()
     }

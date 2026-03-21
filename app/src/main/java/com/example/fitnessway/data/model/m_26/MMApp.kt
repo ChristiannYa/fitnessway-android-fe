@@ -8,4 +8,6 @@ data class PaginationResult<T>(
     val totalCount: Long,
     val pageCount: Int,
     val currentPage: Int
-)
+) {
+    val hasMorePages: Boolean get() = currentPage < pageCount
+}

@@ -1,5 +1,6 @@
 package com.example.fitnessway.data.repository.food
 
+import com.example.fitnessway.data.constants.Pagination
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
@@ -9,14 +10,14 @@ import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
-import com.example.fitnessway.data.model.m_26.PaginationResult
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodApiClient
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.hasFetched
+import com.example.fitnessway.util.UiStatePager
+import com.example.fitnessway.util.pagination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -36,27 +37,69 @@ class FoodRepositoryImpl(
     private val _uiState = MutableStateFlow(FoodRepositoryUiState())
     override val uiState: StateFlow<FoodRepositoryUiState> = _uiState
 
-    private fun fetchPendingFoods(limit: Int, offset: Long): Flow<UiState<PaginationResult<PendingFood>>> =
+    private fun fetchPendingFoods(offset: Long) =
         httpClient.makeRequest(
-            apiCall = { apiClient.getPendingFoods(limit, offset) },
+            apiCall = { apiClient.getPendingFoods(Pagination.LIMIT, offset) },
             extractData = { it.pendingFoodsPagination },
             errMsg = "Failed to fetch pending foods"
         )
 
-    override fun refreshPendingFoods(limit: Int, offset: Long) {
-        _uiState.update { it.copy(pendingFoodsUiState = UiState.Loading) }
+    override fun refreshPendingFoods() {
+        _uiState.update { it.copy(pendingFoodsUiStatePager = UiStatePager()) }
 
         repositoryScope.launch {
-            fetchPendingFoods(limit, offset).collect { state ->
-                _uiState.update { it.copy(pendingFoodsUiState = state) }
+            fetchPendingFoods(offset = 0).collect { state ->
+                _uiState.update { it.copy(pendingFoodsUiStatePager = UiStatePager(state)) }
             }
         }
     }
 
-    override fun loadPendingFoods(limit: Int, offset: Long) {
-        val pendingFoodsUiState = _uiState.value.pendingFoodsUiState
-        if (pendingFoodsUiState.hasFetched) return
-        refreshPendingFoods(limit, offset)
+    override fun loadPendingFoods() {
+        val uiState = _uiState.value.pendingFoodsUiStatePager.uiState
+        if (uiState.hasFetched) return
+        refreshPendingFoods()
+    }
+
+    override fun loadMorePendingFoods() {
+        val pager = _uiState.value.pendingFoodsUiStatePager
+        if (pager.isLoadingMore) return
+
+        val pagination = pager.pagination ?: return
+        if (!pagination.hasMorePages) return
+
+        _uiState.update {
+            it.copy(pendingFoodsUiStatePager = pager.copy(isLoadingMore = true))
+        }
+
+        repositoryScope.launch {
+            fetchPendingFoods(
+                offset = pagination.currentPage * Pagination.LIMIT.toLong()
+            ).collect { state ->
+                when (state) {
+                    is UiState.Success -> _uiState.update {
+                        val current = it.pendingFoodsUiStatePager.pagination
+                        val accumulated = (current?.data ?: emptyList()) + state.data.data
+
+                        it.copy(
+                            pendingFoodsUiStatePager = UiStatePager(
+                                uiState = UiState.Success(state.data.copy(data = accumulated)),
+                                isLoadingMore = false
+                            )
+                        )
+                    }
+
+                    is UiState.Error -> _uiState.update {
+                        it.copy(
+                            pendingFoodsUiStatePager = it.pendingFoodsUiStatePager.copy(
+                                isLoadingMore = false
+                            )
+                        )
+                    }
+
+                    else -> {}
+                }
+            }
+        }
     }
 
     override suspend fun addPendingFood(
@@ -85,8 +128,8 @@ class FoodRepositoryImpl(
     }
 
     override fun loadFoods() {
-        val foodsUiState = _uiState.value.foodsUiState
-        if (foodsUiState is UiState.Success || foodsUiState is UiState.Error) return
+        val uiState = _uiState.value.foodsUiState
+        if (uiState.hasFetched) return
         refreshFoods()
     }
 
@@ -186,7 +229,7 @@ class FoodRepositoryImpl(
 
     override fun loadFoodSort() {
         val uiState = _uiState.value.foodSortUiState
-        if (uiState is UiState.Success || uiState is UiState.Error) return
+        if (uiState.hasFetched) return
         refreshFoodSort()
     }
 
@@ -213,22 +256,21 @@ class FoodRepositoryImpl(
     }
 
     override fun clearFoodLogsUiCache() {
-        _uiState.update { it.copy(foodLogsCache = emptyMap()) }
+        _uiState.update { it.copy(foodLogsUiState = emptyMap()) }
     }
 
     override fun refreshFoodLogs(date: String) {
         repositoryScope.launch {
             fetchFoodLogs(date).collect { state ->
-                _uiState.update { it.copy(foodLogsCache = it.foodLogsCache + (date to state)) }
+                _uiState.update { it.copy(foodLogsUiState = it.foodLogsUiState + (date to state)) }
             }
         }
     }
 
     override fun loadFoodLogs(date: String) {
-        val cachedData = _uiState.value.foodLogsCache[date]
-        if (cachedData is UiState.Success || cachedData is UiState.Error) {
-            return
-        }
+        val uiState = _uiState.value.foodLogsUiState[date]
+        uiState?.let { if (it.hasFetched) return }
+
         refreshFoodLogs(date)
     }
 

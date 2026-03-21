@@ -187,7 +187,7 @@ class HomeViewModel(
         val apiDate = managers.date.getApiFormattedDate()
 
         // Get original data to update optimistically
-        val originalFoodLogsState = foodRepo.uiState.value.foodLogsCache[apiDate]
+        val originalFoodLogsState = foodRepo.uiState.value.foodLogsUiState[apiDate]
         val originalNutrientIntakesState = nutrientRepo.uiState.value.nutrientIntakesCache[apiDate]
 
         // Only proceed if there are food logs
@@ -261,7 +261,7 @@ class HomeViewModel(
         // Update UI immediately
         foodRepo.updateState {
             it.copy(
-                foodLogsCache = it.foodLogsCache + (apiDate to UiState.Success(
+                foodLogsUiState = it.foodLogsUiState + (apiDate to UiState.Success(
                     optimisticFoodLogs
                 ))
             )
@@ -292,7 +292,7 @@ class HomeViewModel(
 
                         // Obtain updated UI states after optimistic update
                         val currentFoodLogsState = foodRepo.uiState.value
-                            .foodLogsCache[apiDate]
+                            .foodLogsUiState[apiDate]
 
                         val currentNutrientIntakesState = nutrientRepo.uiState.value
                             .nutrientIntakesCache[apiDate]
@@ -311,7 +311,7 @@ class HomeViewModel(
 
                             foodRepo.updateState {
                                 it.copy(
-                                    foodLogsCache = it.foodLogsCache +
+                                    foodLogsUiState = it.foodLogsUiState +
                                             (apiDate to UiState.Success(revertedFoodLogs))
                                 )
                             }
@@ -352,7 +352,7 @@ class HomeViewModel(
         val apiDate = managers.date.getApiFormattedDate()
 
         // Get current data to update optimistically
-        val originalFoodLogsState = foodRepo.uiState.value.foodLogsCache[apiDate]
+        val originalFoodLogsState = foodRepo.uiState.value.foodLogsUiState[apiDate]
         val originalIntakesState = nutrientRepo.uiState.value.nutrientIntakesCache[apiDate]
 
         // Only proceed if we have data
@@ -386,7 +386,7 @@ class HomeViewModel(
         // Update UI immediately
         foodRepo.updateState {
             it.copy(
-                foodLogsCache = it.foodLogsCache
+                foodLogsUiState = it.foodLogsUiState
                         + (apiDate to UiState.Success(optimisticFoodLogs))
             )
         }
@@ -421,7 +421,7 @@ class HomeViewModel(
 
                         // Obtain updated UI states after optimistic update
                         val currentFoodLogsState = foodRepo.uiState.value
-                            .foodLogsCache[apiDate]
+                            .foodLogsUiState[apiDate]
 
                         val currentIntakesState = nutrientRepo.uiState.value
                             .nutrientIntakesCache[apiDate]
@@ -445,7 +445,7 @@ class HomeViewModel(
 
                             foodRepo.updateState {
                                 it.copy(
-                                    foodLogsCache = it.foodLogsCache + (apiDate to UiState.Success(
+                                    foodLogsUiState = it.foodLogsUiState + (apiDate to UiState.Success(
                                         revertedFoodLogs
                                     ))
                                 )

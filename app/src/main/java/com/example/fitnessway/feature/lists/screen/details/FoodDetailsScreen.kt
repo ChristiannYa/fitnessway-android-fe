@@ -33,8 +33,6 @@ import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.isIdle
-import com.example.fitnessway.util.isSuccess
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -80,8 +78,8 @@ fun FoodDetailsScreen(
             header = {
                 Header(
                     onBackClick = {
-                        if (!foodDeleteState.isIdle) viewModel.resetFoodDeleteState()
-                        if (!foodFavoriteStatusUpdateState.isIdle) viewModel.resetFoodFavoriteStatusUpdateState()
+                        if (foodDeleteState !is UiState.Idle) viewModel.resetFoodDeleteState()
+                        if (foodFavoriteStatusUpdateState !is UiState.Idle) viewModel.resetFoodFavoriteStatusUpdateState()
 
                         onBackClick()
                     },
@@ -89,7 +87,7 @@ fun FoodDetailsScreen(
                 ) {
                     val isFavorite = selectedFoodCopy.metadata.isFavorite
 
-                    if (!foodDeleteState.isSuccess) {
+                    if (foodDeleteState !is UiState.Success) {
                         val favoriteIcon = if (isFavorite) {
                             Icons.Default.Star
                         } else Icons.Default.StarBorder

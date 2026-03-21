@@ -1,17 +1,22 @@
 package com.example.fitnessway.feature.lists.screen.main
 
 import android.view.SoundEffectConstants
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,12 +45,16 @@ import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.ScreenOverlay
 import com.example.fitnessway.ui.shared.Structure
+import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.UFood.Ui.foodsListWithState
-import com.example.fitnessway.util.isLoading
-import com.example.fitnessway.util.isSuccess
+import com.example.fitnessway.util.Ui
+import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.pagination
 import com.example.fitnessway.util.plural
 import com.example.fitnessway.util.splitPascalCase
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -54,28 +64,56 @@ fun ListsScreen(
     onNavigateToFoodRequestScreen: () -> Unit,
     onNavigateToFoodCreationForm: () -> Unit
 ) {
-    val userFlow by viewModel.userFlow.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
+    val pendingFoodsUiStatePager = foodRepoUiState.pendingFoodsUiStatePager
     val foodsUiState = foodRepoUiState.foodsUiState
-    val areListsDataReady = nutrientsUiState.isSuccess && foodsUiState.isSuccess
-
-    var selectedList by remember { mutableStateOf(ListOption.Food) }
-
-    LaunchedEffect(Unit) {
-        viewModel.getFoods()
-        viewModel.getNutrients()
-    }
 
     val moreOptionsState = Structure.rememberMoreOptionsState()
+    var selectedList by remember { mutableStateOf(ListOption.Food) }
+    val pendingFoodsListState = rememberLazyListState()
 
     val pullToRefreshState = rememberPullToRefreshState()
     val pullToRefreshThresholdReached = pullToRefreshState.distanceFraction >= 1f
-    val isRefreshing = pullToRefreshThresholdReached && foodsUiState.isLoading
+    val isRefreshing = pullToRefreshThresholdReached && foodsUiState is UiState.Loading
+
+    val areListsDataReady = nutrientsUiState is UiState.Success &&
+            foodsUiState is UiState.Success
 
     val view = LocalView.current
+
+    LaunchedEffect(Unit) {
+        viewModel.getNutrients()
+    }
+
+    LaunchedEffect(selectedList) {
+        when (selectedList) {
+            ListOption.PendingFood -> {
+                viewModel.getPendingFoods()
+            }
+
+            ListOption.Food -> {
+                viewModel.getFoods()
+            }
+
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(pendingFoodsListState) {
+        snapshotFlow {
+            val lastVisible = pendingFoodsListState.layoutInfo.visibleItemsInfo
+                .lastOrNull()?.index
+            val totalItems = pendingFoodsListState.layoutInfo.totalItemsCount
+
+            totalItems > 0 && lastVisible != null && lastVisible >= totalItems - 3 // 3 items from end
+        }
+            .distinctUntilChanged()
+            .filter { it }
+            .collect { viewModel.loadMorePendingFoods() }
+    }
 
     Screen(
         header = {
@@ -97,45 +135,84 @@ fun ListsScreen(
         }
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            PullToRefreshBox(
-                isRefreshing = isRefreshing,
-                state = pullToRefreshState,
-                onRefresh = viewModel::refreshListsData,
-                indicator = {
-                    Loading.RefreshByPullIndicator(
-                        isRefreshing = isRefreshing,
-                        state = pullToRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    )
+            AnimatedVisibility(
+                visible = selectedList == ListOption.PendingFood
+            ) {
+                LazyColumn(
+                    state = pendingFoodsListState,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxHeight()
+                ) {
+
+                    itemsIndexed(
+                        pendingFoodsUiStatePager.pagination?.data ?: emptyList(),
+                    ) { index, food ->
+                        val foodBase = food.information.base
+
+                        Box(
+                            modifier = Modifier.areaContainer()
+                        ) {
+                            Column {
+                                Text("$index ${foodBase.name}")
+                                Text(foodBase.brand ?: "~")
+                                Text(food.status.name.splitPascalCase())
+                            }
+                        }
+                    }
+
+                    if (pendingFoodsUiStatePager.isLoadingMore) {
+                        item {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(
+                                    Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_SIZE
+                                ),
+                                strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH
+                            )
+                        }
+                    }
                 }
+            }
+
+            AnimatedVisibility(
+                visible = selectedList == ListOption.Food,
+            ) {
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    state = pullToRefreshState,
+                    onRefresh = viewModel::refreshListsData,
+                    indicator = {
+                        Loading.RefreshByPullIndicator(
+                            isRefreshing = isRefreshing,
+                            state = pullToRefreshState,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
+                ) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
+                        foodsListWithState(
+                            state = foodsUiState,
+                            onFoodClick = { food ->
+                                viewModel.setSelectedFood(food)
+                                onViewFoodDetails()
+                            },
+                            loadingVerticalSpace = 16.dp
+                        )
+                    }
+                }
+            }
+
+            AnimatedVisibility(
+                visible = selectedList == ListOption.Supplement
             ) {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxHeight()
                 ) {
-                    when (selectedList) {
-                        ListOption.PendingFood -> {
-                            item {
-                                Text("Pending Foods")
-                            }
-                        }
-
-                        ListOption.Food -> {
-                            foodsListWithState(
-                                state = foodsUiState,
-                                onFoodClick = { food ->
-                                    viewModel.setSelectedFood(food)
-                                    onViewFoodDetails()
-                                },
-                                loadingVerticalSpace = 16.dp
-                            )
-                        }
-
-                        ListOption.Supplement -> {
-                            item {
-                                SupplementList()
-                            }
-                        }
+                    item {
+                        SupplementList()
                     }
                 }
             }

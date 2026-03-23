@@ -47,6 +47,7 @@ import com.example.fitnessway.ui.shared.ScreenOverlay
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UFood.Ui.foodsListWithState
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
@@ -104,11 +105,22 @@ fun ListsScreen(
 
     LaunchedEffect(pendingFoodsListState) {
         snapshotFlow {
-            val lastVisible = pendingFoodsListState.layoutInfo.visibleItemsInfo
-                .lastOrNull()?.index
-            val totalItems = pendingFoodsListState.layoutInfo.totalItemsCount
+            val layoutInfo = pendingFoodsListState.layoutInfo
+            val viewportEndOffset = layoutInfo.viewportEndOffset
 
-            totalItems > 0 && lastVisible != null && lastVisible >= totalItems - 3 // 3 items from end
+            val totalItemsCount = layoutInfo.totalItemsCount
+            val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
+
+            if (lastItem != null) logcat("last item: ${lastItem.index}")
+
+            lastItem?.let {
+                val isLastItem = lastItem.index == totalItemsCount - 1
+
+                val lastItemYBottomCord = lastItem.offset + lastItem.size
+                val isFullyVisible = lastItemYBottomCord <= viewportEndOffset
+
+                totalItemsCount > 0 && isLastItem && isFullyVisible
+            } ?: false
         }
             .distinctUntilChanged()
             .filter { it }
@@ -138,36 +150,41 @@ fun ListsScreen(
             AnimatedVisibility(
                 visible = selectedList == ListOption.PendingFood
             ) {
-                LazyColumn(
-                    state = pendingFoodsListState,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxHeight()
-                ) {
+                Box(modifier = Modifier.fillMaxHeight()) {
+                    LazyColumn(
+                        state = pendingFoodsListState,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
+                        itemsIndexed(
+                            pendingFoodsUiStatePager.pagination?.data ?: emptyList(),
+                        ) { index, food ->
+                            val foodBase = food.information.base
 
-                    itemsIndexed(
-                        pendingFoodsUiStatePager.pagination?.data ?: emptyList(),
-                    ) { index, food ->
-                        val foodBase = food.information.base
-
-                        Box(
-                            modifier = Modifier.areaContainer()
-                        ) {
-                            Column {
-                                Text("$index ${foodBase.name}")
-                                Text(foodBase.brand ?: "~")
-                                Text(food.status.name.splitPascalCase())
+                            Box(modifier = Modifier.areaContainer()) {
+                                Column {
+                                    Text("$index ${foodBase.name}")
+                                    Text(foodBase.brand ?: "~")
+                                    Text(food.status.name.splitPascalCase())
+                                }
                             }
                         }
-                    }
 
-                    if (pendingFoodsUiStatePager.isLoadingMore) {
-                        item {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(
-                                    Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_SIZE
-                                ),
-                                strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH
-                            )
+                        if (pendingFoodsUiStatePager.pagination?.hasMorePages == true) {
+                            item {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .size(
+                                                Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE
+                                            ),
+                                        strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH
+                                    )
+                                }
+                            }
                         }
                     }
                 }

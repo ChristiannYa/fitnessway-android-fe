@@ -1,5 +1,5 @@
 package com.example.fitnessway.data.constants
 
 object Pagination {
-    const val LIMIT = 12
+    const val LIMIT = 6
 }

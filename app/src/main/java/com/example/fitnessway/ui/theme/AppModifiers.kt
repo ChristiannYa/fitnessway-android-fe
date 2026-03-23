@@ -12,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -66,4 +65,15 @@ object AppModifiers {
             shape = shape
         )
         .padding(size.padding)
+
+    @Composable
+    fun Modifier.foodContainer(
+        onClick: (() -> Unit)? = null
+    ) = this.areaContainer(
+        size = AreaContainerSize.MEDIUM,
+        borderColor = MaterialTheme.colorScheme.surfaceVariant,
+        showsIndication = true,
+        onClickEnabled = onClick != null,
+        onClick = { onClick?.let { it() } }
+    )
 }

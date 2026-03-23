@@ -40,6 +40,7 @@ import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.AppModifiers.foodContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Formatters.logcat
@@ -151,27 +152,20 @@ object UFood {
         @Composable
         fun FoodPreview(
             food: FoodInformation,
-            isUserPremium: Boolean? = null,
+            isUserPremium: Boolean = false,
             showsNutrientPreview: Boolean = false,
             onClick: (() -> Unit)? = null
         ) {
             val view = LocalView.current
-            val missingBrand = food.information.brand == null || food.information.brand.isEmpty()
+            val missingBrand = food.information.brand.isNullOrEmpty()
 
             Box(
-                modifier = Modifier
-                    .areaContainer(
-                        size = AreaContainerSize.MEDIUM,
-                        borderColor = MaterialTheme.colorScheme.surfaceVariant,
-                        showsIndication = true,
-                        onClickEnabled = onClick != null,
-                        onClick = {
-                            if (onClick != null) {
-                                view.playSoundEffect(SoundEffectConstants.CLICK)
-                                onClick()
-                            }
-                        }
-                    ),
+                modifier = Modifier.foodContainer {
+                    onClick?.let {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        it()
+                    }
+                }
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -199,7 +193,7 @@ object UFood {
                             )
                         }
 
-                        if (isUserPremium == true && showsNutrientPreview) {
+                        if (isUserPremium && showsNutrientPreview) {
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 food.nutrients.basic.forEach { (nutrientData, amount) ->
                                     val nutrientColor = getColor(nutrientData.preferences.hexColor)
@@ -229,7 +223,7 @@ object UFood {
 
         fun LazyListScope.foodsListWithState(
             state: UiState<List<FoodInformation>>,
-            isUserPremium: Boolean? = null,
+            isUserPremium: Boolean = false,
             showsNutrientPreview: Boolean = false,
             onFoodClick: (FoodInformation) -> Unit,
             loadingVerticalSpace: Dp = 16.dp,

@@ -1,9 +1,9 @@
-package com.example.fitnessway.mappers
+package com.example.fitnessway.data.mappers
 
 import com.example.fitnessway.data.model.MFood
 import com.example.fitnessway.data.model.m_26.FoodBase
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
-// import com.example.fitnessway.data.model.m_26.PendingFood
+import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.util.asEnum
 import com.example.fitnessway.util.form.FormStates.FoodCreation
@@ -29,7 +29,6 @@ fun FoodCreation.toUserFoodRequest(nutrients: List<NutrientIdWithAmount>) = MFoo
     nutrients = nutrients
 )
 
-/*
 fun PendingFood.toM25FoodInformation() = MFood.Model.FoodInformation(
     information = MFood.Model.FoodBaseInfo(
         id = this.id,
@@ -44,7 +43,5 @@ fun PendingFood.toM25FoodInformation() = MFood.Model.FoodInformation(
         createdAt = this.createdAt.toString(),
         updatedAt = ""
     ),
-    nutrients = this.information.nutrients
+    nutrients = this.information.nutrients.toM25NutrientsInFood()
 )
-
- */

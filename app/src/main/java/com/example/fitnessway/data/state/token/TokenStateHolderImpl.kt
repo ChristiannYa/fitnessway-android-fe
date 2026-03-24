@@ -5,7 +5,7 @@ import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import com.example.fitnessway.data.constants.PreferencesStoreKeys
+import com.example.fitnessway.constants.PreferencesStoreKeys
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

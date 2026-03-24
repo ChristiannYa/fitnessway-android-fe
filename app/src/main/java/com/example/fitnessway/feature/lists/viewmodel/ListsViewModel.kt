@@ -2,6 +2,9 @@ package com.example.fitnessway.feature.lists.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.mappers.toNutrientIdAmountList
+import com.example.fitnessway.data.mappers.toPendingRequest
+import com.example.fitnessway.data.mappers.toUserFoodRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
@@ -15,9 +18,6 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
-import com.example.fitnessway.mappers.toNutrientIdAmountList
-import com.example.fitnessway.mappers.toPendingRequest
-import com.example.fitnessway.mappers.toUserFoodRequest
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
@@ -58,11 +58,7 @@ class ListsViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
-
-    fun refreshListsData() {
-        foodRepo.refreshFoods()
-    }
-
+    
     fun getPendingFoods() {
         foodRepo.loadPendingFoods()
     }
@@ -73,6 +69,10 @@ class ListsViewModel(
 
     fun getFoods() {
         foodRepo.loadFoods()
+    }
+
+    fun refreshFoods() {
+        foodRepo.refreshFoods()
     }
 
     fun getNutrients() {

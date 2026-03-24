@@ -1,6 +1,6 @@
 package com.example.fitnessway.data.repository.food
 
-import com.example.fitnessway.data.constants.Pagination
+import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest

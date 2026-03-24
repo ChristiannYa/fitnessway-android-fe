@@ -12,7 +12,6 @@ import kotlinx.serialization.UseSerializers
 import java.util.UUID
 import kotlin.time.Instant
 
-
 @Serializable
 enum class ServingUnit {
     G,
@@ -54,15 +53,15 @@ data class FoodBase(
 )
 
 @Serializable
-data class FoodInformation<N : NutrientEntry>(
+data class FoodInformation(
     val base: FoodBase,
-    val nutrients: List<N>
+    val nutrients: NutrientsByType<NutrientInFood>
 )
 
 @Serializable
 data class AppFood(
     val id: Int,
-    val information: FoodInformation<NutrientInFood>,
+    val information: FoodInformation,
     val createdBy: UUID?,
     val createdAt: Instant,
     val updatedAt: Instant? = null
@@ -71,7 +70,7 @@ data class AppFood(
 @Serializable
 data class PendingFood(
     val id: Int,
-    val information: FoodInformation<NutrientInFood>,
+    val information: FoodInformation,
     val status: PendingFoodStatus,
     val createdBy: UUID?,
     val reviewedBy: UUID? = null,
@@ -83,7 +82,7 @@ data class PendingFood(
 @Serializable
 data class UserFood(
     val id: Int,
-    val information: FoodInformation<NutrientInFood>,
+    val information: FoodInformation,
     val isFavorite: Boolean,
     val lastLoggedAt: String?,
     val createdAt: String,

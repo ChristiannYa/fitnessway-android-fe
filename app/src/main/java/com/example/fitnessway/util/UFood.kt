@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -221,55 +222,61 @@ object UFood {
             }
         }
 
-        fun LazyListScope.foodsListWithState(
+        @Composable
+        fun UserFoodsList(
             state: UiState<List<FoodInformation>>,
             isUserPremium: Boolean = false,
             showsNutrientPreview: Boolean = false,
             onFoodClick: (FoodInformation) -> Unit,
             loadingVerticalSpace: Dp = 16.dp,
+            modifier: Modifier = Modifier
         ) {
-            when (state) {
-                is UiState.Loading -> item {
-                    Column(verticalArrangement = Arrangement.spacedBy(loadingVerticalSpace)) {
-                        repeat(12) {
-                            Loading.Composable(height = 32.dp)
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = modifier.fillMaxHeight()
+            ) {
+                when (state) {
+                    is UiState.Loading -> item {
+                        Column(verticalArrangement = Arrangement.spacedBy(loadingVerticalSpace)) {
+                            repeat(12) {
+                                Loading.Composable(height = 32.dp)
+                            }
                         }
                     }
-                }
 
-                is UiState.Success -> {
-                    val foods = state.data
+                    is UiState.Success -> {
+                        val foods = state.data
 
-                    if (foods.isEmpty()) {
-                        item {
-                            NotFoundMessage("Foods that you add to your list will appear here")
-                        }
-                    } else {
-                        items(
-                            items = foods,
-                            key = { food -> food.information.id }
-                        ) { food ->
-                            FoodPreview(
-                                food = food,
-                                isUserPremium = isUserPremium,
-                                showsNutrientPreview = showsNutrientPreview,
-                                onClick = { onFoodClick(food) }
-                            )
+                        if (foods.isEmpty()) {
+                            item {
+                                NotFoundMessage("Foods that you add to your list will appear here")
+                            }
+                        } else {
+                            items(
+                                items = foods,
+                                key = { food -> food.information.id }
+                            ) { food ->
+                                FoodPreview(
+                                    food = food,
+                                    isUserPremium = isUserPremium,
+                                    showsNutrientPreview = showsNutrientPreview,
+                                    onClick = { onFoodClick(food) }
+                                )
+                            }
                         }
                     }
+
+                    else -> {}
                 }
 
-                else -> {}
-            }
-
-            item("foodListState_errorMessage") {
-                NotFoundMessageAnimated(
-                    isVisible = state is UiState.Error,
-                    message = formatUiErrorMessage(state)
-                )
+                item("foodListState_errorMessage") {
+                    NotFoundMessageAnimated(
+                        isVisible = state is UiState.Error,
+                        message = formatUiErrorMessage(state)
+                    )
+                }
             }
         }
-
     }
 
     data class FoodInformationComposables(

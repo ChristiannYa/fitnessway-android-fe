@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.constants
+package com.example.fitnessway.constants
 
 import androidx.datastore.preferences.core.stringPreferencesKey
 

@@ -3,9 +3,7 @@ package com.example.fitnessway.feature.home.screen.foodselection
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -30,7 +28,7 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
-import com.example.fitnessway.util.UFood.Ui.foodsListWithState
+import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -127,17 +125,13 @@ private fun Foods(
     isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.fillMaxHeight()
-    ) {
-        foodsListWithState(
-            state = state,
-            isUserPremium = isUserPremium,
-            showsNutrientPreview = true,
-            onFoodClick = onFoodClick
-        )
-    }
+    UFood.Ui.UserFoodsList(
+        state = state,
+        isUserPremium = isUserPremium,
+        showsNutrientPreview = true,
+        onFoodClick = onFoodClick,
+        modifier = modifier
+    )
 
     NotFoundMessageAnimated(
         isVisible = state is UiState.Error,

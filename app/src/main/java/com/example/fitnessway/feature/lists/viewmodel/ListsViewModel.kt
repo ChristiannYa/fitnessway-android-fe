@@ -62,25 +62,15 @@ class ListsViewModel(
             initialValue = null
         )
 
-    fun getPendingFoods() {
-        pendingFoodRepo.loadPendingFoods()
-    }
+    fun getPendingFoods() = pendingFoodRepo.loadPendingFoods()
 
-    fun loadMorePendingFoods() {
-        pendingFoodRepo.loadMorePendingFoods()
-    }
+    fun loadMorePendingFoods() = pendingFoodRepo.loadMorePendingFoods()
 
-    fun getFoods() {
-        foodRepo.loadFoods()
-    }
+    fun getFoods() = foodRepo.loadFoods()
 
-    fun refreshFoods() {
-        foodRepo.refreshFoods()
-    }
+    fun refreshFoods() = foodRepo.refreshFoods()
 
-    fun getNutrients() {
-        nutrientRepo.loadNutrients()
-    }
+    fun getNutrients() = nutrientRepo.loadNutrients()
 
     fun addFoodRequest() {
         val formState = managers.creation.formState.value

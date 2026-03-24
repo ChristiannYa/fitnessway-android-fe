@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -95,7 +96,9 @@ class PendingFoodRepositoryImpl(
         apiCall = { apiClient.addPendingFood(request) },
         extractData = { it.pendingFoodSubmitted },
         errMsg = "Failed to add food request"
-    )
+    ).onEach { state ->
+        if (state is UiState.Success) refreshPendingFoods()
+    }
 
     override fun updateState(update: (UserPendingFoodRepositoryUiState) -> UserPendingFoodRepositoryUiState) {
         _uiState.update(update)

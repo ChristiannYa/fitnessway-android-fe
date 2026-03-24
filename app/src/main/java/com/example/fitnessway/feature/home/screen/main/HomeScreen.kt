@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.home.screen.main
 
-import android.content.res.Configuration
 import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
@@ -36,7 +34,6 @@ import com.example.fitnessway.ui.shared.Loading.RefreshByPullIndicator
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
@@ -220,17 +217,5 @@ fun HomeScreen(
         } else {
             NotFoundMessage("User not found")
         }
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun HomeScreenPreview() {
-    FitnesswayTheme {
-        HomeScreen(
-            onViewFoodsList = {},
-            onViewFoodLogDetails = {},
-            onNavigateToGoals = {}
-        )
     }
 }

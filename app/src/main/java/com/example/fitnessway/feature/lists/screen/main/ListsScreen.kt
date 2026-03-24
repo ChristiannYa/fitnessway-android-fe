@@ -41,12 +41,13 @@ fun ListsScreen(
     onNavigateToFoodCreationForm: () -> Unit
 ) {
     val userFlow by viewModel.userFlow.collectAsState()
+    val pendingFoodRepoUiState by viewModel.pendingFoodRepoUiState.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
     val user = userFlow
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
-    val pendingFoodsUiStatePager = foodRepoUiState.pendingFoodsUiStatePager
+    val pendingFoodsUiStatePager = pendingFoodRepoUiState.pendingFoodsUiStatePager
     val foodsUiState = foodRepoUiState.foodsUiState
 
     val moreOptionsState = Structure.rememberMoreOptionsState()

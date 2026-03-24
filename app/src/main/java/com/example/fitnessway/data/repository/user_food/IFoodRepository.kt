@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.repository.food
+package com.example.fitnessway.data.repository.user_food
 
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
@@ -8,19 +8,12 @@ import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
-import com.example.fitnessway.data.model.m_26.PendingFood
-import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodRepository {
     val uiState: StateFlow<FoodRepositoryUiState>
-
-    fun loadPendingFoods()
-    fun refreshPendingFoods()
-    fun loadMorePendingFoods()
-    suspend fun addPendingFood(request: PendingFoodAddRequest): Flow<UiState<PendingFood>>
 
     fun refreshFoods()
     fun loadFoods()

@@ -7,8 +7,8 @@ import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MUser
-import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
+import com.example.fitnessway.data.repository.user_food.IFoodRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.IDateManager

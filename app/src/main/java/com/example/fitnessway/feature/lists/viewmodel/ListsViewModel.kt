@@ -12,8 +12,9 @@ import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MUser
-import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
+import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
+import com.example.fitnessway.data.repository.user_food.IFoodRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ListsViewModel(
+    private val pendingFoodRepo: IPendingFoodRepository,
     private val foodRepo: IFoodRepository,
     private val nutrientRepo: INutrientRepository,
     private val managers: IListsManagers,
@@ -48,6 +50,7 @@ class ListsViewModel(
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
 
+    val pendingFoodRepoUiState = pendingFoodRepo.uiState
     val foodRepoUiState = foodRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
 
@@ -58,13 +61,13 @@ class ListsViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
-    
+
     fun getPendingFoods() {
-        foodRepo.loadPendingFoods()
+        pendingFoodRepo.loadPendingFoods()
     }
 
     fun loadMorePendingFoods() {
-        foodRepo.loadMorePendingFoods()
+        pendingFoodRepo.loadMorePendingFoods()
     }
 
     fun getFoods() {
@@ -87,7 +90,7 @@ class ListsViewModel(
         val request = formState.toPendingRequest(nutrients)
 
         viewModelScope.launch {
-            foodRepo.addPendingFood(request).collect { state ->
+            pendingFoodRepo.addPendingFood(request).collect { state ->
                 _uiState.update { it.copy(foodRequestState = state) }
             }
         }

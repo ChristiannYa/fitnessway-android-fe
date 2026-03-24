@@ -10,8 +10,8 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.repository.auth.IAuthRepository
-import com.example.fitnessway.data.repository.food.IFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
+import com.example.fitnessway.data.repository.user_food.IFoodRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager

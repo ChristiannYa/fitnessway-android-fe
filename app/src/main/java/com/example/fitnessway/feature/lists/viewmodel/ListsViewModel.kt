@@ -12,6 +12,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MUser
+import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
 import com.example.fitnessway.data.repository.user_food.IFoodRepository
@@ -50,6 +51,9 @@ class ListsViewModel(
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
 
+    private val _selectedList = MutableStateFlow<ListOption>(ListOption.Food)
+    val selectedList: StateFlow<ListOption> = _selectedList
+
     val pendingFoodRepoUiState = pendingFoodRepo.uiState
     val foodRepoUiState = foodRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
@@ -61,6 +65,10 @@ class ListsViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+    fun setSelectedList(list: ListOption) {
+        _selectedList.value = list
+    }
 
     fun getPendingFoods() = pendingFoodRepo.loadPendingFoods()
 

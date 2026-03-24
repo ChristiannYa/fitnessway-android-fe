@@ -10,9 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -40,6 +37,7 @@ fun ListsScreen(
     onNavigateToFoodRequestScreen: () -> Unit,
     onNavigateToFoodCreationForm: () -> Unit
 ) {
+    val selectedList by viewModel.selectedList.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val pendingFoodRepoUiState by viewModel.pendingFoodRepoUiState.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
@@ -51,11 +49,6 @@ fun ListsScreen(
     val foodsUiState = foodRepoUiState.foodsUiState
 
     val moreOptionsState = Structure.rememberMoreOptionsState()
-    var selectedList by remember { mutableStateOf(ListOption.Food) }
-
-    val areListsDataReady = nutrientsUiState is UiState.Success &&
-            foodsUiState is UiState.Success
-
     val view = LocalView.current
 
     LaunchedEffect(Unit) {
@@ -64,14 +57,8 @@ fun ListsScreen(
 
     LaunchedEffect(selectedList) {
         when (selectedList) {
-            ListOption.PendingFood -> {
-                viewModel.getPendingFoods()
-            }
-
-            ListOption.Food -> {
-                viewModel.getFoods()
-            }
-
+            ListOption.PendingFood -> viewModel.getPendingFoods()
+            ListOption.Food -> viewModel.getFoods()
             ListOption.Supplement -> {}
         }
     }
@@ -80,31 +67,34 @@ fun ListsScreen(
         header = {
             Header(
                 title = "My ${selectedList.name.splitPascalCase().plural()}",
-                extraContent = if (areListsDataReady) {
-                    {
-                        Clickables.AppPngIconButton(
-                            icon = selectedList.icon,
-                            contentDescription = "Create ${selectedList.name.splitPascalCase()}",
-                            onClick = {
-                                view.playSoundEffect(SoundEffectConstants.CLICK)
-                                when (selectedList) {
-                                    ListOption.PendingFood -> onNavigateToFoodRequestScreen()
-                                    ListOption.Food -> onNavigateToFoodCreationForm()
-                                    ListOption.Supplement -> {}
-                                }
+                extraContent = {
+                    Clickables.AppPngIconButton(
+                        icon = selectedList.icon,
+                        contentDescription = "Create ${selectedList.name.splitPascalCase()}",
+                        enabled = nutrientsUiState is UiState.Success && when (selectedList) {
+                            ListOption.PendingFood -> pendingFoodsUiStatePager.uiState is UiState.Success
+                            ListOption.Food -> foodsUiState is UiState.Success
+                            ListOption.Supplement -> false
+                        },
+                        onClick = {
+                            view.playSoundEffect(SoundEffectConstants.CLICK)
+                            when (selectedList) {
+                                ListOption.PendingFood -> onNavigateToFoodRequestScreen()
+                                ListOption.Food -> onNavigateToFoodCreationForm()
+                                ListOption.Supplement -> {}
                             }
-                        )
+                        }
+                    )
 
-                        Clickables.AppPngIconButton(
-                            icon = Structure.AppIconButtonSource.Vector(Icons.Default.Menu),
-                            contentDescription = "View list options",
-                            onClick = {
-                                view.playSoundEffect(SoundEffectConstants.CLICK)
-                                moreOptionsState.toggle()
-                            }
-                        )
-                    }
-                } else null
+                    Clickables.AppPngIconButton(
+                        icon = Structure.AppIconButtonSource.Vector(Icons.Default.Menu),
+                        contentDescription = "View list options",
+                        onClick = {
+                            view.playSoundEffect(SoundEffectConstants.CLICK)
+                            moreOptionsState.toggle()
+                        }
+                    )
+                }
             )
         }
     ) {
@@ -143,25 +133,23 @@ fun ListsScreen(
                     iconTint = tint,
                     onClick = {
                         moreOptionsState.hide()
-                        selectedList = option
+                        viewModel.setSelectedList(option)
                     }
                 )
             }.toTypedArray()
 
-            if (areListsDataReady) {
-                Structure.MoreOptions(
-                    state = moreOptionsState,
-                    options = options,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .zIndex(1f)
-                )
+            Structure.MoreOptions(
+                state = moreOptionsState,
+                options = options,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .zIndex(1f)
+            )
 
-                ScreenOverlay.DarkOverlay(
-                    isVisible = moreOptionsState.isVisible,
-                    onClick = moreOptionsState::hide
-                )
-            }
+            ScreenOverlay.DarkOverlay(
+                isVisible = moreOptionsState.isVisible,
+                onClick = moreOptionsState::hide
+            )
         }
     }
 }

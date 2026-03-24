@@ -70,7 +70,7 @@ object AppModifiers {
     fun Modifier.foodContainer(
         onClick: (() -> Unit)? = null
     ) = this.areaContainer(
-        size = AreaContainerSize.MEDIUM,
+        size = AreaContainerSize.SMALL,
         borderColor = MaterialTheme.colorScheme.surfaceVariant,
         showsIndication = true,
         onClickEnabled = onClick != null,

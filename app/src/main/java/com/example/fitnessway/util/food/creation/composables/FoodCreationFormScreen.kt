@@ -106,13 +106,13 @@ fun <T> FoodCreationFormScreen(
 
     val titlePrefix: String? = when (foodSource) {
         FoodSource.USER -> null
-        FoodSource.APP -> "App"
+        FoodSource.APP -> "Request"
     }
 
     val screenTitle = run {
         if (titlePrefix != null && stepTitle != null) {
-            "($titlePrefix) $stepTitle"
-        } else null
+            "My $titlePrefix - $stepTitle"
+        } else stepTitle
     }
 
     Screen(

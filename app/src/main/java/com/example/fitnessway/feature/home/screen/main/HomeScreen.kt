@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
 import com.example.fitnessway.feature.home.screen.main.composables.DatePicker
@@ -34,7 +35,6 @@ import com.example.fitnessway.ui.shared.Loading.RefreshByPullIndicator
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -171,7 +171,7 @@ fun HomeScreen(
 
                                 NotFoundMessageAnimated(
                                     isVisible = nutrientIntakesState is UiState.Error,
-                                    message = formatUiErrorMessage(nutrientIntakesState),
+                                    message = nutrientIntakesState.toErrorMessageOrNull() ?: "",
                                     modifier = Modifier.weight(1f)
                                 )
                             }

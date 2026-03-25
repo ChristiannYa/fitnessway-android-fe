@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.model.MFood
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
-import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.UiState
 
@@ -46,7 +46,7 @@ fun UserFoodsList(
             ) {
                 NotFoundMessageAnimated(
                     isVisible = foodsUiState is UiState.Error,
-                    message = formatUiErrorMessage(foodsUiState)
+                    message = foodsUiState.toErrorMessageOrNull() ?: ""
                 )
 
                 UFood.Ui.UserFoodsList(

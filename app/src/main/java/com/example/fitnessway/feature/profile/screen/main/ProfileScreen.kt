@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.feature.profile.screen.main.composables.UpgradePromptDialog
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
@@ -51,7 +52,6 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.robotoSerifFamily
-import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Ui.Measurements.SCREEN_HORIZONTAL_PADDING
 import com.example.fitnessway.util.Ui.Measurements.TEXT_ICON_HORIZONTAL_SPACE
 import com.example.fitnessway.util.UiState
@@ -120,7 +120,7 @@ fun ProfileScreen(
                     ) {
                         NotFoundMessageAnimated(
                             isVisible = nutrientsUiState is UiState.Error,
-                            message = formatUiErrorMessage(nutrientsUiState)
+                            message = nutrientsUiState.toErrorMessageOrNull() ?: ""
                         )
 
                         ProfileImage(user = user) {

@@ -1,13 +1,13 @@
 package com.example.fitnessway.data.repository.pending_food
 
 import com.example.fitnessway.constants.Pagination
+import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodApiClient
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
-import com.example.fitnessway.util.pagination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,7 +52,7 @@ class PendingFoodRepositoryImpl(
         val pager = _uiState.value.pendingFoodsUiStatePager
         if (pager.isLoadingMore) return
 
-        val pagination = pager.pagination ?: return
+        val pagination = pager.toPaginationOrNull() ?: return
         if (!pagination.hasMorePages) return
 
         _uiState.update {
@@ -65,7 +65,7 @@ class PendingFoodRepositoryImpl(
             ).collect { state ->
                 when (state) {
                     is UiState.Success -> _uiState.update {
-                        val current = it.pendingFoodsUiStatePager.pagination
+                        val current = it.pendingFoodsUiStatePager.toPaginationOrNull()
                         val accumulated = (current?.data ?: emptyList()) + state.data.data
 
                         it.copy(

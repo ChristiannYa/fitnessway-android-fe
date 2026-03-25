@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.NutrientType
@@ -37,7 +38,6 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.UNutrient.filterGoalNotSet
 import com.example.fitnessway.util.UNutrient.filterGoalSetPreferences
 import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
@@ -354,7 +354,7 @@ fun <T> FoodCreationFormScreen(
 
             Messages.NotFoundMessageAnimated(
                 isVisible = nutrientsUiState is UiState.Error,
-                message = formatUiErrorMessage(nutrientsUiState)
+                message = nutrientsUiState.toErrorMessageOrNull() ?: ""
             )
         }
     }

@@ -5,7 +5,6 @@ import com.example.fitnessway.util.Constants.LogLevel
 import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale.getDefault
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
@@ -118,21 +117,6 @@ object Formatters {
             null
         }
     }
-
-    fun <T> formatUiErrorMessage(uiState: UiState<T>): String {
-        val backupErrorMessage = "An unknown error occurred"
-        return (uiState as? UiState.Error)?.message ?: backupErrorMessage
-    }
-
-    fun String.snakeCapitalized(): String = this
-        .split("_")
-        .joinToString(" ") { outer ->
-            outer.replaceFirstChar { inner ->
-                if (inner.isLowerCase()) inner.titlecase(
-                    getDefault()
-                ) else inner.toString()
-            }
-        }
 
     fun logcat(
         message: String,

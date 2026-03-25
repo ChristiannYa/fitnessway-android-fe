@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
@@ -42,7 +43,6 @@ import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.foodContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Formatters.formatUiErrorMessage
 import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UNutrient.Debug.logNutrientWithAmountData
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
@@ -271,7 +271,7 @@ object UFood {
                 item("foodListState_errorMessage") {
                     NotFoundMessageAnimated(
                         isVisible = state is UiState.Error,
-                        message = formatUiErrorMessage(state)
+                        message = state.toErrorMessageOrNull() ?: ""
                     )
                 }
             }

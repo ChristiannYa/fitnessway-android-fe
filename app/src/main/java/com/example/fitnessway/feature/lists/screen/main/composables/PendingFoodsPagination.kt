@@ -17,7 +17,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toM25FoodInformation
+import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
@@ -26,7 +28,6 @@ import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
-import com.example.fitnessway.util.pagination
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -85,7 +86,7 @@ fun PendingFoodsPagination(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxHeight()
                     ) {
-                        pendingFoodsUiStatePager.pagination?.let { pagination ->
+                        pendingFoodsUiStatePager.toPaginationOrNull()?.let { pagination ->
                             val pendingFoods = pagination.data
 
                             if (pendingFoods.isEmpty()) {
@@ -128,6 +129,11 @@ fun PendingFoodsPagination(
 
                 else -> {}
             }
+
+            Messages.NotFoundMessageAnimated(
+                isVisible = pendingFoodsUiStatePager.uiState is UiState.Error,
+                message = pendingFoodsUiStatePager.uiState.toErrorMessageOrNull() ?: ""
+            )
         }
     }
 }

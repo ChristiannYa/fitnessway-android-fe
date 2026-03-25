@@ -15,5 +15,3 @@ data class UiStatePager<T>(
     val uiState: UiState<PaginationResult<T>> = UiState.Loading,
     val isLoadingMore: Boolean = false
 )
-
-val <T> UiStatePager<T>.pagination get() = (uiState as? UiState.Success)?.data

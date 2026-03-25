@@ -4,6 +4,7 @@ import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.NutrientGroupable
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.NutrientInFood
+import com.example.fitnessway.data.model.m_26.NutrientPreview
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.util.UNutrient
@@ -20,6 +21,9 @@ fun <N : NutrientGroupable> List<N>.toType(): NutrientsByType<N> {
         minerals = grouped[NutrientType.MINERAL] ?: emptyList()
     )
 }
+
+fun NutrientPreview.toList() =
+    listOf(this.calories, this.carbs, this.fats, this.protein)
 
 fun Map<Int, String>.toNutrientIdAmountList(
     nutrientDvMap: Map<Int, String>? = null

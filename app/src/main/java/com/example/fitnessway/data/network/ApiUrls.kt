@@ -1,5 +1,7 @@
 package com.example.fitnessway.data.network
 
+import com.example.fitnessway.data.model.m_26.PaginationParams
+
 object ApiUrls {
     const val BASE_URL_GO = "http://10.0.0.4:5050/api/go/"
     const val BASE_URL_KT = "http://10.0.0.4:1144/api/kt/"
@@ -40,7 +42,17 @@ object ApiUrls {
         const val NUTRIENT_COLOR_SET_URL = "$BASE_URL_GO$NUTRIENT_COLOR_SET_PATH"
     }
 
+    object AppFood {
+        const val LIST_PATH = "food/app/search"
+        const val LIST_URL = "$BASE_URL_KT$LIST_PATH"
+
+        fun getListPathWithParams(params: PaginationParams) = "$LIST_PATH?limit=${params.limit}&offset=${params.offset}"
+        fun getListUrlWithParams(params: PaginationParams) = BASE_URL_KT + getListPathWithParams(params)
+    }
+
     object Food {
+        // @TODO: Move into its dedicated `PendingFood` scope, along with any related
+        //   pending food request urls
         const val FOOD_PENDING_LIST_PATH = "food/pending/my-own"
         const val FOOD_PENDING_LIST_URL = "$BASE_URL_KT$FOOD_PENDING_LIST_PATH"
 

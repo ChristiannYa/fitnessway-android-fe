@@ -16,6 +16,7 @@ import io.ktor.client.HttpClient as KtorHttpClient
 
 
 class FoodApiClient(private val client: KtorHttpClient) {
+    // @TODO: Move into its dedicated `PendingFoodApiClient` scope
     suspend fun getPendingFoods(
         limit: Int,
         offset: Long

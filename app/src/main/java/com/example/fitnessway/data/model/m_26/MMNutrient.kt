@@ -24,6 +24,14 @@ data class NutrientsByType<N : NutrientGroupable>(
 )
 
 @Serializable
+data class NutrientPreview(
+    val calories: NutrientAmountWithColor,
+    val carbs: NutrientAmountWithColor,
+    val fats: NutrientAmountWithColor,
+    val protein: NutrientAmountWithColor
+)
+
+@Serializable
 data class NutrientBase(
     val id: Int,
     val name: String,
@@ -61,4 +69,10 @@ data class NutrientInFood(
 data class NutrientIdWithAmount(
     val nutrientId: Int,
     val amount: Double
+)
+
+@Serializable
+data class NutrientAmountWithColor(
+    val amount: Double? = null,
+    val color: String? = null
 )

@@ -12,8 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,8 +26,7 @@ import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
+import com.example.fitnessway.util.extensions.OnLoadMore
 
 @Composable
 fun PendingFoodsPagination(
@@ -42,27 +39,7 @@ fun PendingFoodsPagination(
 ) {
     val pendingFoodsListLazyState = rememberLazyListState()
 
-    LaunchedEffect(pendingFoodsListLazyState) {
-        snapshotFlow {
-            val layoutInfo = pendingFoodsListLazyState.layoutInfo
-            val viewportEndOffset = layoutInfo.viewportEndOffset
-
-            val totalItemsCount = layoutInfo.totalItemsCount
-            val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
-
-            lastItem?.let {
-                val isLastItem = lastItem.index == totalItemsCount - 1
-
-                val lastItemYBottomCord = lastItem.offset + lastItem.size
-                val isFullyVisible = lastItemYBottomCord <= viewportEndOffset
-
-                totalItemsCount > 0 && isLastItem && isFullyVisible
-            } ?: false
-        }
-            .distinctUntilChanged()
-            .filter { it }
-            .collect { onLoadMore() }
-    }
+    pendingFoodsListLazyState.OnLoadMore(onLoadMore)
 
     AnimatedVisibility(
         visible = isVisible,

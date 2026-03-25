@@ -23,6 +23,7 @@ val viewModelModule = module {
 
     viewModel {
         HomeViewModel(
+            appFoodRepo = get(),
             nutrientRepo = get(),
             foodRepo = get(),
             managers = get(),

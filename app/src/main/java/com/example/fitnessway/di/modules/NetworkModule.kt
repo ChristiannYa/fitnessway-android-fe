@@ -2,6 +2,7 @@ package com.example.fitnessway.di.modules
 
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.createKtorHttpClient
+import com.example.fitnessway.data.network.ktor_client.AppFoodApiClient
 import com.example.fitnessway.data.network.ktor_client.AuthApiClient
 import com.example.fitnessway.data.network.ktor_client.FoodApiClient
 import com.example.fitnessway.data.network.ktor_client.NutrientApiClient
@@ -20,5 +21,6 @@ val networkModule = module {
     single { AuthApiClient(client = get()) }
     single { UserApiClient(client = get()) }
     single { NutrientApiClient(client = get()) }
+    single { AppFoodApiClient(client = get()) }
     single { FoodApiClient(client = get()) }
 }

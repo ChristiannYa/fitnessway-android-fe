@@ -2,13 +2,19 @@ package com.example.fitnessway.feature.home.screen.foodselection
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.feature.home.screen.foodselection.composables.SearchAppFood
+import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
+import com.example.fitnessway.feature.home.screen.foodselection.composables.FoodResultsPagination
 import com.example.fitnessway.feature.home.screen.foodselection.composables.UserFoodsList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
@@ -23,15 +29,15 @@ fun FoodSelectionScreen(
     onBackClick: () -> Unit,
     onNavigateToSelectedFood: () -> Unit,
 ) {
+    val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
 
     val user = userFlow
+    val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
     val foodsUiState = foodRepoUiState.foodsUiState
-
-    val searchResults = emptyList<String>()
-
+    
     LaunchedEffect(Unit) {
         viewModel.getFoods()
     }
@@ -54,12 +60,28 @@ fun FoodSelectionScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    SearchAppFood(
-                        onSearch = { query ->
-                            focusManager.clearFocus()
-                        },
-                        searchResults = searchResults
-                    )
+                    var appFoodSearchQuery by remember { mutableStateOf("") }
+                    var isTyping by remember { mutableStateOf(false) }
+
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        AppFoodSearchBar(
+                            query = appFoodSearchQuery,
+                            onQueryChange = { q ->
+                                appFoodSearchQuery = q
+                                isTyping = q.isNotBlank()
+                                viewModel.searchAppFoods(q)
+                            },
+                            focusManager = focusManager
+                        )
+
+                        FoodResultsPagination(
+                            isTyping = isTyping,
+                            isUserPremium = user.isPremium,
+                            appFoodsUiStatePager = appFoodsUiStatePager,
+                            onTypingConsumed = { isTyping = false },
+                            onLoadMore = {}
+                        )
+                    }
 
                     UserFoodsList(
                         foodsUiState = foodsUiState,
@@ -68,7 +90,13 @@ fun FoodSelectionScreen(
                         onFoodClick = {
                             viewModel.setSelectedFoodToLog(it)
                             onNavigateToSelectedFood()
-                        }
+                        },
+                        modifier = Modifier
+                            .then(
+                                if (!appFoodSearchQuery.isNotBlank()) {
+                                    Modifier.fillMaxHeight()
+                                } else Modifier
+                            )
                     )
                 }
             }

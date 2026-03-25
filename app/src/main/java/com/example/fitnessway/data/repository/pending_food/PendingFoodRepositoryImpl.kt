@@ -22,8 +22,8 @@ class PendingFoodRepositoryImpl(
     private val repositoryScope: CoroutineScope,
 ) : IPendingFoodRepository {
 
-    private val _uiState = MutableStateFlow(UserPendingFoodRepositoryUiState())
-    override val uiState: StateFlow<UserPendingFoodRepositoryUiState> = _uiState
+    private val _uiState = MutableStateFlow(PendingFoodRepositoryUiState())
+    override val uiState: StateFlow<PendingFoodRepositoryUiState> = _uiState
 
     private fun fetchPendingFoods(offset: Long) =
         httpClient.makeRequest(
@@ -100,11 +100,11 @@ class PendingFoodRepositoryImpl(
         if (state is UiState.Success) refreshPendingFoods()
     }
 
-    override fun updateState(update: (UserPendingFoodRepositoryUiState) -> UserPendingFoodRepositoryUiState) {
+    override fun updateState(update: (PendingFoodRepositoryUiState) -> PendingFoodRepositoryUiState) {
         _uiState.update(update)
     }
 
     override fun clearRepository() {
-        _uiState.update { UserPendingFoodRepositoryUiState() }
+        _uiState.update { PendingFoodRepositoryUiState() }
     }
 }

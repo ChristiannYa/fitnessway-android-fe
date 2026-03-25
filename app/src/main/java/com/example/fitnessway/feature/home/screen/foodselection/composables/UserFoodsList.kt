@@ -21,13 +21,14 @@ fun UserFoodsList(
     foodsUiState: UiState<List<MFood.Model.FoodInformation>>,
     isUserPremium: Boolean,
     onRefresh: () -> Unit,
-    onFoodClick: (MFood.Model.FoodInformation) -> Unit
+    onFoodClick: (MFood.Model.FoodInformation) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
     val pullToRefreshThresholdReached = pullToRefreshState.distanceFraction >= 1f
     val isRefreshing = pullToRefreshThresholdReached && foodsUiState is UiState.Loading
 
-    Box {
+    Box(modifier = modifier) {
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             state = pullToRefreshState,

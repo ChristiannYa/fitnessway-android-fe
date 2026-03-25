@@ -7,6 +7,7 @@ import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MUser
+import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user_food.IFoodRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
@@ -23,6 +24,8 @@ import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UFood.mapFoodLogs
 import com.example.fitnessway.util.UiState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +36,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
+    private val appFoodRepo: IAppFoodRepository,
     private val nutrientRepo: INutrientRepository,
     private val foodRepo: IFoodRepository,
     private val managers: IHomeManager,
@@ -54,6 +58,7 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
+    val appFoodRepoUiState = appFoodRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
 
@@ -77,6 +82,26 @@ class HomeViewModel(
             }
         }
     }
+
+    private var debounceJob: Job? = null
+
+    fun searchAppFoods(query: String) {
+        debounceJob?.cancel()
+
+        if (query.isBlank()) {
+            appFoodRepo.clearAppFoods()
+            return
+        }
+
+        appFoodRepo.clearAppFoods()
+
+        debounceJob = viewModelScope.launch {
+            delay(500)
+            appFoodRepo.searchAppFoods(query)
+        }
+    }
+
+    fun loadMoreAppFoods(query: String) = appFoodRepo.loadMoreAppFoods(query)
 
     fun getNutrientIntakes() {
         val date = managers.date.getApiFormattedDate()

@@ -11,3 +11,8 @@ data class PaginationResult<T>(
 ) {
     val hasMorePages: Boolean get() = currentPage < pageCount
 }
+
+data class PaginationParams(
+    val limit: Int,
+    val offset: Long
+)

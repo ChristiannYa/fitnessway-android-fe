@@ -92,7 +92,20 @@ data class UserFood(
 @Serializable
 data class FoodSearchResult(
     val id: Int,
-    val base: FoodBase
+    val base: FoodBase,
+    val nutrientsPreview: NutrientPreview
+)
+
+data class FoodPreview(
+    val id: Int,
+    val base: FoodBase,
+    val nutrientPreview: NutrientPreview,
+    val isUserPremium: Boolean
+)
+
+@Serializable
+data class AppFoodSearchResponse(
+    val appFoodsPagination: PaginationResult<FoodSearchResult>
 )
 
 @Serializable

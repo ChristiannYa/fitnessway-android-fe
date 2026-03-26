@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
@@ -98,6 +99,23 @@ fun FoodResultsPagination(
                                         isUserPremium = isUserPremium
                                     )
                                 )
+                            }
+
+                            if (pagination.hasMorePages) {
+                                item("app_foods_more_pages_loading_indicator") {
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier
+                                                .size(
+                                                    Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE
+                                                ),
+                                            strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

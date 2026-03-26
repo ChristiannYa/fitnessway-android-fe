@@ -37,7 +37,7 @@ fun FoodSelectionScreen(
     val user = userFlow
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
     val foodsUiState = foodRepoUiState.foodsUiState
-    
+
     LaunchedEffect(Unit) {
         viewModel.getFoods()
     }
@@ -79,7 +79,7 @@ fun FoodSelectionScreen(
                             isUserPremium = user.isPremium,
                             appFoodsUiStatePager = appFoodsUiStatePager,
                             onTypingConsumed = { isTyping = false },
-                            onLoadMore = {}
+                            onLoadMore = { viewModel.loadMoreAppFoods(appFoodSearchQuery) }
                         )
                     }
 

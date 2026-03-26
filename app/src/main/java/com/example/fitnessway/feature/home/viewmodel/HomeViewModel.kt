@@ -96,7 +96,7 @@ class HomeViewModel(
         appFoodRepo.clearAppFoods()
 
         debounceJob = viewModelScope.launch {
-            delay(500)
+            delay(600)
             appFoodRepo.searchAppFoods(query)
         }
     }

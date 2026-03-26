@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toPascalCaseSpaced
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
 import com.example.fitnessway.feature.home.screen.foodselection.composables.FoodResultsPagination
 import com.example.fitnessway.feature.home.screen.foodselection.composables.UserFoodsList
@@ -20,7 +21,6 @@ import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
-import com.example.fitnessway.util.toPascalCaseSpaced
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

@@ -14,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.zIndex
+import com.example.fitnessway.data.mappers.plural
+import com.example.fitnessway.data.mappers.toPascalCaseSpaced
 import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.feature.lists.screen.main.composables.PendingFoodsPagination
 import com.example.fitnessway.feature.lists.screen.main.composables.UserFoodsList
@@ -26,8 +28,6 @@ import com.example.fitnessway.ui.shared.ScreenOverlay
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.plural
-import com.example.fitnessway.util.toPascalCaseSpaced
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -66,7 +66,7 @@ fun ListsScreen(
     Screen(
         header = {
             Header(
-                title = "My ${selectedList.name.toPascalCaseSpaced().plural()}",
+                title = "My ${selectedList.name.toPascalCaseSpaced(false).plural()}",
                 extraContent = {
                     Clickables.AppPngIconButton(
                         icon = selectedList.icon,

@@ -50,6 +50,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
+import com.example.fitnessway.data.mappers.toPascalCaseSpaced
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
@@ -70,7 +71,6 @@ import com.example.fitnessway.util.UFood.Ui.getFoodBrandText
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.toPascalCaseSpaced
 
 @Composable
 private fun getFoodLogsContainerColor(): Color {

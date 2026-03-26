@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toPascalCaseSpaced
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
@@ -43,7 +44,6 @@ import com.example.fitnessway.util.Ui.handleApiSuccessTempState
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
-import com.example.fitnessway.util.toPascalCaseSpaced
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

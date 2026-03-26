@@ -34,7 +34,6 @@ import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
@@ -44,6 +43,7 @@ import com.example.fitnessway.util.Ui.handleApiSuccessTempState
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
+import com.example.fitnessway.util.toPascalCaseSpaced
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -94,7 +94,7 @@ fun FoodLogScreen(
             foodLogFormStateCopy != null &&
             selectedFoodToLogCopy != null
         ) {
-            val foodLogCategoryString = getFoodLogCategory(foodLogCategoryCopy)
+            val foodLogCategoryString = foodLogCategoryCopy.name.toPascalCaseSpaced()
 
             Screen(
                 header = {

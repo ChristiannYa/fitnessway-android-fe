@@ -22,6 +22,13 @@ enum class ServingUnit {
     KCAL
 }
 
+enum class FoodLogCategories {
+    BREAKFAST,
+    LUNCH,
+    DINNER,
+    SUPPLEMENT
+}
+
 @Serializable
 enum class PendingFoodStatus {
     PENDING,

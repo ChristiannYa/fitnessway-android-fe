@@ -27,13 +27,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
-import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
+import com.example.fitnessway.data.model.m_26.FoodLogCategories
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
@@ -135,13 +135,9 @@ object UFood {
 
     object Ui {
         fun getFoodBrandText(brand: String?): String {
-            return if (brand == null || brand.isEmpty()) {
+            return if (brand.isNullOrEmpty()) {
                 "~"
             } else brand
-        }
-
-        fun getFoodLogCategory(category: FoodLogCategories): String {
-            return category.name.lowercase().replaceFirstChar { it.uppercase() }
         }
 
         @Composable

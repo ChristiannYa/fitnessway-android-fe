@@ -20,7 +20,7 @@ import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
-import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
+import com.example.fitnessway.util.toPascalCaseSpaced
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -46,7 +46,7 @@ fun FoodSelectionScreen(
         val foodLogCategoryCopy = foodLogCategory
 
         if (foodLogCategoryCopy != null) {
-            val categoryString = getFoodLogCategory(foodLogCategoryCopy)
+            val categoryString = foodLogCategoryCopy.name.toPascalCaseSpaced()
 
             Screen(
                 header = {
@@ -56,10 +56,7 @@ fun FoodSelectionScreen(
                     )
                 },
             ) { focusManager ->
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     var appFoodSearchQuery by remember { mutableStateOf("") }
                     var isTyping by remember { mutableStateOf(false) }
 

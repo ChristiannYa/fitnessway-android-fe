@@ -27,7 +27,7 @@ import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.plural
-import com.example.fitnessway.util.splitPascalCase
+import com.example.fitnessway.util.toPascalCaseSpaced
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -66,11 +66,11 @@ fun ListsScreen(
     Screen(
         header = {
             Header(
-                title = "My ${selectedList.name.splitPascalCase().plural()}",
+                title = "My ${selectedList.name.toPascalCaseSpaced().plural()}",
                 extraContent = {
                     Clickables.AppPngIconButton(
                         icon = selectedList.icon,
-                        contentDescription = "Create ${selectedList.name.splitPascalCase()}",
+                        contentDescription = "Create ${selectedList.name.toPascalCaseSpaced()}",
                         enabled = nutrientsUiState is UiState.Success && when (selectedList) {
                             ListOption.PendingFood -> pendingFoodsUiStatePager.uiState is UiState.Success
                             ListOption.Food -> foodsUiState is UiState.Success
@@ -127,7 +127,7 @@ fun ListsScreen(
                 val tint = if (isSelected) WhiteFont else null
 
                 Structure.MoreOptionsConfig(
-                    text = option.name.splitPascalCase().plural(),
+                    text = option.name.toPascalCaseSpaced().plural(),
                     backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else null,
                     icon = option.icon,
                     iconTint = tint,

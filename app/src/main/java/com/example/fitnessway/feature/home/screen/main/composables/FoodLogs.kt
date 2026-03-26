@@ -50,10 +50,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
-import com.example.fitnessway.data.model.MFood.Enum.FoodLogCategories
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
+import com.example.fitnessway.data.model.m_26.FoodLogCategories
 import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
@@ -67,10 +67,10 @@ import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UFood.Ui.getFoodBrandColor
 import com.example.fitnessway.util.UFood.Ui.getFoodBrandText
-import com.example.fitnessway.util.UFood.Ui.getFoodLogCategory
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.toPascalCaseSpaced
 
 @Composable
 private fun getFoodLogsContainerColor(): Color {
@@ -149,7 +149,7 @@ private fun FoodLogsCategorized(
         categoriesWithLogs.forEachIndexed { index, (category, logs) ->
             stickyHeader {
                 Text(
-                    text = getFoodLogCategory(category),
+                    text = category.name.toPascalCaseSpaced(),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
@@ -186,7 +186,7 @@ private fun FoodLogCategory(
     onRemoveFoodLog: (FoodLogData) -> Unit,
     isDeletionError: Boolean
 ) {
-    val categoryFormatted = getFoodLogCategory(category)
+    val categoryFormatted = category.name.toPascalCaseSpaced()
 
     Column(
         modifier = Modifier
@@ -339,7 +339,6 @@ private fun FoodLog(
                                     color = when (foodLog.foodStatus) {
                                         FoodLogFoodStatus.DELETED -> OrangeWarning
                                         FoodLogFoodStatus.UPDATED -> MaterialTheme.colorScheme.onSurfaceVariant
-                                        else -> Color.Transparent
                                     },
                                     shape = CircleShape
                                 )

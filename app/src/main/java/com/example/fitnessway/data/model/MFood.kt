@@ -20,13 +20,6 @@ import kotlinx.serialization.Serializable
 
 object MFood {
     object Enum {
-        enum class FoodLogCategories {
-            BREAKFAST,
-            LUNCH,
-            DINNER,
-            SUPPLEMENT
-        }
-
         enum class ServingUnits {
             G,
             MG,

@@ -42,7 +42,7 @@ fun UserFoodsList(
             }
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 NotFoundMessageAnimated(

@@ -1,9 +1,6 @@
 package com.example.fitnessway.data.network.ktor_client
 
 import com.example.fitnessway.data.model.MFood
-import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
-import com.example.fitnessway.data.model.m_26.PendingFoodAddResponse
-import com.example.fitnessway.data.model.m_26.PendingFoodsGetResponse
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractApiData
 import com.example.fitnessway.util.jsonBody
@@ -16,22 +13,6 @@ import io.ktor.client.HttpClient as KtorHttpClient
 
 
 class FoodApiClient(private val client: KtorHttpClient) {
-    // @TODO: Move into its dedicated `PendingFoodApiClient` scope
-    suspend fun getPendingFoods(
-        limit: Int,
-        offset: Long
-    ): PendingFoodsGetResponse = client.get(ApiUrls.PendingFood.LIST_URL) {
-        parameter("limit", limit)
-        parameter("offset", offset)
-    }.extractApiData()
-
-
-    suspend fun addPendingFood(
-        req: PendingFoodAddRequest
-    ): PendingFoodAddResponse = client.post(ApiUrls.PendingFood.ADD_URL) {
-        jsonBody(req)
-    }.extractApiData()
-
     suspend fun getFoods(): MFood.Api.Res.FoodsGetApiResponse =
         client.get(ApiUrls.Food.LIST_URL).extractApiData()
 

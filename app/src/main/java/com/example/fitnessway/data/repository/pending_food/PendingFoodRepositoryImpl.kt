@@ -5,7 +5,7 @@ import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.data.network.HttpClient
-import com.example.fitnessway.data.network.ktor_client.FoodApiClient
+import com.example.fitnessway.data.network.ktor_client.PendingFoodApiClient
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class PendingFoodRepositoryImpl(
     private val httpClient: HttpClient,
-    private val apiClient: FoodApiClient,
+    private val apiClient: PendingFoodApiClient,
     private val repositoryScope: CoroutineScope,
 ) : IPendingFoodRepository {
 

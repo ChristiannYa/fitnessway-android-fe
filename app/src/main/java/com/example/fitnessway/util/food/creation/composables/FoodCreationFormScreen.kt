@@ -213,7 +213,6 @@ fun <T> FoodCreationFormScreen(
                         ),
                     )
 
-                    // @TODO: Use `m_26`'s `NutrientType`
                     val nutrientFieldsData = NutrientType.entries.associateWith { type ->
                         val nutrientList = nutrients
                             .filterNutrientsByType(type)

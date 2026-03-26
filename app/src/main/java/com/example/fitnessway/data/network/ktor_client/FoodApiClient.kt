@@ -20,7 +20,7 @@ class FoodApiClient(private val client: KtorHttpClient) {
     suspend fun getPendingFoods(
         limit: Int,
         offset: Long
-    ): PendingFoodsGetResponse = client.get(ApiUrls.Food.FOOD_PENDING_LIST_URL) {
+    ): PendingFoodsGetResponse = client.get(ApiUrls.PendingFood.LIST_URL) {
         parameter("limit", limit)
         parameter("offset", offset)
     }.extractApiData()
@@ -28,70 +28,70 @@ class FoodApiClient(private val client: KtorHttpClient) {
 
     suspend fun addPendingFood(
         req: PendingFoodAddRequest
-    ): PendingFoodAddResponse = client.post(ApiUrls.Food.FOOD_PENDING_ADD_URL) {
+    ): PendingFoodAddResponse = client.post(ApiUrls.PendingFood.ADD_URL) {
         jsonBody(req)
     }.extractApiData()
 
     suspend fun getFoods(): MFood.Api.Res.FoodsGetApiResponse =
-        client.get(ApiUrls.Food.FOOD_USER_LIST_URL).extractApiData()
+        client.get(ApiUrls.Food.LIST_URL).extractApiData()
 
     suspend fun addFood(
         req: MFood.Api.Req.FoodAddRequest
     ): MFood.Api.Res.FoodAddApiResponse =
-        client.post(ApiUrls.Food.FOOD_USER_ADD_URL) {
+        client.post(ApiUrls.Food.ADD_URL) {
             jsonBody(req)
         }.extractApiData()
 
     suspend fun updateFood(
         req: MFood.Api.Req.FoodUpdateRequest
     ): MFood.Api.Res.FoodUpdateApiResponse =
-        client.post(ApiUrls.Food.FOOD_USER_UPDATE_URL) {
+        client.post(ApiUrls.Food.UPDATE_URL) {
             jsonBody(req)
         }.extractApiData()
 
     suspend fun deleteFood(foodId: Int): MFood.Api.Res.FoodDeleteApiResponse =
-        client.delete(ApiUrls.Food.FOOD_USER_DELETE_URL) {
+        client.delete(ApiUrls.Food.DELETE_URL) {
             parameter("food-id", foodId)
         }.extractApiData()
 
     suspend fun updateFoodFavoriteStatus(
         req: MFood.Api.Req.FoodFavoriteStatusUpdateRequest
     ): MFood.Api.Res.FoodFavoriteStatusUpdateApiResponse =
-        client.put(ApiUrls.Food.FOOD_USER_FAVORITE_STATUS_UPDATE_URL) {
+        client.put(ApiUrls.Food.FAVORITE_STATUS_UPDATE_URL) {
             jsonBody(req)
         }.extractApiData()
 
     suspend fun getFoodSort(): MFood.Api.Res.FoodSortGetApiResponse =
-        client.get(ApiUrls.Food.FOOD_USER_SORT_GET_URL).extractApiData()
+        client.get(ApiUrls.Food.SORT_GET_URL).extractApiData()
 
     suspend fun updateFoodSort(
         req: MFood.Api.Req.FoodSortUpdateRequest
     ): MFood.Api.Res.FoodSortUpdateApiResponse =
-        client.post(ApiUrls.Food.FOOD_USER_SORT_UPDATE_URL) {
+        client.post(ApiUrls.Food.SORT_UPDATE_URL) {
             jsonBody(req)
         }.extractApiData()
 
     suspend fun getFoodLogs(date: String): MFood.Api.Res.FoodLogsGetApiResponse =
-        client.get(ApiUrls.Food.FOOD_LOG_LIST_URL) {
+        client.get(ApiUrls.FoodLog.LIST_URL) {
             parameter("date", date)
         }.extractApiData()
 
     suspend fun addFoodLog(
         req: MFood.Api.Req.FoodLogAddRequest
     ): MFood.Api.Res.FoodLogAddApiResponse =
-        client.post(ApiUrls.Food.FOOD_LOG_ADD_URL) {
+        client.post(ApiUrls.FoodLog.ADD_URL) {
             jsonBody(req)
         }.extractApiData()
 
     suspend fun updateFoodLog(
         req: MFood.Api.Req.FoodLogUpdateRequest
     ): MFood.Api.Res.FoodLogUpdateApiResponse =
-        client.put(ApiUrls.Food.FOOD_LOG_UPDATE_URL) {
+        client.put(ApiUrls.FoodLog.UPDATE_URL) {
             jsonBody(req)
         }.extractApiData()
 
     suspend fun deleteFoodLog(foodLogId: Int): MFood.Api.Res.FoodLogDeleteApiResponse =
-        client.delete(ApiUrls.Food.FOOD_LOG_DELETE_URL) {
+        client.delete(ApiUrls.FoodLog.DELETE_URL) {
             parameter("food-log-id", foodLogId)
         }.extractApiData()
 }

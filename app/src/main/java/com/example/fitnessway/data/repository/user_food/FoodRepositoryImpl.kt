@@ -63,7 +63,7 @@ class FoodRepositoryImpl(
             extractData = { it.foodCreated },
             errMsg = "Failed to add food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.FOOD_USER_LIST_URL
+                ApiUrls.Food.LIST_URL
             )
         ).onEach { state ->
             if (state is UiState.Success) {
@@ -86,8 +86,8 @@ class FoodRepositoryImpl(
                 extractData = { it.foodUpdated },
                 errMsg = "Failed to update food",
                 invalidatedUrls = listOf(
-                    ApiUrls.Food.FOOD_USER_LIST_URL,
-                    ApiUrls.Food.FOOD_LOG_LIST_URL
+                    ApiUrls.Food.LIST_URL,
+                    ApiUrls.FoodLog.LIST_URL
                 )
             ).collect { state ->
                 _updateFoodFlow.emit(state)
@@ -105,8 +105,8 @@ class FoodRepositoryImpl(
             extractData = { it.foodDeleted },
             errMsg = "Failed to delete food",
             invalidatedUrls = listOf(
-                ApiUrls.Food.FOOD_USER_LIST_URL,
-                ApiUrls.Food.FOOD_LOG_LIST_URL
+                ApiUrls.Food.LIST_URL,
+                ApiUrls.FoodLog.LIST_URL
             )
         )
     }
@@ -163,8 +163,8 @@ class FoodRepositoryImpl(
             extractData = { it.foodSort },
             errMsg = "Failed to update food sort",
             invalidatedUrls = listOf(
-                ApiUrls.Food.FOOD_USER_SORT_GET_URL,
-                ApiUrls.Food.FOOD_USER_LIST_URL
+                ApiUrls.Food.SORT_GET_URL,
+                ApiUrls.Food.LIST_URL
             )
         )
     }
@@ -206,7 +206,7 @@ class FoodRepositoryImpl(
             errMsg = "Failed to add log",
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.getIntakesByDateUrl(date),
-                ApiUrls.Food.getLogsByDateUrl(date)
+                ApiUrls.FoodLog.getListByDateUrl(date)
             )
         )
     }
@@ -220,7 +220,7 @@ class FoodRepositoryImpl(
             extractData = { it.updatedFoodLog },
             errMsg = "Failed to update log",
             invalidatedUrls = listOf(
-                ApiUrls.Food.getLogsByDateUrl(date),
+                ApiUrls.FoodLog.getListByDateUrl(date),
                 ApiUrls.Nutrient.getIntakesByDateUrl(date)
             )
         )
@@ -236,7 +236,7 @@ class FoodRepositoryImpl(
             errMsg = "Failed to delete log",
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.getIntakesByDateUrl(date),
-                ApiUrls.Food.getLogsByDateUrl(date)
+                ApiUrls.FoodLog.getListByDateUrl(date)
             )
         )
     }

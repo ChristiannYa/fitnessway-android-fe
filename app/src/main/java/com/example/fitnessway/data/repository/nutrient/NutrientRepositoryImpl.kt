@@ -89,8 +89,8 @@ class NutrientRepositoryImpl(
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.NUTRIENT_INTAKES_URL,
                 ApiUrls.Nutrient.NUTRIENT_LIST_URL,
-                ApiUrls.Food.FOOD_LOG_LIST_URL,
-                ApiUrls.Food.FOOD_USER_LIST_URL
+                ApiUrls.FoodLog.LIST_URL,
+                ApiUrls.Food.LIST_URL
             )
         )
     }
@@ -106,8 +106,8 @@ class NutrientRepositoryImpl(
             invalidatedUrls = listOf(
                 ApiUrls.Nutrient.NUTRIENT_INTAKES_URL,
                 ApiUrls.Nutrient.NUTRIENT_LIST_URL,
-                ApiUrls.Food.FOOD_LOG_LIST_URL,
-                ApiUrls.Food.FOOD_USER_LIST_URL
+                ApiUrls.FoodLog.LIST_URL,
+                ApiUrls.Food.LIST_URL
             )
         )
     }

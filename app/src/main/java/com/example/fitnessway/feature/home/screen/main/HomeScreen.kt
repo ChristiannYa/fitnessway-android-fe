@@ -35,6 +35,7 @@ import com.example.fitnessway.ui.shared.Loading.RefreshByPullIndicator
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -46,6 +47,8 @@ fun HomeScreen(
     onNavigateToGoals: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
+    logcat("A: Composed")
+
     val uiState by viewModel.uiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
@@ -93,7 +96,6 @@ fun HomeScreen(
     val view = LocalView.current
 
     Screen {
-
         if (user != null) {
             Box(modifier = Modifier.fillMaxSize()) {
                 PullToRefreshBox(

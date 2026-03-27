@@ -12,6 +12,7 @@ import com.example.fitnessway.feature.home.screen.main.HomeScreen
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.feature.profile.navigation.ProfileGoalsDest
 import com.example.fitnessway.navigation.HomeGraph
+import com.example.fitnessway.util.Formatters.logcat
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -55,7 +56,11 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
             FoodSelectionScreen(
                 viewModel,
                 onBackClick = navController::popBackStack,
-                onNavigateToSelectedFood = { navController.navigate(FoodLog) },
+                onNavigateToSelectedFood = {
+                    logcat("[navgraph] navigating to selected food")
+                    navController.navigate(FoodLog)
+                },
+                navBackStackEntry = entry
             )
         }
 

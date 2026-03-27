@@ -103,11 +103,9 @@ data class FoodSearchResult(
     val nutrientsPreview: NutrientPreview
 )
 
-data class FoodPreview(
-    val id: Int,
-    val base: FoodBase,
-    val nutrientPreview: NutrientPreview,
-    val isUserPremium: Boolean
+@Serializable
+data class AppFoodFindByIdResponse(
+    val appFood: AppFood?
 )
 
 @Serializable
@@ -129,4 +127,16 @@ data class PendingFoodAddRequest(
 @Serializable
 data class PendingFoodAddResponse(
     val pendingFoodSubmitted: PendingFood
+)
+
+data class FoodPreview(
+    val id: Int,
+    val base: FoodBase,
+    val nutrientPreview: NutrientPreview,
+    val isUserPremium: Boolean
+)
+
+data class FoodToLogSearchCriteria(
+    val id: Int,
+    val source: FoodSource
 )

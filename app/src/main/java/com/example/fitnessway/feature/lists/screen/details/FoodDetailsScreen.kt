@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toM26FoodInformation
 import com.example.fitnessway.feature.lists.screen.details.composables.ConfirmFoodDeletionPopup
 import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
@@ -147,7 +148,7 @@ fun FoodDetailsScreen(
                     )
 
                     FoodInformation(
-                        food = selectedFoodCopy,
+                        food = selectedFoodCopy.toM26FoodInformation(),
                         isFoodDeletionSuccess = foodDeleteState is UiState.Success,
                         user = user
                     )

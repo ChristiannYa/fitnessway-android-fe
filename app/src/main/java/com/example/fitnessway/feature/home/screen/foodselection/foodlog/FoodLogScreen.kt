@@ -4,11 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,30 +16,31 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toPascalCaseSpaced
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.mappers.toM26FoodInformation
+import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.mappers.toTypedList
+import com.example.fitnessway.data.model.m_26.FoodSource
+import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
-import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
-import com.example.fitnessway.ui.shared.Banners.SuccessBannerAnimated
+import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
+import com.example.fitnessway.ui.nutrient.PagedNutrients
+import com.example.fitnessway.ui.shared.Banners
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
+import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.shared.Structure
-import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
-import com.example.fitnessway.util.UNutrient
-import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleApiSuccessTempState
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.extensions.calcIntakesFromServings
+import com.example.fitnessway.util.extensions.findById
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -51,15 +49,66 @@ fun FoodLogScreen(
     onBackClick: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
-    val foodLogFormState by viewModel.foodLogFormState.collectAsState()
-    val foodLogCategory by viewModel.foodLogCategory.collectAsState()
-    val selectedFoodToLog by viewModel.selectedFoodToLog.collectAsState()
+    logcat("C: Composed")
 
-    val user = userFlow
+    val user by viewModel.userFlow.collectAsState()
+
+    val uiState by viewModel.uiState.collectAsState()
+    val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
+    val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
+
+    val searchCriteria = viewModel.searchCriteria.collectAsState().value
+    val foodToLog = viewModel.foodToLog.collectAsState().value
+    val formState = viewModel.foodLogFormState.collectAsState().value
+    val category = viewModel.foodLogCategory.collectAsState().value
+
+    val appFoodUiState = appFoodRepoUiState.appFood
+    val foodsUiState = foodRepoUiState.foodsUiState
     val foodLogAddState = uiState.foodLogAddState
-    val time = viewModel.getCurrentTime()
+
+    val isLogSuccessFull = handleApiSuccessTempState(
+        uiState = foodLogAddState,
+        onTimeout = viewModel::resetFoodLogAddState
+    )
+
+    val logErrorMessage = handleTempApiErrMsg(
+        uiState = foodLogAddState,
+        onTimeOut = viewModel::resetFoodLogAddState
+    )
+
+    LaunchedEffect(searchCriteria) {
+        searchCriteria?.let { searchCriteria ->
+            when (searchCriteria.source) {
+                FoodSource.APP -> {
+                    viewModel.findAppFoodById(searchCriteria.id)
+                }
+
+                FoodSource.USER -> {
+                    if (foodsUiState is UiState.Success) {
+                        foodsUiState.data
+                            .findById(searchCriteria.id)
+                            ?.let {
+                                viewModel.setFoodToLog(it.toM26FoodInformation())
+                            }
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(appFoodUiState) {
+        if (appFoodUiState is UiState.Success) {
+            appFoodUiState.data?.let { appFoodFound ->
+                viewModel.setFoodToLog(appFoodFound.information)
+            }
+        }
+    }
+
+    LaunchedEffect(foodToLog) {
+        foodToLog?.let {
+            viewModel.initializeFoodLogForm(it, viewModel.getCurrentTime())
+        }
+    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -67,196 +116,110 @@ fun FoodLogScreen(
         }
     }
 
-    LaunchedEffect(selectedFoodToLog?.information?.id) {
-        selectedFoodToLog?.let { food ->
-            viewModel.initializeFoodLogForm(food, time)
-        }
-    }
+    val isScreenDataReady = searchCriteria != null &&
+            foodToLog != null &&
+            formState != null &&
+            category != null
 
-    val foodLogCategoryCopy = foodLogCategory
-    val foodLogFormStateCopy = foodLogFormState
-    val selectedFoodToLogCopy = selectedFoodToLog
-
-    val focusManager = LocalFocusManager.current
-
-    val isFoodLogSuccess = handleApiSuccessTempState(
-        uiState = foodLogAddState,
-        onTimeout = viewModel::resetFoodLogAddState
-    )
-
-    val foodLogErrorMessage = handleTempApiErrMsg(
-        uiState = foodLogAddState,
-        onTimeOut = viewModel::resetFoodLogAddState
-    )
-
-    if (user != null) {
-        if (foodLogCategoryCopy != null &&
-            foodLogFormStateCopy != null &&
-            selectedFoodToLogCopy != null
-        ) {
-            val foodLogCategoryString = foodLogCategoryCopy.name.toPascalCaseSpaced()
-
-            Screen(
-                header = {
-                    Header(
-                        onBackClick = {
-                            if (foodLogAddState is UiState.Error) viewModel.resetFoodLogAddState()
-                            onBackClick()
-                        },
-                        isOnBackEnabled = foodLogAddState !is UiState.Loading,
-                        title = "Log Submission"
-                    ) {
-                        if (selectedFoodToLogCopy.metadata.isFavorite) {
-                            Structure.AppIconDynamic(
-                                source = Structure.AppIconButtonSource.Vector(
-                                    imageVector = Icons.Default.Star
-                                ),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-
-                        AppLabel<Unit>(
-                            text = foodLogCategoryString,
-                            size = Ui.LabelSize.MEDIUM,
-                        )
-
-                        Clickables.HeaderDoneButton(
-                            onClick = viewModel::addFoodLog,
-                            enabled = viewModel.isFoodLogFormValid,
-                            isLoading = foodLogAddState is UiState.Loading
-                        )
-                    }
-                }
-            ) {
-                val scrollState = rememberScrollState()
-
-                val fieldsProvider = FoodLogFieldsProvider(
-                    formState = foodLogFormStateCopy,
-                    focusManager = focusManager,
-                    isFormSubmitting = foodLogAddState is UiState.Loading,
-                    onFieldUpdate = { fieldName, value ->
-                        viewModel.updateFoodLogFormField(fieldName, value)
-                    }
-                )
-
-                val foodNutrients = remember(
-                    selectedFoodToLogCopy.nutrients,
-                    foodLogFormStateCopy.data.servings
+    if (isScreenDataReady) {
+        Screen(
+            header = {
+                Header(
+                    onBackClick = {
+                        if (foodLogAddState is UiState.Error) viewModel.resetFoodLogAddState()
+                        onBackClick()
+                    },
+                    isOnBackEnabled = foodLogAddState !is UiState.Loading,
+                    title = "Log Submission"
                 ) {
-                    val servings = foodLogFormStateCopy.data.servings.toDoubleOrNull() ?: 0.0
+                    AppLabel<Unit>(
+                        text = category.name.toPascalSpaced(),
+                        size = Ui.LabelSize.MEDIUM,
+                    )
 
-                    calcNutrientIntakesFromFoodLogServings(
-                        nutrients = selectedFoodToLogCopy.nutrients,
-                        currentServings = 1.0,
-                        newServings = servings
+                    Clickables.HeaderDoneButton(
+                        onClick = viewModel::addFoodLog,
+                        enabled = viewModel.isFoodLogFormValid,
+                        isLoading = foodLogAddState is UiState.Loading
                     )
                 }
+            }
+        ) { focusManager ->
+            val fieldsProvider = FoodLogFieldsProvider(
+                formState = formState,
+                focusManager = focusManager,
+                isFormSubmitting = foodLogAddState is UiState.Loading,
+                onFieldUpdate = { fieldName, value ->
+                    viewModel.updateFoodLogFormField(fieldName, value)
+                }
+            )
 
-                Box(modifier = Modifier.fillMaxSize()) {
+            val foodNutrients = remember(
+                foodToLog.nutrients,
+                formState.data.servings
+            ) {
+                foodToLog.nutrients.calcIntakesFromServings(
+                    currentServings = 1.0,
+                    newServings = formState.data.servings.toDoubleOrNull() ?: 0.0
+                )
+            }
+
+            Box(Modifier.fillMaxSize()) {
+                if (searchCriteria.source == FoodSource.APP && appFoodUiState is UiState.Loading) {
+                    Loading.SpinnerInScreen()
+                } else {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.verticalScroll(scrollState)
+                        modifier = Modifier.verticalScroll(rememberScrollState())
                     ) {
-                        ErrorBannerAnimated(
-                            isVisible = foodLogErrorMessage != null,
-                            text = foodLogErrorMessage ?: ""
+                        Banners.ErrorBannerAnimated(
+                            isVisible = logErrorMessage != null,
+                            text = logErrorMessage ?: ""
                         )
 
                         FoodLogInformation(
-                            food = selectedFoodToLogCopy,
+                            food = foodToLog,
                             servingsField = fieldsProvider.servings(),
                             amountPerServingsField = fieldsProvider.amountPerServing(
-                                servingUnit = selectedFoodToLogCopy.information.servingUnit
+                                servingUnit = foodToLog.base.servingUnit.name.lowercase()
                             ),
                             timeField = fieldsProvider.time()
                         )
 
-                        val sections = getNutrientSectionsConfig(foodNutrients)
+                        foodNutrients.toTypedList().forEach { (type, nutrientsInFood) ->
+                            if (nutrientsInFood.isNotEmpty()) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(18.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.areaContainer()
+                                ) {
+                                    Text(
+                                        text = type.name.toPascalSpaced(),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
 
-                        sections.forEach { section ->
-                            if (section.shouldShow) {
-                                NutrientSection(
-                                    title = section.title,
-                                    nutrients = section.nutrients,
-                                    isUserPremium = user.isPremium,
-                                    isBasicNutrient = section.isBasicNutrient
-                                )
+                                    PagedNutrients(
+                                        nutrients = nutrientsInFood,
+                                        viewFormat = NutrientsViewFormat.BOX,
+                                        isDataMinimal = true,
+                                        isBasicNutrient = type == NutrientType.BASIC,
+                                        isBaseSizeDisplay = false,
+                                        isUserPremium = user?.isPremium ?: false
+                                    )
+                                }
                             }
                         }
                     }
-
-                    SuccessBannerAnimated(
-                        text = "Food logged successfully",
-                        isVisible = isFoodLogSuccess,
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    )
                 }
+
+                Banners.SuccessBannerAnimated(
+                    text = "Food logged successfully",
+                    isVisible = isLogSuccessFull,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
             }
         }
-
-    } else NotFoundScreen(
-        onBackClick = onBackClick,
-        title = "Log Information",
-        message = "User data not found"
-    )
-}
-
-@Composable
-private fun NutrientSection(
-    title: String,
-    nutrients: List<NutrientDataWithAmount>,
-    isBasicNutrient: Boolean,
-    isUserPremium: Boolean
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(18.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.areaContainer(),
-        content = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            PagedNutrients(
-                nutrients = nutrients,
-                displayFormat = UNutrient.ScrollableNutrientsFormat.BOX,
-                isDataMinimal = true,
-                isBasicNutrient = isBasicNutrient,
-                isBaseSizeDisplay = false,
-                isUserPremium = isUserPremium
-            )
-        }
-    )
-}
-
-private data class NutrientSectionConfig(
-    val title: String,
-    val nutrients: List<NutrientDataWithAmount>,
-    val isBasicNutrient: Boolean = true,
-    val shouldShow: Boolean = true,
-)
-
-private fun getNutrientSectionsConfig(nutrients: NutrientsByType<NutrientDataWithAmount>): List<NutrientSectionConfig> {
-
-    return listOf(
-        NutrientSectionConfig(
-            title = "Summary",
-            nutrients = nutrients.basic,
-        ),
-        NutrientSectionConfig(
-            title = "Vitamins",
-            nutrients = nutrients.vitamin,
-            isBasicNutrient = false,
-            shouldShow = nutrients.vitamin.isNotEmpty(),
-        ),
-        NutrientSectionConfig(
-            title = "Minerals",
-            nutrients = nutrients.mineral,
-            isBasicNutrient = false,
-            shouldShow = nutrients.mineral.isNotEmpty()
-        )
-    )
+    }
 }

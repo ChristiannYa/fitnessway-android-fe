@@ -49,6 +49,12 @@ object ApiUrls {
 
         fun getPaginationPath(params: PaginationParams) = "$LIST_PATH?${params.toRequestParams()}"
         fun getPaginationUrl(params: PaginationParams) = BASE_URL_KT + getPaginationPath(params)
+
+        const val BY_ID_PATH = "food/app"
+        const val BY_ID_URL = "$BASE_URL_KT$BY_ID_PATH"
+
+        fun getByIdPathParam(id: Int) = "$BY_ID_PATH/$id"
+        fun getByIdUrlParam(id: Int) = BASE_URL_KT + getByIdPathParam(id)
     }
 
     object PendingFood {

@@ -17,9 +17,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toM26FoodInformation
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
-import com.example.fitnessway.util.form.field.FoodLogEditionField
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
@@ -29,6 +29,7 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UFood.FoodInformationComposables
+import com.example.fitnessway.util.form.field.FoodLogEditionField
 
 private const val deletedFoodMessage = "You have removed this food from your food list"
 private const val updatedFoodMessage = "You have updated this food information"
@@ -45,7 +46,7 @@ fun FoodLogDetails(
     val foodComposables = remember(
         key1 = foodLog.food,
         key2 = nutrients
-    ) { FoodInformationComposables(foodLog.food, nutrients, user) }
+    ) { FoodInformationComposables(foodLog.food.toM26FoodInformation(), user) }
 
     Box(
         modifier = Modifier.fillMaxWidth(),

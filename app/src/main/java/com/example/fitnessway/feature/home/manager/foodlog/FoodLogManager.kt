@@ -1,8 +1,10 @@
 package com.example.fitnessway.feature.home.manager.foodlog
 
-import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
+import com.example.fitnessway.data.model.m_26.FoodInformation
 import com.example.fitnessway.data.model.m_26.FoodLogCategories
+import com.example.fitnessway.data.model.m_26.FoodSource
+import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.roundIfClose
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
@@ -13,18 +15,26 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FoodLogManager : IFoodLogManager {
-    private val _selectedFoodSort = MutableStateFlow<String?>(null)
-
-    override val selectedFoodSort: StateFlow<String?> = _selectedFoodSort
-
     private val _foodLogCategory = MutableStateFlow<FoodLogCategories?>(null)
     override val foodLogCategory: StateFlow<FoodLogCategories?> = _foodLogCategory
 
     private val _selectedFoodLog = MutableStateFlow<FoodLogData?>(null)
     override val selectedFoodLog: StateFlow<FoodLogData?> = _selectedFoodLog
 
+    private val _foodToLogSearchCriteria = MutableStateFlow<FoodToLogSearchCriteria?>(null)
+    override val searchCriteria: StateFlow<FoodToLogSearchCriteria?> = _foodToLogSearchCriteria
+
+    private val _foodToLogFound = MutableStateFlow<FoodInformation?>(null)
+    override val foodToLog: StateFlow<FoodInformation?> = _foodToLogFound
+
     private val _selectedFoodToLog = MutableStateFlow<FoodInformation?>(null)
-    override val selectedFoodToLog: StateFlow<FoodInformation?> = _selectedFoodToLog
+    override val foodInfoToLog: StateFlow<FoodInformation?> = _selectedFoodToLog
+
+    private val _selectedFoodIdToLog = MutableStateFlow<Int?>(null)
+    override val foodIdToLog: StateFlow<Int?> = _selectedFoodIdToLog
+
+    private val _selectedFoodSourceToLog = MutableStateFlow<FoodSource?>(null)
+    override val foodSourceToLog: StateFlow<FoodSource?> = _selectedFoodSourceToLog
 
     private val _selectedFoodLogToRemove = MutableStateFlow<FoodLogData?>(null)
     override val selectedFoodLogToRemove: StateFlow<FoodLogData?> = _selectedFoodLogToRemove
@@ -32,10 +42,8 @@ class FoodLogManager : IFoodLogManager {
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
 
-    private val _foodLogEditionFormState =
-        MutableStateFlow<FormState<FormStates.FoodLogEdition>?>(null)
-    override val foodLogEditionFormState: StateFlow<FormState<FormStates.FoodLogEdition>?> =
-        _foodLogEditionFormState
+    private val _foodLogEditionFormState = MutableStateFlow<FormState<FormStates.FoodLogEdition>?>(null)
+    override val foodLogEditionFormState: StateFlow<FormState<FormStates.FoodLogEdition>?> = _foodLogEditionFormState
 
     override val isFoodLogFormValid: Boolean
         get() = _foodLogFormState.value?.let {
@@ -108,10 +116,6 @@ class FoodLogManager : IFoodLogManager {
             } else false
         }
 
-    override fun setSelectedFoodSort(foodSort: String) {
-        _selectedFoodSort.value = foodSort
-    }
-
     override fun setFoodLogCategory(categories: FoodLogCategories) {
         _foodLogCategory.value = when (categories) {
             FoodLogCategories.BREAKFAST -> FoodLogCategories.BREAKFAST
@@ -125,8 +129,24 @@ class FoodLogManager : IFoodLogManager {
         _selectedFoodLog.value = foodLog
     }
 
-    override fun setSelectedFoodToLog(food: FoodInformation) {
+    override fun setSearchCriteria(foodToLogSearchCriteria: FoodToLogSearchCriteria) {
+        _foodToLogSearchCriteria.value = foodToLogSearchCriteria
+    }
+
+    override fun setFoodToLog(foodToLog: FoodInformation) {
+        _foodToLogFound.value = foodToLog
+    }
+
+    override fun setFoodInfoToLog(food: FoodInformation) {
         _selectedFoodToLog.value = food
+    }
+
+    override fun setFoodIdToLog(id: Int) {
+        _selectedFoodIdToLog.value = id
+    }
+
+    override fun setFoodSourceToLog(source: FoodSource) {
+        _selectedFoodSourceToLog.value = source
     }
 
     override fun setSelectedFoodLogToRemove(foodLog: FoodLogData) {
@@ -137,8 +157,8 @@ class FoodLogManager : IFoodLogManager {
         _foodLogFormState.value = FormState(
             data = FormStates.FoodLog(
                 servings = doubleFormatter(1.0),
-                amountPerServing = doubleFormatter(food.information.amountPerServing, 3),
-                amountPerServingDb = food.information.amountPerServing,
+                amountPerServing = doubleFormatter(food.base.amountPerServing, 3),
+                amountPerServingDb = food.base.amountPerServing,
                 time = time
             )
         )
@@ -246,37 +266,6 @@ class FoodLogManager : IFoodLogManager {
             }
 
             _foodLogFormState.value = currentState.copy(data = updatedData)
-        }
-    }
-
-    override fun startFormEdit(formState: FormStates) {
-        when (formState) {
-            is FormStates.FoodLog -> _foodLogFormState.value = _foodLogFormState.value?.edit()
-            is FormStates.FoodLogEdition -> _foodLogEditionFormState.value =
-                _foodLogEditionFormState.value?.edit()
-
-            else -> {}
-        }
-    }
-
-    override fun cancelFormEdit(formState: FormStates) {
-        when (formState) {
-            is FormStates.FoodLog -> _foodLogFormState.value = _foodLogFormState.value?.cancel()
-            is FormStates.FoodLogEdition -> _foodLogEditionFormState.value =
-                _foodLogEditionFormState.value?.cancel()
-
-            else -> {}
-        }
-    }
-
-    override fun saveFormEdit(formState: FormStates) {
-        when (formState) {
-            is FormStates.FoodLog -> _foodLogFormState.value = _foodLogFormState.value?.save()
-
-            is FormStates.FoodLogEdition -> _foodLogEditionFormState.value =
-                _foodLogEditionFormState.value?.save()
-
-            else -> {}
         }
     }
 }

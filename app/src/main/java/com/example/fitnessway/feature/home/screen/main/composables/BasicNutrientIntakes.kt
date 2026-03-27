@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toM26NutrientInFood
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
@@ -70,7 +71,7 @@ fun BasicNutrientIntakes(
                         )
 
                         PagedNutrients(
-                            nutrients = basicNutrientsWithGoals,
+                            nutrients = basicNutrientsWithGoals.map { it.toM26NutrientInFood() },
                             displayFormat = UNutrient.ScrollableNutrientsFormat.BOX,
                             isUserPremium = user.isPremium
                         )

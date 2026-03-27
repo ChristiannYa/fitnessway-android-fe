@@ -53,6 +53,7 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.model.m_26.NutrientInFood
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
@@ -61,15 +62,17 @@ import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.ClickableConfiguration
 import com.example.fitnessway.util.Ui.InputUi
 import com.example.fitnessway.util.Ui.LabelSize
+import com.example.fitnessway.util.extensions.calcIntakes
 
 
 object UNutrient {
+    // @TODO: Remove and replace by `NutrientsViewFormat` from `ui.nutrient`
     enum class ScrollableNutrientsFormat {
         BOX,
         CIRCLE
     }
 
-    data class NutrientData(
+    data class NutrientIntakeCalculation(
         val intake: Double,
         val progress: Double,
         val remaining: Double,
@@ -161,7 +164,7 @@ object UNutrient {
         }
     }
 
-    fun calcNutrientIntakeData(intakeData: NutrientDataWithAmount): NutrientData {
+    fun calcNutrientIntakeData(intakeData: NutrientDataWithAmount): NutrientIntakeCalculation {
         val intake = intakeData.amount
         val goal = intakeData.nutrientWithPreferences.preferences.goal ?: 0.0
 
@@ -170,7 +173,7 @@ object UNutrient {
         val remaining = goal - intake
         val over = intake - goal
 
-        return NutrientData(
+        return NutrientIntakeCalculation(
             intake = intake,
             progress = progress,
             remaining = remaining,
@@ -450,7 +453,7 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsBox(
-            nutrients: List<NutrientDataWithAmount>,
+            nutrients: List<NutrientInFood>,
             isUserPremium: Boolean,
             isDataMinimal: Boolean = false,
             /**
@@ -477,17 +480,15 @@ object UNutrient {
         ) {
             val barShape = 16.dp
 
-            nutrients.forEach { nutrientData ->
-                val nutrient = nutrientData.nutrientWithPreferences.nutrient
-                val nutrientType = nutrient.type
-                val preferences = nutrientData.nutrientWithPreferences.preferences
+            nutrients.forEach { nutrientInFood ->
+                val preferences = nutrientInFood.nutrientData.preferences
 
                 val nutrientColor = getUserNutrientColor(
                     color = preferences.hexColor,
                     isUserPremium = isUserPremium
                 )
 
-                val calculatedNutrientData = calcNutrientIntakeData(intakeData = nutrientData)
+                val calculatedNutrientData = nutrientInFood.calcIntakes()
 
                 val animatedProgress by animateFloatAsState(
                     targetValue = (calculatedNutrientData.progress / 100f).toFloat(),
@@ -519,7 +520,7 @@ object UNutrient {
                             }
 
                             Text(
-                                text = nutrient.unit,
+                                text = nutrientInFood.nutrientData.base.unit.name.lowercase(),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = nutrientColor.copy(0.5f)
                             )
@@ -536,7 +537,7 @@ object UNutrient {
                                     shape = RoundedCornerShape(barShape)
                                 )
                         ) {
-                            val progressModifier = if (nutrientType == NutrientType.BASIC) {
+                            val progressModifier = if (nutrientInFood.nutrientData.nutrientType == NutrientType.BASIC) {
                                 Modifier
                                     .align(Alignment.BottomCenter)
                                     .offset(y = -(verticalSpace * 2))
@@ -557,7 +558,7 @@ object UNutrient {
                             )
 
                             Text(
-                                text = doubleFormatter(nutrientData.amount),
+                                text = doubleFormatter(nutrientInFood.amount),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = FontFamily.Default,
                                 color = WhiteFont,
@@ -568,11 +569,11 @@ object UNutrient {
                         }
 
                         // Bottom part: nutrient name
-                        val name = if (nutrient.type == NutrientType.VITAMIN
-                            || nutrient.type == NutrientType.MINERAL
+                        val name = if (nutrientInFood.nutrientData.nutrientType == NutrientType.VITAMIN
+                            || nutrientInFood.nutrientData.nutrientType == NutrientType.MINERAL
                         ) {
-                            nutrient.symbol ?: nutrient.name
-                        } else nutrient.name
+                            nutrientInFood.nutrientData.base.symbol ?: nutrientInFood.nutrientData.base.name
+                        } else nutrientInFood.nutrientData.base.name
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -601,16 +602,15 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsCircle(
-            nutrients: List<NutrientDataWithAmount>,
+            nutrients: List<NutrientInFood>,
             isUserPremium: Boolean
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 modifier = Modifier.fillMaxWidth(),
                 content = {
-                    nutrients.forEach { nutrientData ->
-                        val nutrient = nutrientData.nutrientWithPreferences.nutrient
-                        val preferences = nutrientData.nutrientWithPreferences.preferences
+                    nutrients.forEach { nutrientInFood ->
+                        val preferences = nutrientInFood.nutrientData.preferences
 
                         val nutrientColor = getUserNutrientColor(
                             color = preferences.hexColor,
@@ -619,7 +619,7 @@ object UNutrient {
 
                         val targetProgress =
                             if (preferences.goal != null) {
-                                (nutrientData.amount / preferences.goal)
+                                (nutrientInFood.amount / preferences.goal)
                             } else {
                                 0.0
                             }
@@ -630,7 +630,7 @@ object UNutrient {
                         )
 
                         val percentage = if (preferences.goal != null) {
-                            (nutrientData.amount / preferences.goal) * 100
+                            (nutrientInFood.amount / preferences.goal) * 100
                         } else {
                             0.0
                         }
@@ -656,7 +656,7 @@ object UNutrient {
                                 )
 
                                 Text(
-                                    text = doubleFormatter(nutrientData.amount),
+                                    text = doubleFormatter(nutrientInFood.amount),
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontFamily = FontFamily.Default,
                                     maxLines = 1,
@@ -677,7 +677,7 @@ object UNutrient {
                                 )
 
                                 Text(
-                                    text = nutrient.name,
+                                    text = nutrientInFood.nutrientData.base.name,
                                     style = MaterialTheme.typography.labelLarge,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
@@ -691,15 +691,14 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsLine(
-            nutrients: List<NutrientDataWithAmount>
+            nutrients: List<NutrientInFood>
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                nutrients.forEach { nutrientData ->
-                    val nutrient = nutrientData.nutrientWithPreferences.nutrient
-                    val preferences = nutrientData.nutrientWithPreferences.preferences
+                nutrients.forEach { nutrientInFood ->
+                    val preferences = nutrientInFood.nutrientData.preferences
 
                     val targetProgress = if (preferences.goal != null) {
-                        ((nutrientData.amount / preferences.goal).toFloat())
+                        ((nutrientInFood.amount / preferences.goal).toFloat())
                     } else {
                         0f
                     }
@@ -710,7 +709,7 @@ object UNutrient {
                     )
 
                     val percentage = if (preferences.goal != null) {
-                        ((nutrientData.amount / preferences.goal) * 100).toFloat()
+                        ((nutrientInFood.amount / preferences.goal) * 100).toFloat()
                     } else {
                         0f
                     }
@@ -730,14 +729,14 @@ object UNutrient {
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             // Left side: nutrient name and symbol
-                            if (nutrient.type == NutrientType.MINERAL) {
+                            if (nutrientInFood.nutrientData.nutrientType == NutrientType.MINERAL) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                     Text(
-                                        text = nutrient.name,
+                                        text = nutrientInFood.nutrientData.base.name,
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Medium
                                     )
-                                    nutrient.symbol?.let {
+                                    nutrientInFood.nutrientData.base.symbol?.let {
                                         Text(
                                             text = it,
                                             style = MaterialTheme.typography.bodyMedium,
@@ -750,7 +749,7 @@ object UNutrient {
                                 }
                             } else {
                                 Text(
-                                    text = nutrient.name,
+                                    text = nutrientInFood.nutrientData.base.name,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -758,12 +757,12 @@ object UNutrient {
 
                             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                 Text(
-                                    text = doubleFormatter(nutrientData.amount, 2),
+                                    text = doubleFormatter(nutrientInFood.amount, 2),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Default,
                                 )
                                 Text(
-                                    text = nutrient.unit,
+                                    text = nutrientInFood.nutrientData.base.unit.name.lowercase(),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
                                 )
@@ -800,9 +799,10 @@ object UNutrient {
             }
         }
 
+        // @TODO: Remove and replace by `PagedNutrients` from `ui.nutrient`
         @Composable
         fun PagedNutrients(
-            nutrients: List<NutrientDataWithAmount>,
+            nutrients: List<NutrientInFood>,
             displayFormat: ScrollableNutrientsFormat,
             isDataMinimal: Boolean = false,
             isBasicNutrient: Boolean = true,

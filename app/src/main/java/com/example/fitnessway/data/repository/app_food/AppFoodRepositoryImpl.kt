@@ -22,6 +22,23 @@ class AppFoodRepositoryImpl(
     private val _uiState = MutableStateFlow(AppFoodRepositoryUiState())
     override val uiState: StateFlow<AppFoodRepositoryUiState> = _uiState
 
+    private fun fetchAppFoodById(id: Int) =
+        httpClient.makeRequest(
+            apiCall = { apiClient.findAppFoodById(id) },
+            extractData = { it.appFood },
+            errMsg = "Failed to fetch food by ID"
+        )
+
+    override fun findAppFoodById(id: Int) {
+        repositoryScope.launch {
+            fetchAppFoodById(id).collect { state ->
+                _uiState.update {
+                    it.copy(appFood = state)
+                }
+            }
+        }
+    }
+
     private fun fetchAppFoods(query: String, offset: Long) =
         httpClient.makeRequest(
             apiCall = {

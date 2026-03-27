@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.plural
-import com.example.fitnessway.data.mappers.toPascalCaseSpaced
+import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.feature.lists.screen.main.composables.PendingFoodsPagination
 import com.example.fitnessway.feature.lists.screen.main.composables.UserFoodsList
@@ -66,11 +66,11 @@ fun ListsScreen(
     Screen(
         header = {
             Header(
-                title = "My ${selectedList.name.toPascalCaseSpaced(false).plural()}",
+                title = "My ${selectedList.name.toPascalSpaced(false).plural()}",
                 extraContent = {
                     Clickables.AppPngIconButton(
                         icon = selectedList.icon,
-                        contentDescription = "Create ${selectedList.name.toPascalCaseSpaced()}",
+                        contentDescription = "Create ${selectedList.name.toPascalSpaced()}",
                         enabled = nutrientsUiState is UiState.Success && when (selectedList) {
                             ListOption.PendingFood -> pendingFoodsUiStatePager.uiState is UiState.Success
                             ListOption.Food -> foodsUiState is UiState.Success
@@ -127,7 +127,7 @@ fun ListsScreen(
                 val tint = if (isSelected) WhiteFont else null
 
                 Structure.MoreOptionsConfig(
-                    text = option.name.toPascalCaseSpaced().plural(),
+                    text = option.name.toPascalSpaced().plural(),
                     backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else null,
                     icon = option.icon,
                     iconTint = tint,

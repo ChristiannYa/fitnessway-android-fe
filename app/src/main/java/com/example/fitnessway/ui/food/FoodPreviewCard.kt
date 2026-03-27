@@ -1,4 +1,4 @@
-package com.example.fitnessway.ui
+package com.example.fitnessway.ui.food
 
 import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.Arrangement

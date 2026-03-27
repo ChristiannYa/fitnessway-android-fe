@@ -2,6 +2,8 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.mappers.toM25NutrientsInFood
+import com.example.fitnessway.data.mappers.toM26NutrientsInFood
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
@@ -18,12 +20,13 @@ import com.example.fitnessway.feature.home.manager.foodrequest.IFoodRequestManag
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.getCurrentDateInServerFormat
+import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLog
-import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UFood.mapFoodLogs
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.extensions.calcIntakesFromServings
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,6 +61,9 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
+    private val _appFoodSearchQuery = MutableStateFlow("")
+    val appFoodSearchQuery: StateFlow<String> = _appFoodSearchQuery
+
     val appFoodRepoUiState = appFoodRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
@@ -86,6 +92,8 @@ class HomeViewModel(
     private var debounceJob: Job? = null
 
     fun searchAppFoods(query: String) {
+        _appFoodSearchQuery.value = query
+
         debounceJob?.cancel()
 
         if (query.isBlank()) {
@@ -100,6 +108,8 @@ class HomeViewModel(
             appFoodRepo.searchAppFoods(query)
         }
     }
+
+    fun findAppFoodById(id: Int) = appFoodRepo.findAppFoodById(id)
 
     fun loadMoreAppFoods(query: String) = appFoodRepo.loadMoreAppFoods(query)
 
@@ -120,7 +130,7 @@ class HomeViewModel(
     fun addFoodLog() {
         val user = this.userFlow.value ?: return
         val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
-        val selectedFoodId = managers.foodLog.selectedFoodToLog.value?.information?.id ?: return
+        val selectedFoodId = 0 // managers.foodLog.selectedFoodToLog.value.information?.id ?: return
         val category = managers.foodLog.foodLogCategory.value ?: return
 
         val date = managers.date.getApiFormattedDate()
@@ -224,11 +234,13 @@ class HomeViewModel(
         val originalNutrientIntakes = originalNutrientIntakesState.data
 
         // Gather new nutrient data based on amount per servings
-        val newNutrientData = calcNutrientIntakesFromFoodLogServings(
-            nutrients = selectedFoodLog.food.nutrients,
-            currentServings = selectedFoodLog.servings,
-            newServings = formState.data.servings.toDouble()
-        )
+        val newNutrientData = selectedFoodLog.food.nutrients
+            .toM26NutrientsInFood()
+            .calcIntakesFromServings(
+                currentServings = selectedFoodLog.servings,
+                newServings = formState.data.servings.toDouble()
+            )
+            .toM25NutrientsInFood()
 
         // Update the current food log's nutrients
         val foodWithUpdatedNutrients = selectedFoodLog.food.copy(
@@ -501,6 +513,12 @@ class HomeViewModel(
                 }
             }
         }
+    }
+
+    fun onResetFoodSelectionScreen() {
+        logcat("Clearing food selection data")
+        _appFoodSearchQuery.value = ""
+        appFoodRepo.clearAppFoods()
     }
 
     fun resetFoodLogAddState() {

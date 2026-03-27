@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
@@ -50,8 +51,6 @@ import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.getColor
 import com.example.fitnessway.util.UNutrient.mapNutrients
-import com.example.fitnessway.util.form.FormStates
-import com.example.fitnessway.util.nutrient.INutrientDvControls
 
 object UFood {
     enum class FoodNutrientIntakesOperation {
@@ -82,32 +81,6 @@ object UFood {
         }
     }
 
-    /**
-     * Food log data is not being asked for because the function would not be compatible for
-     * when editing a food **to be** logged, not an **existing** one, hence just the current and
-     * new serving sizes are asked for instead
-     */
-    fun calcNutrientIntakesFromFoodLogServings(
-        nutrients: NutrientsByType<NutrientDataWithAmount>,
-        currentServings: Double,
-        newServings: Double
-    ): NutrientsByType<NutrientDataWithAmount> {
-        return nutrients.mapNutrients { _, nutrientsList ->
-            nutrientsList.map { nutrientData ->
-                val foodNutrientAmountData = nutrients.combine().find {
-                    val nutrient = it.nutrientWithPreferences.nutrient
-                    nutrient.id == nutrientData.nutrientWithPreferences.nutrient.id
-                }
-
-                if (foodNutrientAmountData != null) {
-                    val originalAmount = foodNutrientAmountData.amount / currentServings
-                    val newAmount = (originalAmount) * newServings
-                    nutrientData.copy(amount = newAmount)
-                } else nutrientData
-            }
-        }
-    }
-
     fun FoodLogsByCategory.mapFoodLogs(
         transform: (
             category: FoodLogCategories,
@@ -119,10 +92,6 @@ object UFood {
         dinner = transform(FoodLogCategories.DINNER, dinner),
         supplement = transform(FoodLogCategories.SUPPLEMENT, supplement)
     )
-
-    fun FoodLogsByCategory.combineAll(): List<FoodLogData> {
-        return this.breakfast + this.lunch + this.dinner + this.supplement
-    }
 
     /**
      * Returns a list of food log ids
@@ -275,8 +244,7 @@ object UFood {
     }
 
     data class FoodInformationComposables(
-        val food: FoodInformation,
-        val nutrients: NutrientsByType<NutrientDataWithAmount> = food.nutrients,
+        val foodInformation: com.example.fitnessway.data.model.m_26.FoodInformation,
         val user: User
     ) {
         @Composable
@@ -310,7 +278,7 @@ object UFood {
                         horizontalAlignment = topHorizontalAlignment,
                         verticalArrangement = Arrangement.spacedBy(verticalSpace)
                     ) {
-                        val foodBrand = food.information.brand?.ifEmpty { "~" } ?: "~"
+                        val foodBrand = foodInformation.base.brand?.ifEmpty { "~" } ?: "~"
 
                         Text(
                             text = foodBrand,
@@ -319,7 +287,7 @@ object UFood {
                         )
 
                         Text(
-                            text = food.information.name,
+                            text = foodInformation.base.name,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.SemiBold,
                             textAlign = if (foodLogServings != null) null else {
@@ -331,7 +299,7 @@ object UFood {
                     if (foodLogServings != null) {
                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                             val amPerSer = doubleFormatter(
-                                value = food.information.amountPerServing * foodLogServings
+                                value = foodInformation.base.amountPerServing * foodLogServings
                             )
 
                             Text(
@@ -342,7 +310,7 @@ object UFood {
                             )
 
                             Text(
-                                text = food.information.servingUnit,
+                                text = foodInformation.base.servingUnit.name.lowercase(),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = brandColor
                             )
@@ -366,7 +334,7 @@ object UFood {
                     )
 
                     PagedNutrients(
-                        nutrients = nutrients.basic,
+                        nutrients = foodInformation.nutrients.toList(),
                         displayFormat = UNutrient.ScrollableNutrientsFormat.CIRCLE,
                         isUserPremium = user.isPremium
                     )
@@ -377,8 +345,8 @@ object UFood {
         @Composable
         fun RemainingNutrients() {
             val remainingNutrients = listOf(
-                NutrientType.VITAMIN to nutrients.vitamin,
-                NutrientType.MINERAL to nutrients.mineral
+                NutrientType.VITAMIN to foodInformation.nutrients.vitamins,
+                NutrientType.MINERAL to foodInformation.nutrients.minerals
             )
 
             if (remainingNutrients.any { it.second.isNotEmpty() }) {
@@ -414,16 +382,6 @@ object UFood {
                 )
             }
         }
-    }
-
-    @Composable
-    fun FoodFormScreen(
-        title: String,
-        currentStep: Int,
-        formState: FormStates.FoodCreation,
-        nutrientDvControls: INutrientDvControls.NutrientDvControls
-    ) {
-
     }
 
     object Debug {

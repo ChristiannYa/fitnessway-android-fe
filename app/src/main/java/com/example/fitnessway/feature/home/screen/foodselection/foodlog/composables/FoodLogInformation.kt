@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.util.form.field.FoodLogField
+import com.example.fitnessway.data.model.m_26.FoodInformation
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UFood
+import com.example.fitnessway.util.form.field.FoodLogField
 
 @Composable
 fun FoodLogInformation(
@@ -33,7 +33,7 @@ fun FoodLogInformation(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val brand = UFood.Ui.getFoodBrandText(food.information.brand)
+                val brand = UFood.Ui.getFoodBrandText(food.base.brand)
                 val brandColor = UFood.Ui.getFoodBrandColor()
 
                 Text(
@@ -43,7 +43,7 @@ fun FoodLogInformation(
                 )
 
                 Text(
-                    text = food.information.name,
+                    text = food.base.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onBackground,

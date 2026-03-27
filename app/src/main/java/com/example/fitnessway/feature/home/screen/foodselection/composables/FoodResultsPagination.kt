@@ -20,7 +20,7 @@ import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.FoodSearchResult
-import com.example.fitnessway.ui.FoodPreviewCard
+import com.example.fitnessway.ui.food.FoodPreviewCard
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
@@ -34,6 +34,7 @@ fun FoodResultsPagination(
     appFoodsUiStatePager: UiStatePager<FoodSearchResult>,
     onTypingConsumed: () -> Unit,
     onLoadMore: () -> Unit,
+    onFoodClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isLoading = isTyping || appFoodsUiStatePager.uiState is UiState.Loading
@@ -97,7 +98,8 @@ fun FoodResultsPagination(
                                         base = pendingFood.base,
                                         nutrientPreview = pendingFood.nutrientsPreview,
                                         isUserPremium = isUserPremium
-                                    )
+                                    ),
+                                    onClick = onFoodClick
                                 )
                             }
 

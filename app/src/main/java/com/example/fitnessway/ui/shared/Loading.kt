@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -113,5 +114,21 @@ object Loading {
             color = color,
             modifier = modifier
         )
+    }
+
+    @Composable
+    fun SpinnerInScreen() {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            CircularProgressIndicator(
+                strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH,
+                modifier = Modifier
+                    .size(
+                        Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_SIZE
+                    )
+            )
+        }
     }
 }

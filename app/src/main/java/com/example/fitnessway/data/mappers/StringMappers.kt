@@ -1,11 +1,15 @@
 package com.example.fitnessway.data.mappers
 
-fun String.toPascalCaseSpaced(
+fun String.toPascalSpaced(
     shouldLowerCases: Boolean = true
-): String = this
+) = this
     .replace(Regex("([a-z])([A-Z])"), "$1 $2")
     .replace(Regex("([A-Z]+)([A-Z][a-z])"), "$1 $2")
     .let { if (shouldLowerCases) it.lowercase() else it }
     .replaceFirstChar { it.uppercaseChar() }
+
+fun String?.toPascalSpacedOrFallback(
+    fallback: String = "~"
+) = this?.toPascalSpaced() ?: fallback
 
 fun String.plural(): String = this + "s"

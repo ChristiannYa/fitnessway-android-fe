@@ -13,7 +13,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toPascalCaseSpaced
+import androidx.navigation.NavBackStackEntry
+import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.model.m_26.FoodSource
+import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
 import com.example.fitnessway.feature.home.screen.foodselection.composables.FoodResultsPagination
 import com.example.fitnessway.feature.home.screen.foodselection.composables.UserFoodsList
@@ -21,18 +24,24 @@ import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
+import com.example.fitnessway.util.Formatters.logcat
+import com.example.fitnessway.util.extensions.OnPopFromStack
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FoodSelectionScreen(
     viewModel: HomeViewModel = koinViewModel(),
-    onBackClick: () -> Unit,
     onNavigateToSelectedFood: () -> Unit,
+    onBackClick: () -> Unit,
+    navBackStackEntry: NavBackStackEntry
 ) {
+    logcat("B: Composed")
+
     val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val foodLogCategory by viewModel.foodLogCategory.collectAsState()
+    val appFoodSearchQuery by viewModel.appFoodSearchQuery.collectAsState()
 
     val user = userFlow
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
@@ -42,11 +51,15 @@ fun FoodSelectionScreen(
         viewModel.getFoods()
     }
 
+    navBackStackEntry.OnPopFromStack {
+        viewModel.onResetFoodSelectionScreen()
+    }
+
     if (user != null) {
         val foodLogCategoryCopy = foodLogCategory
 
         if (foodLogCategoryCopy != null) {
-            val categoryString = foodLogCategoryCopy.name.toPascalCaseSpaced()
+            val categoryString = foodLogCategoryCopy.name.toPascalSpaced()
 
             Screen(
                 header = {
@@ -57,14 +70,12 @@ fun FoodSelectionScreen(
                 },
             ) { focusManager ->
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    var appFoodSearchQuery by remember { mutableStateOf("") }
                     var isTyping by remember { mutableStateOf(false) }
 
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         AppFoodSearchBar(
                             query = appFoodSearchQuery,
                             onQueryChange = { q ->
-                                appFoodSearchQuery = q
                                 isTyping = q.isNotBlank()
                                 viewModel.searchAppFoods(q)
                             },
@@ -76,7 +87,11 @@ fun FoodSelectionScreen(
                             isUserPremium = user.isPremium,
                             appFoodsUiStatePager = appFoodsUiStatePager,
                             onTypingConsumed = { isTyping = false },
-                            onLoadMore = { viewModel.loadMoreAppFoods(appFoodSearchQuery) }
+                            onLoadMore = { viewModel.loadMoreAppFoods(appFoodSearchQuery) },
+                            onFoodClick = {
+                                viewModel.setSearchCriteria(FoodToLogSearchCriteria(it, FoodSource.APP))
+                                onNavigateToSelectedFood()
+                            }
                         )
                     }
 
@@ -85,7 +100,7 @@ fun FoodSelectionScreen(
                         isUserPremium = user.isPremium,
                         onRefresh = viewModel::refreshFoodSelectionScreenData,
                         onFoodClick = {
-                            viewModel.setSelectedFoodToLog(it)
+                            viewModel.setSearchCriteria(FoodToLogSearchCriteria(it.information.id, FoodSource.USER))
                             onNavigateToSelectedFood()
                         },
                         modifier = Modifier

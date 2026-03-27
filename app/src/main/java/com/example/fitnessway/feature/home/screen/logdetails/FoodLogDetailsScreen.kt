@@ -15,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toM25NutrientsInFood
+import com.example.fitnessway.data.mappers.toM26NutrientsInFood
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -24,11 +26,11 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure
-import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLogServings
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.extensions.calcIntakesFromServings
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -130,11 +132,12 @@ fun FoodLogDetailsScreen(
                             ) {
                                 val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
 
-                                calcNutrientIntakesFromFoodLogServings(
-                                    nutrients = foodLog.food.nutrients,
-                                    currentServings = foodLog.servings,
-                                    newServings = servings
-                                )
+                                foodLog.food.nutrients
+                                    .toM26NutrientsInFood()
+                                    .calcIntakesFromServings(
+                                        currentServings = foodLog.servings,
+                                        newServings = servings
+                                    )
                             }
 
                             ErrorBannerAnimated(
@@ -145,7 +148,7 @@ fun FoodLogDetailsScreen(
                             FoodLogDetails(
                                 foodLog = foodLog,
                                 isBlurredOverlayVisible = formState.isEditing,
-                                nutrients = nutrients,
+                                nutrients = nutrients.toM25NutrientsInFood(),
                                 servingField = fieldsProvider.servings(),
                                 amountPerServingField = fieldsProvider.amountPerServing(
                                     servingUnit = foodLog.food.information.servingUnit

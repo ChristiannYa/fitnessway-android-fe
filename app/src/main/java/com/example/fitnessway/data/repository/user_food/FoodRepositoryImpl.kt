@@ -51,7 +51,7 @@ class FoodRepositoryImpl(
 
     override fun loadFoods() {
         val uiState = _uiState.value.foodsUiState
-        if (uiState.hasFetched) return
+        if (uiState.hasState) return
         refreshFoods()
     }
 
@@ -151,7 +151,7 @@ class FoodRepositoryImpl(
 
     override fun loadFoodSort() {
         val uiState = _uiState.value.foodSortUiState
-        if (uiState.hasFetched) return
+        if (uiState.hasState) return
         refreshFoodSort()
     }
 
@@ -191,7 +191,7 @@ class FoodRepositoryImpl(
 
     override fun loadFoodLogs(date: String) {
         val uiState = _uiState.value.foodLogsUiState[date]
-        uiState?.let { if (it.hasFetched) return }
+        uiState?.let { if (it.hasState) return }
 
         refreshFoodLogs(date)
     }

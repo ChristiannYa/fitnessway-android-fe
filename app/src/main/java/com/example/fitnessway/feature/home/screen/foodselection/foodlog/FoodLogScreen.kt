@@ -75,7 +75,7 @@ fun FoodLogScreen(
 
     fun onBackClick() {
         viewModel.resetFoodLogAddState()
-        if (foodLogAddState.hasFetched) viewModel.resetFoodLogAddState()
+        if (foodLogAddState.hasState) viewModel.resetFoodLogAddState()
         onPopBackStack()
     }
 

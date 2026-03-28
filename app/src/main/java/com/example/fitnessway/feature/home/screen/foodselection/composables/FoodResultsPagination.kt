@@ -44,7 +44,7 @@ fun FoodResultsPagination(
     appFoodsLazyListState.OnLoadMore(onLoadMore)
 
     LaunchedEffect(appFoodsUiStatePager.uiState) {
-        if (appFoodsUiStatePager.uiState.hasFetched) {
+        if (appFoodsUiStatePager.uiState.hasState) {
             onTypingConsumed()
         }
     }

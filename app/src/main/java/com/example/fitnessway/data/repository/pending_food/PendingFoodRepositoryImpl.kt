@@ -44,7 +44,7 @@ class PendingFoodRepositoryImpl(
 
     override fun loadPendingFoods() {
         val uiState = _uiState.value.pendingFoodsUiStatePager.uiState
-        if (uiState.hasFetched) return
+        if (uiState.hasState) return
         refreshPendingFoods()
     }
 

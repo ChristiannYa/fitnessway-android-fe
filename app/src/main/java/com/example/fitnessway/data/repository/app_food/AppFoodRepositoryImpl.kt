@@ -2,6 +2,7 @@ package com.example.fitnessway.data.repository.app_food
 
 import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.mappers.toPaginationOrNull
+import com.example.fitnessway.data.model.m_26.AppFood
 import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.AppFoodApiClient
@@ -29,15 +30,21 @@ class AppFoodRepositoryImpl(
             errMsg = "Failed to fetch food by ID"
         )
 
-    private val fetchedAppFoodIds = mutableSetOf<Int>()
+    private val fetchedAppFoods = mutableListOf<AppFood>()
 
     override fun findAppFoodById(id: Int) {
-        if (fetchedAppFoodIds.contains(id)) return
+        val appFoodFound = fetchedAppFoods.find { it.id == id }
+        if (appFoodFound != null) {
+            _uiState.update { it.copy(appFood = UiState.Success(appFoodFound)) }
+            return
+        }
 
         repositoryScope.launch {
             fetchAppFoodById(id).collect { state ->
                 _uiState.update { it.copy(appFood = state) }
-                if (state is UiState.Success) fetchedAppFoodIds.add(id)
+                if (state is UiState.Success) {
+                    state.data?.let { fetchedAppFoods.add(it) }
+                }
             }
         }
     }

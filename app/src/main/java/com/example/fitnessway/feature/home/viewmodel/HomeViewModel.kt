@@ -513,8 +513,11 @@ class HomeViewModel(
     }
 
     fun onResetFoodSelectionScreen() {
-        _appFoodSearchQuery.value = ""
-        appFoodRepo.clearAppFoods()
+        viewModelScope.launch {
+            delay(500)
+            _appFoodSearchQuery.value = ""
+            appFoodRepo.clearAppFoods()
+        }
     }
 
     fun resetFoodLogAddState() {

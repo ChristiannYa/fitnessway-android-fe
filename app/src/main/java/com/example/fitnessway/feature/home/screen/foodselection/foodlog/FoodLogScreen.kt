@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +33,6 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleApiSuccessTempState
@@ -46,11 +45,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FoodLogScreen(
-    onBackClick: () -> Unit,
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    onPopBackStack: () -> Unit
 ) {
-    logcat("C: Composed")
-
     val user by viewModel.userFlow.collectAsState()
 
     val uiState by viewModel.uiState.collectAsState()
@@ -75,6 +72,14 @@ fun FoodLogScreen(
         uiState = foodLogAddState,
         onTimeOut = viewModel::resetFoodLogAddState
     )
+
+    fun onBackClick() {
+        viewModel.resetFoodLogAddState()
+        if (foodLogAddState.hasFetched) viewModel.resetFoodLogAddState()
+        onPopBackStack()
+    }
+
+    BackHandler { onBackClick() }
 
     LaunchedEffect(searchCriteria) {
         searchCriteria?.let { searchCriteria ->
@@ -110,12 +115,6 @@ fun FoodLogScreen(
         }
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.resetFoodLogAddState()
-        }
-    }
-
     val isScreenDataReady = searchCriteria != null &&
             foodToLog != null &&
             formState != null &&
@@ -125,10 +124,7 @@ fun FoodLogScreen(
         Screen(
             header = {
                 Header(
-                    onBackClick = {
-                        if (foodLogAddState is UiState.Error) viewModel.resetFoodLogAddState()
-                        onBackClick()
-                    },
+                    onBackClick = ::onBackClick,
                     isOnBackEnabled = foodLogAddState !is UiState.Loading,
                     title = "Log Submission"
                 ) {

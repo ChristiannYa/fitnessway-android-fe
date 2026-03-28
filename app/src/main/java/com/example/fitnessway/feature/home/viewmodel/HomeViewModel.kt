@@ -20,7 +20,6 @@ import com.example.fitnessway.feature.home.manager.foodrequest.IFoodRequestManag
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.getCurrentDateInServerFormat
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLog
 import com.example.fitnessway.util.UFood.getFoodById
@@ -118,9 +117,7 @@ class HomeViewModel(
         nutrientRepo.loadNutrientIntakes(date)
     }
 
-    fun getFoods() {
-        foodRepo.loadFoods()
-    }
+    fun getFoods() = foodRepo.loadFoods()
 
     fun getFoodLogs() {
         val date = managers.date.getApiFormattedDate()
@@ -516,7 +513,6 @@ class HomeViewModel(
     }
 
     fun onResetFoodSelectionScreen() {
-        logcat("Clearing food selection data")
         _appFoodSearchQuery.value = ""
         appFoodRepo.clearAppFoods()
     }

@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.screen.foodselection
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavBackStackEntry
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
@@ -24,19 +24,14 @@ import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
-import com.example.fitnessway.util.Formatters.logcat
-import com.example.fitnessway.util.extensions.OnPopFromStack
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FoodSelectionScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onNavigateToSelectedFood: () -> Unit,
-    onBackClick: () -> Unit,
-    navBackStackEntry: NavBackStackEntry
+    onPopBackStack: () -> Unit,
 ) {
-    logcat("B: Composed")
-
     val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
@@ -47,12 +42,15 @@ fun FoodSelectionScreen(
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
     val foodsUiState = foodRepoUiState.foodsUiState
 
-    LaunchedEffect(Unit) {
-        viewModel.getFoods()
+    fun onBackClick() {
+        viewModel.onResetFoodSelectionScreen()
+        onPopBackStack()
     }
 
-    navBackStackEntry.OnPopFromStack {
-        viewModel.onResetFoodSelectionScreen()
+    BackHandler { onBackClick() }
+
+    LaunchedEffect(Unit) {
+        viewModel.getFoods()
     }
 
     if (user != null) {
@@ -64,7 +62,7 @@ fun FoodSelectionScreen(
             Screen(
                 header = {
                     Header(
-                        onBackClick = onBackClick,
+                        onBackClick = ::onBackClick,
                         title = "$categoryString selection",
                     )
                 },
@@ -114,12 +112,12 @@ fun FoodSelectionScreen(
             }
 
         } else NotFoundScreen(
-            onBackClick = onBackClick,
+            onBackClick = onPopBackStack,
             message = "Food log category not found"
         )
 
     } else NotFoundScreen(
-        onBackClick = onBackClick,
+        onBackClick = onPopBackStack,
         message = "User not found"
     )
 }

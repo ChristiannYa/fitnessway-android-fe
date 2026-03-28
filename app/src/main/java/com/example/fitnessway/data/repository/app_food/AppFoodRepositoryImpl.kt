@@ -29,12 +29,15 @@ class AppFoodRepositoryImpl(
             errMsg = "Failed to fetch food by ID"
         )
 
+    private val fetchedAppFoodIds = mutableSetOf<Int>()
+
     override fun findAppFoodById(id: Int) {
+        if (fetchedAppFoodIds.contains(id)) return
+
         repositoryScope.launch {
             fetchAppFoodById(id).collect { state ->
-                _uiState.update {
-                    it.copy(appFood = state)
-                }
+                _uiState.update { it.copy(appFood = state) }
+                if (state is UiState.Success) fetchedAppFoodIds.add(id)
             }
         }
     }

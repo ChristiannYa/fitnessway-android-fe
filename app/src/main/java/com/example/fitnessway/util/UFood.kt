@@ -36,6 +36,8 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.data.model.m_26.FoodLogCategories
 import com.example.fitnessway.data.model.m_26.NutrientType
+import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
+import com.example.fitnessway.ui.nutrient.PagedNutrients
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
@@ -47,7 +49,6 @@ import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UNutrient.Debug.logNutrientWithAmountData
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
-import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.getColor
 import com.example.fitnessway.util.UNutrient.mapNutrients
@@ -335,7 +336,7 @@ object UFood {
 
                     PagedNutrients(
                         nutrients = foodInformation.nutrients.toList(),
-                        displayFormat = UNutrient.ScrollableNutrientsFormat.CIRCLE,
+                        viewFormat = NutrientsViewFormat.CIRCLE,
                         isUserPremium = user.isPremium
                     )
                 }

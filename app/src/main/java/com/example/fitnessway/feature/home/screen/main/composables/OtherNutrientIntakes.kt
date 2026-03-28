@@ -15,12 +15,12 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.data.model.m_26.NutrientType
+import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
+import com.example.fitnessway.ui.nutrient.PagedNutrients
 import com.example.fitnessway.ui.shared.Loading.Composable
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.UNutrient
-import com.example.fitnessway.util.UNutrient.Ui.PagedNutrients
 import com.example.fitnessway.util.UNutrient.filterGoalSetAmounts
 import com.example.fitnessway.util.UNutrient.filterNonPremiumAmounts
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
@@ -77,7 +77,7 @@ fun OtherNutrientIntakes(
 
                         PagedNutrients(
                             nutrients = nutrients.map { it.toM26NutrientInFood() },
-                            displayFormat = UNutrient.ScrollableNutrientsFormat.BOX,
+                            viewFormat = NutrientsViewFormat.BOX,
                             isBasicNutrient = false,
                             isUserPremium = user.isPremium,
                         )

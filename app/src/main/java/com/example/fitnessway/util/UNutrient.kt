@@ -15,13 +15,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
@@ -794,96 +790,6 @@ object UNutrient {
                                 )
                             }
                         )
-                    }
-                }
-            }
-        }
-
-        // @TODO: Remove and replace by `PagedNutrients` from `ui.nutrient`
-        @Composable
-        fun PagedNutrients(
-            nutrients: List<NutrientInFood>,
-            displayFormat: ScrollableNutrientsFormat,
-            isDataMinimal: Boolean = false,
-            isBasicNutrient: Boolean = true,
-            isBaseSizeDisplay: Boolean = true,
-            isUserPremium: Boolean,
-            modifier: Modifier = Modifier
-        ) {
-            val chunkedNutrients = nutrients.chunked(4)
-            val pagerState = rememberPagerState(pageCount = { chunkedNutrients.size })
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = modifier.fillMaxWidth()
-                ) { page ->
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        when (displayFormat) {
-                            ScrollableNutrientsFormat.BOX -> {
-                                val contentWidth = if (isBaseSizeDisplay) 72.dp else 62.dp
-
-                                val progressBarHeight = if (isBaseSizeDisplay) {
-                                    if (isBasicNutrient) {
-                                        115.2.dp
-                                    } else (115.2 / 2).dp
-                                } else {
-                                    if (isBasicNutrient) {
-                                        (contentWidth * 0.7f) * 2
-                                    } else {
-                                        contentWidth * 0.8f
-                                    }
-                                }
-
-                                val verticalSpace = if (isBaseSizeDisplay) 10.dp else 12.dp
-
-
-                                NutrientsAsBox(
-                                    nutrients = chunkedNutrients[page],
-                                    isDataMinimal = isDataMinimal,
-                                    isUserPremium = isUserPremium,
-                                    progressBarHeight = progressBarHeight,
-                                    contentWidth = contentWidth,
-                                    verticalSpace = verticalSpace
-                                )
-                            }
-
-                            ScrollableNutrientsFormat.CIRCLE -> {
-                                NutrientsAsCircle(
-                                    nutrients = chunkedNutrients[page],
-                                    isUserPremium = isUserPremium
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if (chunkedNutrients.size > 1) {
-                    Row(
-                        modifier = Modifier.padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        repeat(chunkedNutrients.size) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .background(
-                                        color = if (pagerState.currentPage == index)
-                                            MaterialTheme.colorScheme.primary
-                                        else
-                                            MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = CircleShape
-                                    )
-                            )
-                        }
                     }
                 }
             }

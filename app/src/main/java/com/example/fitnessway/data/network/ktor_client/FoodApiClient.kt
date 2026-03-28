@@ -26,7 +26,7 @@ class FoodApiClient(private val client: KtorHttpClient) {
     suspend fun updateFood(
         req: MFood.Api.Req.FoodUpdateRequest
     ): MFood.Api.Res.FoodUpdateApiResponse =
-        client.post(ApiUrls.Food.UPDATE_URL) {
+        client.put(ApiUrls.Food.UPDATE_URL) {
             jsonBody(req)
         }.extractApiData()
 

@@ -82,7 +82,7 @@ fun FoodLogScreen(
 
     BackHandler { onBackClick() }
 
-    LaunchedEffect(searchCriteria) {
+    LaunchedEffect(Unit) {
         searchCriteria?.let { searchCriteria ->
             when (searchCriteria.source) {
                 FoodSource.APP -> {
@@ -108,7 +108,9 @@ fun FoodLogScreen(
     }
 
     LaunchedEffect(appFoodUiState) {
-        if (appFoodUiState is UiState.Success) {
+        if (appFoodUiState is UiState.Success &&
+            searchCriteria?.source == FoodSource.APP
+        ) {
             appFoodUiState.data?.let { appFoodFound ->
                 viewModel.setFoodToLog(
                     FoodInformationWithId(

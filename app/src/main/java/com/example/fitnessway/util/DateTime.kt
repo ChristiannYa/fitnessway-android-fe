@@ -9,7 +9,7 @@ import kotlin.time.toKotlinInstant
 
 private val UI_DATE_FORMAT = DateTimeFormatter.ofPattern("MM-dd-yyyy hh:mm a", Locale.US)
 
-fun String.toInstant(zone: ZoneId = ZoneId.of("UTC")): Instant =
+fun String.toInstant(zone: ZoneId = ZoneId.systemDefault()): Instant =
     LocalDateTime
         .parse(this, UI_DATE_FORMAT)
         .atZone(zone)

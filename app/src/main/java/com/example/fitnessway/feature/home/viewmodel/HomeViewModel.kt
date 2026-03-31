@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.mappers.toM25NutrientsInFood
 import com.example.fitnessway.data.mappers.toM26NutrientsInFood
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MUser
+import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user_food.IFoodRepository
@@ -26,6 +26,7 @@ import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UFood.mapFoodLogs
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.extensions.calcIntakesFromServings
+import com.example.fitnessway.util.toInstant
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -126,18 +127,19 @@ class HomeViewModel(
 
     fun addFoodLog() {
         val user = this.userFlow.value ?: return
-        val foodLogFormState = managers.foodLog.foodLogFormState.value ?: return
-        val selectedFoodId = 0 // managers.foodLog.selectedFoodToLog.value.information?.id ?: return
+        val foodLogFormState = managers.foodLog.foodLogFormState.value?.data ?: return
+        val selectedFoodId = managers.foodLog.foodToLog.value?.id ?: return
         val category = managers.foodLog.foodLogCategory.value ?: return
+        val source = managers.foodLog.searchCriteria.value?.source ?: return
 
         val date = managers.date.getApiFormattedDate()
 
         val request = FoodLogAddRequest(
             foodId = selectedFoodId,
-            servings = foodLogFormState.data.servings.toDouble(),
-            category = category.name.lowercase(),
-            source = "user",
-            time = "$date ${foodLogFormState.data.time}"
+            servings = foodLogFormState.servings.toDouble(),
+            category = category,
+            time = "$date ${foodLogFormState.time}".toInstant(),
+            source = source
         )
 
         viewModelScope.launch {

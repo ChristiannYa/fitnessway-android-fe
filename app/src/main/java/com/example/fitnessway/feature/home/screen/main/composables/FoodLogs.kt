@@ -54,7 +54,7 @@ import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
-import com.example.fitnessway.data.model.m_26.FoodLogCategories
+import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
@@ -80,7 +80,7 @@ private fun getFoodLogsContainerColor(): Color {
 @Composable
 fun FoodLogs(
     foodLogsState: UiState<FoodLogsByCategory>,
-    onViewFoodsList: (FoodLogCategories) -> Unit,
+    onViewFoodsList: (FoodLogCategory) -> Unit,
     onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit,
     isDeletionError: Boolean,
@@ -133,16 +133,16 @@ fun FoodLogs(
 @Composable
 private fun FoodLogsCategorized(
     foodLogs: FoodLogsByCategory,
-    onViewFoodsList: (FoodLogCategories) -> Unit,
+    onViewFoodsList: (FoodLogCategory) -> Unit,
     onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit,
     isDeletionError: Boolean
 ) {
     val categoriesWithLogs = listOf(
-        FoodLogCategories.BREAKFAST to foodLogs.breakfast,
-        FoodLogCategories.LUNCH to foodLogs.lunch,
-        FoodLogCategories.DINNER to foodLogs.dinner,
-        FoodLogCategories.SUPPLEMENT to foodLogs.supplement
+        FoodLogCategory.BREAKFAST to foodLogs.breakfast,
+        FoodLogCategory.LUNCH to foodLogs.lunch,
+        FoodLogCategory.DINNER to foodLogs.dinner,
+        FoodLogCategory.SUPPLEMENT to foodLogs.supplement
     )
 
     LazyColumn {
@@ -180,8 +180,8 @@ private fun FoodLogsCategorized(
 @Composable
 private fun FoodLogCategory(
     foodLogs: List<FoodLogData>,
-    category: FoodLogCategories,
-    onViewFoodsList: (FoodLogCategories) -> Unit,
+    category: FoodLogCategory,
+    onViewFoodsList: (FoodLogCategory) -> Unit,
     onViewFoodLogDetails: (FoodLogData) -> Unit,
     onRemoveFoodLog: (FoodLogData) -> Unit,
     isDeletionError: Boolean

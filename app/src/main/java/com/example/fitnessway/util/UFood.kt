@@ -34,7 +34,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
-import com.example.fitnessway.data.model.m_26.FoodLogCategories
+import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
 import com.example.fitnessway.ui.nutrient.PagedNutrients
@@ -84,14 +84,14 @@ object UFood {
 
     fun FoodLogsByCategory.mapFoodLogs(
         transform: (
-            category: FoodLogCategories,
+            category: FoodLogCategory,
             logs: List<FoodLogData>
         ) -> List<FoodLogData>
     ): FoodLogsByCategory = FoodLogsByCategory(
-        breakfast = transform(FoodLogCategories.BREAKFAST, breakfast),
-        lunch = transform(FoodLogCategories.LUNCH, lunch),
-        dinner = transform(FoodLogCategories.DINNER, dinner),
-        supplement = transform(FoodLogCategories.SUPPLEMENT, supplement)
+        breakfast = transform(FoodLogCategory.BREAKFAST, breakfast),
+        lunch = transform(FoodLogCategory.LUNCH, lunch),
+        dinner = transform(FoodLogCategory.DINNER, dinner),
+        supplement = transform(FoodLogCategory.SUPPLEMENT, supplement)
     )
 
     /**

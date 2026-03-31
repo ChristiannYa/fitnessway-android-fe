@@ -2,8 +2,8 @@ package com.example.fitnessway.feature.home.manager.foodlog
 
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.m_26.FoodInformation
-import com.example.fitnessway.data.model.m_26.FoodLogCategories
-import com.example.fitnessway.data.model.m_26.FoodSource
+import com.example.fitnessway.data.model.m_26.FoodInformationWithId
+import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
@@ -11,15 +11,12 @@ import com.example.fitnessway.util.form.field.FormFieldName
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodLogManager {
-    val foodLogCategory: StateFlow<FoodLogCategories?>
+    val foodLogCategory: StateFlow<FoodLogCategory?>
 
     val selectedFoodLog: StateFlow<FoodLogData?>
 
     val searchCriteria: StateFlow<FoodToLogSearchCriteria?>
-    val foodToLog: StateFlow<FoodInformation?>
-    val foodInfoToLog: StateFlow<FoodInformation?>
-    val foodIdToLog: StateFlow<Int?>
-    val foodSourceToLog: StateFlow<FoodSource?>
+    val foodToLog: StateFlow<FoodInformationWithId?>
 
     val selectedFoodLogToRemove: StateFlow<FoodLogData?>
 
@@ -28,15 +25,12 @@ interface IFoodLogManager {
     val isFoodLogFormValid: Boolean
     val isFoodLogEditionFormValid: Boolean
 
-    fun setFoodLogCategory(categories: FoodLogCategories)
+    fun setFoodLogCategory(categories: FoodLogCategory)
 
     fun setSelectedFoodLog(foodLog: FoodLogData)
 
-    fun setSearchCriteria(foodToLogSearchCriteria: FoodToLogSearchCriteria)
-    fun setFoodToLog(foodToLog: FoodInformation)
-    fun setFoodInfoToLog(food: FoodInformation)
-    fun setFoodIdToLog(id: Int)
-    fun setFoodSourceToLog(source: FoodSource)
+    fun setSearchCriteria(criteria: FoodToLogSearchCriteria)
+    fun setFoodToLog(foodToLog: FoodInformationWithId)
 
     fun setSelectedFoodLogToRemove(foodLog: FoodLogData)
 

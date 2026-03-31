@@ -2,8 +2,8 @@ package com.example.fitnessway.feature.home.manager.foodlog
 
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.m_26.FoodInformation
-import com.example.fitnessway.data.model.m_26.FoodLogCategories
-import com.example.fitnessway.data.model.m_26.FoodSource
+import com.example.fitnessway.data.model.m_26.FoodInformationWithId
+import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.roundIfClose
@@ -15,26 +15,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FoodLogManager : IFoodLogManager {
-    private val _foodLogCategory = MutableStateFlow<FoodLogCategories?>(null)
-    override val foodLogCategory: StateFlow<FoodLogCategories?> = _foodLogCategory
+    private val _foodLogCategory = MutableStateFlow<FoodLogCategory?>(null)
+    override val foodLogCategory: StateFlow<FoodLogCategory?> = _foodLogCategory
 
     private val _selectedFoodLog = MutableStateFlow<FoodLogData?>(null)
     override val selectedFoodLog: StateFlow<FoodLogData?> = _selectedFoodLog
 
-    private val _foodToLogSearchCriteria = MutableStateFlow<FoodToLogSearchCriteria?>(null)
-    override val searchCriteria: StateFlow<FoodToLogSearchCriteria?> = _foodToLogSearchCriteria
+    private val _searchCriteria = MutableStateFlow<FoodToLogSearchCriteria?>(null)
+    override val searchCriteria: StateFlow<FoodToLogSearchCriteria?> = _searchCriteria
 
-    private val _foodToLogFound = MutableStateFlow<FoodInformation?>(null)
-    override val foodToLog: StateFlow<FoodInformation?> = _foodToLogFound
-
-    private val _selectedFoodToLog = MutableStateFlow<FoodInformation?>(null)
-    override val foodInfoToLog: StateFlow<FoodInformation?> = _selectedFoodToLog
-
-    private val _selectedFoodIdToLog = MutableStateFlow<Int?>(null)
-    override val foodIdToLog: StateFlow<Int?> = _selectedFoodIdToLog
-
-    private val _selectedFoodSourceToLog = MutableStateFlow<FoodSource?>(null)
-    override val foodSourceToLog: StateFlow<FoodSource?> = _selectedFoodSourceToLog
+    private val _foodToLog = MutableStateFlow<FoodInformationWithId?>(null)
+    override val foodToLog: StateFlow<FoodInformationWithId?> = _foodToLog
 
     private val _selectedFoodLogToRemove = MutableStateFlow<FoodLogData?>(null)
     override val selectedFoodLogToRemove: StateFlow<FoodLogData?> = _selectedFoodLogToRemove
@@ -116,12 +107,12 @@ class FoodLogManager : IFoodLogManager {
             } else false
         }
 
-    override fun setFoodLogCategory(categories: FoodLogCategories) {
+    override fun setFoodLogCategory(categories: FoodLogCategory) {
         _foodLogCategory.value = when (categories) {
-            FoodLogCategories.BREAKFAST -> FoodLogCategories.BREAKFAST
-            FoodLogCategories.LUNCH -> FoodLogCategories.LUNCH
-            FoodLogCategories.DINNER -> FoodLogCategories.DINNER
-            FoodLogCategories.SUPPLEMENT -> FoodLogCategories.SUPPLEMENT
+            FoodLogCategory.BREAKFAST -> FoodLogCategory.BREAKFAST
+            FoodLogCategory.LUNCH -> FoodLogCategory.LUNCH
+            FoodLogCategory.DINNER -> FoodLogCategory.DINNER
+            FoodLogCategory.SUPPLEMENT -> FoodLogCategory.SUPPLEMENT
         }
     }
 
@@ -129,24 +120,12 @@ class FoodLogManager : IFoodLogManager {
         _selectedFoodLog.value = foodLog
     }
 
-    override fun setSearchCriteria(foodToLogSearchCriteria: FoodToLogSearchCriteria) {
-        _foodToLogSearchCriteria.value = foodToLogSearchCriteria
+    override fun setSearchCriteria(criteria: FoodToLogSearchCriteria) {
+        _searchCriteria.value = criteria
     }
 
-    override fun setFoodToLog(foodToLog: FoodInformation) {
-        _foodToLogFound.value = foodToLog
-    }
-
-    override fun setFoodInfoToLog(food: FoodInformation) {
-        _selectedFoodToLog.value = food
-    }
-
-    override fun setFoodIdToLog(id: Int) {
-        _selectedFoodIdToLog.value = id
-    }
-
-    override fun setFoodSourceToLog(source: FoodSource) {
-        _selectedFoodSourceToLog.value = source
+    override fun setFoodToLog(foodToLog: FoodInformationWithId) {
+        _foodToLog.value = foodToLog
     }
 
     override fun setSelectedFoodLogToRemove(foodLog: FoodLogData) {

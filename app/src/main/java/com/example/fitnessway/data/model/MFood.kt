@@ -168,17 +168,6 @@ object MFood {
             )
 
             @Serializable
-            data class FoodLogAddRequest(
-                @SerialName("food_id")
-                val foodId: Int,
-
-                val servings: Double,
-                val category: String,
-                val source: String,
-                val time: String
-            )
-
-            @Serializable
             data class FoodLogUpdateRequest(
                 @SerialName("food_log_id")
                 val foodLogId: Int,
@@ -237,12 +226,6 @@ object MFood {
             data class FoodLogsGetApiResponse(
                 @SerialName("food_logs")
                 val foodLogs: FoodLogsByCategory
-            )
-
-            @Serializable
-            data class FoodLogAddApiResponse(
-                @SerialName("food_log_added")
-                val foodLogAdded: FoodLogData
             )
 
             @Serializable

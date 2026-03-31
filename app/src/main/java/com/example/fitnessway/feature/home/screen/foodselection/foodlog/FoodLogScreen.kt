@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toM26FoodInformation
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.mappers.toTypedList
+import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
@@ -93,7 +94,12 @@ fun FoodLogScreen(
                         foodsUiState.data
                             .findById(searchCriteria.id)
                             ?.let {
-                                viewModel.setFoodToLog(it.toM26FoodInformation())
+                                viewModel.setFoodToLog(
+                                    foodToLog = FoodInformationWithId(
+                                        id = it.information.id,
+                                        information = it.toM26FoodInformation()
+                                    )
+                                )
                             }
                     }
                 }
@@ -104,14 +110,19 @@ fun FoodLogScreen(
     LaunchedEffect(appFoodUiState) {
         if (appFoodUiState is UiState.Success) {
             appFoodUiState.data?.let { appFoodFound ->
-                viewModel.setFoodToLog(appFoodFound.information)
+                viewModel.setFoodToLog(
+                    FoodInformationWithId(
+                        id = appFoodFound.id,
+                        information = appFoodFound.information
+                    )
+                )
             }
         }
     }
 
     LaunchedEffect(foodToLog) {
         foodToLog?.let {
-            viewModel.initializeFoodLogForm(it, viewModel.getCurrentTime())
+            viewModel.initializeFoodLogForm(it.information, viewModel.getCurrentTime())
         }
     }
 
@@ -151,10 +162,10 @@ fun FoodLogScreen(
             )
 
             val foodNutrients = remember(
-                foodToLog.nutrients,
+                foodToLog.information.nutrients,
                 formState.data.servings
             ) {
-                foodToLog.nutrients.calcIntakesFromServings(
+                foodToLog.information.nutrients.calcIntakesFromServings(
                     currentServings = 1.0,
                     newServings = formState.data.servings.toDoubleOrNull() ?: 0.0
                 )
@@ -175,10 +186,10 @@ fun FoodLogScreen(
                         )
 
                         FoodLogInformation(
-                            food = foodToLog,
+                            food = foodToLog.information,
                             servingsField = fieldsProvider.servings(),
                             amountPerServingsField = fieldsProvider.amountPerServing(
-                                servingUnit = foodToLog.base.servingUnit.name.lowercase()
+                                servingUnit = foodToLog.information.base.servingUnit.name.lowercase()
                             ),
                             timeField = fieldsProvider.time()
                         )

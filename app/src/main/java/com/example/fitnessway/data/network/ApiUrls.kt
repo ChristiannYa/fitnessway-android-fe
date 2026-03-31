@@ -69,14 +69,15 @@ object ApiUrls {
     }
 
     object FoodLog {
-        const val LIST_PATH = "food/log/get-logs"
+        const val PATH = "food/log"
+
+        const val LIST_PATH = "$PATH/get-logs"
         const val LIST_URL = "$BASE_URL_GO$LIST_PATH"
 
         fun getListByDatePath(date: String) = "$LIST_PATH?date=$date"
         fun getListByDateUrl(date: String) = BASE_URL_GO + getListByDatePath(date)
 
-        const val ADD_PATH = "food/log/add"
-        const val ADD_URL = "$BASE_URL_GO$ADD_PATH"
+        const val ADD_URL = "$BASE_URL_KT$PATH"
 
         const val UPDATE_PATH = "food/log/update"
         const val UPDATE_URL = "$BASE_URL_GO$UPDATE_PATH"

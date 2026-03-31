@@ -22,7 +22,7 @@ enum class ServingUnit {
     KCAL
 }
 
-enum class FoodLogCategories {
+enum class FoodLogCategory {
     BREAKFAST,
     LUNCH,
     DINNER,
@@ -38,6 +38,14 @@ enum class PendingFoodStatus {
     val isReviewed by lazy { this != PENDING }
 }
 
+@Serializable
+enum class UserFoodSnapshotStatus {
+    PRESENT,
+    UPDATED,
+    DELETED
+}
+
+@Serializable
 enum class FoodSource {
     APP,
     USER
@@ -50,6 +58,20 @@ enum class ListOption(
     Food(Structure.AppIconButtonSource.Resource(R.drawable.food)),
     Supplement(Structure.AppIconButtonSource.Resource(R.drawable.energy))
 }
+
+@Serializable
+data class FoodLog(
+    val id: Int,
+    val category: FoodLogCategory,
+    val time: Instant,
+    val loggedAt: Instant,
+    val servings: Double,
+    val userFoodSnapshotStatus: UserFoodSnapshotStatus? = null,
+    val userFoodSnapshotId: Int?,
+    val source: FoodSource,
+    val foodId: Int?,
+    val foodInformation: FoodInformation
+)
 
 @Serializable
 data class FoodBase(
@@ -87,20 +109,24 @@ data class PendingFood(
 )
 
 @Serializable
-data class UserFood(
-    val id: Int,
-    val information: FoodInformation,
-    val isFavorite: Boolean,
-    val lastLoggedAt: String?,
-    val createdAt: String,
-    val updatedAt: String
-)
-
-@Serializable
 data class FoodSearchResult(
     val id: Int,
     val base: FoodBase,
     val nutrientsPreview: NutrientPreview
+)
+
+@Serializable
+data class FoodLogAddRequest(
+    val foodId: Int,
+    val servings: Double,
+    val category: FoodLogCategory,
+    val time: Instant,
+    val source: FoodSource
+)
+
+@Serializable
+data class FoodLogAddResponse(
+    val foodLogAdded: FoodLog
 )
 
 @Serializable
@@ -127,6 +153,11 @@ data class PendingFoodAddRequest(
 @Serializable
 data class PendingFoodAddResponse(
     val pendingFoodSubmitted: PendingFood
+)
+
+data class FoodInformationWithId(
+    val id: Int,
+    val information: FoodInformation
 )
 
 data class FoodPreview(

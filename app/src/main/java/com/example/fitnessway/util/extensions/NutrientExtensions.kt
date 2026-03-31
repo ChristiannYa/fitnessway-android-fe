@@ -1,7 +1,6 @@
 package com.example.fitnessway.util.extensions
 
 import com.example.fitnessway.data.mappers.map
-import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.m_26.NutrientInFood
 import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.util.UNutrient
@@ -27,15 +26,10 @@ fun NutrientsByType<NutrientInFood>.calcIntakesFromServings(
     newServings: Double
 ): NutrientsByType<NutrientInFood> = this.map { _, nutrients ->
     nutrients.map { nutrientInFood ->
-        val nutrientInFoodTarget = this.toList().find {
-            it.nutrientData.base.id == nutrientInFood.nutrientData.base.id
-        }
+        val originalAmount = if (currentServings != 0.0) {
+            nutrientInFood.amount / currentServings
+        } else nutrientInFood.amount
 
-        if (nutrientInFoodTarget != null) {
-            val originalAmount = nutrientInFoodTarget.amount / currentServings
-            val newAmount = (originalAmount) * newServings
-
-            nutrientInFood.copy(amount = newAmount)
-        } else nutrientInFood
+        nutrientInFood.copy(amount = originalAmount * newServings)
     }
 }

@@ -29,12 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
-import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
-import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
 import com.example.fitnessway.ui.nutrient.PagedNutrients
@@ -51,54 +46,8 @@ import com.example.fitnessway.util.UNutrient.Debug.logNutrientWithAmountData
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.getColor
-import com.example.fitnessway.util.UNutrient.mapNutrients
 
 object UFood {
-    enum class FoodNutrientIntakesOperation {
-        ADD, SUBTRACT
-    }
-
-    fun calcNutrientIntakesFromFoodLog(
-        currentIntakes: NutrientsByType<NutrientDataWithAmount>,
-        foodLog: FoodLogData,
-        operation: FoodNutrientIntakesOperation
-    ): NutrientsByType<NutrientDataWithAmount> {
-        return currentIntakes.mapNutrients { _, intakes ->
-            intakes.map { intake ->
-                val foodNutrientAmountData = foodLog.food.nutrients.combine().find {
-                    val nutrient = it.nutrientWithPreferences.nutrient
-                    nutrient.id == intake.nutrientWithPreferences.nutrient.id
-                }
-
-                if (foodNutrientAmountData != null) {
-                    val newAmount = when (operation) {
-                        FoodNutrientIntakesOperation.ADD -> intake.amount + foodNutrientAmountData.amount
-                        FoodNutrientIntakesOperation.SUBTRACT -> intake.amount - foodNutrientAmountData.amount
-                    }
-
-                    intake.copy(amount = newAmount)
-                } else intake
-            }
-        }
-    }
-
-    fun FoodLogsByCategory.mapFoodLogs(
-        transform: (
-            category: FoodLogCategory,
-            logs: List<FoodLogData>
-        ) -> List<FoodLogData>
-    ): FoodLogsByCategory = FoodLogsByCategory(
-        breakfast = transform(FoodLogCategory.BREAKFAST, breakfast),
-        lunch = transform(FoodLogCategory.LUNCH, lunch),
-        dinner = transform(FoodLogCategory.DINNER, dinner),
-        supplement = transform(FoodLogCategory.SUPPLEMENT, supplement)
-    )
-
-    /**
-     * Returns a list of food log ids
-     */
-    fun List<FoodLogData>.getIds(): List<Int> = this.map { it.id }
-
     fun List<FoodInformation>.getFoodById(id: Int): FoodInformation? {
         return this.find { it.information.id == id }
     }

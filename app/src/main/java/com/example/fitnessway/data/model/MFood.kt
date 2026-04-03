@@ -10,7 +10,6 @@ import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
-import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
@@ -104,14 +103,6 @@ object MFood {
         )
 
         @Serializable
-        data class FoodLogsByCategory(
-            val breakfast: List<FoodLogData>,
-            val lunch: List<FoodLogData>,
-            val dinner: List<FoodLogData>,
-            val supplement: List<FoodLogData>,
-        )
-
-        @Serializable
         data class FoodLogData(
             val id: Int,
             val category: String,
@@ -166,18 +157,6 @@ object MFood {
                 @SerialName("is_favorite")
                 val isFavorite: Boolean
             )
-
-            // @TODO: Replace with new API object
-            @Serializable
-            data class FoodLogUpdateRequest(
-                @SerialName("food_log_id")
-                val foodLogId: Int,
-
-                @SerialName("food_snapshot_id")
-                val foodSnapshotId: Int?,
-
-                val servings: Double
-            )
         }
 
         object Res {
@@ -221,18 +200,6 @@ object MFood {
             data class FoodFavoriteStatusUpdateApiResponse(
                 @SerialName("food_updated")
                 val foodUpdated: FoodInformation
-            )
-
-            @Serializable
-            data class FoodLogsGetApiResponse(
-                @SerialName("food_logs")
-                val foodLogs: FoodLogsByCategory
-            )
-
-            @Serializable
-            data class FoodLogUpdateApiResponse(
-                @SerialName("updated_food_log")
-                val updatedFoodLog: FoodLogData
             )
 
             @Serializable

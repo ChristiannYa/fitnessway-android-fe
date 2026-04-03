@@ -143,6 +143,18 @@ data class FoodLogAddResponse(
 )
 
 @Serializable
+data class FoodLogUpdateRequest(
+    val foodLogId: Int,
+    val userFoodSnapshotId: Int?,
+    val servings: Double
+)
+
+@Serializable
+data class FoodLogUpdateResponse(
+    val foodLogUpdated: FoodLog
+)
+
+@Serializable
 data class AppFoodFindByIdResponse(
     val appFood: AppFood?
 )

@@ -3,6 +3,8 @@ package com.example.fitnessway.data.network.ktor_client
 import com.example.fitnessway.data.model.MFood
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogAddResponse
+import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
+import com.example.fitnessway.data.model.m_26.FoodLogUpdateResponse
 import com.example.fitnessway.data.model.m_26.FoodLogsResponse
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractApiData
@@ -65,9 +67,7 @@ class FoodApiClient(private val client: KtorHttpClient) {
             jsonBody(req)
         }.extractApiData()
 
-    suspend fun updateFoodLog(
-        req: MFood.Api.Req.FoodLogUpdateRequest
-    ): MFood.Api.Res.FoodLogUpdateApiResponse =
+    suspend fun updateFoodLog(req: FoodLogUpdateRequest): FoodLogUpdateResponse =
         client.put(ApiUrls.FoodLog.UPDATE_URL) {
             jsonBody(req)
         }.extractApiData()

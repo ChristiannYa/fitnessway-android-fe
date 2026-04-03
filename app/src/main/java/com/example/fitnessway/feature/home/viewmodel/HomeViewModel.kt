@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.mappers.mapfl
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
+import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
@@ -284,7 +284,7 @@ class HomeViewModel(
 
         val request = FoodLogUpdateRequest(
             foodLogId = updatedFoodLog.id,
-            foodSnapshotId = updatedFoodLog.userFoodSnapshotId,
+            userFoodSnapshotId = updatedFoodLog.userFoodSnapshotId,
             servings = updatedFoodLog.servings
         )
 

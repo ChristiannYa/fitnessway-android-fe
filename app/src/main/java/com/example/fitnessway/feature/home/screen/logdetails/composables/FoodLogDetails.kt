@@ -17,12 +17,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toM26FoodInformation
-import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.MUser.Model.User
+import com.example.fitnessway.data.model.m_26.FoodLog
+import com.example.fitnessway.data.model.m_26.NutrientDataAmount
+import com.example.fitnessway.data.model.m_26.NutrientsByType
+import com.example.fitnessway.data.model.m_26.UserFoodSnapshotStatus
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
@@ -36,24 +35,24 @@ private const val updatedFoodMessage = "You have updated this food information"
 
 @Composable
 fun FoodLogDetails(
-    foodLog: FoodLogData,
+    foodLog: FoodLog,
     isBlurredOverlayVisible: Boolean,
-    nutrients: NutrientsByType<NutrientDataWithAmount>,
+    nutrients: NutrientsByType<NutrientDataAmount>,
     servingField: FoodLogEditionField,
     amountPerServingField: FoodLogEditionField,
     user: User
 ) {
     val foodComposables = remember(
-        key1 = foodLog.food,
+        key1 = foodLog,
         key2 = nutrients
-    ) { FoodInformationComposables(foodLog.food.toM26FoodInformation(), user) }
+    ) { FoodInformationComposables(foodLog.foodInformation, user) }
 
     Box(
         modifier = Modifier.fillMaxWidth(),
         content = {
-            val (foodStatusMsg, foodStatusAccent) = when (foodLog.foodStatus) {
-                FoodLogFoodStatus.DELETED -> deletedFoodMessage to OrangeWarning
-                FoodLogFoodStatus.UPDATED -> updatedFoodMessage to MaterialTheme.colorScheme.onSurfaceVariant
+            val (foodStatusMsg, foodStatusAccent) = when (foodLog.userFoodSnapshotStatus) {
+                UserFoodSnapshotStatus.DELETED -> deletedFoodMessage to OrangeWarning
+                UserFoodSnapshotStatus.UPDATED -> updatedFoodMessage to MaterialTheme.colorScheme.onSurfaceVariant
                 else -> "" to MaterialTheme.colorScheme.onSurfaceVariant
             }
 
@@ -61,7 +60,7 @@ fun FoodLogDetails(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
-                    if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
+                    if (foodLog.userFoodSnapshotStatus != UserFoodSnapshotStatus.PRESENT) {
                         item {
                             Text(
                                 text = foodStatusMsg,
@@ -84,9 +83,9 @@ fun FoodLogDetails(
                             )
 
                             val foodLogServings = foodLog.servings
-                            val food = foodLog.food.information
-                            val foodAmountPerServing = doubleFormatter(food.amountPerServing)
-                            val foodServingUnit = food.servingUnit
+                            val food = foodLog.foodInformation
+                            val foodAmountPerServing = doubleFormatter(food.base.amountPerServing)
+                            val foodServingUnit = food.base.servingUnit
 
                             Box(
                                 modifier = Modifier.areaContainer(

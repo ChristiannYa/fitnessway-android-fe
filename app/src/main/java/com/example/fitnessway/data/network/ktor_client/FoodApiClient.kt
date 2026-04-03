@@ -3,6 +3,7 @@ package com.example.fitnessway.data.network.ktor_client
 import com.example.fitnessway.data.model.MFood
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogAddResponse
+import com.example.fitnessway.data.model.m_26.FoodLogsResponse
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractApiData
 import com.example.fitnessway.util.jsonBody
@@ -54,10 +55,10 @@ class FoodApiClient(private val client: KtorHttpClient) {
             jsonBody(req)
         }.extractApiData()
 
-    suspend fun getFoodLogs(date: String): MFood.Api.Res.FoodLogsGetApiResponse =
-        client.get(ApiUrls.FoodLog.LIST_URL) {
-            parameter("date", date)
-        }.extractApiData()
+    suspend fun getFoodLogs(date: String): FoodLogsResponse =
+        client
+            .get(ApiUrls.FoodLog.getListByDateUrl(date))
+            .extractApiData()
 
     suspend fun addFoodLog(req: FoodLogAddRequest): FoodLogAddResponse =
         client.post(ApiUrls.FoodLog.ADD_URL) {

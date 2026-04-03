@@ -2,19 +2,26 @@ package com.example.fitnessway.data.model.m_26
 
 import kotlinx.serialization.Serializable
 
-/**
- * Represents nutrient information that can be grouped by [NutrientType]
- */
-interface NutrientGroupable {
-    val nutrientType: NutrientType
-}
-
 @Serializable
 enum class NutrientType {
     BASIC,
     VITAMIN,
     MINERAL,
 }
+
+enum class NutrientIntakeMath {
+    ADD,
+    SUBTRACT
+}
+
+/**
+ * Represents nutrient information that can be grouped by [NutrientType]
+ */
+interface NutrientGroupable {
+    val iNutrientType: NutrientType
+}
+
+typealias NutrientIntakes = NutrientsByType<NutrientDataAmount>
 
 @Serializable
 data class NutrientsByType<N : NutrientGroupable>(
@@ -52,17 +59,17 @@ data class NutrientData(
     val base: NutrientBase,
     val preferences: NutrientPreferences
 ) : NutrientGroupable {
-    override val nutrientType: NutrientType
+    override val iNutrientType: NutrientType
         get() = this.base.type
 }
 
 @Serializable
-data class NutrientInFood(
+data class NutrientDataAmount(
     val nutrientData: NutrientData,
     val amount: Double
 ) : NutrientGroupable {
-    override val nutrientType: NutrientType
-        get() = this.nutrientData.nutrientType
+    override val iNutrientType: NutrientType
+        get() = this.nutrientData.base.type
 }
 
 @Serializable
@@ -75,4 +82,9 @@ data class NutrientIdWithAmount(
 data class NutrientAmountWithColor(
     val amount: Double? = null,
     val color: String? = null
+)
+
+@Serializable
+data class NutrientIntakesResponse(
+    val nutrientIntakes: NutrientIntakes
 )

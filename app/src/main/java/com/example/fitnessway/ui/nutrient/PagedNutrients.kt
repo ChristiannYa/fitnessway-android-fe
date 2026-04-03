@@ -16,13 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.m_26.NutrientInFood
+import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsBox
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsCircle
 
 @Composable
 fun PagedNutrients(
-    nutrients: List<NutrientInFood>,
+    nutrients: List<NutrientDataAmount>,
     viewFormat: NutrientsViewFormat,
     isDataMinimal: Boolean = false,
     isBasicNutrient: Boolean = true,

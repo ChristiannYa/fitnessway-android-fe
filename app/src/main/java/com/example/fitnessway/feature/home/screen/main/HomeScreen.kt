@@ -150,21 +150,21 @@ fun HomeScreen(
                             ) {
                                 BasicNutrientIntakes(
                                     state = nutrientIntakesState,
-                                    user = user,
+                                    isUserPremium = user.isPremium,
                                     onNavigateToGoals = onNavigateToGoals
                                 )
 
                                 OtherNutrientIntakes(
                                     state = nutrientIntakesState,
                                     nutrientType = NutrientType.VITAMIN,
-                                    user = user,
+                                    isUserPremium = user.isPremium,
                                     onNavigateToGoals = onNavigateToGoals
                                 )
 
                                 OtherNutrientIntakes(
                                     state = nutrientIntakesState,
                                     nutrientType = NutrientType.MINERAL,
-                                    user = user,
+                                    isUserPremium = user.isPremium,
                                     onNavigateToGoals = onNavigateToGoals
                                 )
 

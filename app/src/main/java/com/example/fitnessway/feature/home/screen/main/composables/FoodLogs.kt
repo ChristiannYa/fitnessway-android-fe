@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,14 +50,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPascalSpaced
-import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
-import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
+import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
+import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
+import com.example.fitnessway.data.model.m_26.UserFoodSnapshotStatus
 import com.example.fitnessway.ui.shared.Loading.Area
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
-import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
@@ -73,16 +71,14 @@ import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
 
 @Composable
-private fun getFoodLogsContainerColor(): Color {
-    return MaterialTheme.colorScheme.surfaceTint
-}
+private fun getFoodLogsContainerColor() = MaterialTheme.colorScheme.surfaceTint
 
 @Composable
 fun FoodLogs(
-    foodLogsState: UiState<FoodLogsByCategory>,
+    foodLogsState: UiState<FoodLogsCategorized>,
     onViewFoodsList: (FoodLogCategory) -> Unit,
-    onViewFoodLogDetails: (FoodLogData) -> Unit,
-    onRemoveFoodLog: (FoodLogData) -> Unit,
+    onViewFoodLogDetails: (FoodLog) -> Unit,
+    onRemoveFoodLog: (FoodLog) -> Unit,
     isDeletionError: Boolean,
     isVisible: Boolean,
     modifier: Modifier = Modifier
@@ -132,10 +128,10 @@ fun FoodLogs(
 
 @Composable
 private fun FoodLogsCategorized(
-    foodLogs: FoodLogsByCategory,
+    foodLogs: FoodLogsCategorized,
     onViewFoodsList: (FoodLogCategory) -> Unit,
-    onViewFoodLogDetails: (FoodLogData) -> Unit,
-    onRemoveFoodLog: (FoodLogData) -> Unit,
+    onViewFoodLogDetails: (FoodLog) -> Unit,
+    onRemoveFoodLog: (FoodLog) -> Unit,
     isDeletionError: Boolean
 ) {
     val categoriesWithLogs = listOf(
@@ -179,11 +175,11 @@ private fun FoodLogsCategorized(
 
 @Composable
 private fun FoodLogCategory(
-    foodLogs: List<FoodLogData>,
+    foodLogs: List<FoodLog>,
     category: FoodLogCategory,
     onViewFoodsList: (FoodLogCategory) -> Unit,
-    onViewFoodLogDetails: (FoodLogData) -> Unit,
-    onRemoveFoodLog: (FoodLogData) -> Unit,
+    onViewFoodLogDetails: (FoodLog) -> Unit,
+    onRemoveFoodLog: (FoodLog) -> Unit,
     isDeletionError: Boolean
 ) {
     val categoryFormatted = category.name.toPascalSpaced()
@@ -236,9 +232,9 @@ private fun FoodLogCategory(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FoodLog(
-    foodLog: FoodLogData,
-    onViewFoodLogDetails: (FoodLogData) -> Unit,
-    onRemoveFoodLog: (FoodLogData) -> Unit,
+    foodLog: FoodLog,
+    onViewFoodLogDetails: (FoodLog) -> Unit,
+    onRemoveFoodLog: (FoodLog) -> Unit,
     isDeletionError: Boolean
 ) {
     val swipeToRemoveLogState = rememberSwipeToDismissBoxState(
@@ -302,8 +298,8 @@ private fun FoodLog(
                 )
         ) {
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.weight(1f)
             ) {
                 val foodBrandColor = getFoodBrandColor()
 
@@ -312,7 +308,7 @@ private fun FoodLog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = foodLog.food.information.name,
+                        text = foodLog.foodInformation.base.name,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
@@ -320,25 +316,15 @@ private fun FoodLog(
                         modifier = Modifier.weight(1f, false)
                     )
 
-                    if (foodLog.foodStatus == FoodLogFoodStatus.PRESENT &&
-                        foodLog.food.metadata.isFavorite
-                    ) {
-                        Structure.AppIconDynamic(
-                            source = Structure.AppIconButtonSource.Vector(
-                                imageVector = Icons.Default.Star
-                            ),
-                            modifier = Modifier.size(12.dp)
-                        )
-                    }
-
-                    if (foodLog.foodStatus != FoodLogFoodStatus.PRESENT) {
+                    if (foodLog.userFoodSnapshotStatus != UserFoodSnapshotStatus.PRESENT) {
                         Box(
                             modifier = Modifier
                                 .size(5.dp)
                                 .background(
-                                    color = when (foodLog.foodStatus) {
-                                        FoodLogFoodStatus.DELETED -> OrangeWarning
-                                        FoodLogFoodStatus.UPDATED -> MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = when (foodLog.userFoodSnapshotStatus) {
+                                        UserFoodSnapshotStatus.UPDATED -> MaterialTheme.colorScheme.onSurfaceVariant
+                                        UserFoodSnapshotStatus.DELETED -> OrangeWarning
+                                        else -> Color.Transparent
                                     },
                                     shape = CircleShape
                                 )
@@ -347,7 +333,7 @@ private fun FoodLog(
                 }
 
                 Text(
-                    text = getFoodBrandText(foodLog.food.information.brand),
+                    text = getFoodBrandText(foodLog.foodInformation.base.brand),
                     style = MaterialTheme.typography.labelLarge,
                     color = foodBrandColor
                 )
@@ -378,7 +364,7 @@ private fun FoodLog(
             Spacer(modifier = Modifier.width(8.dp))
 
             AppLabel<Unit>(
-                text = foodLog.time,
+                text = foodLog.time.toString(),
                 textStyle = MaterialTheme.typography.labelSmall,
                 size = Ui.LabelSize.XS,
             )

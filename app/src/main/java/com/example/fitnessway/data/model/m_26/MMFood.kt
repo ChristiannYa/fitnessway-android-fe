@@ -74,6 +74,14 @@ data class FoodLog(
 )
 
 @Serializable
+data class FoodLogsCategorized(
+    val breakfast: List<FoodLog>,
+    val lunch: List<FoodLog>,
+    val dinner: List<FoodLog>,
+    val supplement: List<FoodLog>
+)
+
+@Serializable
 data class FoodBase(
     val name: String,
     val brand: String? = null,
@@ -84,7 +92,7 @@ data class FoodBase(
 @Serializable
 data class FoodInformation(
     val base: FoodBase,
-    val nutrients: NutrientsByType<NutrientInFood>
+    val nutrients: NutrientsByType<NutrientDataAmount>
 )
 
 @Serializable
@@ -122,6 +130,11 @@ data class FoodLogAddRequest(
     val category: FoodLogCategory,
     val time: Instant,
     val source: FoodSource
+)
+
+@Serializable
+data class FoodLogsResponse(
+    val foodLogs: FoodLogsCategorized
 )
 
 @Serializable

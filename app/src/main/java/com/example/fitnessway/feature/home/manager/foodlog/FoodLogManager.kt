@@ -1,8 +1,8 @@
 package com.example.fitnessway.feature.home.manager.foodlog
 
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.m_26.FoodInformation
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
+import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.util.Formatters.doubleFormatter
@@ -18,8 +18,8 @@ class FoodLogManager : IFoodLogManager {
     private val _foodLogCategory = MutableStateFlow<FoodLogCategory?>(null)
     override val foodLogCategory: StateFlow<FoodLogCategory?> = _foodLogCategory
 
-    private val _selectedFoodLog = MutableStateFlow<FoodLogData?>(null)
-    override val selectedFoodLog: StateFlow<FoodLogData?> = _selectedFoodLog
+    private val _selectedFoodLog = MutableStateFlow<FoodLog?>(null)
+    override val selectedFoodLog: StateFlow<FoodLog?> = _selectedFoodLog
 
     private val _searchCriteria = MutableStateFlow<FoodToLogSearchCriteria?>(null)
     override val searchCriteria: StateFlow<FoodToLogSearchCriteria?> = _searchCriteria
@@ -27,8 +27,8 @@ class FoodLogManager : IFoodLogManager {
     private val _foodToLog = MutableStateFlow<FoodInformationWithId?>(null)
     override val foodToLog: StateFlow<FoodInformationWithId?> = _foodToLog
 
-    private val _selectedFoodLogToRemove = MutableStateFlow<FoodLogData?>(null)
-    override val selectedFoodLogToRemove: StateFlow<FoodLogData?> = _selectedFoodLogToRemove
+    private val _selectedFoodLogToRemove = MutableStateFlow<FoodLog?>(null)
+    override val selectedFoodLogToRemove: StateFlow<FoodLog?> = _selectedFoodLogToRemove
 
     private val _foodLogFormState = MutableStateFlow<FormState<FormStates.FoodLog>?>(null)
     override val foodLogFormState: StateFlow<FormState<FormStates.FoodLog>?> = _foodLogFormState
@@ -116,7 +116,7 @@ class FoodLogManager : IFoodLogManager {
         }
     }
 
-    override fun setSelectedFoodLog(foodLog: FoodLogData) {
+    override fun setSelectedFoodLog(foodLog: FoodLog) {
         _selectedFoodLog.value = foodLog
     }
 
@@ -128,7 +128,7 @@ class FoodLogManager : IFoodLogManager {
         _foodToLog.value = foodToLog
     }
 
-    override fun setSelectedFoodLogToRemove(foodLog: FoodLogData) {
+    override fun setSelectedFoodLogToRemove(foodLog: FoodLog) {
         _selectedFoodLogToRemove.value = foodLog
     }
 
@@ -143,15 +143,15 @@ class FoodLogManager : IFoodLogManager {
         )
     }
 
-    override fun initializeFoodLogEditionForm(foodLog: FoodLogData) {
-        val amPerSerCalc = foodLog.servings * foodLog.food.information.amountPerServing
+    override fun initializeFoodLogEditionForm(foodLog: FoodLog) {
+        val amPerSerCalc = foodLog.servings * foodLog.foodInformation.base.amountPerServing
         val amPerSer = amPerSerCalc.roundIfClose(0.03)
 
         val formState = FormState(
             data = FormStates.FoodLogEdition(
                 servings = doubleFormatter(foodLog.servings, 3),
                 amountPerServing = doubleFormatter(amPerSer, 3),
-                foodAmountPerServing = foodLog.food.information.amountPerServing,
+                foodAmountPerServing = foodLog.foodInformation.base.amountPerServing,
                 servingsPrecised = foodLog.servings
             )
         )

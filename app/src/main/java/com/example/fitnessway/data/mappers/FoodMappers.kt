@@ -3,11 +3,26 @@ package com.example.fitnessway.data.mappers
 import com.example.fitnessway.data.model.MFood
 import com.example.fitnessway.data.model.m_26.FoodBase
 import com.example.fitnessway.data.model.m_26.FoodInformation
+import com.example.fitnessway.data.model.m_26.FoodLog
+import com.example.fitnessway.data.model.m_26.FoodLogCategory
+import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.util.form.FormStates.FoodCreation
 import com.example.fitnessway.util.toEnum
+
+fun FoodLogsCategorized.mapfl(
+    transform: (
+        category: FoodLogCategory,
+        logs: List<FoodLog>
+    ) -> List<FoodLog>
+): FoodLogsCategorized = FoodLogsCategorized(
+    breakfast = transform(FoodLogCategory.BREAKFAST, breakfast),
+    lunch = transform(FoodLogCategory.LUNCH, lunch),
+    dinner = transform(FoodLogCategory.DINNER, dinner),
+    supplement = transform(FoodLogCategory.SUPPLEMENT, supplement)
+)
 
 fun FoodCreation.toPendingRequest(nutrients: List<NutrientIdWithAmount>) = PendingFoodAddRequest(
     base = FoodBase(

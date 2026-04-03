@@ -11,7 +11,8 @@ import io.ktor.client.HttpClient as KtorHttpClient
 
 class AppFoodApiClient(private val client: KtorHttpClient) {
     suspend fun findAppFoodById(id: Int): AppFoodFindByIdResponse =
-        client.get(ApiUrls.AppFood.getByIdUrlParam(id))
+        client
+            .get(ApiUrls.AppFood.getByIdUrl(id))
             .extractApiData()
 
     suspend fun searchAppFoods(

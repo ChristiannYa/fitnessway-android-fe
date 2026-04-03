@@ -4,10 +4,9 @@ import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostReq
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
-import com.example.fitnessway.data.network.ApiUrls
+import com.example.fitnessway.data.model.m_26.NutrientIntakes
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.NutrientApiClient
 import com.example.fitnessway.util.UiState
@@ -29,7 +28,7 @@ class NutrientRepositoryImpl(
     private val _uiState = MutableStateFlow(NutrientRepositoryUiState())
     override val uiState: StateFlow<NutrientRepositoryUiState> = _uiState.asStateFlow()
 
-    private fun fetchNutrientIntakes(date: String): Flow<UiState<NutrientsByType<NutrientDataWithAmount>>> {
+    private fun fetchNutrientIntakes(date: String): Flow<UiState<NutrientIntakes>> {
         return httpClient.makeRequest(
             apiCall = { apiClient.getNutrientIntakes(date) },
             extractData = { it.nutrientIntakes },
@@ -85,13 +84,7 @@ class NutrientRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = { apiClient.setNutrientGoals(request) },
             extractData = { it.upsertedGoals },
-            errMsg = "Failed to set nutrient goals",
-            invalidatedUrls = listOf(
-                ApiUrls.Nutrient.NUTRIENT_INTAKES_URL,
-                ApiUrls.Nutrient.NUTRIENT_LIST_URL,
-                ApiUrls.FoodLog.LIST_URL,
-                ApiUrls.Food.LIST_URL
-            )
+            errMsg = "Failed to set nutrient goals"
         )
     }
 
@@ -102,13 +95,7 @@ class NutrientRepositoryImpl(
         return httpClient.makeRequest(
             apiCall = { apiClient.setNutrientColors(request) },
             extractData = { it.updatedColors },
-            errMsg = "Failed to update nutrient colors",
-            invalidatedUrls = listOf(
-                ApiUrls.Nutrient.NUTRIENT_INTAKES_URL,
-                ApiUrls.Nutrient.NUTRIENT_LIST_URL,
-                ApiUrls.FoodLog.LIST_URL,
-                ApiUrls.Food.LIST_URL
-            )
+            errMsg = "Failed to update nutrient colors"
         )
     }
 

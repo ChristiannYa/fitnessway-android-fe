@@ -49,7 +49,7 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
-import com.example.fitnessway.data.model.m_26.NutrientInFood
+import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
@@ -449,7 +449,7 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsBox(
-            nutrients: List<NutrientInFood>,
+            nutrients: List<NutrientDataAmount>,
             isUserPremium: Boolean,
             isDataMinimal: Boolean = false,
             /**
@@ -533,11 +533,12 @@ object UNutrient {
                                     shape = RoundedCornerShape(barShape)
                                 )
                         ) {
-                            val progressModifier = if (nutrientInFood.nutrientData.nutrientType == NutrientType.BASIC) {
-                                Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .offset(y = -(verticalSpace * 2))
-                            } else Modifier.align(Alignment.Center)
+                            val progressModifier =
+                                if (nutrientInFood.nutrientData.iNutrientType == NutrientType.BASIC) {
+                                    Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .offset(y = -(verticalSpace * 2))
+                                } else Modifier.align(Alignment.Center)
 
                             Box(
                                 modifier = Modifier
@@ -565,8 +566,8 @@ object UNutrient {
                         }
 
                         // Bottom part: nutrient name
-                        val name = if (nutrientInFood.nutrientData.nutrientType == NutrientType.VITAMIN
-                            || nutrientInFood.nutrientData.nutrientType == NutrientType.MINERAL
+                        val name = if (nutrientInFood.nutrientData.iNutrientType == NutrientType.VITAMIN
+                            || nutrientInFood.nutrientData.iNutrientType == NutrientType.MINERAL
                         ) {
                             nutrientInFood.nutrientData.base.symbol ?: nutrientInFood.nutrientData.base.name
                         } else nutrientInFood.nutrientData.base.name
@@ -598,7 +599,7 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsCircle(
-            nutrients: List<NutrientInFood>,
+            nutrients: List<NutrientDataAmount>,
             isUserPremium: Boolean
         ) {
             Row(
@@ -687,7 +688,7 @@ object UNutrient {
 
         @Composable
         fun NutrientsAsLine(
-            nutrients: List<NutrientInFood>
+            nutrients: List<NutrientDataAmount>
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 nutrients.forEach { nutrientInFood ->
@@ -725,7 +726,7 @@ object UNutrient {
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             // Left side: nutrient name and symbol
-                            if (nutrientInFood.nutrientData.nutrientType == NutrientType.MINERAL) {
+                            if (nutrientInFood.nutrientData.iNutrientType == NutrientType.MINERAL) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                     Text(
                                         text = nutrientInFood.nutrientData.base.name,

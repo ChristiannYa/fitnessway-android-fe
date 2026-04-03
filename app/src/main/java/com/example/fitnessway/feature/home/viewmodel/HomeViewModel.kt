@@ -2,13 +2,14 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.mappers.toM25NutrientsInFood
-import com.example.fitnessway.data.mappers.toM26NutrientsInFood
+import com.example.fitnessway.data.mappers.mapfl
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.MFood.Enum.FoodSort
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MUser
+import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
+import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user_food.IFoodRepository
@@ -20,12 +21,10 @@ import com.example.fitnessway.feature.home.manager.foodrequest.IFoodRequestManag
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.getCurrentDateInServerFormat
-import com.example.fitnessway.util.UFood
-import com.example.fitnessway.util.UFood.calcNutrientIntakesFromFoodLog
 import com.example.fitnessway.util.UFood.getFoodById
-import com.example.fitnessway.util.UFood.mapFoodLogs
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.extensions.calcIntakesFromServings
+import com.example.fitnessway.util.extensions.calcDailyIntakes
+import com.example.fitnessway.util.extensions.calcFoodLogNutrients
 import com.example.fitnessway.util.toInstant
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -233,21 +232,19 @@ class HomeViewModel(
         val originalNutrientIntakes = originalNutrientIntakesState.data
 
         // Gather new nutrient data based on amount per servings
-        val newNutrientData = selectedFoodLog.food.nutrients
-            .toM26NutrientsInFood()
-            .calcIntakesFromServings(
+        val newNutrientData = selectedFoodLog.foodInformation.nutrients
+            .calcFoodLogNutrients(
                 currentServings = selectedFoodLog.servings,
                 newServings = formState.data.servings.toDouble()
             )
-            .toM25NutrientsInFood()
 
         // Update the current food log's nutrients
-        val foodWithUpdatedNutrients = selectedFoodLog.food.copy(
+        val foodWithUpdatedNutrients = selectedFoodLog.foodInformation.copy(
             nutrients = newNutrientData
         )
 
         // Create the updated food log information
-        val updatedFoodLog = FoodLogData(
+        val updatedFoodLog = FoodLog(
             id = selectedFoodLog.id,
             category = selectedFoodLog.category,
             time = selectedFoodLog.time,
@@ -256,10 +253,11 @@ class HomeViewModel(
                 value = formState.data.servingsPrecised,
                 decimalPlaces = 4
             ).toDouble(),
-            foodStatus = selectedFoodLog.foodStatus,
-            foodSnapshotId = selectedFoodLog.foodSnapshotId,
+            userFoodSnapshotStatus = selectedFoodLog.userFoodSnapshotStatus,
+            userFoodSnapshotId = selectedFoodLog.userFoodSnapshotId,
             source = selectedFoodLog.source,
-            food = foodWithUpdatedNutrients
+            foodId = selectedFoodLog.foodId,
+            foodInformation = foodWithUpdatedNutrients
         )
 
         // Change the selected food log's nutrients value
@@ -267,30 +265,26 @@ class HomeViewModel(
 
 
         // Create optimistic food logs
-        val optimisticFoodLogs = originalFoodLogs.mapFoodLogs { category, logs ->
-            logs.filter { it.id != selectedFoodLog.id }.let { filteredLogs ->
-                if (category.name.lowercase() == updatedFoodLog.category) {
-                    filteredLogs + updatedFoodLog
-                } else filteredLogs
-            }
+        val optimisticFoodLogs = originalFoodLogs.mapfl { category, logs ->
+            logs
+                .filter { it.id != selectedFoodLog.id }
+                .let { if (category == updatedFoodLog.category) it + updatedFoodLog else it }
         }
 
         // Create optimistic nutrient intakes
-        val intakesWithoutFoodLog = calcNutrientIntakesFromFoodLog(
-            currentIntakes = originalNutrientIntakes,
-            foodLog = selectedFoodLog,
-            operation = UFood.FoodNutrientIntakesOperation.SUBTRACT
+        val intakesWithoutFoodLog = originalNutrientIntakes.calcDailyIntakes(
+            nutrients = selectedFoodLog.foodInformation.nutrients.toList(),
+            intakeMath = NutrientIntakeMath.SUBTRACT
         )
 
-        val optimisticIntakes = calcNutrientIntakesFromFoodLog(
-            currentIntakes = intakesWithoutFoodLog,
-            foodLog = updatedFoodLog,
-            operation = UFood.FoodNutrientIntakesOperation.ADD
+        val optimisticIntakes = intakesWithoutFoodLog.calcDailyIntakes(
+            nutrients = updatedFoodLog.foodInformation.nutrients.toList(),
+            intakeMath = NutrientIntakeMath.ADD
         )
 
         val request = FoodLogUpdateRequest(
             foodLogId = updatedFoodLog.id,
-            foodSnapshotId = updatedFoodLog.foodSnapshotId,
+            foodSnapshotId = updatedFoodLog.userFoodSnapshotId,
             servings = updatedFoodLog.servings
         )
 
@@ -334,16 +328,15 @@ class HomeViewModel(
                             .nutrientIntakesCache[apiDate]
 
                         if (currentFoodLogsState is UiState.Success) {
-                            val revertedFoodLogs = currentFoodLogsState.data
-                                .mapFoodLogs { category, logs ->
-                                    (logs.filter { it.id != updatedFoodLog.id }
-                                        .let { filteredLogs ->
-                                            if (category.name.lowercase() == selectedFoodLog.category) {
-                                                filteredLogs + selectedFoodLog
-                                            } else filteredLogs
-                                        })
-                                        .sortedByDescending { it.id }
-                                }
+                            val revertedFoodLogs = currentFoodLogsState.data.mapfl { category, logs ->
+                                (logs.filter { it.id != updatedFoodLog.id }
+                                    .let {
+                                        if (category == selectedFoodLog.category) {
+                                            it + selectedFoodLog
+                                        } else it
+                                    })
+                                    .sortedByDescending { it.id }
+                            }
 
                             foodRepo.updateState {
                                 it.copy(
@@ -354,16 +347,15 @@ class HomeViewModel(
                         }
 
                         if (currentNutrientIntakesState is UiState.Success) {
-                            val intakesWithoutUpdatedFoodLog = calcNutrientIntakesFromFoodLog(
-                                currentIntakes = currentNutrientIntakesState.data,
-                                foodLog = updatedFoodLog,
-                                operation = UFood.FoodNutrientIntakesOperation.SUBTRACT
+
+                            val intakesWithoutUpdatedFoodLog = currentNutrientIntakesState.data.calcDailyIntakes(
+                                nutrients = updatedFoodLog.foodInformation.nutrients.toList(),
+                                intakeMath = NutrientIntakeMath.SUBTRACT
                             )
 
-                            val revertedIntakes = calcNutrientIntakesFromFoodLog(
-                                currentIntakes = intakesWithoutUpdatedFoodLog,
-                                foodLog = selectedFoodLog,
-                                operation = UFood.FoodNutrientIntakesOperation.ADD
+                            val revertedIntakes = intakesWithoutUpdatedFoodLog.calcDailyIntakes(
+                                nutrients = selectedFoodLog.foodInformation.nutrients.toList(),
+                                intakeMath = NutrientIntakeMath.ADD
                             )
 
                             nutrientRepo.updateState {
@@ -381,7 +373,7 @@ class HomeViewModel(
         }
     }
 
-    private val _foodLogFailedDeletions = mutableMapOf<String, MutableSet<FoodLogData>>()
+    private val _foodLogFailedDeletions = mutableMapOf<String, MutableSet<FoodLog>>()
 
     fun deleteFoodLog() {
         val selectedFoodLogToRemove = managers.foodLog.selectedFoodLogToRemove.value ?: return
@@ -407,16 +399,15 @@ class HomeViewModel(
         failedDeletionsForDate.remove(selectedFoodLogToRemove)
 
         // Store optimistic food logs by filtering out the food log
-        val optimisticFoodLogs = originalFoodLogs.mapFoodLogs { _, logs ->
+        val optimisticFoodLogs = originalFoodLogs.mapfl { _, logs ->
             logs.filter { it.id != selectedFoodLogToRemove.id }
         }
 
         // Store optimistic intakes by removing the food log's intake amount from
         // the original intakes
-        val optimisticIntakes = calcNutrientIntakesFromFoodLog(
-            currentIntakes = originalIntakes,
-            foodLog = selectedFoodLogToRemove,
-            operation = UFood.FoodNutrientIntakesOperation.SUBTRACT
+        val optimisticIntakes = originalIntakes.calcDailyIntakes(
+            nutrients = selectedFoodLogToRemove.foodInformation.nutrients.toList(),
+            intakeMath = NutrientIntakeMath.SUBTRACT
         )
 
         // Update UI immediately
@@ -468,12 +459,9 @@ class HomeViewModel(
 
                             // Revert back to original food logs state
                             val revertedFoodLogs = currentFoodLogs
-                                .mapFoodLogs { category, logs ->
+                                .mapfl { category, logs ->
                                     (logs + failedDeletionsForDate.filter {
-                                        it.category.equals(
-                                            other = category.name,
-                                            ignoreCase = true
-                                        ) // Safe string comparison
+                                        it.category == category
                                     })
                                         .distinctBy { it.id }
                                         .sortedByDescending { it.id }
@@ -492,10 +480,9 @@ class HomeViewModel(
                             val currentIntakes = currentIntakesState.data
 
                             // Revert back to original nutrient intakes state
-                            val revertedNutrients = calcNutrientIntakesFromFoodLog(
-                                currentIntakes = currentIntakes,
-                                foodLog = selectedFoodLogToRemove,
-                                operation = UFood.FoodNutrientIntakesOperation.ADD
+                            val revertedNutrients = currentIntakes.calcDailyIntakes(
+                                nutrients = selectedFoodLogToRemove.foodInformation.nutrients.toList(),
+                                intakeMath = NutrientIntakeMath.ADD
                             )
 
                             nutrientRepo.updateState {

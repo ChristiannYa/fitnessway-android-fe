@@ -123,7 +123,7 @@ object MFood {
             val servings: Double,
 
             @SerialName("food_status")
-            val foodStatus: FoodLogFoodStatus,
+            val foodStatus: FoodLogFoodStatus? = null,
 
             @SerialName("food_snapshot_id")
             val foodSnapshotId: Int?,
@@ -167,6 +167,7 @@ object MFood {
                 val isFavorite: Boolean
             )
 
+            // @TODO: Replace with new API object
             @Serializable
             data class FoodLogUpdateRequest(
                 @SerialName("food_log_id")

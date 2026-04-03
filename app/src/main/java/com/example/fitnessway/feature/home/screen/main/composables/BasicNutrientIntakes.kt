@@ -10,26 +10,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toM26NutrientInFood
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
-import com.example.fitnessway.data.model.MUser.Model.User
-import com.example.fitnessway.data.model.m_26.NutrientType
+import com.example.fitnessway.data.model.m_26.NutrientIntakes
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
 import com.example.fitnessway.ui.nutrient.PagedNutrients
 import com.example.fitnessway.ui.shared.Loading.Composable
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.UNutrient.filterGoalSetAmounts
-import com.example.fitnessway.util.UNutrient.filterNonPremiumAmounts
-import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UiState
 
 @Composable
 fun BasicNutrientIntakes(
-    state: UiState<NutrientsByType<NutrientDataWithAmount>>,
-    user: User,
+    state: UiState<NutrientIntakes>,
+    isUserPremium: Boolean,
     onNavigateToGoals: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -37,10 +30,9 @@ fun BasicNutrientIntakes(
         is UiState.Loading -> Composable(210.dp, "Loading nutrient intakes")
 
         is UiState.Success -> {
-            val basicNutrientsWithGoals = state.data
-                .filterNutrientsByType(NutrientType.BASIC)
-                .filterNonPremiumAmounts(user.isPremium)
-                .filterGoalSetAmounts()
+            val basicNutrientsWithGoals = state.data.basic
+                .let { if (!isUserPremium) it.filter { n -> !n.nutrientData.base.isPremium } else it }
+                .filter { it.nutrientData.preferences.goal != null }
 
             val isEmpty = basicNutrientsWithGoals.isEmpty()
 
@@ -71,9 +63,9 @@ fun BasicNutrientIntakes(
                         )
 
                         PagedNutrients(
-                            nutrients = basicNutrientsWithGoals.map { it.toM26NutrientInFood() },
+                            nutrients = basicNutrientsWithGoals,
                             viewFormat = NutrientsViewFormat.BOX,
-                            isUserPremium = user.isPremium
+                            isUserPremium = isUserPremium
                         )
                     }
                 }

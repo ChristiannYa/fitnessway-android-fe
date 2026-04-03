@@ -39,7 +39,7 @@ import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleApiSuccessTempState
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.extensions.calcIntakesFromServings
+import com.example.fitnessway.util.extensions.calcFoodLogNutrients
 import com.example.fitnessway.util.extensions.findById
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import org.koin.compose.viewmodel.koinViewModel
@@ -167,7 +167,7 @@ fun FoodLogScreen(
                 foodToLog.information.nutrients,
                 formState.data.servings
             ) {
-                foodToLog.information.nutrients.calcIntakesFromServings(
+                foodToLog.information.nutrients.calcFoodLogNutrients(
                     currentServings = 1.0,
                     newServings = formState.data.servings.toDoubleOrNull() ?: 0.0
                 )

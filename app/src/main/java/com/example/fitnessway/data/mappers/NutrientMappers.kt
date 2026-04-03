@@ -3,15 +3,18 @@ package com.example.fitnessway.data.mappers
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.NutrientData
+import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.data.model.m_26.NutrientGroupable
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
-import com.example.fitnessway.data.model.m_26.NutrientInFood
 import com.example.fitnessway.data.model.m_26.NutrientPreferences
 import com.example.fitnessway.data.model.m_26.NutrientPreview
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.toEnum
+
+fun NutrientPreview.toList() =
+    listOf(this.calories, this.carbs, this.fats, this.protein)
 
 fun <N : NutrientGroupable> NutrientsByType<N>.toList() =
     this.basic + this.vitamins + this.minerals
@@ -23,7 +26,7 @@ fun <N : NutrientGroupable> NutrientsByType<N>.toTypedList() =
         NutrientType.MINERAL to this.minerals
     )
 
-fun <N : NutrientGroupable> NutrientsByType<N>.map(
+fun <N : NutrientGroupable> NutrientsByType<N>.mapnbt(
     transform: (
         type: NutrientType,
         nutrients: List<N>
@@ -34,11 +37,8 @@ fun <N : NutrientGroupable> NutrientsByType<N>.map(
     minerals = transform(NutrientType.MINERAL, this.minerals)
 )
 
-fun NutrientPreview.toList() =
-    listOf(this.calories, this.carbs, this.fats, this.protein)
-
 fun <N : NutrientGroupable> List<N>.toType(): NutrientsByType<N> {
-    val grouped = this.groupBy { it.nutrientType }
+    val grouped = this.groupBy { it.iNutrientType }
 
     return NutrientsByType(
         basic = grouped[NutrientType.BASIC] ?: emptyList(),
@@ -65,7 +65,7 @@ fun Map<Int, String>.toNutrientIdAmountList(
         }
 
 fun MNutrient.Model.NutrientDataWithAmount.toM26NutrientInFood() =
-    NutrientInFood(
+    NutrientDataAmount(
         nutrientData = NutrientData(
             base = NutrientBase(
                 id = this.nutrientWithPreferences.nutrient.id,
@@ -84,20 +84,20 @@ fun MNutrient.Model.NutrientDataWithAmount.toM26NutrientInFood() =
     )
 
 fun MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>.toM26NutrientsInFood() =
-    NutrientsByType<NutrientInFood>(
+    NutrientsByType<NutrientDataAmount>(
         basic = this.basic.map { it.toM26NutrientInFood() },
         vitamins = this.vitamin.map { it.toM26NutrientInFood() },
         minerals = this.mineral.map { it.toM26NutrientInFood() }
     )
 
-fun NutrientsByType<NutrientInFood>.toM25NutrientsInFood() =
+fun NutrientsByType<NutrientDataAmount>.toM25NutrientsInFood() =
     MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>(
         basic = this.basic.map { it.toM25NutrientDataWithAmount() },
         vitamin = this.vitamins.map { it.toM25NutrientDataWithAmount() },
         mineral = this.minerals.map { it.toM25NutrientDataWithAmount() }
     )
 
-fun NutrientInFood.toM25NutrientDataWithAmount() = MNutrient.Model.NutrientDataWithAmount(
+fun NutrientDataAmount.toM25NutrientDataWithAmount() = MNutrient.Model.NutrientDataWithAmount(
     nutrientWithPreferences = MNutrient.Model.NutrientWithPreferences(
         nutrient = MNutrient.Model.Nutrient(
             id = this.nutrientData.base.id,

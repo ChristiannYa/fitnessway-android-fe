@@ -30,11 +30,10 @@ object ApiUrls {
         const val NUTRIENT_LIST_PATH = "nutrient/get-nutrients"
         const val NUTRIENT_LIST_URL = "$BASE_URL_GO$NUTRIENT_LIST_PATH"
 
-        const val NUTRIENT_INTAKES_PATH = "nutrient/get-intakes"
-        const val NUTRIENT_INTAKES_URL = "$BASE_URL_GO/$NUTRIENT_INTAKES_PATH"
+        const val NUTRIENT_INTAKES_PATH = "nutrient/intake/date"
 
-        fun getIntakesByDatePath(date: String) = "$NUTRIENT_INTAKES_PATH?date=$date"
-        fun getIntakesByDateUrl(date: String) = BASE_URL_GO + getIntakesByDatePath(date)
+        fun getIntakesByDatePath(date: String) = "$NUTRIENT_INTAKES_PATH/$date"
+        fun getIntakesByDateUrl(date: String) = BASE_URL_KT + getIntakesByDatePath(date)
 
         const val NUTRIENT_GOAL_SET_PATH = "nutrient/set-goal"
         const val NUTRIENT_GOAL_SET_URL = "$BASE_URL_GO$NUTRIENT_GOAL_SET_PATH"
@@ -53,8 +52,8 @@ object ApiUrls {
         const val BY_ID_PATH = "food/app"
         const val BY_ID_URL = "$BASE_URL_KT$BY_ID_PATH"
 
-        fun getByIdPathParam(id: Int) = "$BY_ID_PATH/$id"
-        fun getByIdUrlParam(id: Int) = BASE_URL_KT + getByIdPathParam(id)
+        fun getByIdPath(id: Int) = "$BY_ID_PATH/$id"
+        fun getByIdUrl(id: Int) = BASE_URL_KT + getByIdPath(id)
     }
 
     object PendingFood {
@@ -71,11 +70,11 @@ object ApiUrls {
     object FoodLog {
         const val PATH = "food/log"
 
-        const val LIST_PATH = "$PATH/get-logs"
-        const val LIST_URL = "$BASE_URL_GO$LIST_PATH"
+        const val LIST_PATH = "$PATH/date"
+        const val LIST_URL = "$BASE_URL_KT$LIST_PATH"
 
-        fun getListByDatePath(date: String) = "$LIST_PATH?date=$date"
-        fun getListByDateUrl(date: String) = BASE_URL_GO + getListByDatePath(date)
+        fun getListByDatePath(date: String) = "$LIST_PATH/$date"
+        fun getListByDateUrl(date: String) = BASE_URL_KT + getListByDatePath(date)
 
         const val ADD_URL = "$BASE_URL_KT$PATH"
 

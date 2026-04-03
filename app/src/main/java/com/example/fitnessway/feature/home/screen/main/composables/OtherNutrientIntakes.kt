@@ -10,10 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toM26NutrientInFood
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
-import com.example.fitnessway.data.model.MUser.Model.User
+import com.example.fitnessway.data.model.m_26.NutrientIntakes
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
 import com.example.fitnessway.ui.nutrient.PagedNutrients
@@ -21,18 +18,15 @@ import com.example.fitnessway.ui.shared.Loading.Composable
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.UNutrient.filterGoalSetAmounts
-import com.example.fitnessway.util.UNutrient.filterNonPremiumAmounts
-import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.UiState
 
 
 @Composable
 fun OtherNutrientIntakes(
-    state: UiState<NutrientsByType<NutrientDataWithAmount>>,
+    state: UiState<NutrientIntakes>,
     nutrientType: NutrientType,
-    user: User,
+    isUserPremium: Boolean,
     onNavigateToGoals: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -42,10 +36,13 @@ fun OtherNutrientIntakes(
         is UiState.Loading -> Composable(160.dp, "Loading $nutrientTypeName intakes")
 
         is UiState.Success -> {
-            val nutrients = state.data
-                .filterNutrientsByType(nutrientType)
-                .filterNonPremiumAmounts(user.isPremium)
-                .filterGoalSetAmounts()
+            val nutrients = when (nutrientType) {
+                NutrientType.BASIC -> state.data.basic // Just to satisfy the linter
+                NutrientType.VITAMIN -> state.data.vitamins
+                NutrientType.MINERAL -> state.data.minerals
+            }
+                .let { if (!isUserPremium) it.filter { n -> !n.nutrientData.base.isPremium } else it }
+                .filter { it.nutrientData.preferences.goal != null }
 
             val isEmpty = nutrients.isEmpty()
 
@@ -76,10 +73,10 @@ fun OtherNutrientIntakes(
                         )
 
                         PagedNutrients(
-                            nutrients = nutrients.map { it.toM26NutrientInFood() },
+                            nutrients = nutrients,
                             viewFormat = NutrientsViewFormat.BOX,
                             isBasicNutrient = false,
-                            isUserPremium = user.isPremium,
+                            isUserPremium = isUserPremium,
                         )
                     }
                 }

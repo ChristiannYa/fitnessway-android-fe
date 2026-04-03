@@ -7,9 +7,9 @@ import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
-import com.example.fitnessway.data.model.MFood.Model.FoodLogsByCategory
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
+import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodApiClient
@@ -170,7 +170,7 @@ class FoodRepositoryImpl(
         )
     }
 
-    private fun fetchFoodLogs(date: String): Flow<UiState<FoodLogsByCategory>> {
+    private fun fetchFoodLogs(date: String): Flow<UiState<FoodLogsCategorized>> {
         return httpClient.makeRequest(
             apiCall = { apiClient.getFoodLogs(date) },
             extractData = { it.foodLogs },

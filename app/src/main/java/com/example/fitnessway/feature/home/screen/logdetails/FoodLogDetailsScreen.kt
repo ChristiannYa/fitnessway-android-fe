@@ -4,9 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,9 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toM25NutrientsInFood
-import com.example.fitnessway.data.mappers.toM26NutrientsInFood
-import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
+import com.example.fitnessway.data.mappers.toList
+import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
@@ -25,13 +21,13 @@ import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.extensions.calcIntakesFromServings
+import com.example.fitnessway.util.extensions.calcFoodLogNutrients
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
+import com.example.fitnessway.util.logcat
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -63,9 +59,7 @@ fun FoodLogDetailsScreen(
     if (foodLog == null) {
         Screen(
             header = { Header(onBackClick = onBackClick, title = "Food Log Details") }
-        ) {
-            NotFoundMessage("Food log not found")
-        }
+        ) { NotFoundMessage("Food log not found") }
     } else {
         foodLogDetailsFormState?.let { formState ->
             Screen(
@@ -81,24 +75,13 @@ fun FoodLogDetailsScreen(
                         isOnBackEnabled = !formState.isEditing,
                         title = "Log Details"
                     ) {
-                        if (foodLog.foodStatus == FoodLogFoodStatus.PRESENT &&
-                            foodLog.food.metadata.isFavorite
-                        ) {
-                            Structure.AppIconDynamic(
-                                source = Structure.AppIconButtonSource.Vector(
-                                    imageVector = Icons.Default.Star
-                                ),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-
                         AppLabel<Unit>(
-                            text = foodLog.category.replaceFirstChar { it.uppercase() },
+                            text = foodLog.category.name.toPascalSpaced(),
                             size = Ui.LabelSize.SMALL
                         )
 
                         AppLabel<Unit>(
-                            text = foodLog.time,
+                            text = foodLog.time.toString(),
                             size = Ui.LabelSize.SMALL
                         )
 
@@ -126,18 +109,21 @@ fun FoodLogDetailsScreen(
 
                     Box(modifier = Modifier.imePadding()) {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            val nutrients = remember(
-                                key1 = foodLog.food.nutrients,
-                                key2 = formState.data.servings
-                            ) {
-                                val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
+                            val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
+                            logcat("[screen] servings: $servings")
 
-                                foodLog.food.nutrients
-                                    .toM26NutrientsInFood()
-                                    .calcIntakesFromServings(
+                            val nutrients = remember(
+                                foodLog.foodInformation.nutrients,
+                                servings
+                            ) {
+                                foodLog.foodInformation.nutrients
+                                    .calcFoodLogNutrients(
                                         currentServings = foodLog.servings,
                                         newServings = servings
                                     )
+                            }
+                            nutrients.toList().forEach {
+                                logcat("[screen] [${it.nutrientData.base.id}]: ${it.amount}")
                             }
 
                             ErrorBannerAnimated(
@@ -148,10 +134,10 @@ fun FoodLogDetailsScreen(
                             FoodLogDetails(
                                 foodLog = foodLog,
                                 isBlurredOverlayVisible = formState.isEditing,
-                                nutrients = nutrients.toM25NutrientsInFood(),
+                                nutrients = nutrients,
                                 servingField = fieldsProvider.servings(),
                                 amountPerServingField = fieldsProvider.amountPerServing(
-                                    servingUnit = foodLog.food.information.servingUnit
+                                    servingUnit = foodLog.foodInformation.base.amountPerServing.toString()
                                 ),
                                 user = user
                             )

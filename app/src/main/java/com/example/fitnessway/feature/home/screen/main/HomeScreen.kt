@@ -61,7 +61,7 @@ fun HomeScreen(
     )
 
     val apiDateFormat = remember(selectedDate) {
-        viewModel.getApiFormattedDate()
+        viewModel.dateTimeFormatter.formatKebabDate(selectedDate)
     }
 
     // Recompose when either nutrientRepoUiState OR apiDateFormat changes
@@ -120,7 +120,7 @@ fun HomeScreen(
                                     view.playSoundEffect(SoundEffectConstants.CLICK)
                                     viewModel.toggleFoodLogsVisibility()
                                 },
-                                date = viewModel.getFormattedDay(selectedDate)
+                                date = viewModel.dateTimeFormatter.getDayDisplay(selectedDate)
                             )
 
                             DatePicker(

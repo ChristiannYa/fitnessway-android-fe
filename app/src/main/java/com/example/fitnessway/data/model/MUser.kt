@@ -20,7 +20,8 @@ object MUser {
             val isPremium: Boolean,
             val createdAt: String,
             val updatedAt: String,
-            val type: UserType
+            val type: UserType,
+            val timezone: String
         )
     }
 

@@ -15,11 +15,12 @@ import com.example.fitnessway.feature.profile.manager.ProfileManagersImpl
 import com.example.fitnessway.feature.profile.manager.colors.ColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.GoalsManager
 import org.koin.dsl.module
+import java.time.ZoneId
 
-val managersModule = module {
+fun loadManagerModules(timezone: ZoneId) = module {
     single<IHomeManager> {
         HomeManagerImpl(
-            date = DateManager(),
+            date = DateManager(timezone),
             foodLog = FoodLogManager(),
             foodRequest = FoodRequestManager(),
             ui = UiManager()

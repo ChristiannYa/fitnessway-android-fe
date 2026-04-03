@@ -23,9 +23,9 @@ import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.getCurrentDateInServerFormat
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import com.example.fitnessway.util.extensions.calcDailyIntakes
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
-import com.example.fitnessway.util.toInstant
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +42,8 @@ class HomeViewModel(
     private val nutrientRepo: INutrientRepository,
     private val foodRepo: IFoodRepository,
     private val managers: IHomeManager,
-    val appStateStore: IApplicationStateStore
+    val appStateStore: IApplicationStateStore,
+    val dateTimeFormatter: IAppDateTimeFormatter
 ) : ViewModel(),
     IFoodLogManager by managers.foodLog,
     IDateManager by managers.date,
@@ -67,15 +68,17 @@ class HomeViewModel(
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
 
+    private fun getKebabDisplayDate() =
+        dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
+
     fun loadHomeData() {
         getNutrientIntakes()
         getFoodLogs()
     }
 
     fun refreshHomeData() {
-        val date = managers.date.getApiFormattedDate()
-        nutrientRepo.refreshNutrientIntakes(date)
-        foodRepo.refreshFoodLogs(date)
+        nutrientRepo.refreshNutrientIntakes(getKebabDisplayDate())
+        foodRepo.refreshFoodLogs(getKebabDisplayDate())
     }
 
     fun refreshFoodSelectionScreenData() {
@@ -112,17 +115,11 @@ class HomeViewModel(
 
     fun loadMoreAppFoods(query: String) = appFoodRepo.loadMoreAppFoods(query)
 
-    fun getNutrientIntakes() {
-        val date = managers.date.getApiFormattedDate()
-        nutrientRepo.loadNutrientIntakes(date)
-    }
+    fun getNutrientIntakes() = nutrientRepo.loadNutrientIntakes(getKebabDisplayDate())
 
     fun getFoods() = foodRepo.loadFoods()
 
-    fun getFoodLogs() {
-        val date = managers.date.getApiFormattedDate()
-        foodRepo.loadFoodLogs(date)
-    }
+    fun getFoodLogs() = foodRepo.loadFoodLogs(getKebabDisplayDate())
 
     fun addFoodLog() {
         val user = this.userFlow.value ?: return
@@ -131,13 +128,13 @@ class HomeViewModel(
         val category = managers.foodLog.foodLogCategory.value ?: return
         val source = managers.foodLog.searchCriteria.value?.source ?: return
 
-        val date = managers.date.getApiFormattedDate()
+        val date = getKebabDisplayDate()
 
         val request = FoodLogAddRequest(
             foodId = selectedFoodId,
             servings = foodLogFormState.servings.toDouble(),
             category = category,
-            time = "$date ${foodLogFormState.time}".toInstant(),
+            time = "$date ${foodLogFormState.time}",
             source = source
         )
 
@@ -217,7 +214,7 @@ class HomeViewModel(
         val formState = managers.foodLog.foodLogEditionFormState.value ?: return
         val selectedFoodLog = managers.foodLog.selectedFoodLog.value ?: return
 
-        val apiDate = managers.date.getApiFormattedDate()
+        val apiDate = getKebabDisplayDate()
 
         // Get original data to update optimistically
         val originalFoodLogsState = foodRepo.uiState.value.foodLogsUiState[apiDate]
@@ -377,7 +374,7 @@ class HomeViewModel(
 
     fun deleteFoodLog() {
         val selectedFoodLogToRemove = managers.foodLog.selectedFoodLogToRemove.value ?: return
-        val apiDate = managers.date.getApiFormattedDate()
+        val apiDate = getKebabDisplayDate()
 
         // Get current data to update optimistically
         val originalFoodLogsState = foodRepo.uiState.value.foodLogsUiState[apiDate]

@@ -4,7 +4,6 @@ import android.app.Application
 import com.example.fitnessway.di.init.AppInitializer
 import com.example.fitnessway.di.modules.appModule
 import com.example.fitnessway.di.modules.dataStoreModule
-import com.example.fitnessway.di.modules.managersModule
 import com.example.fitnessway.di.modules.networkModule
 import com.example.fitnessway.di.modules.repositoryModule
 import com.example.fitnessway.di.modules.scopeModule
@@ -23,9 +22,11 @@ class FitnesswayApp : Application() {
         super.onCreate()
         clearOkHttpCache()
 
+        // @TODO: Move auth-related modules in the App's `initialize()` upon auth
         startKoin {
             androidContext(this@FitnesswayApp)
             androidLogger()
+
             modules(
                 appModule,
                 stateModule,
@@ -33,7 +34,6 @@ class FitnesswayApp : Application() {
                 viewModelModule,
                 repositoryModule,
                 dataStoreModule,
-                managersModule,
                 scopeModule
             )
         }
@@ -42,8 +42,6 @@ class FitnesswayApp : Application() {
     }
 
     private fun clearOkHttpCache() {
-        // @NOTE
-        // `Application.cacheDir` or just `cacheDir` returns the app's cache directory
         val cacheDir = File(cacheDir, "okhttp_cache")
         if (cacheDir.exists()) cacheDir.deleteRecursively()
     }

@@ -27,7 +27,8 @@ val viewModelModule = module {
             nutrientRepo = get(),
             foodRepo = get(),
             managers = get(),
-            appStateStore = get()
+            appStateStore = get(),
+            dateTimeFormatter = get()
         )
     }
 

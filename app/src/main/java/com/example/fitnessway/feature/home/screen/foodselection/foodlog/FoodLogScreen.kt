@@ -124,7 +124,10 @@ fun FoodLogScreen(
 
     LaunchedEffect(foodToLog) {
         foodToLog?.let {
-            viewModel.initializeFoodLogForm(it.information, viewModel.getCurrentTime())
+            viewModel.initializeFoodLogForm(
+                food = it.information,
+                time = viewModel.dateTimeFormatter.getCurrentTime()
+            )
         }
     }
 

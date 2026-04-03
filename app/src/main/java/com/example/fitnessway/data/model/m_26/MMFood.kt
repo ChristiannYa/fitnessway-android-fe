@@ -128,7 +128,7 @@ data class FoodLogAddRequest(
     val foodId: Int,
     val servings: Double,
     val category: FoodLogCategory,
-    val time: Instant,
+    val time: String,
     val source: FoodSource
 )
 

@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -27,7 +26,6 @@ import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
 import com.example.fitnessway.util.form.field.provider.FoodLogEditionFieldsProvider
-import com.example.fitnessway.util.logcat
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -110,7 +108,6 @@ fun FoodLogDetailsScreen(
                     Box(modifier = Modifier.imePadding()) {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
-                            logcat("[screen] servings: $servings")
 
                             val nutrients = remember(
                                 foodLog.foodInformation.nutrients,
@@ -122,9 +119,6 @@ fun FoodLogDetailsScreen(
                                         newServings = servings
                                     )
                             }
-                            nutrients.toList().forEach {
-                                logcat("[screen] [${it.nutrientData.base.id}]: ${it.amount}")
-                            }
 
                             ErrorBannerAnimated(
                                 isVisible = foodLogUpdateErrMsg != null,
@@ -132,9 +126,12 @@ fun FoodLogDetailsScreen(
                             )
 
                             FoodLogDetails(
-                                foodLog = foodLog,
+                                foodLog = foodLog.copy(
+                                    foodInformation = foodLog.foodInformation.copy(
+                                        nutrients = nutrients
+                                    )
+                                ),
                                 isBlurredOverlayVisible = formState.isEditing,
-                                nutrients = nutrients,
                                 servingField = fieldsProvider.servings(),
                                 amountPerServingField = fieldsProvider.amountPerServing(
                                     servingUnit = foodLog.foodInformation.base.amountPerServing.toString()

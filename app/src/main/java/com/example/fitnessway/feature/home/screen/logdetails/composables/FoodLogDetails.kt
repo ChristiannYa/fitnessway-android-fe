@@ -19,8 +19,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.data.model.m_26.FoodLog
-import com.example.fitnessway.data.model.m_26.NutrientDataAmount
-import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.data.model.m_26.UserFoodSnapshotStatus
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.theme.AppModifiers
@@ -37,15 +35,16 @@ private const val updatedFoodMessage = "You have updated this food information"
 fun FoodLogDetails(
     foodLog: FoodLog,
     isBlurredOverlayVisible: Boolean,
-    nutrients: NutrientsByType<NutrientDataAmount>,
     servingField: FoodLogEditionField,
     amountPerServingField: FoodLogEditionField,
     user: User
 ) {
-    val foodComposables = remember(
-        key1 = foodLog,
-        key2 = nutrients
-    ) { FoodInformationComposables(foodLog.foodInformation, user) }
+    val foodComposables = remember(foodLog) {
+        FoodInformationComposables(
+            foodInformation = foodLog.foodInformation,
+            user = user
+        )
+    }
 
     Box(
         modifier = Modifier.fillMaxWidth(),

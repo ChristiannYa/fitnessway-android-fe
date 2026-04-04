@@ -18,6 +18,7 @@ import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
 import com.example.fitnessway.util.UNutrient.mapNutrients
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +33,8 @@ class ProfileViewModel(
     private val nutrientRepo: INutrientRepository,
     private val foodRepo: IFoodRepository,
     private val managers: IProfileManagers,
-    userStateHolder: IUserStateHolder
+    val dateTimeFormatter: IAppDateTimeFormatter,
+    userStateHolder: IUserStateHolder,
 ) : ViewModel(),
     IGoalsManager by managers.goals,
     IColorsManager by managers.colors {

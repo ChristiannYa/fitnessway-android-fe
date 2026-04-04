@@ -19,6 +19,7 @@ import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import org.koin.androidx.compose.koinViewModel
+import kotlin.time.Instant
 
 @Composable
 fun ProfileAccountInformationScreen(
@@ -42,7 +43,10 @@ fun ProfileAccountInformationScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.areaContainer(size = AreaContainerSize.SMALL),
             ) {
-                val userInformation = getUserAccountInformation(user)
+                val userInformation = getUserAccountInformation(
+                    user = user,
+                    formatDisplayDate = viewModel.dateTimeFormatter::formatDisplayDate
+                )
 
                 userInformation.forEach {
                     Row(
@@ -68,9 +72,12 @@ fun ProfileAccountInformationScreen(
     }
 }
 
-private fun getUserAccountInformation(user: User): List<Pair<String, String>> {
+private fun getUserAccountInformation(
+    user: User,
+    formatDisplayDate: (Instant) -> String
+): List<Pair<String, String>> {
     return listOf(
         Pair("Email", user.email),
-        Pair("Date Joined", user.createdAt)
+        Pair("Date Joined", formatDisplayDate(user.createdAt))
     )
 }

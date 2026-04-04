@@ -68,8 +68,7 @@ class HomeViewModel(
     val nutrientRepoUiState = nutrientRepo.uiState
     val foodRepoUiState = foodRepo.uiState
 
-    private fun getKebabDisplayDate() =
-        dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
+    private fun getKebabDisplayDate() = dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
 
     fun loadHomeData() {
         getNutrientIntakes()

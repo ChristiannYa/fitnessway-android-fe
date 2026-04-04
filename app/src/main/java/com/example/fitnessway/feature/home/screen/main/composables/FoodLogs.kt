@@ -69,18 +69,20 @@ import com.example.fitnessway.util.UFood.Ui.getFoodBrandText
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
+import kotlin.time.Instant
 
 @Composable
 private fun getFoodLogsContainerColor() = MaterialTheme.colorScheme.surfaceTint
 
 @Composable
 fun FoodLogs(
+    isVisible: Boolean,
     foodLogsState: UiState<FoodLogsCategorized>,
+    isDeletionError: Boolean,
+    formatTime: (Instant) -> String,
     onViewFoodsList: (FoodLogCategory) -> Unit,
     onViewFoodLogDetails: (FoodLog) -> Unit,
     onRemoveFoodLog: (FoodLog) -> Unit,
-    isDeletionError: Boolean,
-    isVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -108,10 +110,11 @@ fun FoodLogs(
 
                 is UiState.Success -> FoodLogsCategorized(
                     foodLogs = foodLogsState.data,
+                    isDeletionError = isDeletionError,
+                    formatTime = formatTime,
                     onViewFoodsList = onViewFoodsList,
                     onViewFoodLogDetails = onViewFoodLogDetails,
-                    onRemoveFoodLog = onRemoveFoodLog,
-                    isDeletionError = isDeletionError
+                    onRemoveFoodLog = onRemoveFoodLog
                 )
 
                 else -> {}
@@ -129,10 +132,11 @@ fun FoodLogs(
 @Composable
 private fun FoodLogsCategorized(
     foodLogs: FoodLogsCategorized,
+    isDeletionError: Boolean,
+    formatTime: (Instant) -> String,
     onViewFoodsList: (FoodLogCategory) -> Unit,
     onViewFoodLogDetails: (FoodLog) -> Unit,
-    onRemoveFoodLog: (FoodLog) -> Unit,
-    isDeletionError: Boolean
+    onRemoveFoodLog: (FoodLog) -> Unit
 ) {
     val categoriesWithLogs = listOf(
         FoodLogCategory.BREAKFAST to foodLogs.breakfast,
@@ -163,10 +167,11 @@ private fun FoodLogsCategorized(
                 FoodLogCategory(
                     foodLogs = logs,
                     category = category,
+                    isDeletionError = isDeletionError,
+                    formatTime = formatTime,
                     onViewFoodsList = onViewFoodsList,
                     onViewFoodLogDetails = onViewFoodLogDetails,
-                    onRemoveFoodLog = onRemoveFoodLog,
-                    isDeletionError = isDeletionError
+                    onRemoveFoodLog = onRemoveFoodLog
                 )
             }
         }
@@ -177,10 +182,11 @@ private fun FoodLogsCategorized(
 private fun FoodLogCategory(
     foodLogs: List<FoodLog>,
     category: FoodLogCategory,
+    isDeletionError: Boolean,
+    formatTime: (Instant) -> String,
     onViewFoodsList: (FoodLogCategory) -> Unit,
     onViewFoodLogDetails: (FoodLog) -> Unit,
-    onRemoveFoodLog: (FoodLog) -> Unit,
-    isDeletionError: Boolean
+    onRemoveFoodLog: (FoodLog) -> Unit
 ) {
     val categoryFormatted = category.name.toPascalSpaced()
 
@@ -201,9 +207,10 @@ private fun FoodLogCategory(
                 key(log.id) {
                     FoodLog(
                         foodLog = log,
+                        isDeletionError = isDeletionError,
+                        formatTime = formatTime,
                         onViewFoodLogDetails = { onViewFoodLogDetails(log) },
-                        onRemoveFoodLog = { onRemoveFoodLog(log) },
-                        isDeletionError = isDeletionError
+                        onRemoveFoodLog = { onRemoveFoodLog(log) }
                     )
                 }
             }
@@ -233,9 +240,10 @@ private fun FoodLogCategory(
 @Composable
 private fun FoodLog(
     foodLog: FoodLog,
+    isDeletionError: Boolean,
+    formatTime: (Instant) -> String,
     onViewFoodLogDetails: (FoodLog) -> Unit,
-    onRemoveFoodLog: (FoodLog) -> Unit,
-    isDeletionError: Boolean
+    onRemoveFoodLog: (FoodLog) -> Unit
 ) {
     val swipeToRemoveLogState = rememberSwipeToDismissBoxState(
         initialValue = SwipeToDismissBoxValue.Settled
@@ -364,7 +372,7 @@ private fun FoodLog(
             Spacer(modifier = Modifier.width(8.dp))
 
             AppLabel<Unit>(
-                text = foodLog.time.toString(),
+                text = formatTime(foodLog.time),
                 textStyle = MaterialTheme.typography.labelSmall,
                 size = Ui.LabelSize.XS,
             )

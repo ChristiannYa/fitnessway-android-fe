@@ -2,6 +2,7 @@ package com.example.fitnessway.data.model
 
 import com.example.fitnessway.data.model.MUser.Model.User
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 @Serializable
 enum class UserType {
@@ -18,7 +19,7 @@ object MUser {
             val name: String,
             val email: String,
             val isPremium: Boolean,
-            val createdAt: String,
+            val createdAt: Instant,
             val updatedAt: String,
             val type: UserType,
             val timezone: String

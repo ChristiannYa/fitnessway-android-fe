@@ -81,7 +81,7 @@ fun FoodLogDetailsScreen(
                         )
 
                         AppLabel<Unit>(
-                            text = foodLog.time.toString(),
+                            text = viewModel.dateTimeFormatter.formatTime(foodLog.time),
                             size = Ui.LabelSize.SMALL
                         )
 

@@ -1,15 +1,18 @@
 package com.example.fitnessway.data.repository.food_log
 
+import com.example.fitnessway.constants.Pagination
+import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
+import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodLogApiClient
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.logcat
+import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,14 +39,13 @@ class FoodLogRepositoryImpl(
     override fun refreshFoodLogs(date: String) {
         repositoryScope.launch {
             fetchFoodLogs(date).collect { state ->
-                _uiState.update { it.copy(foodLogsUiState = it.foodLogsUiState + (date to state)) }
+                _uiState.update { it.copy(foodLogs = it.foodLogs + (date to state)) }
             }
         }
     }
 
     override fun loadFoodLogs(date: String) {
-        logcat("[flRepo] lfl - called")
-        val uiState = _uiState.value.foodLogsUiState[date]
+        val uiState = _uiState.value.foodLogs[date]
         uiState?.let { if (it.hasState) return }
         refreshFoodLogs(date)
     }
@@ -87,9 +89,96 @@ class FoodLogRepositoryImpl(
         )
     )
 
-    override fun updateState(update: (FoodLogRepositoryUiState) -> FoodLogRepositoryUiState) = _uiState.update(update)
+    override fun clearFoodLogsUiCache() = _uiState.update { it.copy(foodLogs = emptyMap()) }
 
-    override fun clearFoodLogsUiCache() = _uiState.update { it.copy(foodLogsUiState = emptyMap()) }
+    private fun fetchRecentlyLogged(offset: Long) =
+        httpClient.makeRequest(
+            apiCall = {
+                apiClient.getLatestLoggedFoods(
+                    PaginationParams(Pagination.LIMIT, offset)
+                )
+            },
+            extractData = { it.recentlyLoggedFoodsPagination },
+            errMsg = "Failed to fetch recently logged foods"
+        )
+
+    private fun refreshRecentlyLogged() {
+        _uiState.update {
+            it.copy(
+                recentlyLogged = UiStatePager()
+            )
+        }
+
+        repositoryScope.launch {
+            fetchRecentlyLogged(offset = 0).collect { state ->
+                _uiState.update {
+                    it.copy(
+                        recentlyLogged = UiStatePager(state)
+                    )
+                }
+            }
+        }
+    }
+
+    override fun loadRecentlyLogged() {
+        val uiState = _uiState.value.recentlyLogged.uiState
+        if (uiState.hasState) return
+        refreshRecentlyLogged()
+    }
+
+    override fun loadMoreRecentlyLogged() {
+        val pager = _uiState.value.recentlyLogged
+        if (pager.isLoadingMore) return
+
+        val pagination = pager.toPaginationOrNull() ?: return
+        if (!pagination.hasMorePages) return
+
+        _uiState.update {
+            it.copy(
+                recentlyLogged = pager.copy(
+                    isLoadingMore = true
+                )
+            )
+        }
+
+        repositoryScope.launch {
+            fetchRecentlyLogged(
+                offset = pagination.currentPage * Pagination.LIMIT.toLong()
+            ).collect { state ->
+                when (state) {
+                    is UiState.Success -> _uiState.update {
+                        val current = it.recentlyLogged.toPaginationOrNull()
+                        val accumulated = (current?.data ?: emptyList()) + state.data.data
+
+                        it.copy(
+                            recentlyLogged = UiStatePager(
+                                uiState = UiState.Success(
+                                    data = state.data.copy(
+                                        data = accumulated
+                                    )
+                                )
+                            )
+                        )
+                    }
+
+                    is UiState.Error -> _uiState.update {
+                        it.copy(
+                            recentlyLogged = it.recentlyLogged.copy(
+                                isLoadingMore = false
+                            )
+                        )
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+
+        TODO("Not yet implemented")
+    }
+
+
+    override fun updateState(update: (FoodLogRepositoryUiState) -> FoodLogRepositoryUiState) = _uiState.update(update)
 
     override fun clearRepository() = _uiState.update { FoodLogRepositoryUiState() }
 }

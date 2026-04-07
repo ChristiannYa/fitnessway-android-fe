@@ -6,6 +6,8 @@ import com.example.fitnessway.data.model.m_26.FoodInformation
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
+import com.example.fitnessway.data.model.m_26.FoodPreview
+import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
@@ -57,6 +59,13 @@ fun MFood.Model.FoodInformation.toM26FoodInformation() = FoodInformation(
     nutrients = this.nutrients.toM26NutrientsInFood()
 )
 
+fun MFood.Model.FoodInformation.toMFoodPreview() = FoodPreview(
+    id = this.information.id,
+    base = this.information.toM26FoodBase(),
+    nutrientPreview = this.nutrients.toNutrientPreview(),
+    source = FoodSource.USER
+)
+
 fun PendingFood.toM25FoodInformation() = MFood.Model.FoodInformation(
     information = MFood.Model.FoodBaseInfo(
         id = this.id,
@@ -72,4 +81,11 @@ fun PendingFood.toM25FoodInformation() = MFood.Model.FoodInformation(
         updatedAt = ""
     ),
     nutrients = this.information.nutrients.toM25NutrientsInFood()
+)
+
+fun PendingFood.toPreview() = FoodPreview(
+    id = this.id,
+    base = this.information.base,
+    nutrientPreview = this.information.nutrients.toNutrientPreview(),
+    source = FoodSource.APP
 )

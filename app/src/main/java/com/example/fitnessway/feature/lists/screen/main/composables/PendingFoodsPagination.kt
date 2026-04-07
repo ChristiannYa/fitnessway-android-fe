@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
-import com.example.fitnessway.data.mappers.toM25FoodInformation
 import com.example.fitnessway.data.mappers.toPaginationOrNull
+import com.example.fitnessway.data.mappers.toPreview
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
@@ -76,7 +76,7 @@ fun PendingFoodsPagination(
                                     key = { it.id }
                                 ) { pendingFood ->
                                     UFood.Ui.FoodPreview(
-                                        food = pendingFood.toM25FoodInformation(),
+                                        food = pendingFood.toPreview(),
                                         isUserPremium = isUserPremium,
                                         showsNutrientPreview = true,
                                         onClick = { onFoodClick(pendingFood) }

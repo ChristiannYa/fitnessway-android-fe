@@ -8,11 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,15 +25,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toList
+import com.example.fitnessway.data.mappers.toMFoodPreview
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MUser.Model.User
+import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
 import com.example.fitnessway.ui.nutrient.PagedNutrients
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
-import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.foodContainer
@@ -66,13 +64,13 @@ object UFood {
 
         @Composable
         fun FoodPreview(
-            food: FoodInformation,
+            food: FoodPreview,
             isUserPremium: Boolean = false,
             showsNutrientPreview: Boolean = false,
             onClick: (() -> Unit)? = null
         ) {
             val view = LocalView.current
-            val missingBrand = food.information.brand.isNullOrEmpty()
+            val missingBrand = food.base.brand.isNullOrEmpty()
 
             Box(
                 modifier = Modifier.foodContainer {
@@ -82,55 +80,41 @@ object UFood {
                     }
                 }
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.weight(1f, false)
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = food.information.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = if (missingBrand) "~" else food.information.brand,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = food.base.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = if (missingBrand) "~" else food.base.brand,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
 
-                        if (isUserPremium && showsNutrientPreview) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                food.nutrients.basic.forEach { (nutrientData, amount) ->
-                                    val nutrientColor = getColor(nutrientData.preferences.hexColor)
+                    if (isUserPremium && showsNutrientPreview) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            food.nutrientPreview.toList().forEach { n ->
+                                val nutrientColor = getColor(n.color)
 
-                                    if (nutrientColor != null) {
-                                        Text(
-                                            text = doubleFormatter(amount),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = nutrientColor
-                                        )
-                                    }
+                                if (nutrientColor != null && n.amount != null) {
+                                    Text(
+                                        text = doubleFormatter(n.amount),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = nutrientColor
+                                    )
                                 }
                             }
                         }
-                    }
-
-                    if (food.metadata.isFavorite) {
-                        Structure.AppIconDynamic(
-                            source = Structure.AppIconButtonSource.Vector(Icons.Default.Star),
-                            contentDescription = "Food favorite indicator",
-                            modifier = Modifier.size(20.dp)
-                        )
                     }
                 }
             }
@@ -171,7 +155,7 @@ object UFood {
                                 key = { food -> food.information.id }
                             ) { food ->
                                 FoodPreview(
-                                    food = food,
+                                    food = food.toMFoodPreview(),
                                     isUserPremium = isUserPremium,
                                     showsNutrientPreview = showsNutrientPreview,
                                     onClick = { onFoodClick(food) }

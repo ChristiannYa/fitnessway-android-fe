@@ -1,6 +1,8 @@
 package com.example.fitnessway.data.mappers
 
+import com.example.fitnessway.constants.NutrientId
 import com.example.fitnessway.data.model.MNutrient
+import com.example.fitnessway.data.model.m_26.NutrientAmountWithColor
 import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientDataAmount
@@ -37,15 +39,16 @@ fun <N : NutrientGroupable> NutrientsByType<N>.mapnbt(
     minerals = transform(NutrientType.MINERAL, this.minerals)
 )
 
-fun <N : NutrientGroupable> List<N>.toType(): NutrientsByType<N> {
-    val grouped = this.groupBy { it.iNutrientType }
-
-    return NutrientsByType(
-        basic = grouped[NutrientType.BASIC] ?: emptyList(),
-        vitamins = grouped[NutrientType.VITAMIN] ?: emptyList(),
-        minerals = grouped[NutrientType.MINERAL] ?: emptyList()
-    )
-}
+fun <N : NutrientGroupable> List<N>.toType(): NutrientsByType<N> =
+    this
+        .groupBy { it.iNutrientType }
+        .let {
+            NutrientsByType(
+                basic = it[NutrientType.BASIC] ?: emptyList(),
+                vitamins = it[NutrientType.VITAMIN] ?: emptyList(),
+                minerals = it[NutrientType.MINERAL] ?: emptyList()
+            )
+        }
 
 fun Map<Int, String>.toNutrientIdAmountList(
     nutrientDvMap: Map<Int, String>? = null
@@ -63,6 +66,42 @@ fun Map<Int, String>.toNutrientIdAmountList(
 
             NutrientIdWithAmount(nutrientId, amount)
         }
+
+fun NutrientsByType<NutrientDataAmount>.toNutrientPreview() =
+    this.basic.let { nutrients ->
+        NutrientPreview(
+            calories = nutrients
+                .find { it.nutrientData.base.id == NutrientId.CALORIES }
+                .toNutrientAmountWithColorOrNull(),
+            carbs = nutrients
+                .find { it.nutrientData.base.id == NutrientId.CALORIES }
+                .toNutrientAmountWithColorOrNull(),
+            fats = nutrients
+                .find { it.nutrientData.base.id == NutrientId.FATS }
+                .toNutrientAmountWithColorOrNull(),
+            protein = nutrients
+                .find { it.nutrientData.base.id == NutrientId.PROTEIN }
+                .toNutrientAmountWithColorOrNull()
+        )
+    }
+
+fun NutrientDataAmount.toNutrientAmountWithColor() =
+    NutrientAmountWithColor(
+        amount = this.amount,
+        color = this.nutrientData.preferences.hexColor
+    )
+
+fun NutrientDataAmount?.toNutrientAmountWithColorOrNull() =
+    this?.toNutrientAmountWithColor() ?: NutrientAmountWithColor()
+
+fun MNutrient.Model.NutrientDataWithAmount.toM26NutrientAmountWithColor() =
+    NutrientAmountWithColor(
+        amount = this.amount,
+        color = this.nutrientWithPreferences.preferences.hexColor
+    )
+
+fun MNutrient.Model.NutrientDataWithAmount?.toM26NutrientAmountWithColorOrNull() =
+    this?.toM26NutrientAmountWithColor() ?: NutrientAmountWithColor()
 
 fun MNutrient.Model.NutrientDataWithAmount.toM26NutrientInFood() =
     NutrientDataAmount(
@@ -89,6 +128,25 @@ fun MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>.toM2
         vitamins = this.vitamin.map { it.toM26NutrientInFood() },
         minerals = this.mineral.map { it.toM26NutrientInFood() }
     )
+
+fun MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>.toNutrientPreview() =
+    this.basic.let { nutrients ->
+        NutrientPreview(
+            calories = nutrients
+                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.CALORIES }
+                .toM26NutrientAmountWithColorOrNull(),
+            carbs = nutrients
+                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.CARBS }
+                .toM26NutrientAmountWithColorOrNull(),
+            fats = nutrients
+                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.FATS }
+                .toM26NutrientAmountWithColorOrNull(),
+            protein = nutrients
+                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.PROTEIN }
+                .toM26NutrientAmountWithColorOrNull()
+        )
+    }
+
 
 fun NutrientsByType<NutrientDataAmount>.toM25NutrientsInFood() =
     MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>(

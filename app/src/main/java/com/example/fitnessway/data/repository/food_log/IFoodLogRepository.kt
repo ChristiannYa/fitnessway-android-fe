@@ -13,10 +13,13 @@ interface IFoodLogRepository {
 
     fun refreshFoodLogs(date: String)
     fun loadFoodLogs(date: String)
-    fun clearFoodLogsUiCache()
     suspend fun addFoodLog(request: FoodLogAddRequest, date: String): Flow<UiState<FoodLog>>
     suspend fun updateFoodLog(request: FoodLogUpdateRequest, date: String): Flow<UiState<FoodLog>>
     suspend fun deleteFoodLog(foodLogId: Int, date: String): Flow<UiState<FoodLogData>>
+    fun clearFoodLogsUiCache()
+
+    fun loadRecentlyLogged()
+    fun loadMoreRecentlyLogged()
 
     fun updateState(update: (FoodLogRepositoryUiState) -> FoodLogRepositoryUiState)
     fun clearRepository()

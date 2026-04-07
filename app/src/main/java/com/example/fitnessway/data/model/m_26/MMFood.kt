@@ -126,7 +126,7 @@ data class PendingFood(
 
 @Serializable
 data class RecentlyLoggedFoodsResponse(
-    val recentlyLoggedFoods: PaginationResult<FoodPreview>
+    val recentlyLoggedFoodsPagination: PaginationResult<FoodPreview>
 )
 
 @Serializable

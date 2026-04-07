@@ -120,7 +120,13 @@ data class PendingFood(
 data class FoodSearchResult(
     val id: Int,
     val base: FoodBase,
-    val nutrientsPreview: NutrientPreview
+    val nutrientsPreview: NutrientPreview,
+    val source: FoodSource
+)
+
+@Serializable
+data class RecentlyLoggedFoodsResponse(
+    val recentlyLoggedFoods: PaginationResult<FoodSearchResult>
 )
 
 @Serializable
@@ -185,10 +191,12 @@ data class FoodInformationWithId(
     val information: FoodInformation
 )
 
+@Serializable
 data class FoodPreview(
     val id: Int,
     val base: FoodBase,
     val nutrientPreview: NutrientPreview,
+    val source: FoodSource,
     val isUserPremium: Boolean
 )
 

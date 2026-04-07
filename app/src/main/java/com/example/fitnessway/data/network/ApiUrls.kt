@@ -46,9 +46,6 @@ object ApiUrls {
         const val LIST_PATH = "food/app/search"
         const val LIST_URL = "$BASE_URL_KT$LIST_PATH"
 
-        fun getPaginationPath(params: PaginationParams) = "$LIST_PATH?${params.toRequestParams()}"
-        fun getPaginationUrl(params: PaginationParams) = BASE_URL_KT + getPaginationPath(params)
-
         const val BY_ID_PATH = "food/app"
         const val BY_ID_URL = "$BASE_URL_KT$BY_ID_PATH"
 
@@ -75,6 +72,12 @@ object ApiUrls {
 
         fun getListByDatePath(date: String) = "$LIST_PATH/$date"
         fun getListByDateUrl(date: String) = BASE_URL_KT + getListByDatePath(date)
+
+        const val LIST_LATEST_FOODS_PATH = "$PATH/latest"
+        const val LIST_LATEST_FOODS_URL = "$BASE_URL_KT$LIST_LATEST_FOODS_PATH"
+
+        const val LIST_RECENT_PATH = "$PATH/latest"
+        const val LIST_RECENT_URL = "$BASE_URL_KT$LIST_RECENT_PATH"
 
         const val ADD_URL = "$BASE_URL_KT$PATH"
 

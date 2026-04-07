@@ -3,7 +3,6 @@ package com.example.fitnessway.feature.home.screen.foodselection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -12,14 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
 import com.example.fitnessway.feature.home.screen.foodselection.composables.FoodResultsPagination
-import com.example.fitnessway.feature.home.screen.foodselection.composables.UserFoodsList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
@@ -93,6 +90,8 @@ fun FoodSelectionScreen(
                         )
                     }
 
+
+                    /*
                     UserFoodsList(
                         foodsUiState = foodsUiState,
                         isUserPremium = user.isPremium,
@@ -108,6 +107,8 @@ fun FoodSelectionScreen(
                                 } else Modifier
                             )
                     )
+
+                     */
                 }
             }
 

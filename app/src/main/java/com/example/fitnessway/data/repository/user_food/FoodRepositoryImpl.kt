@@ -5,11 +5,6 @@ import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateR
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
-import com.example.fitnessway.data.model.m_26.FoodLog
-import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
-import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
-import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodApiClient
@@ -100,17 +95,11 @@ class FoodRepositoryImpl(
 
     override suspend fun deleteFood(
         foodId: Int
-    ): Flow<UiState<FoodInformation>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.deleteFood(foodId) },
-            extractData = { it.foodDeleted },
-            errMsg = "Failed to delete food",
-            invalidatedUrls = listOf(
-                ApiUrls.Food.LIST_URL,
-                ApiUrls.FoodLog.LIST_URL
-            )
-        )
-    }
+    ): Flow<UiState<FoodInformation>> = httpClient.makeRequest(
+        apiCall = { apiClient.deleteFood(foodId) },
+        extractData = { it.foodDeleted },
+        errMsg = "Failed to delete food"
+    )
 
     private var _updateFoodFavoriteStatusJob: Job? = null
     private val _updateFoodFavoriteStatusFlow = MutableSharedFlow<UiState<FoodInformation>>()
@@ -132,13 +121,12 @@ class FoodRepositoryImpl(
         return _updateFoodFavoriteStatusFlow
     }
 
-    private fun fetchFoodSort(): Flow<UiState<String>> {
-        return httpClient.makeRequest(
+    private fun fetchFoodSort(): Flow<UiState<String>> =
+        httpClient.makeRequest(
             apiCall = apiClient::getFoodSort,
             extractData = { it.foodSort },
             errMsg = "Failed to get food sort"
         )
-    }
 
     override fun refreshFoodSort() {
         _uiState.update { it.copy(foodSortUiState = UiState.Loading) }
@@ -158,95 +146,13 @@ class FoodRepositoryImpl(
 
     override fun updateFoodSort(
         request: FoodSortUpdateRequest
-    ): Flow<UiState<String>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.updateFoodSort(request) },
-            extractData = { it.foodSort },
-            errMsg = "Failed to update food sort",
-            invalidatedUrls = listOf(
-                ApiUrls.Food.SORT_GET_URL,
-                ApiUrls.Food.LIST_URL
-            )
-        )
-    }
+    ): Flow<UiState<String>> = httpClient.makeRequest(
+        apiCall = { apiClient.updateFoodSort(request) },
+        extractData = { it.foodSort },
+        errMsg = "Failed to update food sort"
+    )
 
-    private fun fetchFoodLogs(date: String): Flow<UiState<FoodLogsCategorized>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.getFoodLogs(date) },
-            extractData = { it.foodLogs },
-            errMsg = "Failed to get logs"
-        )
-    }
+    override fun updateState(update: (FoodRepositoryUiState) -> FoodRepositoryUiState) = _uiState.update(update)
 
-    override fun clearFoodLogsUiCache() {
-        _uiState.update { it.copy(foodLogsUiState = emptyMap()) }
-    }
-
-    override fun refreshFoodLogs(date: String) {
-        repositoryScope.launch {
-            fetchFoodLogs(date).collect { state ->
-                _uiState.update { it.copy(foodLogsUiState = it.foodLogsUiState + (date to state)) }
-            }
-        }
-    }
-
-    override fun loadFoodLogs(date: String) {
-        val uiState = _uiState.value.foodLogsUiState[date]
-        uiState?.let { if (it.hasState) return }
-
-        refreshFoodLogs(date)
-    }
-
-    override suspend fun addFoodLog(
-        request: FoodLogAddRequest,
-        date: String
-    ): Flow<UiState<FoodLog>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.addFoodLog(request) },
-            extractData = { it.foodLogAdded },
-            errMsg = "Failed to add log",
-            invalidatedUrls = listOf(
-                ApiUrls.Nutrient.getIntakesByDateUrl(date),
-                ApiUrls.FoodLog.getListByDateUrl(date)
-            )
-        )
-    }
-
-    override suspend fun updateFoodLog(
-        request: FoodLogUpdateRequest,
-        date: String
-    ): Flow<UiState<FoodLog>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.updateFoodLog(request) },
-            extractData = { it.foodLogUpdated },
-            errMsg = "Failed to update log",
-            invalidatedUrls = listOf(
-                ApiUrls.FoodLog.getListByDateUrl(date),
-                ApiUrls.Nutrient.getIntakesByDateUrl(date)
-            )
-        )
-    }
-
-    override suspend fun deleteFoodLog(
-        foodLogId: Int,
-        date: String
-    ): Flow<UiState<FoodLogData>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.deleteFoodLog(foodLogId) },
-            extractData = { it.foodLogDeleted },
-            errMsg = "Failed to delete log",
-            invalidatedUrls = listOf(
-                ApiUrls.Nutrient.getIntakesByDateUrl(date),
-                ApiUrls.FoodLog.getListByDateUrl(date)
-            )
-        )
-    }
-
-    override fun updateState(update: (FoodRepositoryUiState) -> FoodRepositoryUiState) {
-        _uiState.update(update)
-    }
-
-    override fun clearRepository() {
-        _uiState.update { FoodRepositoryUiState() }
-    }
+    override fun clearRepository() = _uiState.update { FoodRepositoryUiState() }
 }

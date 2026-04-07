@@ -13,6 +13,7 @@ import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.ListOption
+import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
 import com.example.fitnessway.data.repository.user_food.IFoodRepository
@@ -37,6 +38,7 @@ import kotlinx.coroutines.launch
 class ListsViewModel(
     private val pendingFoodRepo: IPendingFoodRepository,
     private val foodRepo: IFoodRepository,
+    private val foodLogRepo: IFoodLogRepository,
     private val nutrientRepo: INutrientRepository,
     private val managers: IListsManagers,
     userStateHolder: IUserStateHolder
@@ -213,7 +215,7 @@ class ListsViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodUpdateState = state) }
-                        foodRepo.clearFoodLogsUiCache()
+                        foodLogRepo.clearFoodLogsUiCache()
 
                         // Clear the original food's data
                         _originalFoodBeforeUpdate = null
@@ -292,7 +294,7 @@ class ListsViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodDeleteState = state) }
-                        foodRepo.clearFoodLogsUiCache()
+                        foodLogRepo.clearFoodLogsUiCache()
 
                         // Reset foods before successful deletion if all deletions succeeded
                         if (_foodFailedDeletions.isEmpty()) {
@@ -394,7 +396,7 @@ class ListsViewModel(
 
                         if (updatedFood.information.id == selectedFoodId) {
                             _uiState.update { it.copy(foodFavoriteStatusUpdateState = state) }
-                            foodRepo.clearFoodLogsUiCache()
+                            foodLogRepo.clearFoodLogsUiCache()
 
                             // Clear the original food's data
                             _originalFoodBeforeFavoriteStatusUpdate = null

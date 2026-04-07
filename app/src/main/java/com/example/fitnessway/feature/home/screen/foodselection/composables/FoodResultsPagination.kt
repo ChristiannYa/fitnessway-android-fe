@@ -97,7 +97,8 @@ fun FoodResultsPagination(
                                         id = pendingFood.id,
                                         base = pendingFood.base,
                                         nutrientPreview = pendingFood.nutrientsPreview,
-                                        isUserPremium = isUserPremium
+                                        isUserPremium = isUserPremium,
+                                        source = pendingFood.source
                                     ),
                                     onClick = onFoodClick
                                 )

@@ -11,6 +11,7 @@ import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
+import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user_food.IFoodRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
@@ -41,6 +42,7 @@ class HomeViewModel(
     private val appFoodRepo: IAppFoodRepository,
     private val nutrientRepo: INutrientRepository,
     private val foodRepo: IFoodRepository,
+    private val foodLogRepo: IFoodLogRepository,
     private val managers: IHomeManager,
     val appStateStore: IApplicationStateStore,
     val dateTimeFormatter: IAppDateTimeFormatter
@@ -77,7 +79,7 @@ class HomeViewModel(
 
     fun refreshHomeData() {
         nutrientRepo.refreshNutrientIntakes(getKebabDisplayDate())
-        foodRepo.refreshFoodLogs(getKebabDisplayDate())
+        foodLogRepo.refreshFoodLogs(getKebabDisplayDate())
     }
 
     fun refreshFoodSelectionScreenData() {
@@ -118,7 +120,7 @@ class HomeViewModel(
 
     fun getFoods() = foodRepo.loadFoods()
 
-    fun getFoodLogs() = foodRepo.loadFoodLogs(getKebabDisplayDate())
+    fun getFoodLogs() = foodLogRepo.loadFoodLogs(getKebabDisplayDate())
 
     fun addFoodLog() {
         val user = this.userFlow.value ?: return
@@ -138,7 +140,7 @@ class HomeViewModel(
         )
 
         viewModelScope.launch {
-            foodRepo.addFoodLog(request, date).collect { state ->
+            foodLogRepo.addFoodLog(request, date).collect { state ->
 
                 when (state) {
                     is UiState.Success -> {
@@ -190,7 +192,7 @@ class HomeViewModel(
                             }
                         }
 
-                        foodRepo.refreshFoodLogs(date)
+                        foodLogRepo.refreshFoodLogs(date)
                         nutrientRepo.refreshNutrientIntakes(date)
                     }
 
@@ -303,7 +305,7 @@ class HomeViewModel(
 
         // Send the api request
         viewModelScope.launch {
-            foodRepo.updateFoodLog(request, apiDate).collect { state ->
+            foodLogRepo.updateFoodLog(request, apiDate).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogUpdateState = state) }
@@ -422,7 +424,7 @@ class HomeViewModel(
         }
 
         viewModelScope.launch {
-            foodRepo.deleteFoodLog(
+            foodLogRepo.deleteFoodLog(
                 foodLogId = selectedFoodLogToRemove.id,
                 date = apiDate
             ).collect { state ->

@@ -49,7 +49,7 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
-    val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
+    val foodLogRepoUiState by viewModel.foodLogRepoUiState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     val areFoodLogsVisible by viewModel.areFoodLogsVisible.collectAsState()
 
@@ -69,8 +69,9 @@ fun HomeScreen(
         nutrientRepoUiState.nutrientIntakesCache[apiDateFormat] ?: UiState.Loading
     }
 
-    val foodLogsState = remember(foodRepoUiState, apiDateFormat) {
-        foodRepoUiState.foodLogsUiState[apiDateFormat] ?: UiState.Loading
+    val foodLogsState = remember(foodLogRepoUiState, apiDateFormat) {
+        foodLogRepoUiState.foodLogsUiState[apiDateFormat] ?: UiState.Loading
+
     }
 
     val pullToRefreshState = rememberPullToRefreshState()
@@ -78,7 +79,7 @@ fun HomeScreen(
 
     val isRefreshing = pullToRefreshThresholdReached &&
             (nutrientRepoUiState.nutrientIntakesCache[apiDateFormat] is UiState.Loading ||
-                    foodRepoUiState.foodLogsUiState[apiDateFormat] is UiState.Loading)
+                    foodLogRepoUiState.foodLogsUiState[apiDateFormat] is UiState.Loading)
 
     LaunchedEffect(key1 = selectedDate) {
         viewModel.loadHomeData()

@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.FoodPreview
-import com.example.fitnessway.data.model.m_26.FoodSearchResult
 import com.example.fitnessway.ui.food.FoodPreviewCard
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.util.Ui
@@ -31,7 +30,7 @@ import com.example.fitnessway.util.extensions.OnLoadMore
 fun FoodResultsPagination(
     isTyping: Boolean,
     isUserPremium: Boolean,
-    appFoodsUiStatePager: UiStatePager<FoodSearchResult>,
+    appFoodsUiStatePager: UiStatePager<FoodPreview>,
     onTypingConsumed: () -> Unit,
     onLoadMore: () -> Unit,
     onFoodClick: (Int) -> Unit,
@@ -96,10 +95,10 @@ fun FoodResultsPagination(
                                     preview = FoodPreview(
                                         id = pendingFood.id,
                                         base = pendingFood.base,
-                                        nutrientPreview = pendingFood.nutrientsPreview,
-                                        isUserPremium = isUserPremium,
+                                        nutrientPreview = pendingFood.nutrientPreview,
                                         source = pendingFood.source
                                     ),
+                                    isUserPremium = isUserPremium,
                                     onClick = onFoodClick
                                 )
                             }

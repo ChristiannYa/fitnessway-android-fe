@@ -23,6 +23,7 @@ import com.example.fitnessway.util.extensions.toTextAndPrecise
 @Composable
 fun FoodPreviewCard(
     preview: FoodPreview,
+    isUserPremium: Boolean,
     onClick: ((Int) -> Unit)? = null,
 ) {
     val view = LocalView.current
@@ -63,7 +64,7 @@ fun FoodPreviewCard(
                     )
                 }
 
-                if (preview.isUserPremium) {
+                if (isUserPremium) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         preview.nutrientPreview.toList().forEach { nutrientPreview ->
                             val nutrientColor = getColor(nutrientPreview.color)

@@ -18,5 +18,6 @@ interface IFoodLogRepository {
     suspend fun updateFoodLog(request: FoodLogUpdateRequest, date: String): Flow<UiState<FoodLog>>
     suspend fun deleteFoodLog(foodLogId: Int, date: String): Flow<UiState<FoodLogData>>
 
+    fun updateState(update: (FoodLogRepositoryUiState) -> FoodLogRepositoryUiState)
     fun clearRepository()
 }

@@ -9,6 +9,7 @@ import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodLogApiClient
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,7 @@ class FoodLogRepositoryImpl(
 
     private fun fetchFoodLogs(date: String): Flow<UiState<FoodLogsCategorized>> =
         httpClient.makeRequest(
-            apiCall = { apiClient.getFoodLogs(date) },
+            apiCall = { apiClient.getByDate(date) },
             extractData = { it.foodLogs },
             errMsg = "Failed to get logs"
         )
@@ -41,56 +42,52 @@ class FoodLogRepositoryImpl(
     }
 
     override fun loadFoodLogs(date: String) {
+        logcat("[flRepo] lfl - called")
         val uiState = _uiState.value.foodLogsUiState[date]
         uiState?.let { if (it.hasState) return }
-
         refreshFoodLogs(date)
     }
 
     override suspend fun addFoodLog(
         request: FoodLogAddRequest,
         date: String
-    ): Flow<UiState<FoodLog>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.addFoodLog(request) },
-            extractData = { it.foodLogAdded },
-            errMsg = "Failed to add log",
-            invalidatedUrls = listOf(
-                ApiUrls.Nutrient.getIntakesByDateUrl(date),
-                ApiUrls.FoodLog.getListByDateUrl(date)
-            )
+    ): Flow<UiState<FoodLog>> = httpClient.makeRequest(
+        apiCall = { apiClient.add(request) },
+        extractData = { it.foodLogAdded },
+        errMsg = "Failed to add log",
+        invalidatedUrls = listOf(
+            ApiUrls.Nutrient.getIntakesByDateUrl(date),
+            ApiUrls.FoodLog.getListByDateUrl(date)
         )
-    }
+    )
 
     override suspend fun updateFoodLog(
         request: FoodLogUpdateRequest,
         date: String
-    ): Flow<UiState<FoodLog>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.updateFoodLog(request) },
-            extractData = { it.foodLogUpdated },
-            errMsg = "Failed to update log",
-            invalidatedUrls = listOf(
-                ApiUrls.FoodLog.getListByDateUrl(date),
-                ApiUrls.Nutrient.getIntakesByDateUrl(date)
-            )
+    ): Flow<UiState<FoodLog>> = httpClient.makeRequest(
+        apiCall = { apiClient.update(request) },
+        extractData = { it.foodLogUpdated },
+        errMsg = "Failed to update log",
+        invalidatedUrls = listOf(
+            ApiUrls.FoodLog.getListByDateUrl(date),
+            ApiUrls.Nutrient.getIntakesByDateUrl(date)
         )
-    }
+    )
 
     override suspend fun deleteFoodLog(
         foodLogId: Int,
         date: String
-    ): Flow<UiState<FoodLogData>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.deleteFoodLog(foodLogId) },
-            extractData = { it.foodLogDeleted },
-            errMsg = "Failed to delete log",
-            invalidatedUrls = listOf(
-                ApiUrls.Nutrient.getIntakesByDateUrl(date),
-                ApiUrls.FoodLog.getListByDateUrl(date)
-            )
+    ): Flow<UiState<FoodLogData>> = httpClient.makeRequest(
+        apiCall = { apiClient.delete(foodLogId) },
+        extractData = { it.foodLogDeleted },
+        errMsg = "Failed to delete log",
+        invalidatedUrls = listOf(
+            ApiUrls.Nutrient.getIntakesByDateUrl(date),
+            ApiUrls.FoodLog.getListByDateUrl(date)
         )
-    }
+    )
+
+    override fun updateState(update: (FoodLogRepositoryUiState) -> FoodLogRepositoryUiState) = _uiState.update(update)
 
     override fun clearFoodLogsUiCache() = _uiState.update { it.copy(foodLogsUiState = emptyMap()) }
 

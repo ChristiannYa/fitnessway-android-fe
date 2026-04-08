@@ -82,7 +82,8 @@ fun HomeScreen(
                     foodLogRepoUiState.foodLogs[apiDateFormat] is UiState.Loading)
 
     LaunchedEffect(key1 = selectedDate) {
-        viewModel.loadHomeData()
+        viewModel.getNutrientIntakes()
+        viewModel.getFoodLogs()
     }
 
     DisposableEffect(Unit) {
@@ -98,7 +99,10 @@ fun HomeScreen(
             Box(modifier = Modifier.fillMaxSize()) {
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,
-                    onRefresh = viewModel::refreshHomeData,
+                    onRefresh = {
+                        viewModel.refreshNutrientIntakes()
+                        viewModel.refreshFoodLogs()
+                    },
                     state = pullToRefreshState,
                     modifier = Modifier.fillMaxSize(),
                     indicator = {

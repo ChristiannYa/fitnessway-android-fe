@@ -27,7 +27,7 @@ import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.OnLoadMore
 
 @Composable
-fun FoodResultsPagination(
+fun AppFoodResultsPagination(
     isTyping: Boolean,
     isUserPremium: Boolean,
     appFoodsUiStatePager: UiStatePager<FoodPreview>,

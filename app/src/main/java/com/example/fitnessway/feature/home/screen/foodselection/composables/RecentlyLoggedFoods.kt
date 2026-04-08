@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.FoodPreview
+import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.util.UFood
@@ -30,7 +31,7 @@ fun RecentlyLoggedFoods(
     uiStatePager: UiStatePager<FoodPreview>,
     isUserPremium: Boolean,
     onLoadMore: () -> Unit,
-    onFoodClick: (FoodPreview) -> Unit,
+    onFoodClick: (Int, FoodSource) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -68,7 +69,7 @@ fun RecentlyLoggedFoods(
                                 food = it,
                                 isUserPremium = isUserPremium,
                                 showsNutrientPreview = true,
-                                onClick = { onFoodClick(it) }
+                                onClick = { onFoodClick(it.id, it.source) }
                             )
                         }
 

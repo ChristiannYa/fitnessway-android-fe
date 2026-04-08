@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
+import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodResultsPagination
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
-import com.example.fitnessway.feature.home.screen.foodselection.composables.FoodResultsPagination
 import com.example.fitnessway.feature.home.screen.foodselection.composables.RecentlyLoggedFoods
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
@@ -76,17 +76,17 @@ fun FoodSelectionScreen(
                             query = appFoodSearchQuery,
                             onQueryChange = { q ->
                                 isTyping = q.isNotBlank()
-                                viewModel.searchAppFoods(q)
+                                viewModel.getAppFoods(q)
                             },
                             focusManager = focusManager
                         )
 
-                        FoodResultsPagination(
+                        AppFoodResultsPagination(
                             isTyping = isTyping,
                             isUserPremium = user.isPremium,
                             appFoodsUiStatePager = appFoodsUiStatePager,
                             onTypingConsumed = { isTyping = false },
-                            onLoadMore = { viewModel.loadMoreAppFoods(appFoodSearchQuery) },
+                            onLoadMore = { viewModel.getMoreAppFoods(appFoodSearchQuery) },
                             onFoodClick = {
                                 viewModel.setSearchCriteria(FoodToLogSearchCriteria(it, FoodSource.APP))
                                 onNavigateToSelectedFood()
@@ -95,16 +95,19 @@ fun FoodSelectionScreen(
                     }
 
                     RecentlyLoggedFoods(
+                        uiStatePager = recentlyLoggedUiStatePager,
+                        isUserPremium = user.isPremium,
+                        onLoadMore = viewModel::getMoreRecentlyLoggedFoods,
+                        onFoodClick = { id, source ->
+                            viewModel.setSearchCriteria(FoodToLogSearchCriteria(id, source))
+                            onNavigateToSelectedFood()
+                        },
                         modifier = Modifier
                             .then(
                                 if (!appFoodSearchQuery.isNotBlank()) {
                                     Modifier.fillMaxHeight()
                                 } else Modifier
-                            ),
-                        uiStatePager = recentlyLoggedUiStatePager,
-                        isUserPremium = user.isPremium,
-                        onLoadMore = viewModel::loadMoreRecentlyLoggedFoods,
-                        onFoodClick = { }
+                            )
                     )
                 }
             }

@@ -71,31 +71,11 @@ class HomeViewModel(
     val foodRepoUiState = foodRepo.uiState
     val foodLogRepoUiState = foodLogRepo.uiState
 
-    private fun getKebabDisplayDate() = dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
-
-    fun loadHomeData() {
-        getNutrientIntakes()
-        getFoodLogs()
-    }
-
-    fun refreshHomeData() {
-        nutrientRepo.refreshNutrientIntakes(getKebabDisplayDate())
-        foodLogRepo.refreshFoodLogs(getKebabDisplayDate())
-    }
-
-    fun refreshFoodSelectionScreenData() {
-        foodRepo.refreshFoods()
-
-        userFlow.value?.let { user ->
-            if (user.isPremium) {
-                foodRepo.refreshFoodSort()
-            }
-        }
-    }
+    private fun getKebabDate() = dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
 
     private var debounceJob: Job? = null
 
-    fun searchAppFoods(query: String) {
+    fun getAppFoods(query: String) {
         _appFoodSearchQuery.value = query
 
         debounceJob?.cancel()
@@ -113,19 +93,23 @@ class HomeViewModel(
         }
     }
 
-    fun findAppFoodById(id: Int) = appFoodRepo.findAppFoodById(id)
+    fun getAppFoodById(id: Int) = appFoodRepo.findAppFoodById(id)
 
-    fun loadMoreAppFoods(query: String) = appFoodRepo.loadMoreAppFoods(query)
+    fun getMoreAppFoods(query: String) = appFoodRepo.loadMoreAppFoods(query)
 
-    fun getNutrientIntakes() = nutrientRepo.loadNutrientIntakes(getKebabDisplayDate())
+    fun getNutrientIntakes() = nutrientRepo.loadNutrientIntakes(getKebabDate())
 
     fun getFoods() = foodRepo.loadFoods()
 
-    fun getFoodLogs() = foodLogRepo.loadFoodLogs(getKebabDisplayDate())
+    fun getFoodLogs() = foodLogRepo.loadFoodLogs(getKebabDate())
 
     fun getRecentlyLoggedFoods() = foodLogRepo.loadRecentlyLogged()
 
-    fun loadMoreRecentlyLoggedFoods() = foodLogRepo.loadMoreRecentlyLogged()
+    fun getMoreRecentlyLoggedFoods() = foodLogRepo.loadMoreRecentlyLogged()
+
+    fun refreshNutrientIntakes() = nutrientRepo.refreshNutrientIntakes(getKebabDate())
+
+    fun refreshFoodLogs() = foodLogRepo.refreshFoodLogs(getKebabDate())
 
     fun addFoodLog() {
         val foodLogFormState = managers.foodLog.foodLogFormState.value?.data ?: return
@@ -158,7 +142,7 @@ class HomeViewModel(
             )
         }
 
-        val date = getKebabDisplayDate()
+        val date = getKebabDate()
 
         val request = FoodLogAddRequest(
             foodId = selectedFood.id,
@@ -203,7 +187,7 @@ class HomeViewModel(
         val formState = managers.foodLog.foodLogEditionFormState.value ?: return
         val selectedFoodLog = managers.foodLog.selectedFoodLog.value ?: return
 
-        val apiDate = getKebabDisplayDate()
+        val apiDate = getKebabDate()
 
         // Get original data to update optimistically
         val originalFoodLogsState = foodLogRepo.uiState.value.foodLogs[apiDate]
@@ -362,7 +346,7 @@ class HomeViewModel(
 
     fun deleteFoodLog() {
         val selectedFoodLogToRemove = managers.foodLog.selectedFoodLogToRemove.value ?: return
-        val apiDate = getKebabDisplayDate()
+        val apiDate = getKebabDate()
 
         // Get current data to update optimistically
         val originalFoodLogsState = foodLogRepo.uiState.value.foodLogs[apiDate]

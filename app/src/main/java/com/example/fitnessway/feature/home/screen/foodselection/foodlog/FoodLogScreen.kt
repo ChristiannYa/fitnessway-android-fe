@@ -82,43 +82,44 @@ fun FoodLogScreen(
 
     BackHandler { onBackClick() }
 
-    LaunchedEffect(Unit) {
-        searchCriteria?.let { searchCriteria ->
-            when (searchCriteria.source) {
-                FoodSource.APP -> {
-                    viewModel.findAppFoodById(searchCriteria.id)
-                }
-
-                FoodSource.USER -> {
-                    if (foodsUiState is UiState.Success) {
-                        foodsUiState.data
-                            .findById(searchCriteria.id)
-                            ?.let {
-                                viewModel.setFoodToLog(
-                                    foodToLog = FoodInformationWithId(
-                                        id = it.information.id,
-                                        information = it.toM26FoodInformation()
-                                    )
-                                )
-                            }
-                    }
-                }
+    LaunchedEffect(searchCriteria) {
+        searchCriteria?.let {
+            when (it.source) {
+                FoodSource.APP -> viewModel.getAppFoodById(searchCriteria.id)
+                FoodSource.USER -> viewModel.getFoods()
             }
         }
     }
 
-    LaunchedEffect(appFoodUiState) {
+    LaunchedEffect(appFoodUiState, searchCriteria) {
         if (appFoodUiState is UiState.Success &&
             searchCriteria?.source == FoodSource.APP
         ) {
-            appFoodUiState.data?.let { appFoodFound ->
+            appFoodUiState.data?.let {
                 viewModel.setFoodToLog(
                     FoodInformationWithId(
-                        id = appFoodFound.id,
-                        information = appFoodFound.information
+                        id = it.id,
+                        information = it.information
                     )
                 )
             }
+        }
+    }
+
+    LaunchedEffect(foodsUiState, searchCriteria) {
+        if (foodsUiState is UiState.Success &&
+            searchCriteria?.source == FoodSource.USER
+        ) {
+            foodsUiState.data
+                .findById(searchCriteria.id)
+                ?.let {
+                    viewModel.setFoodToLog(
+                        foodToLog = FoodInformationWithId(
+                            id = it.information.id,
+                            information = it.toM26FoodInformation()
+                        )
+                    )
+                }
         }
     }
 
@@ -177,7 +178,10 @@ fun FoodLogScreen(
             }
 
             Box(Modifier.fillMaxSize()) {
-                if (searchCriteria.source == FoodSource.APP && appFoodUiState is UiState.Loading) {
+                val isAppFoodLoading = searchCriteria.source == FoodSource.APP && appFoodUiState is UiState.Loading
+                val isUserFoodLoading = searchCriteria.source == FoodSource.USER && foodsUiState is UiState.Loading
+
+                if (isAppFoodLoading || isUserFoodLoading) {
                     Loading.SpinnerInScreen()
                 } else {
                     Column(

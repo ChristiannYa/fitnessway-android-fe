@@ -56,16 +56,18 @@ fun FoodLogDetails(
             }
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
-                    if (foodLog.userFoodSnapshotStatus != UserFoodSnapshotStatus.PRESENT) {
-                        item {
-                            Text(
-                                text = foodStatusMsg,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = foodStatusAccent
-                            )
+                    foodLog.userFoodSnapshotStatus?.let {
+                        if (it != UserFoodSnapshotStatus.PRESENT) {
+                            item {
+                                Text(
+                                    text = foodStatusMsg,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = foodStatusAccent
+                                )
+                            }
                         }
                     }
 

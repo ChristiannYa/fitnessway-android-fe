@@ -181,12 +181,6 @@ object UFood {
         val foodInformation: com.example.fitnessway.data.model.m_26.FoodInformation,
         val user: User
     ) {
-        init {
-            foodInformation.nutrients.toList().forEach {
-                logcat("[food composables obj] [${it.nutrientData.base.id}]: ${it.amount}")
-            }
-        }
-
         @Composable
         fun BaseInformation(
             /**

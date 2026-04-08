@@ -39,6 +39,7 @@ fun AppFoodSearchBar(
                     size = Clickables.AppIconButtonSize.SMALL,
                     onClick = {
                         onQueryChange("")
+                        focusManager.clearFocus()
                     }
                 )
             }

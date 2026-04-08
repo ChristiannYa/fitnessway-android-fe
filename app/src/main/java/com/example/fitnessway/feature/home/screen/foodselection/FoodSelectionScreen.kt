@@ -23,7 +23,6 @@ import com.example.fitnessway.feature.home.screen.foodselection.composables.Rece
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -107,35 +106,9 @@ fun FoodSelectionScreen(
                         onLoadMore = viewModel::loadMoreRecentlyLoggedFoods,
                         onFoodClick = { }
                     )
-
-                    /*
-                    UserFoodsList(
-                        foodsUiState = foodsUiState,
-                        isUserPremium = user.isPremium,
-                        onRefresh = viewModel::refreshFoodSelectionScreenData,
-                        onFoodClick = {
-                            viewModel.setSearchCriteria(FoodToLogSearchCriteria(it.information.id, FoodSource.USER))
-                            onNavigateToSelectedFood()
-                        },
-                        modifier = Modifier
-                            .then(
-                                if (!appFoodSearchQuery.isNotBlank()) {
-                                    Modifier.fillMaxHeight()
-                                } else Modifier
-                            )
-                    )
-
-                     */
                 }
             }
 
-        } else NotFoundScreen(
-            onBackClick = onPopBackStack,
-            message = "Food log category not found"
-        )
-
-    } else NotFoundScreen(
-        onBackClick = onPopBackStack,
-        message = "User not found"
-    )
+        }
+    }
 }

@@ -53,18 +53,16 @@ class FoodRepositoryImpl(
 
     override suspend fun addFood(
         request: FoodAddRequest
-    ): Flow<UiState<FoodInformation>> {
-        return httpClient.makeRequest(
-            apiCall = { apiClient.addFood(request) },
-            extractData = { it.foodCreated },
-            errMsg = "Failed to add food",
-            invalidatedUrls = listOf(
-                ApiUrls.Food.LIST_URL
-            )
-        ).onEach { state ->
-            if (state is UiState.Success) {
-                refreshFoods()
-            }
+    ): Flow<UiState<FoodInformation>> = httpClient.makeRequest(
+        apiCall = { apiClient.addFood(request) },
+        extractData = { it.foodCreated },
+        errMsg = "Failed to add food",
+        invalidatedUrls = listOf(
+            ApiUrls.Food.LIST_URL
+        )
+    ).onEach { state ->
+        if (state is UiState.Success) {
+            refreshFoods()
         }
     }
 

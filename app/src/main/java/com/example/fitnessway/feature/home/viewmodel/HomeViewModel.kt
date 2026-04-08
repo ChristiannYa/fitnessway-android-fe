@@ -4,11 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.mappers.mapfl
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.model.MFood.Enum.FoodSort
+import com.example.fitnessway.data.mappers.toNutrientPreview
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
+import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
@@ -21,9 +22,8 @@ import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.foodrequest.IFoodRequestManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Formatters.getCurrentDateInServerFormat
-import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import com.example.fitnessway.util.extensions.calcDailyIntakes
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
@@ -128,16 +128,40 @@ class HomeViewModel(
     fun loadMoreRecentlyLoggedFoods() = foodLogRepo.loadMoreRecentlyLogged()
 
     fun addFoodLog() {
-        val user = this.userFlow.value ?: return
         val foodLogFormState = managers.foodLog.foodLogFormState.value?.data ?: return
-        val selectedFoodId = managers.foodLog.foodToLog.value?.id ?: return
+        val selectedFood = managers.foodLog.foodToLog.value ?: return
         val category = managers.foodLog.foodLogCategory.value ?: return
         val source = managers.foodLog.searchCriteria.value?.source ?: return
+
+        val originalRecentlyLoggedListPagerState = foodLogRepo.uiState.value.recentlyLogged.uiState
+        if (originalRecentlyLoggedListPagerState !is UiState.Success) return
+
+        val recentlyLoggedList = originalRecentlyLoggedListPagerState.data
+
+        val loggedFoodPreview = FoodPreview(
+            id = selectedFood.id,
+            base = selectedFood.information.base,
+            nutrientPreview = selectedFood.information.nutrients.toNutrientPreview(),
+            source = source
+        )
+
+        val optimisticRecentlyLoggedList = listOf(loggedFoodPreview) +
+                recentlyLoggedList.data.filter { it.id != loggedFoodPreview.id }
+
+        val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPagerState.data.copy(
+            data = optimisticRecentlyLoggedList
+        )
+
+        foodLogRepo.updateState {
+            it.copy(
+                recentlyLogged = UiStatePager(UiState.Success(optimisticRecentlyLoggedPager))
+            )
+        }
 
         val date = getKebabDisplayDate()
 
         val request = FoodLogAddRequest(
-            foodId = selectedFoodId,
+            foodId = selectedFood.id,
             servings = foodLogFormState.servings.toDouble(),
             category = category,
             time = "$date ${foodLogFormState.time}",
@@ -150,59 +174,18 @@ class HomeViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
-
-                        val foodSortState = foodRepo.uiState.value.foodSortUiState
-
-                        // Update food sorting value if the user is premium and has a recently
-                        // logged at sort mode
-                        if (user.isPremium && foodSortState is UiState.Success) {
-                            val currentFoodsState = foodRepo.uiState.value.foodsUiState
-
-                            // Proceed if there is data from states
-                            if (currentFoodsState is UiState.Success) {
-                                val foodSort = foodSortState.data
-
-                                // Check if food sort value is recently logged
-                                if (foodSort.equals(
-                                        other = FoodSort.RECENTLY_LOGGED.name,
-                                        ignoreCase = true
-                                    )
-                                ) {
-                                    // Extract data from foods state
-                                    val currentFoods = currentFoodsState.data
-
-                                    // Obtain most recent version of the food from the repository
-                                    val latestFood = currentFoods.getFoodById(selectedFoodId)
-
-                                    if (latestFood != null) {
-                                        // Create optimistic food with `lastLoggedAt` value
-                                        val optimisticFood = latestFood.copy(
-                                            metadata = latestFood.metadata.copy(
-                                                lastLoggedAt = getCurrentDateInServerFormat()
-                                            )
-                                        )
-
-                                        // Create optimistic foods with optimistic logged food on top
-                                        val optimisticFoods =
-                                            listOf(optimisticFood) + currentFoods.filter {
-                                                it.information.id != optimisticFood.information.id
-                                            }
-
-                                        // Update Ui immediately
-                                        foodRepo.updateState {
-                                            it.copy(foodsUiState = UiState.Success(optimisticFoods))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
                         foodLogRepo.refreshFoodLogs(date)
                         nutrientRepo.refreshNutrientIntakes(date)
                     }
 
                     is UiState.Error -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
+
+                        foodLogRepo.updateState {
+                            it.copy(
+                                recentlyLogged = UiStatePager(UiState.Success(recentlyLoggedList))
+                            )
+                        }
                     }
 
                     is UiState.Loading -> {
@@ -265,7 +248,6 @@ class HomeViewModel(
 
         // Change the selected food log's nutrients value
         managers.foodLog.setSelectedFoodLog(updatedFoodLog)
-
 
         // Create optimistic food logs
         val optimisticFoodLogs = originalFoodLogs.mapfl { category, logs ->

@@ -47,6 +47,13 @@ fun FoodCreation.toUserFoodRequest(nutrients: List<NutrientIdWithAmount>) = MFoo
     nutrients = nutrients
 )
 
+fun PendingFood.toPreview() = FoodPreview(
+    id = this.id,
+    base = this.information.base,
+    nutrientPreview = this.information.nutrients.toNutrientPreview(),
+    source = FoodSource.APP
+)
+
 fun MFood.Model.FoodBaseInfo.toM26FoodBase() = FoodBase(
     name = this.name,
     brand = this.brand,
@@ -64,28 +71,4 @@ fun MFood.Model.FoodInformation.toMFoodPreview() = FoodPreview(
     base = this.information.toM26FoodBase(),
     nutrientPreview = this.nutrients.toNutrientPreview(),
     source = FoodSource.USER
-)
-
-fun PendingFood.toM25FoodInformation() = MFood.Model.FoodInformation(
-    information = MFood.Model.FoodBaseInfo(
-        id = this.id,
-        name = this.information.base.name,
-        brand = this.information.base.brand,
-        amountPerServing = this.information.base.amountPerServing,
-        servingUnit = this.information.base.servingUnit.name
-    ),
-    metadata = MFood.Model.FoodMetaData(
-        isFavorite = false,
-        lastLoggedAt = null,
-        createdAt = this.createdAt.toString(),
-        updatedAt = ""
-    ),
-    nutrients = this.information.nutrients.toM25NutrientsInFood()
-)
-
-fun PendingFood.toPreview() = FoodPreview(
-    id = this.id,
-    base = this.information.base,
-    nutrientPreview = this.information.nutrients.toNutrientPreview(),
-    source = FoodSource.APP
 )

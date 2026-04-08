@@ -56,11 +56,7 @@ class FoodLogRepositoryImpl(
     ): Flow<UiState<FoodLog>> = httpClient.makeRequest(
         apiCall = { apiClient.add(request) },
         extractData = { it.foodLogAdded },
-        errMsg = "Failed to add log",
-        invalidatedUrls = listOf(
-            ApiUrls.Nutrient.getIntakesByDateUrl(date),
-            ApiUrls.FoodLog.getListByDateUrl(date)
-        )
+        errMsg = "Failed to add log"
     )
 
     override suspend fun updateFoodLog(
@@ -82,11 +78,7 @@ class FoodLogRepositoryImpl(
     ): Flow<UiState<FoodLogData>> = httpClient.makeRequest(
         apiCall = { apiClient.delete(foodLogId) },
         extractData = { it.foodLogDeleted },
-        errMsg = "Failed to delete log",
-        invalidatedUrls = listOf(
-            ApiUrls.Nutrient.getIntakesByDateUrl(date),
-            ApiUrls.FoodLog.getListByDateUrl(date)
-        )
+        errMsg = "Failed to delete log"
     )
 
     override fun clearFoodLogsUiCache() = _uiState.update { it.copy(foodLogs = emptyMap()) }
@@ -173,8 +165,6 @@ class FoodLogRepositoryImpl(
                 }
             }
         }
-
-        TODO("Not yet implemented")
     }
 
 

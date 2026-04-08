@@ -46,6 +46,12 @@ fun FoodLogDetails(
         )
     }
 
+    val dynServings = remember(servingField.value) {
+        val servings = servingField.value.toDoubleOrNull()
+
+        if (servings == 1.0) "serving" else "servings"
+    }
+
     Box(
         modifier = Modifier.fillMaxWidth(),
         content = {
@@ -100,7 +106,7 @@ fun FoodLogDetails(
 
                                     Text(
                                         text = buildAnnotatedString {
-                                            append("${if (foodLog.servings == 1.0) "serving" else "servings"} of ")
+                                            append("$dynServings of ")
 
                                             withStyle(
                                                 style = SpanStyle(

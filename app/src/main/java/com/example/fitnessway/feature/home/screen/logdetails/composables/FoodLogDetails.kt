@@ -83,10 +83,8 @@ fun FoodLogDetails(
                                 foodLogServings = null
                             )
 
-                            val foodLogServings = foodLog.servings
-                            val food = foodLog.foodInformation
-                            val foodAmountPerServing = doubleFormatter(food.base.amountPerServing)
-                            val foodServingUnit = food.base.servingUnit
+                            val amountPerServing = doubleFormatter(foodLog.foodInformation.base.amountPerServing)
+                            val servingUnit = foodLog.foodInformation.base.servingUnit.name.lowercase()
 
                             Box(
                                 modifier = Modifier.areaContainer(
@@ -102,17 +100,17 @@ fun FoodLogDetails(
 
                                     Text(
                                         text = buildAnnotatedString {
-                                            append("${if (foodLogServings == 1.0) "serving" else "servings"} of ")
+                                            append("${if (foodLog.servings == 1.0) "serving" else "servings"} of ")
 
                                             withStyle(
                                                 style = SpanStyle(
                                                     fontWeight = FontWeight.SemiBold
                                                 )
                                             ) {
-                                                append("$foodAmountPerServing ")
+                                                append("$amountPerServing ")
                                             }
 
-                                            append("$foodServingUnit =")
+                                            append("$servingUnit =")
                                         },
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
@@ -121,7 +119,7 @@ fun FoodLogDetails(
                                     FoodLogEditionField(amountPerServingField)
 
                                     Text(
-                                        text = "g",
+                                        text = servingUnit,
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
                                     )

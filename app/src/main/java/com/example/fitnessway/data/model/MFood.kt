@@ -19,6 +19,7 @@ import kotlinx.serialization.Serializable
 
 object MFood {
     object Enum {
+        // @TODO: Remove this
         enum class ServingUnits {
             G,
             MG,

@@ -21,12 +21,12 @@ import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
 import com.example.fitnessway.feature.home.manager.foodrequest.IFoodRequestManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import com.example.fitnessway.util.extensions.calcDailyIntakes
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
+import com.example.fitnessway.util.extensions.toPrecisedString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -219,10 +219,7 @@ class HomeViewModel(
             category = selectedFoodLog.category,
             time = selectedFoodLog.time,
             loggedAt = selectedFoodLog.loggedAt,
-            servings = doubleFormatter(
-                value = formState.data.servingsPrecised,
-                decimalPlaces = 4
-            ).toDouble(),
+            servings = formState.data.servingsPrecised.toPrecisedString(4).toDouble(),
             userFoodSnapshotStatus = selectedFoodLog.userFoodSnapshotStatus,
             userFoodSnapshotId = selectedFoodLog.userFoodSnapshotId,
             source = selectedFoodLog.source,

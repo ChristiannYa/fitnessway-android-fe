@@ -46,7 +46,7 @@ fun FoodLogDetails(
         )
     }
 
-    val dynServings = remember(servingField.value) {
+    val dynServingsString = remember(servingField.value) {
         val servings = servingField.value.toDoubleOrNull()
 
         if (servings == 1.0) "serving" else "servings"
@@ -90,7 +90,6 @@ fun FoodLogDetails(
                             )
 
                             val amountPerServing = doubleFormatter(foodLog.foodInformation.base.amountPerServing)
-                            val servingUnit = foodLog.foodInformation.base.servingUnit.name.lowercase()
 
                             Box(
                                 modifier = Modifier.areaContainer(
@@ -106,7 +105,7 @@ fun FoodLogDetails(
 
                                     Text(
                                         text = buildAnnotatedString {
-                                            append("$dynServings of ")
+                                            append("$dynServingsString of ")
 
                                             withStyle(
                                                 style = SpanStyle(
@@ -116,7 +115,7 @@ fun FoodLogDetails(
                                                 append("$amountPerServing ")
                                             }
 
-                                            append("$servingUnit =")
+                                            append("${foodLog.foodInformation.base.servingUnit.name.lowercase()} =")
                                         },
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
@@ -125,7 +124,7 @@ fun FoodLogDetails(
                                     FoodLogEditionField(amountPerServingField)
 
                                     Text(
-                                        text = servingUnit,
+                                        text = "g",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
                                     )

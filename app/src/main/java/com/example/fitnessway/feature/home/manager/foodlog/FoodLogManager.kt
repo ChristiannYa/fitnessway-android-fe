@@ -5,9 +5,11 @@ import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
+import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.roundIfClose
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
+import com.example.fitnessway.util.extensions.toPrecisedString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
@@ -144,13 +146,18 @@ class FoodLogManager : IFoodLogManager {
     }
 
     override fun initializeFoodLogEditionForm(foodLog: FoodLog) {
-        val amPerSerCalc = foodLog.servings * foodLog.foodInformation.base.amountPerServing
-        val amPerSer = amPerSerCalc.roundIfClose(0.03)
+        val servingUnit = foodLog.foodInformation.base.servingUnit
+        val foodAmountPerServing = if (servingUnit == ServingUnit.OZ) {
+            foodLog.foodInformation.base.amountPerServing * 28.3495
+        } else foodLog.foodInformation.base.amountPerServing
+
+        val amountPerServingCalc = foodLog.servings * foodAmountPerServing
+        val amountPerServing = amountPerServingCalc.roundIfClose(0.03)
 
         val formState = FormState(
             data = FormStates.FoodLogEdition(
-                servings = doubleFormatter(foodLog.servings, 3),
-                amountPerServing = doubleFormatter(amPerSer, 3),
+                servings = foodLog.servings.toPrecisedString(3),
+                amountPerServing = amountPerServing.toPrecisedString(3),
                 foodAmountPerServing = foodLog.foodInformation.base.amountPerServing,
                 servingsPrecised = foodLog.servings
             )
@@ -164,16 +171,22 @@ class FoodLogManager : IFoodLogManager {
         input: String
     ) {
         _foodLogEditionFormState.value?.let { formState ->
+            val servingUnit = _selectedFoodLog.value?.foodInformation?.base?.servingUnit ?: return
+            val foodAmountPerServing = if (servingUnit == ServingUnit.OZ) {
+                formState.data.foodAmountPerServing * 28.3495
+            } else formState.data.foodAmountPerServing
+
             val updatedData = when (fieldName) {
                 FormFieldName.FoodLogEdition.SERVINGS -> {
                     val newAmount = input.toDoubleOrNull()
 
                     val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
-                        val amount = formState.data.foodAmountPerServing * newAmount
-                        doubleFormatter(amount, 3)
+                        (foodAmountPerServing * newAmount).toPrecisedString(3)
                     } else formState.data.amountPerServing
 
-                    val servingsPrecised = newAmount ?: formState.data.servingsPrecised
+                    val servingsPrecised = if (newAmount != null && newAmount > 0) {
+                        newAmount
+                    } else formState.data.servingsPrecised
 
                     formState.data.copy(
                         servings = input,
@@ -186,12 +199,11 @@ class FoodLogManager : IFoodLogManager {
                     val newAmount = input.toDoubleOrNull()
 
                     val (dynServings, servingsPrecised) = if (newAmount != null && newAmount > 0) {
-                        val precised = newAmount / formState.data.foodAmountPerServing
-                        val formatted = doubleFormatter(precised, 3)
-                        formatted to precised
-                    } else {
-                        formState.data.servings to formState.data.servingsPrecised
-                    }
+                        val precised = newAmount / foodAmountPerServing
+
+                        precised.toPrecisedString(3) to precised
+                    } else formState.data.servings to formState.data.servingsPrecised
+
 
                     formState.data.copy(
                         amountPerServing = input,

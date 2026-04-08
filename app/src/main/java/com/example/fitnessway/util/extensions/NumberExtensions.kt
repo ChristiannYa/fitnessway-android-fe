@@ -8,7 +8,7 @@ import kotlin.math.sign
 
 private val formatCache = mutableMapOf<Int, DecimalFormat>()
 
-fun Double.toTextAndPrecise(decimalPlaces: Int = 1): String {
+fun Double.toPrecisedString(decimalPlaces: Int = 1): String {
     require(decimalPlaces >= 0) { "Decimal places must be non-negative" }
 
     // Handle near-zero values

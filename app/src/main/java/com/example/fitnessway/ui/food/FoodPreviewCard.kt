@@ -18,7 +18,7 @@ import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.ui.theme.AppModifiers.foodContainer
 import com.example.fitnessway.util.UNutrient.getColor
-import com.example.fitnessway.util.extensions.toTextAndPrecise
+import com.example.fitnessway.util.extensions.toPrecisedString
 
 @Composable
 fun FoodPreviewCard(
@@ -71,7 +71,7 @@ fun FoodPreviewCard(
 
                             if (nutrientColor != null && nutrientPreview.amount != null) {
                                 Text(
-                                    text = nutrientPreview.amount.toTextAndPrecise(),
+                                    text = nutrientPreview.amount.toPrecisedString(),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = nutrientColor
                                 )

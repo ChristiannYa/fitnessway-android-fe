@@ -81,8 +81,7 @@ object ApiUrls {
 
         const val ADD_URL = "$BASE_URL_KT$PATH"
 
-        const val UPDATE_PATH = "food/log/update"
-        const val UPDATE_URL = "$BASE_URL_GO$UPDATE_PATH"
+        const val UPDATE_URL = "$BASE_URL_KT/$PATH"
 
         const val DELETE_PATH = "food/log/delete"
         const val DELETE_URL = "$BASE_URL_GO$DELETE_PATH"

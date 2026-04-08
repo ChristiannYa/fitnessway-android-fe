@@ -31,7 +31,6 @@ import com.example.fitnessway.util.form.field.FoodLogEditionField
 private const val deletedFoodMessage = "You have removed this food from your food list"
 private const val updatedFoodMessage = "You have updated this food information"
 
-// @TODO: Fix error when updating
 @Composable
 fun FoodLogDetails(
     foodLog: FoodLog,

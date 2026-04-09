@@ -59,6 +59,11 @@ enum class ListOption(
     Supplement(Structure.AppIconButtonSource.Resource(R.drawable.energy))
 }
 
+enum class FoodLogListFilter {
+    RECENTLY_LOGGED,
+    USER_FOODS
+}
+
 @Serializable
 data class FoodLog(
     val id: Int,

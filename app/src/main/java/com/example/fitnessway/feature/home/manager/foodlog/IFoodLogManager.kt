@@ -4,6 +4,7 @@ import com.example.fitnessway.data.model.m_26.FoodInformation
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
+import com.example.fitnessway.data.model.m_26.FoodLogListFilter
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodLogManager {
     val foodLogCategory: StateFlow<FoodLogCategory?>
+    val foodList: StateFlow<FoodLogListFilter>
 
     val selectedFoodLog: StateFlow<FoodLog?>
 
@@ -26,6 +28,8 @@ interface IFoodLogManager {
     val isFoodLogEditionFormValid: Boolean
 
     fun setFoodLogCategory(categories: FoodLogCategory)
+
+    fun setFoodList(list: FoodLogListFilter)
 
     fun setSelectedFoodLog(foodLog: FoodLog)
 

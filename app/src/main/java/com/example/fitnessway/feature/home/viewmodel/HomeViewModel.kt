@@ -8,6 +8,7 @@ import com.example.fitnessway.data.mappers.toNutrientPreview
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
+import com.example.fitnessway.data.model.m_26.FoodLogListFilter
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
@@ -472,6 +473,7 @@ class HomeViewModel(
             delay(500)
             _appFoodSearchQuery.value = ""
             appFoodRepo.clearAppFoods()
+            managers.foodLog.setFoodList(FoodLogListFilter.RECENTLY_LOGGED)
         }
     }
 

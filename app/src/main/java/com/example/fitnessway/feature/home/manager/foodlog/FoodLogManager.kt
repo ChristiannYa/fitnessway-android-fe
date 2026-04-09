@@ -4,6 +4,7 @@ import com.example.fitnessway.data.model.m_26.FoodInformation
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
+import com.example.fitnessway.data.model.m_26.FoodLogListFilter
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.roundIfClose
@@ -19,6 +20,9 @@ import kotlinx.coroutines.flow.StateFlow
 class FoodLogManager : IFoodLogManager {
     private val _foodLogCategory = MutableStateFlow<FoodLogCategory?>(null)
     override val foodLogCategory: StateFlow<FoodLogCategory?> = _foodLogCategory
+
+    private val _foodList = MutableStateFlow<FoodLogListFilter>(FoodLogListFilter.RECENTLY_LOGGED)
+    override val foodList: StateFlow<FoodLogListFilter> = _foodList
 
     private val _selectedFoodLog = MutableStateFlow<FoodLog?>(null)
     override val selectedFoodLog: StateFlow<FoodLog?> = _selectedFoodLog
@@ -109,6 +113,7 @@ class FoodLogManager : IFoodLogManager {
             } else false
         }
 
+    // @TODO: Simplify
     override fun setFoodLogCategory(categories: FoodLogCategory) {
         _foodLogCategory.value = when (categories) {
             FoodLogCategory.BREAKFAST -> FoodLogCategory.BREAKFAST
@@ -116,6 +121,10 @@ class FoodLogManager : IFoodLogManager {
             FoodLogCategory.DINNER -> FoodLogCategory.DINNER
             FoodLogCategory.SUPPLEMENT -> FoodLogCategory.SUPPLEMENT
         }
+    }
+
+    override fun setFoodList(list: FoodLogListFilter) {
+        _foodList.value = list
     }
 
     override fun setSelectedFoodLog(foodLog: FoodLog) {

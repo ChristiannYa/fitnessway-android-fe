@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.screen.foodselection.composables
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
+import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
@@ -29,6 +31,7 @@ import com.example.fitnessway.util.extensions.OnLoadMore
 @Composable
 fun RecentlyLoggedFoods(
     uiStatePager: UiStatePager<FoodPreview>,
+    isVisible: Boolean,
     isUserPremium: Boolean,
     onLoadMore: () -> Unit,
     onFoodClick: (Int, FoodSource) -> Unit,
@@ -38,64 +41,71 @@ fun RecentlyLoggedFoods(
 
     lazyListState.OnLoadMore(onLoadMore)
 
-    Box(Modifier.fillMaxHeight()) {
-        when (uiStatePager.uiState) {
-            is UiState.Loading -> Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                repeat(12) {
-                    Loading.Composable(height = 32.dp)
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = Animation.ComposableTransition.fadeIn,
+        exit = Animation.ComposableTransition.fadeOut,
+        modifier = modifier
+    ) {
+        Box(Modifier.fillMaxHeight()) {
+            when (uiStatePager.uiState) {
+                is UiState.Loading -> Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    repeat(12) {
+                        Loading.Composable(height = 32.dp)
+                    }
                 }
-            }
 
-            is UiState.Success -> LazyColumn(
-                state = lazyListState,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                uiStatePager.toPaginationOrNull()?.let { pagination ->
-                    val data = pagination.data
+                is UiState.Success -> LazyColumn(
+                    state = lazyListState,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxHeight()
+                ) {
+                    uiStatePager.toPaginationOrNull()?.let { pagination ->
+                        val data = pagination.data
 
-                    if (data.isEmpty()) {
-                        item {
-                            Messages.NotFoundMessage("Foods that you log will appear here")
-                        }
-                    } else {
-                        items(
-                            items = data,
-                            key = { it.id }
-                        ) {
-                            UFood.Ui.FoodPreview(
-                                food = it,
-                                isUserPremium = isUserPremium,
-                                showsNutrientPreview = true,
-                                onClick = { onFoodClick(it.id, it.source) }
-                            )
-                        }
-
-                        if (pagination.hasMorePages) {
+                        if (data.isEmpty()) {
                             item {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    CircularProgressIndicator(
-                                        strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH,
-                                        modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_SIZE)
-                                    )
+                                Messages.NotFoundMessage("Foods that you log will appear here")
+                            }
+                        } else {
+                            items(
+                                items = data,
+                                key = { it.id }
+                            ) {
+                                UFood.Ui.FoodPreview(
+                                    food = it,
+                                    isUserPremium = isUserPremium,
+                                    showsNutrientPreview = true,
+                                    onClick = { onFoodClick(it.id, it.source) }
+                                )
+                            }
+
+                            if (pagination.hasMorePages) {
+                                item {
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        CircularProgressIndicator(
+                                            strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH,
+                                            modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_SIZE)
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
+                else -> {}
             }
 
-            else -> {}
+            Messages.NotFoundMessageAnimated(
+                isVisible = uiStatePager.uiState is UiState.Error,
+                message = uiStatePager.uiState.toErrorMessageOrNull() ?: ""
+            )
         }
-
-        Messages.NotFoundMessageAnimated(
-            isVisible = uiStatePager.uiState is UiState.Error,
-            message = uiStatePager.uiState.toErrorMessageOrNull() ?: ""
-        )
     }
 }

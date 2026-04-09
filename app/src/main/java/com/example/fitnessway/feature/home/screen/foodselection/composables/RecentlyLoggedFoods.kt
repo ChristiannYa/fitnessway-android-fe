@@ -72,7 +72,7 @@ fun RecentlyLoggedFoods(
                         } else {
                             items(
                                 items = data,
-                                key = { it.id }
+                                key = { "${it.source}_${it.id}" }
                             ) {
                                 UFood.Ui.FoodPreview(
                                     food = it,

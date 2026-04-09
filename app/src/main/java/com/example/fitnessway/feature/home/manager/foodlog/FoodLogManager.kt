@@ -5,10 +5,10 @@ import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
-import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.roundIfClose
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
+import com.example.fitnessway.util.extensions.calcAmountPerServing
 import com.example.fitnessway.util.extensions.toPrecisedString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
@@ -135,22 +135,20 @@ class FoodLogManager : IFoodLogManager {
     }
 
     override fun initializeFoodLogForm(food: FoodInformation, time: String) {
+        val amountPerServingDb = food.base.calcAmountPerServing()
+
         _foodLogFormState.value = FormState(
             data = FormStates.FoodLog(
-                servings = doubleFormatter(1.0),
-                amountPerServing = doubleFormatter(food.base.amountPerServing, 3),
-                amountPerServingDb = food.base.amountPerServing,
+                servings = (1.0).toPrecisedString(),
+                amountPerServing = amountPerServingDb.toPrecisedString(3),
+                amountPerServingDb = amountPerServingDb,
                 time = time
             )
         )
     }
 
     override fun initializeFoodLogEditionForm(foodLog: FoodLog) {
-        val servingUnit = foodLog.foodInformation.base.servingUnit
-        val foodAmountPerServing = if (servingUnit == ServingUnit.OZ) {
-            foodLog.foodInformation.base.amountPerServing * 28.3495
-        } else foodLog.foodInformation.base.amountPerServing
-
+        val foodAmountPerServing = foodLog.foodInformation.base.calcAmountPerServing()
         val amountPerServingCalc = foodLog.servings * foodAmountPerServing
         val amountPerServing = amountPerServingCalc.roundIfClose(0.03)
 
@@ -171,10 +169,8 @@ class FoodLogManager : IFoodLogManager {
         input: String
     ) {
         _foodLogEditionFormState.value?.let { formState ->
-            val servingUnit = _selectedFoodLog.value?.foodInformation?.base?.servingUnit ?: return
-            val foodAmountPerServing = if (servingUnit == ServingUnit.OZ) {
-                formState.data.foodAmountPerServing * 28.3495
-            } else formState.data.foodAmountPerServing
+            val foodLog = _selectedFoodLog.value ?: return
+            val foodAmountPerServing = foodLog.foodInformation.base.calcAmountPerServing()
 
             val updatedData = when (fieldName) {
                 FormFieldName.FoodLogEdition.SERVINGS -> {
@@ -228,8 +224,8 @@ class FoodLogManager : IFoodLogManager {
 
                     val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
                         val amount = currentState.data.amountPerServingDb * newAmount
-                        doubleFormatter(amount, 3)
-                    } else currentState.data.amountPerServing // Keep current if invalid
+                        amount.toPrecisedString(3)
+                    } else currentState.data.amountPerServing
 
                     currentState.data.copy(
                         servings = input,
@@ -242,8 +238,8 @@ class FoodLogManager : IFoodLogManager {
 
                     val dynServings = if (newAmount != null && newAmount > 0) {
                         val amount = newAmount / currentState.data.amountPerServingDb
-                        doubleFormatter(amount, 3)
-                    } else currentState.data.servings // Keep current if invalid
+                        amount.toPrecisedString()
+                    } else currentState.data.servings
 
                     currentState.data.copy(
                         amountPerServing = input,

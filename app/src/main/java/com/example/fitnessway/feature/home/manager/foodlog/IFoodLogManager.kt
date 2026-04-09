@@ -27,7 +27,7 @@ interface IFoodLogManager {
     val isFoodLogFormValid: Boolean
     val isFoodLogEditionFormValid: Boolean
 
-    fun setFoodLogCategory(categories: FoodLogCategory)
+    fun setFoodLogCategory(category: FoodLogCategory)
 
     fun setFoodList(list: FoodLogListFilter)
 

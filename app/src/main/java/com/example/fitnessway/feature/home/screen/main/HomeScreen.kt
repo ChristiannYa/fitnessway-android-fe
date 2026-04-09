@@ -188,9 +188,9 @@ fun HomeScreen(
                     isVisible = areFoodLogsVisible,
                     isDeletionError = uiState.foodLogDeleteState is UiState.Error,
                     formatTime = viewModel.dateTimeFormatter::formatTime,
-                    onViewFoodsList = { foodLogCategories ->
+                    onViewFoodsList = { category ->
                         view.playSoundEffect(SoundEffectConstants.NAVIGATION_RIGHT)
-                        viewModel.setFoodLogCategory(foodLogCategories)
+                        viewModel.setFoodLogCategory(category)
                         onViewFoodsList()
                     },
                     onViewFoodLogDetails = { foodLog ->

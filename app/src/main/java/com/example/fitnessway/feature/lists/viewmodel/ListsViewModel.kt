@@ -24,7 +24,6 @@ import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
-import com.example.fitnessway.util.UNutrient.findByNutrientId
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -145,7 +144,7 @@ class ListsViewModel(
 
         // Obtain added nutrients if they are present
         val addedNutrientsWithPreferences = addedNutrients.mapNotNull { addedNutrient ->
-            nutrientsWithPreferences.combine().findByNutrientId(addedNutrient.id)
+            nutrientsWithPreferences.combine().find { it.nutrient.id == addedNutrient.id }
         }
 
         // Create a list of all original nutrients and added nutrients (if any)'s preferences metadata

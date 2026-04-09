@@ -113,14 +113,8 @@ class FoodLogManager : IFoodLogManager {
             } else false
         }
 
-    // @TODO: Simplify
-    override fun setFoodLogCategory(categories: FoodLogCategory) {
-        _foodLogCategory.value = when (categories) {
-            FoodLogCategory.BREAKFAST -> FoodLogCategory.BREAKFAST
-            FoodLogCategory.LUNCH -> FoodLogCategory.LUNCH
-            FoodLogCategory.DINNER -> FoodLogCategory.DINNER
-            FoodLogCategory.SUPPLEMENT -> FoodLogCategory.SUPPLEMENT
-        }
+    override fun setFoodLogCategory(category: FoodLogCategory) {
+        _foodLogCategory.value = category
     }
 
     override fun setFoodList(list: FoodLogListFilter) {

@@ -43,7 +43,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
-import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
@@ -62,12 +61,6 @@ import com.example.fitnessway.util.extensions.calcIntakes
 
 
 object UNutrient {
-    // @TODO: Remove and replace by `NutrientsViewFormat` from `ui.nutrient`
-    enum class ScrollableNutrientsFormat {
-        BOX,
-        CIRCLE
-    }
-
     data class NutrientIntakeCalculation(
         val intake: Double,
         val progress: Double,
@@ -160,25 +153,6 @@ object UNutrient {
         }
     }
 
-    fun calcNutrientIntakeData(intakeData: NutrientDataWithAmount): NutrientIntakeCalculation {
-        val intake = intakeData.amount
-        val goal = intakeData.nutrientWithPreferences.preferences.goal ?: 0.0
-
-        val progress = if (goal > 0) ((intake / goal) * 100) else 0.0
-
-        val remaining = goal - intake
-        val over = intake - goal
-
-        return NutrientIntakeCalculation(
-            intake = intake,
-            progress = progress,
-            remaining = remaining,
-            over = over,
-            isGoalMet = remaining == 0.0,
-            isOverGoal = remaining < 0
-        )
-    }
-
     fun <T> NutrientsByType<T>.filterNutrientsByType(type: NutrientType): List<T> {
         return when (type) {
             NutrientType.BASIC -> this.basic
@@ -208,20 +182,6 @@ object UNutrient {
         )
     }
 
-    fun <T, R> buildNutrientsByType(
-        nutrients: List<T>,
-        transform: (
-            type: NutrientType,
-            nutrients: List<T>
-        ) -> List<R>
-    ): NutrientsByType<R> {
-        return NutrientsByType(
-            basic = transform(NutrientType.BASIC, nutrients),
-            vitamin = transform(NutrientType.VITAMIN, nutrients),
-            mineral = transform(NutrientType.MINERAL, nutrients)
-        )
-    }
-
     fun <T> buildNutrientsByType2(
         nutrients: List<T>,
         getType: (T) -> NutrientType
@@ -239,28 +199,10 @@ object UNutrient {
         return this.basic + this.vitamin + this.mineral
     }
 
-    fun List<MNutrient.Model.NutrientWithPreferences>.findByNutrientId(
-        nutrientId: Int
-    ): MNutrient.Model.NutrientWithPreferences? {
-        return this.find { it.nutrient.id == nutrientId }
-    }
-
-    fun List<NutrientWithPreferences>.sortPremiumNutrients(
-        isPremiumUser: Boolean
-    ): List<NutrientWithPreferences> {
-        return if (!isPremiumUser) this.sortedBy { it.nutrient.isPremium } else this
-    }
-
     fun List<NutrientWithPreferences>.filterNonPremiumPreferences(
         isUserPremium: Boolean
     ): List<NutrientWithPreferences> {
         return if (!isUserPremium) this.filter { !it.nutrient.isPremium } else this
-    }
-
-    fun List<NutrientDataWithAmount>.filterNonPremiumAmounts(
-        isUserPremium: Boolean
-    ): List<NutrientDataWithAmount> {
-        return if (!isUserPremium) this.filter { !it.nutrientWithPreferences.nutrient.isPremium } else this
     }
 
     fun List<NutrientWithPreferences>.filterPremium(
@@ -273,25 +215,11 @@ object UNutrient {
         return this.filter { it.preferences.goal != null }
     }
 
-    fun List<NutrientDataWithAmount>.filterGoalSetAmounts(): List<NutrientDataWithAmount> {
-        return this.filter { it.nutrientWithPreferences.preferences.goal != null }
-    }
-
     fun List<NutrientWithPreferences>.filterGoalNotSet(): List<NutrientWithPreferences> {
         return this.filter { it.preferences.goal == null }
     }
 
-    fun Int.getNutrientById(nutrients: List<Nutrient>): Nutrient? {
-        return nutrients.find { it.id == this }
-    }
-
     fun List<Nutrient>.getIds(): List<Int> = this.map { it.id }
-
-    fun List<Nutrient>.validateFreeUserAccess(isUserPremium: Boolean): Boolean {
-        return if (!isUserPremium) {
-            !this.any { it.isPremium }
-        } else true
-    }
 
     fun getColor(color: String?): Color? {
         if (color.isNullOrEmpty()) return null
@@ -341,7 +269,7 @@ object UNutrient {
     object Ui {
         @Composable
         fun buildAnnotatedString(
-            nutrient: MNutrient.Model.Nutrient,
+            nutrient: Nutrient,
             isInDvMode: Boolean = false,
             nameColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
             informationColor: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f),

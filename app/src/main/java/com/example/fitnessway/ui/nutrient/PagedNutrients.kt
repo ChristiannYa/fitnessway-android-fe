@@ -76,12 +76,10 @@ fun PagedNutrients(
                         )
                     }
 
-                    NutrientsViewFormat.CIRCLE -> {
-                        NutrientsAsCircle(
-                            nutrients = chunkedNutrients[page],
-                            isUserPremium = isUserPremium
-                        )
-                    }
+                    NutrientsViewFormat.CIRCLE -> NutrientsAsCircle(
+                        nutrients = chunkedNutrients[page],
+                        isUserPremium = isUserPremium
+                    )
                 }
             }
         }

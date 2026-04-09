@@ -268,7 +268,7 @@ object UFood {
                     )
 
                     PagedNutrients(
-                        nutrients = foodInformation.nutrients.toList(),
+                        nutrients = foodInformation.nutrients.basic.toList(),
                         viewFormat = NutrientsViewFormat.CIRCLE,
                         isUserPremium = user.isPremium
                     )

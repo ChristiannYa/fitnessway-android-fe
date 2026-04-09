@@ -1,11 +1,5 @@
 package com.example.fitnessway.data.model
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.SortByAlpha
-import com.example.fitnessway.data.model.MFood.Enum.FoodLogFoodStatus
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
@@ -13,47 +7,11 @@ import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
-import com.example.fitnessway.ui.shared.Structure
+import com.example.fitnessway.data.model.m_26.UserFoodSnapshotStatus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 object MFood {
-    object Enum {
-        // @TODO: Remove this
-        enum class ServingUnits {
-            G,
-            MG,
-            MCG,
-            ML,
-            OZ,
-            KCAL;
-
-            companion object {
-                val units by lazy { entries.map { it.name.lowercase() } }
-            }
-        }
-
-        enum class FoodLogFoodStatus {
-            @SerialName("present")
-            PRESENT,
-
-            @SerialName("updated")
-            UPDATED,
-
-            @SerialName("deleted")
-            DELETED
-        }
-
-        enum class FoodSort(
-            val icon: Structure.AppIconButtonSource
-        ) {
-            ALPHABETICALLY(Structure.AppIconButtonSource.Vector(Icons.Default.SortByAlpha)),
-            CREATION_DATE(Structure.AppIconButtonSource.Vector(Icons.Default.CalendarToday)),
-            FAVORITE(Structure.AppIconButtonSource.Vector(Icons.Default.Favorite)),
-            RECENTLY_LOGGED(Structure.AppIconButtonSource.Vector(Icons.Default.History)),
-        }
-    }
-
     object Model {
         @Serializable
         data class FoodBaseInfo(
@@ -115,7 +73,7 @@ object MFood {
             val servings: Double,
 
             @SerialName("food_status")
-            val foodStatus: FoodLogFoodStatus? = null,
+            val foodStatus: UserFoodSnapshotStatus? = null,
 
             @SerialName("food_snapshot_id")
             val foodSnapshotId: Int?,

@@ -8,8 +8,4 @@ fun String.toPascalSpaced(
     .let { if (shouldLowerCases) it.lowercase() else it }
     .replaceFirstChar { it.uppercaseChar() }
 
-fun String?.toPascalSpacedOrFallback(
-    fallback: String = "~"
-) = this?.toPascalSpaced() ?: fallback
-
 fun String.plural(): String = this + "s"

@@ -1,8 +1,8 @@
 package com.example.fitnessway.feature.lists.manager.edition
 
-import com.example.fitnessway.data.model.MFood.Enum.ServingUnits
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient
+import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.UNutrient.combine
@@ -13,6 +13,8 @@ import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInli
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
+import com.example.fitnessway.util.isValidEnum
+import com.example.fitnessway.util.listEnumValues
 import com.example.fitnessway.util.nutrient.NutrientDvControls
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,12 +74,9 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.servingUnit.let { value ->
                 if (value.isEmpty()) null else {
-                    val isValid = when (value) {
-                        in ServingUnits.units -> true
-                        else -> false
+                    if (value.isValidEnum<ServingUnit>()) null else {
+                        "Must be one of ${listEnumValues<ServingUnit>()}"
                     }
-
-                    if (isValid) null else "Must be one of ${ServingUnits.units}"
                 }
             }
         }

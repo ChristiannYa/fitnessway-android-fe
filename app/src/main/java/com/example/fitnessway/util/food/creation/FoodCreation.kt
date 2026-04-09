@@ -1,12 +1,14 @@
 package com.example.fitnessway.util.food.creation
 
-import com.example.fitnessway.data.model.MFood
+import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.util.Formatters
 import com.example.fitnessway.util.Formatters.toInputDouble
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.field.InlineRules
 import com.example.fitnessway.util.form.field.Rules
+import com.example.fitnessway.util.isValidEnum
+import com.example.fitnessway.util.listEnumValues
 import com.example.fitnessway.util.nutrient.NutrientDvControls
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,14 +56,9 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
     override val servingUnitError: String?
         get() = _foodCreationFormState.value.servingUnit.let { value ->
             if (value.isEmpty()) null else {
-                val isValid = when (value) {
-                    in MFood.Enum.ServingUnits.Companion.units -> true
-                    else -> false
+                if (value.isValidEnum<ServingUnit>()) null else {
+                    "Must be one of ${listEnumValues<ServingUnit>()}"
                 }
-
-                val servingUnits = MFood.Enum.ServingUnits.Companion.units.joinToString(separator = ", ")
-
-                if (isValid) null else "Must be one of $servingUnits"
             }
         }
 

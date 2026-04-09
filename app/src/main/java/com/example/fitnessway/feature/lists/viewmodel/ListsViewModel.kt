@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.mappers.toNutrientIdAmountList
 import com.example.fitnessway.data.mappers.toPendingRequest
 import com.example.fitnessway.data.mappers.toUserFoodRequest
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
@@ -345,96 +344,6 @@ class ListsViewModel(
 
     }
 
-    private var _originalFoodBeforeFavoriteStatusUpdate: FoodInformation? = null
-
-    fun updateFoodFavoriteStatus(isFavorite: Boolean) {
-        val selectedFoodId = managers.edition.selectedFood.value?.information?.id ?: return
-
-        // Get current foods data
-        val originalFoodsState = foodRepo.uiState.value.foodsUiState
-
-        // Proceed only if there is data
-        if (originalFoodsState !is UiState.Success) return
-
-        // Extract data from state
-        val originalFoods = originalFoodsState.data
-
-        // Obtain most recent version of the food from the repository
-        val latestFood = originalFoods.getFoodById(selectedFoodId) ?: return
-
-        // Store original food if first update
-        if (_originalFoodBeforeFavoriteStatusUpdate == null) {
-            _originalFoodBeforeFavoriteStatusUpdate = latestFood
-        }
-
-        // Create optimistic food
-        val optimisticFood = latestFood.copy(
-            metadata = latestFood.metadata.copy(
-                isFavorite = isFavorite
-            )
-        )
-
-        // Create optimistic foods
-        val optimisticFoods = originalFoods.map { food ->
-            if (food.information.id == latestFood.information.id) optimisticFood else food
-        }
-
-        // Update Ui immediately
-        foodRepo.updateState {
-            it.copy(foodsUiState = UiState.Success(optimisticFoods))
-        }
-        managers.edition.setSelectedFood(optimisticFood)
-
-        // Send request
-        val request = FoodFavoriteStatusUpdateRequest(selectedFoodId, isFavorite)
-        viewModelScope.launch {
-            foodRepo.updateFoodFavoriteStatus(request).collect { state ->
-                when (state) {
-                    is UiState.Success -> {
-                        val updatedFood = state.data
-
-                        if (updatedFood.information.id == selectedFoodId) {
-                            _uiState.update { it.copy(foodFavoriteStatusUpdateState = state) }
-                            foodLogRepo.clearFoodLogsUiCache()
-
-                            // Clear the original food's data
-                            _originalFoodBeforeFavoriteStatusUpdate = null
-                        }
-                    }
-
-                    is UiState.Error -> {
-                        _uiState.update { it.copy(foodFavoriteStatusUpdateState = state) }
-
-                        // Revert back to original state
-                        val revertedFood = _originalFoodBeforeFavoriteStatusUpdate
-
-                        if (revertedFood != null) {
-                            val currentFoodsState = foodRepo.uiState.value.foodsUiState
-                            if (currentFoodsState is UiState.Success) {
-                                val revertedFoods = currentFoodsState.data.map { food ->
-                                    if (food.information.id == revertedFood.information.id) {
-                                        revertedFood
-                                    } else food
-                                }
-
-                                foodRepo.updateState {
-                                    it.copy(foodsUiState = UiState.Success(revertedFoods))
-                                }
-
-                                managers.edition.setSelectedFood(revertedFood)
-                            }
-
-                            // Clear the original food's data
-                            _originalFoodBeforeFavoriteStatusUpdate = null
-                        }
-                    }
-
-                    else -> {}
-                }
-            }
-        }
-    }
-
     fun resetFoodRequestState() {
         _uiState.update { it.copy(foodRequestState = UiState.Idle) }
     }
@@ -449,10 +358,6 @@ class ListsViewModel(
 
     fun resetFoodDeleteState() {
         _uiState.update { it.copy(foodDeleteState = UiState.Idle) }
-    }
-
-    fun resetFoodFavoriteStatusUpdateState() {
-        _uiState.update { it.copy(foodFavoriteStatusUpdateState = UiState.Idle) }
     }
 
     /**

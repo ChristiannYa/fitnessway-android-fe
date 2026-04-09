@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,7 +29,6 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages.SuccessMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure
-import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
@@ -50,7 +47,6 @@ fun FoodDetailsScreen(
     val selectedFoodCopy = selectedFood
 
     val foodDeleteState = uiState.foodDeleteState
-    val foodFavoriteStatusUpdateState = uiState.foodFavoriteStatusUpdateState
 
     val foodDeleteErrorMessage = handleTempApiErrMsg(
         uiState = foodDeleteState,
@@ -80,28 +76,11 @@ fun FoodDetailsScreen(
                 Header(
                     onBackClick = {
                         if (foodDeleteState !is UiState.Idle) viewModel.resetFoodDeleteState()
-                        if (foodFavoriteStatusUpdateState !is UiState.Idle) viewModel.resetFoodFavoriteStatusUpdateState()
-
                         onBackClick()
                     },
                     title = title
                 ) {
-                    val isFavorite = selectedFoodCopy.metadata.isFavorite
-
                     if (foodDeleteState !is UiState.Success) {
-                        val favoriteIcon = if (isFavorite) {
-                            Icons.Default.Star
-                        } else Icons.Default.StarBorder
-
-                        Clickables.AppPngIconButton(
-                            icon = Structure.AppIconButtonSource.Vector(favoriteIcon),
-                            contentDescription = "Favorite this food",
-                            enabled = !(moreOptionsState.isVisible || isConfirmDeletionPopupVisible),
-                            onClick = {
-                                view.playSoundEffect(SoundEffectConstants.CLICK)
-                                viewModel.updateFoodFavoriteStatus(!isFavorite)
-                            }
-                        )
 
                         Clickables.AppPngIconButton(
                             icon = Structure.AppIconButtonSource.Vector(Icons.Default.MoreHoriz),
@@ -198,9 +177,5 @@ fun FoodDetailsScreen(
                 )
             }
         }
-    } else NotFoundScreen(
-        onBackClick = onBackClick,
-        title = title,
-        message = "Food data not found"
-    )
+    }
 }

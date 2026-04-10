@@ -1,7 +1,6 @@
 package com.example.fitnessway.data.repository.user_food
 
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
-import com.example.fitnessway.data.model.MFood.Api.Req.FoodFavoriteStatusUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodSortUpdateRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
@@ -98,26 +97,6 @@ class FoodRepositoryImpl(
         extractData = { it.foodDeleted },
         errMsg = "Failed to delete food"
     )
-
-    private var _updateFoodFavoriteStatusJob: Job? = null
-    private val _updateFoodFavoriteStatusFlow = MutableSharedFlow<UiState<FoodInformation>>()
-
-    override fun updateFoodFavoriteStatus(
-        request: FoodFavoriteStatusUpdateRequest
-    ): Flow<UiState<FoodInformation>> {
-        _updateFoodFavoriteStatusJob?.cancel()
-
-        _updateFoodFavoriteStatusJob = repositoryScope.launch {
-            httpClient.makeRequest(
-                apiCall = { apiClient.updateFoodFavoriteStatus(request) },
-                extractData = { it.foodUpdated }
-            ).collect { state ->
-                _updateFoodFavoriteStatusFlow.emit(state)
-            }
-        }
-
-        return _updateFoodFavoriteStatusFlow
-    }
 
     private fun fetchFoodSort(): Flow<UiState<String>> =
         httpClient.makeRequest(

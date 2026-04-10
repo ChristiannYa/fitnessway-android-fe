@@ -41,9 +41,6 @@ object MFood {
 
         @Serializable
         data class FoodMetaData(
-            @SerialName("is_favorite")
-            val isFavorite: Boolean,
-
             @SerialName("last_logged_at")
             val lastLoggedAt: String?,
 
@@ -106,15 +103,6 @@ object MFood {
             data class FoodSortUpdateRequest(
                 @SerialName("food_sort")
                 val foodSort: String
-            )
-
-            @Serializable
-            data class FoodFavoriteStatusUpdateRequest(
-                @SerialName("food_id")
-                val foodId: Int,
-
-                @SerialName("is_favorite")
-                val isFavorite: Boolean
             )
         }
 

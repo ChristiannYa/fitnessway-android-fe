@@ -35,13 +35,6 @@ class FoodApiClient(private val client: KtorHttpClient) {
             parameter("food-id", foodId)
         }.extractApiData()
 
-    suspend fun updateFoodFavoriteStatus(
-        req: MFood.Api.Req.FoodFavoriteStatusUpdateRequest
-    ): MFood.Api.Res.FoodFavoriteStatusUpdateApiResponse =
-        client.put(ApiUrls.Food.FAVORITE_STATUS_UPDATE_URL) {
-            jsonBody(req)
-        }.extractApiData()
-
     suspend fun getFoodSort(): MFood.Api.Res.FoodSortGetApiResponse =
         client.get(ApiUrls.Food.SORT_GET_URL).extractApiData()
 

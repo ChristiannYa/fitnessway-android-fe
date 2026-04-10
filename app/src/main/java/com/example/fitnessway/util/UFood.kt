@@ -330,7 +330,6 @@ object UFood {
 
         fun FoodInformation.logFoodMetadata() {
             logcat("[${this.information.id}] - food metadata:")
-            logcat("  ${this.metadata.isFavorite}")
             logcat("  ${this.metadata.lastLoggedAt}")
             logcat("  ${this.metadata.updatedAt}")
             logcat("  ${this.metadata.createdAt}")

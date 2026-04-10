@@ -103,7 +103,7 @@ fun ListsScreen(
                 isVisible = selectedList == ListOption.PendingFood,
                 isUserPremium = user?.isPremium ?: false,
                 pendingFoodsUiStatePager = pendingFoodsUiStatePager,
-                onLoadMore = viewModel::loadMorePendingFoods,
+                onLoadMore = viewModel::getMorePendingFoods,
                 onFoodClick = { pendingFood -> },
             )
 

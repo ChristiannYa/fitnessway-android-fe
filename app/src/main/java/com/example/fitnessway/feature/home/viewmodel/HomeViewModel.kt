@@ -130,11 +130,10 @@ class HomeViewModel(
             source = source
         )
 
-        val optimisticRecentlyLoggedList = listOf(loggedFoodPreview) +
-                recentlyLoggedList.data.filter { it.id != loggedFoodPreview.id }
-
         val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPagerState.data.copy(
-            data = optimisticRecentlyLoggedList
+            data = listOf(loggedFoodPreview) +
+                    recentlyLoggedList.data
+                        .filter { it.id != loggedFoodPreview.id }
         )
 
         foodLogRepo.updateState {

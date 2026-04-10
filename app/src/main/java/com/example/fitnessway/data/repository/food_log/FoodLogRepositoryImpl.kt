@@ -83,18 +83,17 @@ class FoodLogRepositoryImpl(
 
     override fun clearFoodLogsUiCache() = _uiState.update { it.copy(foodLogs = emptyMap()) }
 
-    private fun fetchRecentlyLogged(offset: Long) =
-        httpClient.makeRequest(
-            apiCall = {
-                apiClient.getLatestLoggedFoods(
-                    PaginationParams(Pagination.LIMIT, offset)
-                )
-            },
-            extractData = { it.recentlyLoggedFoodsPagination },
-            errMsg = "Failed to fetch recently logged foods"
-        )
+    private fun fetchRecentlyLogged(offset: Long) = httpClient.makeRequest(
+        apiCall = {
+            apiClient.getLatestLoggedFoods(
+                PaginationParams(Pagination.LIMIT, offset)
+            )
+        },
+        extractData = { it.recentlyLoggedFoodsPagination },
+        errMsg = "Failed to fetch recently logged foods"
+    )
 
-    private fun refreshRecentlyLogged() {
+    override fun refreshRecentlyLogged() {
         _uiState.update {
             it.copy(
                 recentlyLogged = UiStatePager()

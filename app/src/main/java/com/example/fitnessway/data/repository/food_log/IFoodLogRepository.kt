@@ -18,6 +18,7 @@ interface IFoodLogRepository {
     suspend fun deleteFoodLog(foodLogId: Int, date: String): Flow<UiState<FoodLogData>>
     fun clearFoodLogsUiCache()
 
+    fun refreshRecentlyLogged()
     fun loadRecentlyLogged()
     fun loadMoreRecentlyLogged()
 

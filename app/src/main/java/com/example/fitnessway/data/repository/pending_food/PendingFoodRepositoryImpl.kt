@@ -97,6 +97,7 @@ class PendingFoodRepositoryImpl(
         extractData = { it.pendingFoodSubmitted },
         errMsg = "Failed to add food request"
     ).onEach { state ->
+        // @TODO: Remove refreshPendingFoods and move it to the view model
         if (state is UiState.Success) refreshPendingFoods()
     }
 

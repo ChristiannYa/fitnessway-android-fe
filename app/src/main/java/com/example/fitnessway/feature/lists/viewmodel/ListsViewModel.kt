@@ -24,6 +24,7 @@ import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -70,15 +71,15 @@ class ListsViewModel(
         _selectedList.value = list
     }
 
-    fun getPendingFoods() = pendingFoodRepo.loadPendingFoods()
-
-    fun loadMorePendingFoods() = pendingFoodRepo.loadMorePendingFoods()
+    fun getNutrients() = nutrientRepo.loadNutrients()
 
     fun getFoods() = foodRepo.loadFoods()
 
-    fun refreshFoods() = foodRepo.refreshFoods()
+    fun getMorePendingFoods() = pendingFoodRepo.loadMorePendingFoods()
 
-    fun getNutrients() = nutrientRepo.loadNutrients()
+    fun getPendingFoods() = pendingFoodRepo.loadPendingFoods()
+
+    fun refreshFoods() = foodRepo.refreshFoods()
 
     fun addFoodRequest() {
         val formState = managers.creation.formState.value
@@ -117,18 +118,21 @@ class ListsViewModel(
 
         // Get current data to update optimistically
         val originalFoodsUiState = foodRepo.uiState.value.foodsUiState
+        val originalRecentlyLoggedListPagerState = foodLogRepo.uiState.value.recentlyLogged.uiState
 
         // Obtain nutrient data
         val nutrientsUiState = nutrientRepoUiState.value.nutrientsUiState
 
         // Only proceed if there is UI state data
         if (originalFoodsUiState !is UiState.Success ||
+            originalRecentlyLoggedListPagerState !is UiState.Success ||
             nutrientsUiState !is UiState.Success
         ) return
 
         // Extract data from states
         val originalFoods = originalFoodsUiState.data
         val nutrientsWithPreferences = nutrientsUiState.data
+        val recentlyLoggedList = originalRecentlyLoggedListPagerState.data
 
         // Obtain most recent version of the food from the repository
         val latestFood = originalFoods.getFoodById(selectedFoodId) ?: return
@@ -181,10 +185,14 @@ class ListsViewModel(
             nutrients = updatedNutrientsByType
         )
 
-        // Create optimistic foods
+        // Create optimistic data
         val optimisticFoods = originalFoods.map {
             if (it.information.id == latestFood.information.id) optimisticFood else it
         }
+
+        val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPagerState.data.copy(
+            data = recentlyLoggedList.data.filter { it.id != latestFood.information.id }
+        )
 
         // Update UI immediately
         managers.edition.setSelectedFood(optimisticFood)
@@ -193,6 +201,7 @@ class ListsViewModel(
 
         _uiState.update { it.copy(foodUpdateState = UiState.Success(optimisticFood)) }
         foodRepo.updateState { it.copy(foodsUiState = UiState.Success(optimisticFoods)) }
+        foodLogRepo.updateState { it.copy(recentlyLogged = UiStatePager(UiState.Success(optimisticRecentlyLoggedPager))) }
 
         // Create request
         val request = FoodUpdateRequest(
@@ -245,6 +254,8 @@ class ListsViewModel(
                                 _originalFoodBeforeUpdate = null
                             }
                         }
+
+                        foodLogRepo.refreshRecentlyLogged() // Unsafe to manually revert
                     }
 
                     else -> {}
@@ -261,10 +272,14 @@ class ListsViewModel(
         val selectedFoodId = selectedFood.information.id
 
         val originalFoodsState = foodRepo.uiState.value.foodsUiState
-        if (originalFoodsState !is UiState.Success) return
+        val originalRecentlyLoggedListPagerState = foodLogRepo.uiState.value.recentlyLogged.uiState
 
+        if (originalFoodsState !is UiState.Success ||
+            originalRecentlyLoggedListPagerState !is UiState.Success
+        ) return
 
         val originalFoods = originalFoodsState.data
+        val recentlyLoggedList = originalRecentlyLoggedListPagerState.data
 
         // Capture the foods before successful deletion on first deletion
         if (_foodsBeforeSuccessfulDeletion == null) {
@@ -284,8 +299,13 @@ class ListsViewModel(
             it.information.id != selectedFoodId
         }
 
+        val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPagerState.data.copy(
+            data = recentlyLoggedList.data.filter { it.id != latestFood.information.id }
+        )
+
         _uiState.update { it.copy(foodDeleteState = UiState.Success(selectedFood)) }
         foodRepo.updateState { it.copy(foodsUiState = UiState.Success(optimisticFoods)) }
+        foodLogRepo.updateState { it.copy(recentlyLogged = UiStatePager(UiState.Success(optimisticRecentlyLoggedPager))) }
 
         viewModelScope.launch {
             foodRepo.deleteFood(selectedFoodId).collect { state ->
@@ -321,20 +341,19 @@ class ListsViewModel(
                                         }?.first
 
 
-                                        if (failedPosition != null) {
-                                            failedPosition
-                                        } else {
-                                            // For foods still in the list, use their absolute original position
-                                            _foodsBeforeSuccessfulDeletion?.indexOfFirst {
-                                                it.information.id == food.information.id
-                                            } ?: Int.MAX_VALUE
-                                        }
+                                        failedPosition ?: (
+                                                // For foods still in the list, use their absolute original position
+                                                _foodsBeforeSuccessfulDeletion?.indexOfFirst {
+                                                    it.information.id == food.information.id
+                                                } ?: Int.MAX_VALUE)
                                     }
 
                             foodRepo.updateState {
                                 it.copy(foodsUiState = UiState.Success(data = revertedFoods))
                             }
                         }
+
+                        foodLogRepo.refreshRecentlyLogged()
                     }
 
                     else -> {}

@@ -1,10 +1,8 @@
 package com.example.fitnessway.feature.home.screen.foodselection.composables
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,7 +27,7 @@ import com.example.fitnessway.util.extensions.OnLoadMore
 
 @Composable
 fun AppFoodResultsPagination(
-    isTyping: Boolean,
+    isLoading: Boolean,
     isUserPremium: Boolean,
     appFoodsUiStatePager: UiStatePager<FoodPreview>,
     onTypingConsumed: () -> Unit,
@@ -37,7 +35,6 @@ fun AppFoodResultsPagination(
     onFoodClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isLoading = isTyping || appFoodsUiStatePager.uiState is UiState.Loading
 
     val appFoodsLazyListState = rememberLazyListState()
 
@@ -49,15 +46,7 @@ fun AppFoodResultsPagination(
         }
     }
 
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .then(
-                if (isLoading) {
-                    Modifier.fillMaxHeight()
-                } else Modifier
-            )
-    ) {
+    Box(modifier = modifier) {
         if (isLoading) {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -80,9 +69,7 @@ fun AppFoodResultsPagination(
                 LazyColumn(
                     state = appFoodsLazyListState,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(top = 16.dp)
+                    modifier = Modifier.padding(top = 16.dp)
                 ) {
                     appFoodsUiStatePager.toPaginationOrNull()?.let { pagination ->
                         val appFoods = pagination.data
@@ -134,7 +121,8 @@ fun AppFoodResultsPagination(
 
         Messages.NotFoundMessageAnimated(
             isVisible = appFoodsUiStatePager.uiState is UiState.Error,
-            message = appFoodsUiStatePager.uiState.toErrorMessageOrNull() ?: ""
+            message = appFoodsUiStatePager.uiState.toErrorMessageOrNull() ?: "",
+            modifier = Modifier.padding(top = 16.dp)
         )
     }
 }

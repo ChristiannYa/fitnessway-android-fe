@@ -1,10 +1,12 @@
 package com.example.fitnessway.feature.home.screen.foodselection
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +35,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -46,7 +49,7 @@ fun FoodSelectionScreen(
     val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
     val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
     val foodLogRepoUiState by viewModel.foodLogRepoUiState.collectAsState()
-    
+
     val foodList by viewModel.foodList.collectAsState()
     val appFoodSearchQuery by viewModel.appFoodSearchQuery.collectAsState()
 
@@ -84,6 +87,7 @@ fun FoodSelectionScreen(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Column {
                     var isTyping by remember { mutableStateOf(false) }
+                    val isLoading = isTyping || appFoodsUiStatePager.uiState is UiState.Loading
 
                     AppFoodSearchBar(
                         query = appFoodSearchQuery,
@@ -95,7 +99,7 @@ fun FoodSelectionScreen(
                     )
 
                     AppFoodResultsPagination(
-                        isTyping = isTyping,
+                        isLoading = isLoading,
                         isUserPremium = user?.isPremium ?: false,
                         appFoodsUiStatePager = appFoodsUiStatePager,
                         onTypingConsumed = { isTyping = false },
@@ -103,7 +107,14 @@ fun FoodSelectionScreen(
                         onFoodClick = {
                             viewModel.setSearchCriteria(FoodToLogSearchCriteria(it, FoodSource.APP))
                             onNavigateToSelectedFood()
-                        }
+                        },
+                        modifier = Modifier
+                            .animateContentSize()
+                            .then(
+                                if (isTyping || appFoodsUiStatePager.uiState !is UiState.Idle) {
+                                    Modifier.fillMaxHeight()
+                                } else Modifier
+                            )
                     )
                 }
 

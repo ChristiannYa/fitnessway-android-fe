@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.mappers.toNutrientIdAmountList
 import com.example.fitnessway.data.mappers.toPendingRequest
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toUserFoodRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
@@ -118,21 +119,18 @@ class ListsViewModel(
 
         // Get current data to update optimistically
         val originalFoodsUiState = foodRepo.uiState.value.foodsUiState
-        val originalRecentlyLoggedListPagerState = foodLogRepo.uiState.value.recentlyLogged.uiState
 
         // Obtain nutrient data
         val nutrientsUiState = nutrientRepoUiState.value.nutrientsUiState
 
         // Only proceed if there is UI state data
         if (originalFoodsUiState !is UiState.Success ||
-            originalRecentlyLoggedListPagerState !is UiState.Success ||
             nutrientsUiState !is UiState.Success
         ) return
 
         // Extract data from states
         val originalFoods = originalFoodsUiState.data
         val nutrientsWithPreferences = nutrientsUiState.data
-        val recentlyLoggedList = originalRecentlyLoggedListPagerState.data
 
         // Obtain most recent version of the food from the repository
         val latestFood = originalFoods.getFoodById(selectedFoodId) ?: return
@@ -190,10 +188,6 @@ class ListsViewModel(
             if (it.information.id == latestFood.information.id) optimisticFood else it
         }
 
-        val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPagerState.data.copy(
-            data = recentlyLoggedList.data.filter { it.id != latestFood.information.id }
-        )
-
         // Update UI immediately
         managers.edition.setSelectedFood(optimisticFood)
         managers.edition.initializeFoodForm(optimisticFood)
@@ -201,7 +195,7 @@ class ListsViewModel(
 
         _uiState.update { it.copy(foodUpdateState = UiState.Success(optimisticFood)) }
         foodRepo.updateState { it.copy(foodsUiState = UiState.Success(optimisticFoods)) }
-        foodLogRepo.updateState { it.copy(recentlyLogged = UiStatePager(UiState.Success(optimisticRecentlyLoggedPager))) }
+        removeRecentlyLoggedFood(latestFood.information.id)
 
         // Create request
         val request = FoodUpdateRequest(
@@ -255,7 +249,9 @@ class ListsViewModel(
                             }
                         }
 
-                        foodLogRepo.refreshRecentlyLogged() // Unsafe to manually revert
+                        if (foodLogRepo.uiState.value.recentlyLogged.uiState.hasState) {
+                            foodLogRepo.refreshRecentlyLogged() // Unsafe to manually revert
+                        }
                     }
 
                     else -> {}
@@ -269,17 +265,13 @@ class ListsViewModel(
 
     fun deleteFood() {
         val selectedFood = managers.edition.selectedFood.value ?: return
+
         val selectedFoodId = selectedFood.information.id
-
         val originalFoodsState = foodRepo.uiState.value.foodsUiState
-        val originalRecentlyLoggedListPagerState = foodLogRepo.uiState.value.recentlyLogged.uiState
 
-        if (originalFoodsState !is UiState.Success ||
-            originalRecentlyLoggedListPagerState !is UiState.Success
-        ) return
+        if (originalFoodsState !is UiState.Success) return
 
         val originalFoods = originalFoodsState.data
-        val recentlyLoggedList = originalRecentlyLoggedListPagerState.data
 
         // Capture the foods before successful deletion on first deletion
         if (_foodsBeforeSuccessfulDeletion == null) {
@@ -299,13 +291,10 @@ class ListsViewModel(
             it.information.id != selectedFoodId
         }
 
-        val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPagerState.data.copy(
-            data = recentlyLoggedList.data.filter { it.id != latestFood.information.id }
-        )
-
+        // Handle recently logged list update if it's available
+        removeRecentlyLoggedFood(latestFood.information.id)
         _uiState.update { it.copy(foodDeleteState = UiState.Success(selectedFood)) }
         foodRepo.updateState { it.copy(foodsUiState = UiState.Success(optimisticFoods)) }
-        foodLogRepo.updateState { it.copy(recentlyLogged = UiStatePager(UiState.Success(optimisticRecentlyLoggedPager))) }
 
         viewModelScope.launch {
             foodRepo.deleteFood(selectedFoodId).collect { state ->
@@ -353,14 +342,33 @@ class ListsViewModel(
                             }
                         }
 
-                        foodLogRepo.refreshRecentlyLogged()
+                        if (foodLogRepo.uiState.value.recentlyLogged.uiState.hasState) {
+                            foodLogRepo.refreshRecentlyLogged()
+                        }
                     }
 
                     else -> {}
                 }
             }
         }
+    }
 
+    private fun removeRecentlyLoggedFood(foodId: Int) {
+        foodLogRepo.uiState.value.recentlyLogged.uiState
+            .toSuccessOrNull()
+            ?.let { pagination ->
+                foodLogRepo.updateState {
+                    it.copy(
+                        recentlyLogged = UiStatePager(
+                            uiState = UiState.Success(
+                                pagination.copy(
+                                    data = pagination.data.filter { it.id != foodId }
+                                )
+                            )
+                        )
+                    )
+                }
+            }
     }
 
     fun resetFoodRequestState() {

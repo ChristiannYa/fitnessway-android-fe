@@ -22,37 +22,39 @@ import com.example.fitnessway.util.nutrient.INutrientDvControls
 @Composable
 fun SetNutrients(
     fields: List<FoodCreationNutrientField>,
-    nutrientsWithoutGoal: Pair<NutrientType, List<Nutrient>>,
+    nutrientsWithoutGoal: Pair<NutrientType, List<Nutrient>>?,
     nutrientDvControls: INutrientDvControls.NutrientDvControls? = null,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         fields.forEach { FoodCreationFormField(it, nutrientDvControls) }
 
-        if (nutrientsWithoutGoal.second.isNotEmpty()) {
-            Box(modifier = Modifier.areaContainer(size = AreaContainerSize.SMALL)) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val moreThanOne = nutrientsWithoutGoal.second.size > 1
-                    val nutrientsType = nutrientsWithoutGoal.first.toReadable(moreThanOne, true)
+        nutrientsWithoutGoal?.let { (type, nwg) ->
+            if (nwg.isNotEmpty()) {
+                Box(modifier = Modifier.areaContainer(size = AreaContainerSize.SMALL)) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        val moreThanOne = nwg.size > 1
+                        val nutrientsType = type.toReadable(moreThanOne, true)
 
-                    val messageText = if (moreThanOne) {
-                        "These $nutrientsType are missing goals. Setting their goal will allow them to be " +
+                        val messageText = if (moreThanOne) {
+                            "These $nutrientsType are missing goals. Setting their goal will allow them to be " +
+                                    "added to your food"
+                        } else "This $nutrientsType is missing a goal. Setting its goal will allow it to be " +
                                 "added to your food"
-                    } else "This $nutrientsType is missing a goal. Setting its goal will allow it to be " +
-                            "added to your food"
 
-                    Text(
-                        text = messageText,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
+                        Text(
+                            text = messageText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
 
-                    NutrientLabelsFlowRow(
-                        nutrients = nutrientsWithoutGoal.second,
-                        textStyle = MaterialTheme.typography.labelLarge
-                    )
+                        NutrientLabelsFlowRow(
+                            nutrients = nwg,
+                            textStyle = MaterialTheme.typography.labelLarge
+                        )
+                    }
                 }
             }
         }

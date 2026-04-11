@@ -41,7 +41,7 @@ fun FoodDetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
-    val selectedFood by viewModel.selectedFood.collectAsState()
+    val selectedFood by viewModel.editionManager.selectedFood.collectAsState()
 
     val user = userFlow
     val selectedFoodCopy = selectedFood
@@ -145,7 +145,7 @@ fun FoodDetailsScreen(
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
                             moreOptionsState.hide()
-                            viewModel.initializeFoodForm(selectedFoodCopy)
+                            viewModel.editionManager.initializeFoodForm(selectedFoodCopy)
                             onNavigateToEditionScreen()
                         },
                         backgroundColor = MaterialTheme.colorScheme.primary

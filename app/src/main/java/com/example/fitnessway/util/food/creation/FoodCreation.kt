@@ -1,5 +1,6 @@
 package com.example.fitnessway.util.food.creation
 
+import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.util.Formatters
 import com.example.fitnessway.util.Formatters.toInputDouble
@@ -9,11 +10,17 @@ import com.example.fitnessway.util.form.field.InlineRules
 import com.example.fitnessway.util.form.field.Rules
 import com.example.fitnessway.util.isValidEnum
 import com.example.fitnessway.util.listEnumValues
+import com.example.fitnessway.util.logcat
 import com.example.fitnessway.util.nutrient.NutrientDvControls
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
+abstract class FoodCreation(val foodSource: FoodSource) : IFoodCreation, NutrientDvControls() {
+
+    init {
+        logcat("[FoodCreation] initialized with foodSource: $foodSource")
+    }
+
     private val emptyFoodCreationFormState = FormStates.FoodCreation(
         name = "",
         brand = "",
@@ -39,8 +46,12 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
     override val brandError: String?
         get() = _foodCreationFormState.value.brand.let { value ->
             if (value.isEmpty()) null else {
-                val result =
-                    InlineRules.FoodCreation.BrandInlineRules(value.trim()) checkWith Rules.FoodCreation.brandRules
+                val rules = when (foodSource) {
+                    FoodSource.USER -> Rules.FoodCreation.userBrandRules
+                    FoodSource.APP -> Rules.FoodCreation.appBrandRules
+                }
+
+                val result = InlineRules.FoodCreation.BrandInlineRules(value.trim()) checkWith rules
                 result.exceptionOrNull()?.message
             }
         }
@@ -64,7 +75,10 @@ abstract class FoodCreation : IFoodCreation, NutrientDvControls() {
 
     override val isBasicDataValid: Boolean
         get() = _foodCreationFormState.value.name.isNotEmpty() && nameError == null &&
-                brandError == null &&
+                (foodSource == FoodSource.USER && brandError == null ||
+                        foodSource == FoodSource.APP &&
+                        _foodCreationFormState.value.brand.isNotEmpty() &&
+                        brandError == null) &&
                 _foodCreationFormState.value.amountPerServing.isNotEmpty() && amountPerServingError == null &&
                 _foodCreationFormState.value.servingUnit.isNotEmpty() && servingUnitError == null
 

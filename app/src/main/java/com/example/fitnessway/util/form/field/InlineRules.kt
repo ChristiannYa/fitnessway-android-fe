@@ -1,10 +1,10 @@
 package com.example.fitnessway.util.form.field
 
+import kotlin.reflect.KFunction1
 import com.example.fitnessway.util.form.field.Configuration.AuthForm.Name as NameConfig
 import com.example.fitnessway.util.form.field.Configuration.AuthForm.Password as PasswordConfig
-import com.example.fitnessway.util.form.field.Configuration.FoodCreation.Name as FoodNameConfig
 import com.example.fitnessway.util.form.field.Configuration.FoodCreation.Brand as FoodBrandConfig
-import kotlin.reflect.KFunction1
+import com.example.fitnessway.util.form.field.Configuration.FoodCreation.Name as FoodNameConfig
 
 object InlineRules {
     object AuthForm {
@@ -100,6 +100,10 @@ object InlineRules {
             fun lengthRule() = require(
                 value.length in FoodBrandConfig.MIN_LENGTH..FoodBrandConfig.MAX_LENGTH
             ) { FoodBrandConfig.ERR_LEN }
+
+            fun notEmptyRule() = require(
+                value.isNotBlank()
+            ) { FoodBrandConfig.ERR_EMPTY }
 
             fun validCharacters() = require(
                 value.all { it.isLetter() || it in FoodBrandConfig.SPECIAL_CHARACTERS }

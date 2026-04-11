@@ -5,7 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.fitnessway.feature.lists.screen.create.food.CreateFoodFormScreen
+import com.example.fitnessway.feature.lists.screen.create.CreateFoodFormScreen
 import com.example.fitnessway.feature.lists.screen.details.FoodDetailsScreen
 import com.example.fitnessway.feature.lists.screen.details.edition.FoodEditionScreen
 import com.example.fitnessway.feature.lists.screen.main.ListsScreen

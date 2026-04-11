@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.create.food
+package com.example.fitnessway.feature.lists.screen.create
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,7 +30,7 @@ fun CreateFoodFormScreen(
     if (user != null) {
         FoodCreationFormScreen(
             onBackClick = onBackClick,
-            foodCreation = viewModel,
+            foodCreation = viewModel.creationManager,
             foodSource = FoodSource.USER,
             nutrientsUiState = nutrientsUiState,
             isUserPremium = user.isPremium,

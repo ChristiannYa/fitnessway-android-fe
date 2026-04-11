@@ -113,7 +113,7 @@ fun ListsScreen(
                 foodsUiState = foodsUiState,
                 onRefresh = viewModel::refreshFoods,
                 onFoodClick = { food ->
-                    viewModel.setSelectedFood(food)
+                    viewModel.editionManager.setSelectedFood(food)
                     onViewFoodDetails()
                 }
             )

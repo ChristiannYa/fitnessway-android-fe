@@ -28,8 +28,14 @@ object Rules {
             FC.NameInlineRules::validCharactersRule,
             FC.NameInlineRules::validFormatRule
         )
-        val brandRules = listOf(
+        val userBrandRules = listOf(
             FC.BrandInlineRules::lengthRule,
+            FC.BrandInlineRules::validCharacters,
+            FC.BrandInlineRules::validFormatRule
+        )
+        val appBrandRules = listOf(
+            FC.BrandInlineRules::lengthRule,
+            FC.BrandInlineRules::notEmptyRule,
             FC.BrandInlineRules::validCharacters,
             FC.BrandInlineRules::validFormatRule
         )

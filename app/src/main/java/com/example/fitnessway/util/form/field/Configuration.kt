@@ -40,15 +40,19 @@ object Configuration {
             const val SPECIAL_CHARACTERS = ALLOWED_SPECIAL_CHARACTERS
             const val ERR_LEN = "Name must be between $MIN_LENGTH and $MAX_LENGTH characters"
             const val ERR_EMPTY = "Name cannot be empty"
-            const val ERR_INVALID_CHARS = "Name can only contain letters, spaces, hyphens, apostrophes, periods, and ampersands"
+            const val ERR_INVALID_CHARS =
+                "Name can only contain letters, spaces, hyphens, apostrophes, periods, and ampersands"
             const val ERR_INVALID_FORMAT = "Name cannot start or end with special characters!"
         }
+
         object Brand {
             const val MIN_LENGTH = 2
             const val MAX_LENGTH = 50
             const val SPECIAL_CHARACTERS = ALLOWED_SPECIAL_CHARACTERS
             const val ERR_LEN = "Brand must be between $MIN_LENGTH and $MAX_LENGTH characters"
-            const val ERR_INVALID_CHARS = "Brand can only contain letters, spaces, hyphens, apostrophes, periods, and ampersands"
+            const val ERR_EMPTY = "Brand cannot be empty"
+            const val ERR_INVALID_CHARS =
+                "Brand can only contain letters, spaces, hyphens, apostrophes, periods, and ampersands"
             const val ERR_INVALID_FORMAT = "Brand cannot start or end with special characters!"
         }
     }

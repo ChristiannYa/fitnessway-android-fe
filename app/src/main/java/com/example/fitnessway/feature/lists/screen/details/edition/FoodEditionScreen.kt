@@ -62,16 +62,16 @@ fun FoodEditionScreen(
     val uiState by viewModel.uiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
-    val foodEditionFormState by viewModel.foodEditionFormState.collectAsState()
-    val selectedFood by viewModel.selectedFood.collectAsState()
-    val addedNutrients by viewModel.addedNutrients.collectAsState()
-    val deletedNutrients by viewModel.deletedNutrients.collectAsState()
-    val isFoodEditionFormValid by viewModel.isFoodEditionFormValid.collectAsState()
+    val foodEditionFormState by viewModel.editionManager.foodEditionFormState.collectAsState()
+    val selectedFood by viewModel.editionManager.selectedFood.collectAsState()
+    val addedNutrients by viewModel.editionManager.addedNutrients.collectAsState()
+    val deletedNutrients by viewModel.editionManager.deletedNutrients.collectAsState()
+    val isFoodEditionFormValid by viewModel.editionManager.isFoodEditionFormValid.collectAsState()
 
     val user = userFlow
     val nutrientUiState = nutrientRepoUiState.nutrientsUiState
     val foodUpdateState = uiState.foodUpdateState
-    val nutrientDvControls = viewModel.nutrientDvControls
+    val nutrientDvControls = viewModel.editionManager
 
     val foodUpdateErrorMessage = handleTempApiErrMsg(
         uiState = foodUpdateState,
@@ -115,7 +115,7 @@ fun FoodEditionScreen(
                 focusManager = focusManager,
                 isFormSubmitting = foodUpdateState is UiState.Loading,
                 onFieldUpdate = { fieldName, value ->
-                    viewModel.updateFoodEditionFormField(fieldName, value)
+                    viewModel.editionManager.updateFoodEditionFormField(fieldName, value)
                 }
             )
 
@@ -174,8 +174,8 @@ fun FoodEditionScreen(
                             ) {
                                 FoodEditionFormField(
                                     field = it,
-                                    onRemoveNutrient = viewModel::filterOutNutrientFromForm,
-                                    nutrientDvControls = nutrientDvControls
+                                    onRemoveNutrient = viewModel.editionManager::filterOutNutrientFromForm,
+                                    nutrientDvControls = viewModel.editionManager.nutrientDvControls
                                 )
                             }
                         }
@@ -188,7 +188,7 @@ fun FoodEditionScreen(
                 )
 
                 val availableNutrientsClickConfig = Ui.ClickableConfiguration<MNutrient.Model.Nutrient>(
-                    onClick = viewModel::addNutrientToForm
+                    onClick = viewModel.editionManager::addNutrientToForm
                 )
 
                 val nutrients = nutrientUiState.data

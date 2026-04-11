@@ -5,10 +5,11 @@ import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.nutrient.INutrientDvControls
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
-interface IEditionManager {
+interface IEditionManager : INutrientDvControls {
     val selectedFood: StateFlow<FoodInformation?>
     val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?>
     val deletedNutrients: StateFlow<List<Int>>

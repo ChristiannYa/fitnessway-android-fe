@@ -35,7 +35,7 @@ fun FoodRequestScreen(
     if (user != null) {
         FoodCreationFormScreen(
             onBackClick = onBackClick,
-            foodCreation = viewModel,
+            foodCreation = viewModel.requestManager,
             foodSource = FoodSource.APP,
             nutrientsUiState = nutrientsUiState,
             isUserPremium = user.isPremium,

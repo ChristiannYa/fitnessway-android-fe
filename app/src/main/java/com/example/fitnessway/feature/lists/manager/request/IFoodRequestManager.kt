@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.home.manager.foodrequest
+package com.example.fitnessway.feature.lists.manager.request
 
 import com.example.fitnessway.util.food.creation.IFoodCreation
 

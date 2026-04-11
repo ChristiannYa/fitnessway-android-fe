@@ -21,6 +21,7 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
+import com.example.fitnessway.feature.lists.manager.request.IFoodRequestManager
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
@@ -42,13 +43,15 @@ class ListsViewModel(
     private val nutrientRepo: INutrientRepository,
     private val managers: IListsManagers,
     userStateHolder: IUserStateHolder
-) : ViewModel(),
-    IEditionManager by managers.edition,
-    ICreationManager by managers.creation {
+) : ViewModel() {
 
     init {
         managers.edition.init(viewModelScope)
     }
+
+    val editionManager: IEditionManager get() = managers.edition
+    val creationManager: ICreationManager get() = managers.creation
+    val requestManager: IFoodRequestManager get() = managers.request
 
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
@@ -395,8 +398,8 @@ class ListsViewModel(
      */
     fun resetFoodEditionStates() {
         if (_uiState.value.foodUpdateState !is UiState.Idle) resetFoodUpdateState()
-        resetAddedNutrients()
-        resetDeletedNutrients()
+        editionManager.resetAddedNutrients()
+        editionManager.resetDeletedNutrients()
         resetFoodNutrientDvMap()
     }
 

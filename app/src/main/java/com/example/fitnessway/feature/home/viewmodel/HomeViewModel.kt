@@ -20,7 +20,6 @@ import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
-import com.example.fitnessway.feature.home.manager.foodrequest.IFoodRequestManager
 import com.example.fitnessway.feature.home.manager.ui.IUiManager
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
@@ -50,8 +49,7 @@ class HomeViewModel(
 ) : ViewModel(),
     IFoodLogManager by managers.foodLog,
     IDateManager by managers.date,
-    IUiManager by managers.ui,
-    IFoodRequestManager by managers.foodRequest {
+    IUiManager by managers.ui {
 
     val userFlow: StateFlow<MUser.Model.User?> = appStateStore.userStateHolder.userState
         .map { it.user }

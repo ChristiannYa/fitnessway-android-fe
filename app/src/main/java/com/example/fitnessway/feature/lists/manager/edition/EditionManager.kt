@@ -11,8 +11,8 @@ import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.BrandInlineRules
 import com.example.fitnessway.util.form.field.InlineRules.FoodCreation.NameInlineRules
-import com.example.fitnessway.util.form.field.Rules.FoodCreation.brandRules
 import com.example.fitnessway.util.form.field.Rules.FoodCreation.nameRules
+import com.example.fitnessway.util.form.field.Rules.FoodCreation.userBrandRules
 import com.example.fitnessway.util.isValidEnum
 import com.example.fitnessway.util.listEnumValues
 import com.example.fitnessway.util.nutrient.NutrientDvControls
@@ -54,7 +54,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         get() = _foodEditionFormState.value?.let { formState ->
             formState.data.brand.let { value ->
                 if (value.isEmpty()) null else {
-                    val result = BrandInlineRules(value.trim()) checkWith brandRules
+                    val result = BrandInlineRules(value.trim()) checkWith userBrandRules
                     result.exceptionOrNull()?.message
                 }
             }

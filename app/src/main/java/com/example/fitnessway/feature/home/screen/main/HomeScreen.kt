@@ -32,7 +32,6 @@ import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Loading.RefreshByPullIndicator
-import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
@@ -219,8 +218,6 @@ fun HomeScreen(
                     text = deleteFoodLogErrMsg ?: ""
                 )
             }
-        } else {
-            NotFoundMessage("User not found")
         }
     }
 }

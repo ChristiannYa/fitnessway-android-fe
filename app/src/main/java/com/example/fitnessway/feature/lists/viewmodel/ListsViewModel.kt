@@ -86,9 +86,9 @@ class ListsViewModel(
     fun refreshFoods() = foodRepo.refreshFoods()
 
     fun addFoodRequest() {
-        val formState = managers.creation.formState.value
+        val formState = managers.request.formState.value
 
-        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
+        val nutrientDvMap = managers.request.nutrientDvControls.nutrientDvMap.value
         val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
         val request = formState.toPendingRequest(nutrients)
 
@@ -102,8 +102,8 @@ class ListsViewModel(
     fun addFood() {
         val formState = managers.creation.formState.value
 
-        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap
-        val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap.value)
+        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
+        val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
         val request = formState.toUserFoodRequest(nutrients)
 
         viewModelScope.launch {

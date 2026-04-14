@@ -30,11 +30,8 @@ fun BasicNutrientIntakes(
         is UiState.Loading -> Composable(210.dp, "Loading nutrient intakes")
 
         is UiState.Success -> {
-            val basicNutrientsWithGoals = state.data.basic
-                .let { if (!isUserPremium) it.filter { n -> !n.nutrientData.base.isPremium } else it }
-                .filter { it.nutrientData.preferences.goal != null }
-
-            val isEmpty = basicNutrientsWithGoals.isEmpty()
+            val nutrients = state.data.basic
+            val isEmpty = nutrients.isEmpty()
 
             Box(
                 contentAlignment = Alignment.Center,
@@ -63,7 +60,7 @@ fun BasicNutrientIntakes(
                         )
 
                         PagedNutrients(
-                            nutrients = basicNutrientsWithGoals,
+                            nutrients = nutrients,
                             viewFormat = NutrientsViewFormat.BOX,
                             isUserPremium = isUserPremium
                         )

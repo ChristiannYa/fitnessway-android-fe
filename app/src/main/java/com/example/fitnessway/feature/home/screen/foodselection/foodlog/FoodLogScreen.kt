@@ -208,7 +208,10 @@ fun FoodLogScreen(
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(18.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.areaContainer()
+                                    modifier = Modifier
+                                        .areaContainer(
+                                            borderColor = MaterialTheme.colorScheme.surfaceVariant
+                                        )
                                 ) {
                                     Text(
                                         text = type.name.toPascalSpaced(),

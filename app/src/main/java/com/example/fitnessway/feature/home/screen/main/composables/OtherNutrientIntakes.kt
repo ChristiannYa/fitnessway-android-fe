@@ -41,8 +41,6 @@ fun OtherNutrientIntakes(
                 NutrientType.VITAMIN -> state.data.vitamins
                 NutrientType.MINERAL -> state.data.minerals
             }
-                .let { if (!isUserPremium) it.filter { n -> !n.nutrientData.base.isPremium } else it }
-                .filter { it.nutrientData.preferences.goal != null }
 
             val isEmpty = nutrients.isEmpty()
 

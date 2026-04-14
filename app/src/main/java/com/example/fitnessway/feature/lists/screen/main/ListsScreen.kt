@@ -33,7 +33,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ListsScreen(
     viewModel: ListsViewModel = koinViewModel(),
-    onViewFoodDetails: () -> Unit,
+    onNavigateToUserFoodDetails: () -> Unit,
+    onNavigateToPendingFoodDetails: () -> Unit,
     onNavigateToFoodRequestScreen: () -> Unit,
     onNavigateToFoodCreationForm: () -> Unit
 ) {
@@ -104,7 +105,10 @@ fun ListsScreen(
                 isUserPremium = user?.isPremium ?: false,
                 pendingFoodsUiStatePager = pendingFoodsUiStatePager,
                 onLoadMore = viewModel::getMorePendingFoods,
-                onFoodClick = { pendingFood -> },
+                onFoodClick = {
+                    viewModel.requestManager.setPendingFood(it)
+                    onNavigateToPendingFoodDetails()
+                }
             )
 
             UserFoodsList(
@@ -112,9 +116,9 @@ fun ListsScreen(
                 isUserPremium = user?.isPremium ?: false,
                 foodsUiState = foodsUiState,
                 onRefresh = viewModel::refreshFoods,
-                onFoodClick = { food ->
-                    viewModel.editionManager.setSelectedFood(food)
-                    onViewFoodDetails()
+                onFoodClick = {
+                    viewModel.editionManager.setSelectedFood(it)
+                    onNavigateToUserFoodDetails()
                 }
             )
 

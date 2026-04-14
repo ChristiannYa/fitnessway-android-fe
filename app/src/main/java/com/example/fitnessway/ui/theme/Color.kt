@@ -25,6 +25,7 @@ val AreaContainerSecondaryLight = Color(0xFFEAEAEA)
 val WhiteCloud = Color(0xFFD4D9DE)
 
 // Extras
-val ImperialRed = Color(0xFFED2939)
+val ImperialRed = Color(0xFFEF4444)
 val ErrorRed = Color(0xFFE24450)
 val OrangeWarning = Color(0xFFCE7703)
+val OrangeLight = Color(0xFFF59E0B)

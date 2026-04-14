@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.details
+package com.example.fitnessway.feature.lists.screen.user_details
 
 import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toM26FoodInformation
-import com.example.fitnessway.feature.lists.screen.details.composables.ConfirmFoodDeletionPopup
-import com.example.fitnessway.feature.lists.screen.details.composables.FoodInformation
+import com.example.fitnessway.feature.lists.screen.user_details.composables.ConfirmFoodDeletionPopup
+import com.example.fitnessway.feature.lists.screen.user_details.composables.FoodInformation
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables
@@ -34,7 +34,7 @@ import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun FoodDetailsScreen(
+fun UserFoodDetailsScreen(
     viewModel: ListsViewModel = koinViewModel(),
     onBackClick: () -> Unit,
     onNavigateToEditionScreen: () -> Unit
@@ -53,7 +53,6 @@ fun FoodDetailsScreen(
         onTimeOut = viewModel::resetFoodDeleteState
     )
 
-    val title = "Food Details"
     val view = LocalView.current
 
     if (selectedFoodCopy != null && user != null) {
@@ -78,7 +77,7 @@ fun FoodDetailsScreen(
                         if (foodDeleteState !is UiState.Idle) viewModel.resetFoodDeleteState()
                         onBackClick()
                     },
-                    title = title
+                    title = "Food Details"
                 ) {
                     if (foodDeleteState !is UiState.Success) {
 

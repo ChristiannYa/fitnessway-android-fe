@@ -68,7 +68,9 @@ fun PendingFoodsPagination(
 
                             if (pendingFoods.isEmpty()) {
                                 item {
-                                    Messages.NotFoundMessage("Foods that you'd like submit to the app will appear here")
+                                    Messages.NotFoundMessage(
+                                        "Foods that you'd like submit to the app will appear here"
+                                    )
                                 }
                             } else {
                                 items(

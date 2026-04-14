@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.details.composables
+package com.example.fitnessway.feature.lists.screen.user_details.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

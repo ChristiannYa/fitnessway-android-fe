@@ -31,6 +31,7 @@ import com.example.fitnessway.util.form.field.FoodLogEditionField
 private const val deletedFoodMessage = "You have removed this food from your food list"
 private const val updatedFoodMessage = "You have updated this food information"
 
+// @TODO: Change `user` parameter to `isUserPremium`
 @Composable
 fun FoodLogDetails(
     foodLog: FoodLog,
@@ -42,7 +43,7 @@ fun FoodLogDetails(
     val foodComposables = remember(foodLog) {
         FoodInformationComposables(
             foodInformation = foodLog.foodInformation,
-            user = user
+            isUserPremium = user.isPremium
         )
     }
 

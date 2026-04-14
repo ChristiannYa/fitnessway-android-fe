@@ -203,7 +203,8 @@ object Ui {
     @Composable
     fun <T> AppLabel(
         text: String,
-        color: Color = MaterialTheme.colorScheme.surfaceVariant,
+        labelColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+        textColor: Color = MaterialTheme.colorScheme.onBackground,
         size: LabelSize = LabelSize.MEDIUM,
         textStyle: TextStyle = MaterialTheme.typography.labelMedium,
         clickableConfiguration: ClickableConfiguration<T>? = null,
@@ -212,7 +213,7 @@ object Ui {
     ) {
         Surface(
             shape = RoundedCornerShape(size.cornerRadius),
-            color = color,
+            color = labelColor,
             modifier = modifier
                 .clip(RoundedCornerShape(size.cornerRadius))
                 .then(
@@ -236,7 +237,7 @@ object Ui {
                         horizontal = size.paddingX,
                         vertical = size.paddingY
                     ),
-                    color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+                    color = textColor.copy(0.8f)
                 )
             }
         }

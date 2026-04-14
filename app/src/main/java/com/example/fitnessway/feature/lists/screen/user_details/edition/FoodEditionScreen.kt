@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.details.edition
+package com.example.fitnessway.feature.lists.screen.user_details.edition
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.NutrientType
-import com.example.fitnessway.feature.lists.screen.details.edition.composables.FoodEditionFormField
+import com.example.fitnessway.feature.lists.screen.user_details.edition.composables.FoodEditionFormField
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.Clickables

@@ -54,6 +54,11 @@ fun PendingFood.toPreview() = FoodPreview(
     source = FoodSource.APP
 )
 
+fun PendingFood.toFoodInformation() = FoodInformation(
+    base = this.information.base,
+    nutrients = this.information.nutrients
+)
+
 fun MFood.Model.FoodBaseInfo.toM26FoodBase() = FoodBase(
     name = this.name,
     brand = this.brand,

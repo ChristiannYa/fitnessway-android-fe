@@ -1,4 +1,4 @@
-package com.example.fitnessway.feature.lists.screen.details.edition.composables
+package com.example.fitnessway.feature.lists.screen.user_details.edition.composables
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState

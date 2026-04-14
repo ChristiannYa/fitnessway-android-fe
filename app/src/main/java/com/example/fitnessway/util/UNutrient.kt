@@ -323,7 +323,7 @@ object UNutrient {
                         text = UNutrient.Ui.buildAnnotatedString(
                             nutrient = nutrient,
                         ).text,
-                        color = color,
+                        labelColor = color,
                         size = size,
                         textStyle = textStyle,
                         clickableConfiguration = clickableConfiguration,

@@ -1,15 +1,18 @@
 package com.example.fitnessway.feature.lists.navigation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.fitnessway.feature.lists.screen.create.CreateFoodFormScreen
-import com.example.fitnessway.feature.lists.screen.details.FoodDetailsScreen
-import com.example.fitnessway.feature.lists.screen.details.edition.FoodEditionScreen
 import com.example.fitnessway.feature.lists.screen.main.ListsScreen
+import com.example.fitnessway.feature.lists.screen.pending_details.PendingFoodDetailsScreen
 import com.example.fitnessway.feature.lists.screen.request.FoodRequestScreen
+import com.example.fitnessway.feature.lists.screen.user_details.UserFoodDetailsScreen
+import com.example.fitnessway.feature.lists.screen.user_details.edition.FoodEditionScreen
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.navigation.ListsGraph
 import kotlinx.serialization.Serializable
@@ -19,7 +22,10 @@ import org.koin.androidx.compose.koinViewModel
 object ListsMainDest
 
 @Serializable
-private object DetailsDest
+private object UserFoodDetailsDest
+
+@Serializable
+private object PendingFoodDetailsDest
 
 @Serializable
 private object FoodRequestDest
@@ -33,70 +39,57 @@ private object FoodEditionDest
 fun NavGraphBuilder.listsNavigationGraph(navController: NavController) {
     navigation<ListsGraph>(startDestination = ListsMainDest) {
 
-        composable<ListsMainDest> { entry ->
+        @Composable
+        fun getViewModel(entry: NavBackStackEntry): ListsViewModel {
             val parentEntry = remember(entry) {
                 navController.getBackStackEntry<ListsGraph>()
             }
 
-            val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+            return koinViewModel(viewModelStoreOwner = parentEntry)
+        }
 
+        composable<ListsMainDest> {
             ListsScreen(
-                viewModel = viewModel,
-                onViewFoodDetails = { navController.navigate(DetailsDest) },
+                viewModel = getViewModel(it),
+                onNavigateToUserFoodDetails = { navController.navigate(UserFoodDetailsDest) },
+                onNavigateToPendingFoodDetails = { navController.navigate(PendingFoodDetailsDest) },
                 onNavigateToFoodRequestScreen = { navController.navigate(FoodRequestDest) },
                 onNavigateToFoodCreationForm = { navController.navigate(FoodCreationDest) }
             )
         }
 
-        composable<FoodRequestDest> { entry ->
-            val parentEntry = remember(entry) {
-                navController.getBackStackEntry<ListsGraph>()
-            }
-
-            val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
-
+        composable<FoodRequestDest> {
             FoodRequestScreen(
-                viewModel = viewModel,
+                viewModel = getViewModel(it),
                 onBackClick = navController::popBackStack
             )
         }
 
-        composable<FoodCreationDest> { entry ->
-            val parentEntry = remember(entry) {
-                navController.getBackStackEntry<ListsGraph>()
-            }
-
-            val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
-
+        composable<FoodCreationDest> {
             CreateFoodFormScreen(
-                viewModel = viewModel,
+                viewModel = getViewModel(it),
                 onBackClick = navController::popBackStack
             )
         }
 
-        composable<DetailsDest> { entry ->
-            val parentEntry = remember(entry) {
-                navController.getBackStackEntry<ListsGraph>()
-            }
-
-            val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
-
-            FoodDetailsScreen(
-                viewModel = viewModel,
+        composable<UserFoodDetailsDest> {
+            UserFoodDetailsScreen(
+                viewModel = getViewModel(it),
                 onBackClick = navController::popBackStack,
                 onNavigateToEditionScreen = { navController.navigate(FoodEditionDest) }
             )
         }
 
-        composable<FoodEditionDest> { entry ->
-            val parentEntry = remember(entry) {
-                navController.getBackStackEntry<ListsGraph>()
-            }
+        composable<PendingFoodDetailsDest> {
+            PendingFoodDetailsScreen(
+                viewModel = getViewModel(it),
+                onBackClick = navController::popBackStack
+            )
+        }
 
-            val viewModel: ListsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
-
+        composable<FoodEditionDest> {
             FoodEditionScreen(
-                viewModel = viewModel,
+                viewModel = getViewModel(it),
                 onBackClick = navController::popBackStack
             )
         }

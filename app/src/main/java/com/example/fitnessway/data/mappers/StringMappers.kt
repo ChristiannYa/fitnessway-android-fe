@@ -8,4 +8,5 @@ fun String.toPascalSpaced(
     .let { if (shouldLowerCases) it.lowercase() else it }
     .replaceFirstChar { it.uppercaseChar() }
 
+// @TODO: Rename to `toPlural`
 fun String.plural(): String = this + "s"

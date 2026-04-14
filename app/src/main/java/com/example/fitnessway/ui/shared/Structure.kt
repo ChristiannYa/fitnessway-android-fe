@@ -38,20 +38,20 @@ import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Ui.Measurements.SCREEN_HORIZONTAL_PADDING
 
 object Structure {
-    sealed interface AppIconButtonSource {
-        data class Resource(@get:DrawableRes val id: Int) : AppIconButtonSource
-        data class Vector(val imageVector: ImageVector) : AppIconButtonSource
+    sealed interface AppIconSource {
+        data class Resource(@get:DrawableRes val id: Int) : AppIconSource
+        data class Vector(val imageVector: ImageVector) : AppIconSource
     }
 
     @Composable
     fun AppIconDynamic(
-        source: AppIconButtonSource,
+        source: AppIconSource,
         contentDescription: String? = null,
         tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier: Modifier = Modifier
     ) {
         when (source) {
-            is AppIconButtonSource.Resource -> {
+            is AppIconSource.Resource -> {
                 Icon(
                     painter = painterResource(source.id),
                     contentDescription = contentDescription,
@@ -60,7 +60,7 @@ object Structure {
                 )
             }
 
-            is AppIconButtonSource.Vector -> {
+            is AppIconSource.Vector -> {
                 Icon(
                     imageVector = source.imageVector,
                     contentDescription = contentDescription,
@@ -144,7 +144,7 @@ object Structure {
     data class MoreOptionsConfig(
         val text: String,
         val onClick: () -> Unit,
-        val icon: AppIconButtonSource? = null,
+        val icon: AppIconSource? = null,
         val iconTint: Color? = null,
         val iconModifier: Modifier = Modifier,
         val backgroundColor: Color? = null,

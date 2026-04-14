@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.ui.shared.Clickables
-import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
+import com.example.fitnessway.ui.shared.Structure.AppIconSource
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
@@ -68,7 +68,7 @@ fun <T : FormFieldName.IFoodEdition> FoodEditionFormField(
                     val nutrient = field.name.nutrient
 
                     Clickables.AppPngIconButton(
-                        icon = AppIconButtonSource.Vector(Icons.Default.Delete),
+                        icon = AppIconSource.Vector(Icons.Default.Delete),
                         contentDescription = "Delete ${nutrient.name} from food",
                         onClick = { onRemoveNutrient?.invoke(nutrient) },
                         enabled = field.enabled

@@ -66,6 +66,7 @@ object UFood {
             food: FoodPreview,
             isUserPremium: Boolean = false,
             showsNutrientPreview: Boolean = false,
+            contentRight: (@Composable () -> Unit)? = null,
             onClick: (() -> Unit)? = null
         ) {
             val view = LocalView.current
@@ -79,42 +80,46 @@ object UFood {
                     }
                 }
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = food.base.name,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = if (missingBrand) "~" else food.base.brand,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(
+                                text = food.base.name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = if (missingBrand) "~" else food.base.brand,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
 
-                    if (isUserPremium && showsNutrientPreview) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            food.nutrientPreview.toList().forEach { n ->
-                                val nutrientColor = getColor(n.color)
+                        if (isUserPremium && showsNutrientPreview) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                food.nutrientPreview.toList().forEach { n ->
+                                    val nutrientColor = getColor(n.color)
 
-                                if (nutrientColor != null && n.amount != null) {
-                                    Text(
-                                        text = doubleFormatter(n.amount),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = nutrientColor
-                                    )
+                                    if (nutrientColor != null && n.amount != null) {
+                                        Text(
+                                            text = doubleFormatter(n.amount),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = nutrientColor
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
+
+                    contentRight?.let { it() }
                 }
             }
         }

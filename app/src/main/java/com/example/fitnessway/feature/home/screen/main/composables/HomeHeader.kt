@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
 import com.example.fitnessway.ui.shared.Clickables
-import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
+import com.example.fitnessway.ui.shared.Structure.AppIconSource
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 @Composable
@@ -46,7 +46,7 @@ fun HomeHeader(
             Clickables.AppPngIconButton(
                 onClick = onToggleFoodLogsVisibility,
                 contentDescription = "View Food Logs",
-                icon = AppIconButtonSource.Resource(R.drawable.scroll)
+                icon = AppIconSource.Resource(R.drawable.scroll)
             )
         }
     }

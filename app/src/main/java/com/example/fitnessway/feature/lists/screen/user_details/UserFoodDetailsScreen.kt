@@ -82,7 +82,7 @@ fun UserFoodDetailsScreen(
                     if (foodDeleteState !is UiState.Success) {
 
                         Clickables.AppPngIconButton(
-                            icon = Structure.AppIconButtonSource.Vector(Icons.Default.MoreHoriz),
+                            icon = Structure.AppIconSource.Vector(Icons.Default.MoreHoriz),
                             contentDescription = "More options",
                             onClick = {
                                 view.playSoundEffect(SoundEffectConstants.CLICK)

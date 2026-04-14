@@ -8,11 +8,18 @@ import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.FoodSource
+import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.util.form.FormStates.FoodCreation
 import com.example.fitnessway.util.toEnum
+
+fun ListOption.toClientView() = when (this) {
+    ListOption.Supplement -> this.name.toPascalSpaced(false)
+    ListOption.Food -> this.name.toPascalSpaced(false)
+    ListOption.PendingFood -> "Food Request"
+}
 
 fun FoodLogsCategorized.mapfl(
     transform: (

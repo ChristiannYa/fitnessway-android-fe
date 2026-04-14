@@ -17,16 +17,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
+import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.mappers.toPreview
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
+import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.OnLoadMore
+import com.example.fitnessway.util.extensions.getAccent
+import com.example.fitnessway.util.extensions.getImageVector
 
 @Composable
 fun PendingFoodsPagination(
@@ -81,6 +85,17 @@ fun PendingFoodsPagination(
                                         food = pendingFood.toPreview(),
                                         isUserPremium = isUserPremium,
                                         showsNutrientPreview = true,
+                                        contentRight = {
+                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                Structure.AppIconDynamic(
+                                                    source = Structure.AppIconSource.Vector(
+                                                        pendingFood.status.getImageVector()
+                                                    ),
+                                                    contentDescription = "Food is ${pendingFood.status.name.toPascalSpaced()}",
+                                                    tint = pendingFood.status.getAccent()
+                                                )
+                                            }
+                                        },
                                         onClick = { onFoodClick(pendingFood) }
                                     )
                                 }

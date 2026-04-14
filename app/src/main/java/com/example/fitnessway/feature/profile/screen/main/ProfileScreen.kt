@@ -233,7 +233,7 @@ private fun ProfileScreenMainButton(
                 horizontalArrangement = Arrangement.spacedBy(TEXT_ICON_HORIZONTAL_SPACE),
             ) {
                 Structure.AppIconDynamic(
-                    source = Structure.AppIconButtonSource.Vector(imageVector),
+                    source = Structure.AppIconSource.Vector(imageVector),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
@@ -254,7 +254,7 @@ private fun ProfileScreenMainButton(
                 if (isButtonPremium && !isUserPremium) PremiumIcon(size = 18.dp)
 
                 Structure.AppIconDynamic(
-                    source = Structure.AppIconButtonSource.Vector(Icons.Default.ChevronRight),
+                    source = Structure.AppIconSource.Vector(Icons.Default.ChevronRight),
                     modifier = Modifier.size(18.dp)
                 )
             }

@@ -240,7 +240,7 @@ private fun <T> FieldSection(
 
             if (onViewAvailableNutrients != null) {
                 Clickables.AppPngIconButton(
-                    icon = Structure.AppIconButtonSource.Vector(Icons.Default.Add),
+                    icon = Structure.AppIconSource.Vector(Icons.Default.Add),
                     contentDescription = "Add nutrient",
                     onClick = onViewAvailableNutrients
                 )

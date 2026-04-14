@@ -50,7 +50,7 @@ fun Header(
                 )
 
                 Clickables.AppPngIconButton(
-                    icon = Structure.AppIconButtonSource.Vector(Icons.AutoMirrored.Filled.ArrowBack),
+                    icon = Structure.AppIconSource.Vector(Icons.AutoMirrored.Filled.ArrowBack),
                     enabled = enabled,
                     contentDescription = "Go back",
                     onClick = {

@@ -27,14 +27,14 @@ fun AppFoodSearchBar(
         onValueChange = onQueryChange,
         leadingIcon = {
             Structure.AppIconDynamic(
-                source = Structure.AppIconButtonSource.Vector(Icons.Default.Search),
+                source = Structure.AppIconSource.Vector(Icons.Default.Search),
                 contentDescription = "Search app food"
             )
         },
         trailingIcon = {
             if (query.isNotBlank()) {
                 Clickables.AppPngIconButton(
-                    icon = Structure.AppIconButtonSource.Vector(Icons.Default.Close),
+                    icon = Structure.AppIconSource.Vector(Icons.Default.Close),
                     contentDescription = "Close search bar",
                     size = Clickables.AppIconButtonSize.SMALL,
                     onClick = {

@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.ui.shared.Structure.AppIconButtonSource
+import com.example.fitnessway.ui.shared.Structure.AppIconSource
 import com.example.fitnessway.util.Ui
 
 object Clickables {
@@ -43,7 +43,7 @@ object Clickables {
         size: AppIconButtonSize = AppIconButtonSize.LARGE,
         showsClickIndication: Boolean = true,
         enabled: Boolean = true,
-        icon: AppIconButtonSource,
+        icon: AppIconSource,
         iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
         iconTintOverridesDisabledTint: Boolean = false,
         contentDescription: String,
@@ -97,7 +97,7 @@ object Clickables {
                 strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
             )
         } else AppPngIconButton(
-            icon = AppIconButtonSource.Vector(Icons.Default.Done),
+            icon = AppIconSource.Vector(Icons.Default.Done),
             contentDescription = "Done",
             onClick = onClick,
             enabled = enabled,

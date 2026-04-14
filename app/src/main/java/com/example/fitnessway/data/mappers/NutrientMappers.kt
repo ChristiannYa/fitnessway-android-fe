@@ -74,7 +74,7 @@ fun NutrientsByType<NutrientDataAmount>.toNutrientPreview() =
                 .find { it.nutrientData.base.id == NutrientId.CALORIES }
                 .toNutrientAmountWithColorOrNull(),
             carbs = nutrients
-                .find { it.nutrientData.base.id == NutrientId.CALORIES }
+                .find { it.nutrientData.base.id == NutrientId.CARBS }
                 .toNutrientAmountWithColorOrNull(),
             fats = nutrients
                 .find { it.nutrientData.base.id == NutrientId.FATS }

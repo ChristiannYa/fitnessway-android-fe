@@ -5,13 +5,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -36,9 +45,11 @@ import com.example.fitnessway.util.extensions.getImageVector
 fun PendingFoodsPagination(
     isVisible: Boolean,
     isUserPremium: Boolean,
+    isDismissError: Boolean,
     pendingFoodsUiStatePager: UiStatePager<PendingFood>,
     onLoadMore: () -> Unit,
     onFoodClick: (PendingFood) -> Unit,
+    onDismissReview: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pendingFoodsListLazyState = rememberLazyListState()
@@ -81,22 +92,13 @@ fun PendingFoodsPagination(
                                     items = pendingFoods,
                                     key = { it.id }
                                 ) { pendingFood ->
-                                    UFood.Ui.FoodPreview(
-                                        food = pendingFood.toPreview(),
+                                    FoodPreview(
+                                        pendingFood = pendingFood,
+                                        isDismissError = isDismissError,
                                         isUserPremium = isUserPremium,
-                                        showsNutrientPreview = true,
-                                        contentRight = {
-                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                                Structure.AppIconDynamic(
-                                                    source = Structure.AppIconSource.Vector(
-                                                        pendingFood.status.getImageVector()
-                                                    ),
-                                                    contentDescription = "Food is ${pendingFood.status.name.toPascalSpaced()}",
-                                                    tint = pendingFood.status.getAccent()
-                                                )
-                                            }
-                                        },
-                                        onClick = { onFoodClick(pendingFood) }
+                                        onClick = onFoodClick,
+                                        onDismiss = onDismissReview,
+                                        modifier = Modifier.fillMaxWidth()
                                     )
                                 }
 
@@ -129,5 +131,68 @@ fun PendingFoodsPagination(
                 message = pendingFoodsUiStatePager.uiState.toErrorMessageOrNull() ?: ""
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FoodPreview(
+    pendingFood: PendingFood,
+    isDismissError: Boolean,
+    isUserPremium: Boolean,
+    onClick: (PendingFood) -> Unit,
+    onDismiss: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val swipeToDismissState = rememberSwipeToDismissBoxState(
+        initialValue = SwipeToDismissBoxValue.Settled
+    )
+
+    LaunchedEffect(swipeToDismissState.settledValue) {
+        if (swipeToDismissState.settledValue == SwipeToDismissBoxValue.EndToStart) onDismiss(pendingFood.id)
+    }
+
+    LaunchedEffect(isDismissError) {
+        if (isDismissError) swipeToDismissState.reset()
+    }
+
+    SwipeToDismissBox(
+        state = swipeToDismissState,
+        enableDismissFromStartToEnd = false,
+        enableDismissFromEndToStart = pendingFood.status.isReviewed,
+        modifier = modifier,
+        backgroundContent = {
+            if (swipeToDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.CenterEnd)
+                ) {
+                    Text(
+                        text = "Dismiss",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    ) {
+        UFood.Ui.FoodPreview(
+            food = pendingFood.toPreview(),
+            isUserPremium = isUserPremium,
+            showsNutrientPreview = true,
+            contentRight = {
+                Column {
+                    Structure.AppIconDynamic(
+                        source = Structure.AppIconSource.Vector(
+                            pendingFood.status.getImageVector()
+                        ),
+                        contentDescription = "Food is ${pendingFood.status.name.toPascalSpaced()}",
+                        tint = pendingFood.status.getAccent()
+                    )
+                }
+            },
+            onClick = { onClick(pendingFood) }
+        )
     }
 }

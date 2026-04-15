@@ -13,6 +13,7 @@ interface IPendingFoodRepository {
     fun refreshPendingFoods()
     fun loadMorePendingFoods()
     suspend fun addPendingFood(request: PendingFoodAddRequest): Flow<UiState<PendingFood>>
+    suspend fun dismissReview(id: Int): Flow<UiState<Unit>>
 
     fun updateState(update: (PendingFoodRepositoryUiState) -> PendingFoodRepositoryUiState)
 

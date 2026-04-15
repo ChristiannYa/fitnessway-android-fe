@@ -13,19 +13,14 @@ class HttpClient {
         apiCall: suspend () -> T,
         extractData: (T) -> D,
         errMsg: String = "Error making request",
+        // @TODO: Remove param
         invalidatedUrls: List<String> = emptyList()
     ): Flow<UiState<D>> = flow {
         emit(UiState.Loading)
 
         try {
             val data = apiCall()
-            val extractedData = extractData(data)
-
-            if (invalidatedUrls.isNotEmpty()) {
-                invalidatedUrls.forEach { logcat("invalidating url: $it") }
-            }
-
-            emit(UiState.Success(extractedData))
+            emit(UiState.Success(extractData(data)))
 
         } catch (e: Exception) {
             logcat(

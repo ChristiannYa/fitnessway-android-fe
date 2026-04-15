@@ -54,14 +54,22 @@ object ApiUrls {
     }
 
     object PendingFood {
-        const val LIST_PATH = "food/pending/my-own"
+        const val PATH = "food/pending"
+
+        const val LIST_PATH = "$PATH/my-own"
         const val LIST_URL = "$BASE_URL_KT$LIST_PATH"
 
         fun getPaginationPath(params: PaginationParams) = "$LIST_PATH?${params.toRequestParams()}"
         fun getPaginationUrl(params: PaginationParams) = BASE_URL_KT + getPaginationPath(params)
 
-        const val ADD_PATH = "food/pending/add"
+        const val ADD_PATH = "$PATH/add"
         const val ADD_URL = "$BASE_URL_KT$ADD_PATH"
+
+        const val DISMISS_REVIEW_PATH = "$PATH/dismiss-review"
+        const val DISMISS_REVIEW_URL = "$BASE_URL_KT/$DISMISS_REVIEW_PATH"
+
+        fun getDismissReviewPath(id: Int) = "$DISMISS_REVIEW_PATH/$id"
+        fun getDismissReviewUrl(id: Int) = BASE_URL_KT + getDismissReviewPath(id)
     }
 
     object FoodLog {

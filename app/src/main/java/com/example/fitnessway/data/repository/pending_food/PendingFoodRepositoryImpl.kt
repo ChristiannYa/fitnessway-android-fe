@@ -101,6 +101,13 @@ class PendingFoodRepositoryImpl(
         if (state is UiState.Success) refreshPendingFoods()
     }
 
+    override suspend fun dismissReview(id: Int): Flow<UiState<Unit>> =
+        httpClient.makeRequest(
+            apiCall = { apiClient.dismissReview(id) },
+            extractData = { Unit },
+            errMsg = "Failed to dismiss review"
+        )
+
     override fun updateState(update: (PendingFoodRepositoryUiState) -> PendingFoodRepositoryUiState) {
         _uiState.update(update)
     }

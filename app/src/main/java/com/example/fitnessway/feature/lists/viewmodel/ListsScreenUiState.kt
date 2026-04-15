@@ -9,5 +9,5 @@ data class ListsScreenUiState(
     val foodAddState: UiState<FoodInformation> = UiState.Idle,
     val foodUpdateState: UiState<FoodInformation> = UiState.Idle,
     val foodDeleteState: UiState<FoodInformation> = UiState.Idle,
-    val foodFavoriteStatusUpdateState: UiState<FoodInformation> = UiState.Idle
+    val reviewDismissState: UiState<Unit> = UiState.Idle
 )

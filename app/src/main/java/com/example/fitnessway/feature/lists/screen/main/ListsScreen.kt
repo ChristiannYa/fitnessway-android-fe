@@ -1,7 +1,9 @@
 package com.example.fitnessway.feature.lists.screen.main
 
 import android.view.SoundEffectConstants
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditNote
@@ -14,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.plural
 import com.example.fitnessway.data.mappers.toClientView
@@ -23,12 +26,14 @@ import com.example.fitnessway.feature.lists.screen.main.composables.PendingFoods
 import com.example.fitnessway.feature.lists.screen.main.composables.UserFoodsList
 import com.example.fitnessway.feature.lists.screen.main.composables.UserSupplementsList
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
+import com.example.fitnessway.ui.shared.Banners
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.ScreenOverlay
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.extensions.getAppIconSource
 import org.koin.androidx.compose.koinViewModel
@@ -41,6 +46,7 @@ fun ListsScreen(
     onNavigateToFoodRequestScreen: () -> Unit,
     onNavigateToFoodCreationForm: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val pendingFoodRepoUiState by viewModel.pendingFoodRepoUiState.collectAsState()
@@ -54,6 +60,11 @@ fun ListsScreen(
 
     val moreOptionsState = Structure.rememberMoreOptionsState()
     val view = LocalView.current
+
+    val dismissReviewErrorMessage = Ui.handleTempApiErrMsg(
+        uiState = uiState.reviewDismissState,
+        onTimeOut = viewModel::resetReviewDismissState
+    )
 
     LaunchedEffect(Unit) {
         viewModel.getNutrients()
@@ -103,16 +114,29 @@ fun ListsScreen(
         }
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            PendingFoodsPagination(
-                isVisible = selectedList == ListOption.PendingFood,
-                isUserPremium = user?.isPremium ?: false,
-                pendingFoodsUiStatePager = pendingFoodsUiStatePager,
-                onLoadMore = viewModel::getMorePendingFoods,
-                onFoodClick = {
-                    viewModel.requestManager.setPendingFood(it)
-                    onNavigateToPendingFoodDetails()
-                }
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Banners.ErrorBannerAnimated(
+                    isVisible = selectedList == ListOption.PendingFood && dismissReviewErrorMessage != null,
+                    text = dismissReviewErrorMessage ?: ""
+                )
+
+                PendingFoodsPagination(
+                    isVisible = selectedList == ListOption.PendingFood,
+                    isUserPremium = user?.isPremium ?: false,
+                    isDismissError = uiState.reviewDismissState is UiState.Error,
+                    pendingFoodsUiStatePager = pendingFoodsUiStatePager,
+                    onLoadMore = viewModel::getMorePendingFoods,
+                    onFoodClick = {
+                        viewModel.requestManager.setPendingFood(it)
+                        onNavigateToPendingFoodDetails()
+                    },
+                    onDismissReview = { id ->
+                        viewModel.resetReviewDismissState()
+                        viewModel.requestManager.setReviewIdToRemove(id)
+                        viewModel.dismissReview()
+                    }
+                )
+            }
 
             UserFoodsList(
                 isVisible = selectedList == ListOption.Food,
@@ -131,13 +155,12 @@ fun ListsScreen(
 
             val options = enumValues<ListOption>().map { option ->
                 val isSelected = selectedList == option
-                val tint = if (isSelected) WhiteFont else null
 
                 Structure.MoreOptionsConfig(
                     text = option.toClientView().plural(),
                     backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else null,
                     icon = option.getAppIconSource(),
-                    iconTint = tint,
+                    iconTint = if (isSelected) WhiteFont else null,
                     onClick = {
                         moreOptionsState.hide()
                         viewModel.setSelectedList(option)

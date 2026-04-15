@@ -374,6 +374,26 @@ class ListsViewModel(
             }
     }
 
+    fun dismissReview() {
+        val reviewIdToRemove = managers.request.reviewIdToRemove.value ?: return
+
+        viewModelScope.launch {
+            pendingFoodRepo.dismissReview(reviewIdToRemove).collect { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        _uiState.update { it.copy(reviewDismissState = state) }
+                    }
+
+                    is UiState.Error -> {
+                        _uiState.update { it.copy(reviewDismissState = state) }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
     fun resetFoodRequestState() {
         _uiState.update { it.copy(foodRequestState = UiState.Idle) }
     }
@@ -388,6 +408,10 @@ class ListsViewModel(
 
     fun resetFoodDeleteState() {
         _uiState.update { it.copy(foodDeleteState = UiState.Idle) }
+    }
+
+    fun resetReviewDismissState() {
+        _uiState.update { it.copy(reviewDismissState = UiState.Idle) }
     }
 
     /**

@@ -191,17 +191,13 @@ private fun FoodPreview(
             isUserPremium = isUserPremium,
             showsNutrientPreview = true,
             contentRight = {
-                Column {
-                    Structure.AppIconDynamic(
-                        source = Structure.AppIconSource.Vector(
-                            pendingFood.status.getImageVector()
-                        ),
-                        contentDescription = "Food is ${pendingFood.status.name.toPascalSpaced()}",
-                        tint = pendingFood.status.getAccent()
-                    )
-
-                    Text("${pendingFood.id}")
-                }
+                Structure.AppIconDynamic(
+                    source = Structure.AppIconSource.Vector(
+                        pendingFood.status.getImageVector()
+                    ),
+                    contentDescription = "Food is ${pendingFood.status.name.toPascalSpaced()}",
+                    tint = pendingFood.status.getAccent()
+                )
             },
             onClick = { onClick(pendingFood) }
         )

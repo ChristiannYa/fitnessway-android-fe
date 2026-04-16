@@ -10,16 +10,11 @@ import com.example.fitnessway.util.form.field.InlineRules
 import com.example.fitnessway.util.form.field.Rules
 import com.example.fitnessway.util.isValidEnum
 import com.example.fitnessway.util.listEnumValues
-import com.example.fitnessway.util.logcat
 import com.example.fitnessway.util.nutrient.NutrientDvControls
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 abstract class FoodCreation(val foodSource: FoodSource) : IFoodCreation, NutrientDvControls() {
-
-    init {
-        logcat("[FoodCreation] initialized with foodSource: $foodSource")
-    }
 
     private val emptyFoodCreationFormState = FormStates.FoodCreation(
         name = "",

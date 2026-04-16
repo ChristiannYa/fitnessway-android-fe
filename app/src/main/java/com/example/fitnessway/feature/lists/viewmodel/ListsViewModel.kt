@@ -32,8 +32,6 @@ import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
-import com.example.fitnessway.util.extensions.logInfo
-import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -382,121 +380,100 @@ class ListsViewModel(
     }
 
     private val _pendingFoodsFailedDeletions = mutableSetOf<Pair<Int, PendingFood>>()
-    private var _pendingFoodsBeforeSuccessfulDeletion: List<PendingFood> = emptyList()
+    private var _pendingFoodsBeforeDeletion: List<PendingFood> = emptyList()
 
     fun dismissReview() {
-        fun log(log: String) = logcat("[ListsViewModel, dismissReview] $log")
+        val idToDismiss = managers.request.reviewIdToDismiss.value ?: return
 
-        val reviewIdToRemove = managers.request.reviewIdToRemove.value ?: return
-        log("reviewIdToRemove: $reviewIdToRemove")
+        val originalPager = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
+            .toSuccessOrNull()
+            ?: return
 
-        // Get current data to update optimistically
-        val originalPagerState = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
-        if (originalPagerState !is UiState.Success) return
-
-        val originalPager = originalPagerState.data
-        originalPager.toPaginationData().logInfo("originalPager", originalPager.offset)
-
-        originalPager.data.map { it.id }.also { log("originalPager IDs: $it") }
-
-        // Capture the pending foods list before successful deletion (only on first deletion)
-        if (_pendingFoodsBeforeSuccessfulDeletion.isEmpty()) {
-            log("successful deletion list empty -> capturing pending food list before successful deletion")
-            _pendingFoodsBeforeSuccessfulDeletion = originalPagerState.data.data
+        // Store current pending foods (not already in list) before a successful dismissal
+        _pendingFoodsBeforeDeletion = _pendingFoodsBeforeDeletion + run {
+            originalPager.data.filter {
+                it.id !in _pendingFoodsBeforeDeletion.map { p -> p.id }
+            }
         }
 
-        val latest = originalPagerState.data.data
-            .find { it.id == reviewIdToRemove }
+        // Find the current pending food from the current list
+        val current = originalPager.data
+            .find { it.id == idToDismiss }
             ?: return
-        log("latest (ID): ${latest.id}")
 
-        val originalPosition = _pendingFoodsBeforeSuccessfulDeletion
-            .indexOfFirst { it.id == reviewIdToRemove }
+        // Store the original index/position of the dismissed pending food
+        val originalIndex = _pendingFoodsBeforeDeletion
+            .indexOfFirst { it.id == idToDismiss }
             .takeIf { it != -1 }
             ?: return
-        log("original position: $originalPosition")
 
-        _pendingFoodsFailedDeletions.removeIf {
-            log("failed deletions -> it.second.id == reviewedIdToRemove -> remove")
-            it.second.id == reviewIdToRemove
-        }
+        // Remove the dismissed pending food from the failed deletion list.
+        // This resets a previously failed dismissal so that the user can try again
+        _pendingFoodsFailedDeletions.removeIf { it.second.id == idToDismiss }
 
-        val optimisticList = originalPager.data.filter { it.id != reviewIdToRemove }
-        optimisticList.map { it.id }.also { log("optimisticList IDs: $it") }
-
-        val optimisticPaginationData = originalPager
-            .toPaginationData()
-            .calc(OptimisticUpdate.REMOVE, originalPager.offset)
-        optimisticPaginationData.logInfo("optimistic pagination data", originalPager.offset)
-
-        val optimisticPagination = optimisticPaginationData.toResult(optimisticList)
-
+        // Update states optimistically
         _uiState.update { it.copy(reviewDismissState = UiState.Success(Unit)) }
+
         pendingFoodRepo.updateState {
             it.copy(
                 pendingFoodsUiStatePager = UiStatePager(
-                    uiState = UiState.Success(optimisticPagination),
+                    uiState = UiState.Success(
+                        // Optimistic pagination when REMOVING (dismissing) the pending food
+                        originalPager
+                            .toPaginationData()
+                            .calc(OptimisticUpdate.REMOVE, originalPager.offset)
+                            .toResult(originalPager.data.filter { f -> f.id != idToDismiss })
+                    ),
                     isLoadingMore = false
                 )
             )
         }
 
         viewModelScope.launch {
-            pendingFoodRepo.dismissReview(reviewIdToRemove).collect { state ->
+            pendingFoodRepo.dismissReview(idToDismiss).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(reviewDismissState = state) }
 
                         // Reset pending foods before successful deletion if all deletions succeeded
                         if (_pendingFoodsFailedDeletions.isEmpty()) {
-                            _pendingFoodsBeforeSuccessfulDeletion = emptyList()
+                            _pendingFoodsBeforeDeletion = emptyList()
                         }
                     }
 
                     is UiState.Error -> {
                         _uiState.update { it.copy(reviewDismissState = state) }
 
-                        _pendingFoodsFailedDeletions.add(originalPosition to latest)
-                        log("_pendingFoodsFailedDeletions -> adding original position: $originalPosition to latest (ID): #${latest.id} ")
+                        _pendingFoodsFailedDeletions.add(originalIndex to current)
 
-                        log("_pendingFoodsFailedDeletions:")
-                        _pendingFoodsFailedDeletions.forEach { (o, l) -> log("[$o] ${l.id}") }
+                        val currentPager = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
+                            .toSuccessOrNull()
+                            ?: return@collect
 
-                        val currentPagerState = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
-                        if (currentPagerState !is UiState.Success) return@collect
-
-                        val currentPager = currentPagerState.data
-
-                        val revertedList =
-                            (currentPager.data + _pendingFoodsFailedDeletions.map { it.second })
-                                .also { log("revertedList (bare): ${it.map { f -> f.id }}") }
-                                .distinctBy { it.id }
-                                .also { log("revertedList (distinctBy): ${it.map { f -> f.id }}") }
-                                .sortedBy { pendingFood ->
-                                    val failedPosition = _pendingFoodsFailedDeletions.find {
-                                        it.second.id == pendingFood.id
-                                    }?.first
-                                    log("revertedList (sortedBy, failedPosition): $failedPosition")
-
-                                    failedPosition ?: run {
-                                        // For pending foods still in the list, use their absolute original position
-                                        val absolutePosition = _pendingFoodsBeforeSuccessfulDeletion
-                                            .indexOfFirst { it.id == pendingFood.id }
-                                            .takeIf { it != -1 }
-                                            ?: Int.MAX_VALUE
-                                        log("revertedList (sortedBy, absolutePosition): $absolutePosition")
-
-                                        absolutePosition
-                                    }
-                                }
-
-                        val revertedPaginationData = currentPager
+                        val revertedPagination = currentPager
                             .toPaginationData()
                             .calc(OptimisticUpdate.ROLLBACK, currentPager.offset)
-                        revertedPaginationData.logInfo("revertedPaginationData", currentPager.offset)
-
-                        val revertedPagination = revertedPaginationData.toResult(revertedList)
-                        revertedPagination.data.map { it.id }.also { log("revertedPagination.data IDd: $it") }
+                            .toResult(
+                                // Combine current pending foods (modified after optimistic update)
+                                // with the pending foods in queue to rollback
+                                (currentPager.data + _pendingFoodsFailedDeletions.map { it.second })
+                                    .distinctBy { it.id }
+                                    .sortedBy { pendingFood ->
+                                        // Original position from failed deletions being rolled back
+                                        _pendingFoodsFailedDeletions
+                                            .find { it.second.id == pendingFood.id }
+                                            ?.first
+                                            ?: run {
+                                                // Original position from the current list of a non-dismissed
+                                                // pending food
+                                                _pendingFoodsBeforeDeletion
+                                                    .indexOfFirst { it.id == pendingFood.id }
+                                                    .takeIf { it != -1 }
+                                                // Safe fallback
+                                                    ?: Int.MAX_VALUE
+                                            }
+                                    }
+                            )
 
                         pendingFoodRepo.updateState {
                             it.copy(

@@ -42,7 +42,6 @@ import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.OnLoadMore
 import com.example.fitnessway.util.extensions.getAccent
 import com.example.fitnessway.util.extensions.getImageVector
-import com.example.fitnessway.util.logcat
 
 @Composable
 fun PendingFoodsPagination(
@@ -147,23 +146,16 @@ private fun FoodPreview(
     onDismiss: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    fun log(log: String) = logcat("[PendingFoodsPagination, FoodPreview] $log")
-
     val positionalThreshold = SwipeToDismissBoxDefaults.positionalThreshold
+
     val swipeToDismissState = remember {
         SwipeToDismissBoxState(
             initialValue = SwipeToDismissBoxValue.Settled,
             positionalThreshold = positionalThreshold
         )
     }
-    log("id: ${pendingFood.id}, initialSettledValue: ${swipeToDismissState.settledValue}")
 
     LaunchedEffect(swipeToDismissState.settledValue) {
-        logcat(
-            "settledValue: ${swipeToDismissState.settledValue}, " +
-                    "isDismissError: $isDismissError"
-        )
-
         if (swipeToDismissState.settledValue == SwipeToDismissBoxValue.EndToStart) {
             onDismiss(pendingFood.id)
         }

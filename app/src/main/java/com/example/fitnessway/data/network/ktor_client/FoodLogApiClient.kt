@@ -16,8 +16,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
-import kotlinx.coroutines.delay
-
 import io.ktor.client.HttpClient as KtorHttpClient
 
 class FoodLogApiClient(private val client: KtorHttpClient) {
@@ -27,25 +25,27 @@ class FoodLogApiClient(private val client: KtorHttpClient) {
             .extractApiData()
 
     suspend fun getLatestLoggedFoods(params: PaginationParams): RecentlyLoggedFoodsResponse =
-        client.get(ApiUrls.FoodLog.LIST_LATEST_FOODS_URL) {
-            parameter("limit", params.limit)
-            parameter("offset", params.offset)
-        }.extractApiData()
+        client
+            .get(ApiUrls.FoodLog.LIST_LATEST_FOODS_URL) {
+                parameter("limit", params.limit)
+                parameter("offset", params.offset)
+            }
+            .extractApiData()
 
     suspend fun add(req: FoodLogAddRequest): FoodLogAddResponse =
-        client.post(ApiUrls.FoodLog.ADD_URL) {
-            jsonBody(req)
-        }.extractApiData()
+        client
+            .post(ApiUrls.FoodLog.ADD_URL) { jsonBody(req) }
+            .extractApiData()
 
     suspend fun update(req: FoodLogUpdateRequest): FoodLogUpdateResponse =
-        client.put(ApiUrls.FoodLog.UPDATE_URL) {
-            jsonBody(req)
-        }.extractApiData()
+        client
+            .put(ApiUrls.FoodLog.UPDATE_URL) { jsonBody(req) }
+            .extractApiData()
 
-    suspend fun delete(foodLogId: Int): MFood.Api.Res.FoodLogDeleteApiResponse {
-        delay(8000)
-        return client.delete(ApiUrls.FoodLog.DELETE_URL) {
-            parameter("food-log-id", foodLogId)
-        }.extractApiData()
-    }
+    suspend fun delete(foodLogId: Int): MFood.Api.Res.FoodLogDeleteApiResponse =
+        client
+            .delete(ApiUrls.FoodLog.DELETE_URL) {
+                parameter("food-log-id", foodLogId)
+            }
+            .extractApiData()
 }

@@ -3,7 +3,6 @@ package com.example.fitnessway.util.extensions
 import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.model.m_26.OptimisticUpdate
 import com.example.fitnessway.data.model.m_26.PaginationData
-import com.example.fitnessway.util.logcat
 import kotlin.math.ceil
 
 fun PaginationData.calc(updateType: OptimisticUpdate, offset: Long): PaginationData {
@@ -20,11 +19,4 @@ fun PaginationData.calc(updateType: OptimisticUpdate, offset: Long): PaginationD
         pageCount = newPageCount,
         currentPage = newCurrentPage
     )
-}
-
-fun PaginationData.logInfo(itemName: String, offset: Long? = null) {
-    logcat("[AppExtensions, logInfo] $itemName total count: ${this.totalCount}")
-    logcat("[AppExtensions, logInfo] $itemName page count: ${this.pageCount}")
-    logcat("[AppExtensions, logInfo] $itemName current page: ${this.currentPage}")
-    offset?.let { logcat("[AppExtensions, logInfo] $itemName offset: $it") }
 }

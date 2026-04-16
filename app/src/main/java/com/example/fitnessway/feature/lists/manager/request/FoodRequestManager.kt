@@ -10,14 +10,14 @@ class FoodRequestManager : IFoodRequestManager, FoodCreation(FoodSource.APP) {
     private val _pendingFood = MutableStateFlow<PendingFood?>(null)
     override val pendingFood: StateFlow<PendingFood?> = _pendingFood
 
-    private val _reviewIdToRemove = MutableStateFlow<Int?>(null)
-    override val reviewIdToRemove: StateFlow<Int?> = _reviewIdToRemove
+    private val _reviewIdToDismiss = MutableStateFlow<Int?>(null)
+    override val reviewIdToDismiss: StateFlow<Int?> = _reviewIdToDismiss
 
     override fun setPendingFood(food: PendingFood) {
         _pendingFood.value = food
     }
 
     override fun setReviewIdToRemove(id: Int) {
-        _reviewIdToRemove.value = id
+        _reviewIdToDismiss.value = id
     }
 }

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodRequestManager : IFoodCreation {
     val pendingFood: StateFlow<PendingFood?>
-    val reviewIdToRemove: StateFlow<Int?>
+    val reviewIdToDismiss: StateFlow<Int?>
 
     fun setPendingFood(food: PendingFood)
     fun setReviewIdToRemove(id: Int)

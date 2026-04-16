@@ -16,11 +16,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxDefaults
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -40,6 +42,7 @@ import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.OnLoadMore
 import com.example.fitnessway.util.extensions.getAccent
 import com.example.fitnessway.util.extensions.getImageVector
+import com.example.fitnessway.util.logcat
 
 @Composable
 fun PendingFoodsPagination(
@@ -144,12 +147,26 @@ private fun FoodPreview(
     onDismiss: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val swipeToDismissState = rememberSwipeToDismissBoxState(
-        initialValue = SwipeToDismissBoxValue.Settled
-    )
+    fun log(log: String) = logcat("[PendingFoodsPagination, FoodPreview] $log")
+
+    val positionalThreshold = SwipeToDismissBoxDefaults.positionalThreshold
+    val swipeToDismissState = remember {
+        SwipeToDismissBoxState(
+            initialValue = SwipeToDismissBoxValue.Settled,
+            positionalThreshold = positionalThreshold
+        )
+    }
+    log("id: ${pendingFood.id}, initialSettledValue: ${swipeToDismissState.settledValue}")
 
     LaunchedEffect(swipeToDismissState.settledValue) {
-        if (swipeToDismissState.settledValue == SwipeToDismissBoxValue.EndToStart) onDismiss(pendingFood.id)
+        logcat(
+            "settledValue: ${swipeToDismissState.settledValue}, " +
+                    "isDismissError: $isDismissError"
+        )
+
+        if (swipeToDismissState.settledValue == SwipeToDismissBoxValue.EndToStart) {
+            onDismiss(pendingFood.id)
+        }
     }
 
     LaunchedEffect(isDismissError) {
@@ -190,6 +207,8 @@ private fun FoodPreview(
                         contentDescription = "Food is ${pendingFood.status.name.toPascalSpaced()}",
                         tint = pendingFood.status.getAccent()
                     )
+
+                    Text("${pendingFood.id}")
                 }
             },
             onClick = { onClick(pendingFood) }

@@ -3,7 +3,9 @@ package com.example.fitnessway.feature.lists.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.mappers.toNutrientIdAmountList
+import com.example.fitnessway.data.mappers.toPaginationData
 import com.example.fitnessway.data.mappers.toPendingRequest
+import com.example.fitnessway.data.mappers.toResult
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toUserFoodRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
@@ -13,6 +15,8 @@ import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.ListOption
+import com.example.fitnessway.data.model.m_26.OptimisticUpdate
+import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
@@ -27,6 +31,9 @@ import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
+import com.example.fitnessway.util.extensions.calc
+import com.example.fitnessway.util.extensions.logInfo
+import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -374,18 +381,131 @@ class ListsViewModel(
             }
     }
 
+    private val _pendingFoodsFailedDeletions = mutableSetOf<Pair<Int, PendingFood>>()
+    private var _pendingFoodsBeforeSuccessfulDeletion: List<PendingFood> = emptyList()
+
     fun dismissReview() {
+        fun log(log: String) = logcat("[ListsViewModel, dismissReview] $log")
+
         val reviewIdToRemove = managers.request.reviewIdToRemove.value ?: return
+        log("reviewIdToRemove: $reviewIdToRemove")
+
+        // Get current data to update optimistically
+        val originalPagerState = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
+        if (originalPagerState !is UiState.Success) return
+
+        val originalPager = originalPagerState.data
+        originalPager.toPaginationData().logInfo("originalPager", originalPager.offset)
+
+        originalPager.data.map { it.id }.also { log("originalPager IDs: $it") }
+
+        // Capture the pending foods list before successful deletion (only on first deletion)
+        if (_pendingFoodsBeforeSuccessfulDeletion.isEmpty()) {
+            log("successful deletion list empty -> capturing pending food list before successful deletion")
+            _pendingFoodsBeforeSuccessfulDeletion = originalPagerState.data.data
+        }
+
+        val latest = originalPagerState.data.data
+            .find { it.id == reviewIdToRemove }
+            ?: return
+        log("latest (ID): ${latest.id}")
+
+        val originalPosition = _pendingFoodsBeforeSuccessfulDeletion
+            .indexOfFirst { it.id == reviewIdToRemove }
+            .takeIf { it != -1 }
+            ?: return
+        log("original position: $originalPosition")
+
+        _pendingFoodsFailedDeletions.removeIf {
+            log("failed deletions -> it.second.id == reviewedIdToRemove -> remove")
+            it.second.id == reviewIdToRemove
+        }
+
+        val optimisticList = originalPager.data.filter { it.id != reviewIdToRemove }
+        optimisticList.map { it.id }.also { log("optimisticList IDs: $it") }
+
+        val optimisticPaginationData = originalPager
+            .toPaginationData()
+            .calc(OptimisticUpdate.REMOVE, originalPager.offset)
+        optimisticPaginationData.logInfo("optimistic pagination data", originalPager.offset)
+
+        val optimisticPagination = optimisticPaginationData.toResult(optimisticList)
+
+        _uiState.update { it.copy(reviewDismissState = UiState.Success(Unit)) }
+        pendingFoodRepo.updateState {
+            it.copy(
+                pendingFoodsUiStatePager = UiStatePager(
+                    uiState = UiState.Success(optimisticPagination),
+                    isLoadingMore = false
+                )
+            )
+        }
 
         viewModelScope.launch {
             pendingFoodRepo.dismissReview(reviewIdToRemove).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(reviewDismissState = state) }
+
+                        // Reset pending foods before successful deletion if all deletions succeeded
+                        if (_pendingFoodsFailedDeletions.isEmpty()) {
+                            _pendingFoodsBeforeSuccessfulDeletion = emptyList()
+                        }
                     }
 
                     is UiState.Error -> {
                         _uiState.update { it.copy(reviewDismissState = state) }
+
+                        _pendingFoodsFailedDeletions.add(originalPosition to latest)
+                        log("_pendingFoodsFailedDeletions -> adding original position: $originalPosition to latest (ID): #${latest.id} ")
+
+                        log("_pendingFoodsFailedDeletions:")
+                        _pendingFoodsFailedDeletions.forEach { (o, l) -> log("[$o] ${l.id}") }
+
+                        val currentPagerState = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
+                        if (currentPagerState !is UiState.Success) return@collect
+
+                        val currentPager = currentPagerState.data
+
+                        val revertedList =
+                            (currentPager.data + _pendingFoodsFailedDeletions.map { it.second })
+                                .also { log("revertedList (bare): ${it.map { f -> f.id }}") }
+                                .distinctBy { it.id }
+                                .also { log("revertedList (distinctBy): ${it.map { f -> f.id }}") }
+                                .sortedBy { pendingFood ->
+                                    val failedPosition = _pendingFoodsFailedDeletions.find {
+                                        it.second.id == pendingFood.id
+                                    }?.first
+                                    log("revertedList (sortedBy, failedPosition): $failedPosition")
+
+                                    failedPosition ?: run {
+                                        // For pending foods still in the list, use their absolute original position
+                                        val absolutePosition = _pendingFoodsBeforeSuccessfulDeletion
+                                            .indexOfFirst { it.id == pendingFood.id }
+                                            .takeIf { it != -1 }
+                                            ?: Int.MAX_VALUE
+                                        log("revertedList (sortedBy, absolutePosition): $absolutePosition")
+
+                                        absolutePosition
+                                    }
+                                }
+
+                        val revertedPaginationData = currentPager
+                            .toPaginationData()
+                            .calc(OptimisticUpdate.ROLLBACK, currentPager.offset)
+                        revertedPaginationData.logInfo("revertedPaginationData", currentPager.offset)
+
+                        val revertedPagination = revertedPaginationData.toResult(revertedList)
+                        revertedPagination.data.map { it.id }.also { log("revertedPagination.data IDd: $it") }
+
+                        pendingFoodRepo.updateState {
+                            it.copy(
+                                pendingFoodsUiStatePager = UiStatePager(
+                                    uiState = UiState.Success(revertedPagination),
+                                    isLoadingMore = false
+                                )
+                            )
+                        }
                     }
 
                     else -> {}

@@ -35,7 +35,6 @@ import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
@@ -43,7 +42,6 @@ import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.OnLoadMore
 import com.example.fitnessway.util.extensions.getAccent
 import com.example.fitnessway.util.extensions.getImageVector
-import com.example.fitnessway.util.logcat
 
 @Composable
 fun PendingFoodsPagination(
@@ -56,12 +54,6 @@ fun PendingFoodsPagination(
     onDismissReview: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (uiStatePager.uiState is UiState.Success) {
-        uiStatePager.uiState.data.data
-            .map { it.id }
-            .also { logcat("[PendingFoodsPagination] pending foods: $it", Constants.LogLevel.INFO) }
-    }
-
     val pendingFoodsListLazyState = rememberLazyListState()
 
     pendingFoodsListLazyState.OnLoadMore(onLoadMore)

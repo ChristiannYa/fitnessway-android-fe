@@ -26,14 +26,12 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.request.IFoodRequestManager
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
-import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -385,17 +383,11 @@ class ListsViewModel(
     private var _pendingFoodsBeforeDeletion: List<PendingFood> = emptyList()
 
     fun dismissReview() {
-        fun log(log: String, level: Constants.LogLevel = Constants.LogLevel.DEBUG) {
-            logcat("[ListsViewModel, dismissReview] $log", level)
-        }
-
         val idToDismiss = managers.request.reviewIdToDismiss.value ?: return
-        log("dismissing #$idToDismiss", Constants.LogLevel.INFO)
 
         val originalPager = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
             .toSuccessOrNull()
             ?: return
-        log("original pager offset (server): ${originalPager.getServerOffset()}")
 
         // Store current pending foods (not already in list) before a successful dismissal
         _pendingFoodsBeforeDeletion = _pendingFoodsBeforeDeletion + run {

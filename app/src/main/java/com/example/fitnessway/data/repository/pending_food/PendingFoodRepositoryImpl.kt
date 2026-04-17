@@ -29,7 +29,8 @@ class PendingFoodRepositoryImpl(
         httpClient.makeRequest(
             apiCall = { apiClient.getPendingFoods(Pagination.LIMIT, offset) },
             extractData = { it.pendingFoodsPagination },
-            errMsg = "Failed to fetch pending foods"
+            errMsg = "Failed to fetch pending foods",
+            pathDescription = "pending food list"
         )
 
     override fun refreshPendingFoods() {
@@ -90,20 +91,23 @@ class PendingFoodRepositoryImpl(
 
     override suspend fun addPendingFood(
         request: PendingFoodAddRequest,
-    ): Flow<UiState<PendingFood>> = httpClient.makeRequest(
-        apiCall = { apiClient.addPendingFood(request) },
-        extractData = { it.pendingFoodSubmitted },
-        errMsg = "Failed to add food request"
-    ).onEach { state ->
-        // @TODO: Remove refreshPendingFoods and move it to the view model
-        if (state is UiState.Success) refreshPendingFoods()
-    }
+    ): Flow<UiState<PendingFood>> =
+        httpClient.makeRequest(
+            apiCall = { apiClient.addPendingFood(request) },
+            extractData = { it.pendingFoodSubmitted },
+            errMsg = "Failed to add food request",
+            pathDescription = "add pending food"
+        ).onEach { state ->
+            // @TODO: Remove refreshPendingFoods and move it to the view model
+            if (state is UiState.Success) refreshPendingFoods()
+        }
 
     override suspend fun dismissReview(id: Int): Flow<UiState<Unit>> =
         httpClient.makeRequest(
             apiCall = { apiClient.dismissReview(id) },
             extractData = { Unit },
-            errMsg = "Failed to dismiss review"
+            errMsg = "Failed to dismiss review",
+            pathDescription = "dismiss reviewed pending food"
         )
 
     override fun updateState(update: (PendingFoodRepositoryUiState) -> PendingFoodRepositoryUiState) {

@@ -8,7 +8,6 @@ import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.model.m_26.PaginationParams
-import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodLogApiClient
 import com.example.fitnessway.util.UiState
@@ -33,7 +32,8 @@ class FoodLogRepositoryImpl(
         httpClient.makeRequest(
             apiCall = { apiClient.getByDate(date) },
             extractData = { it.foodLogs },
-            errMsg = "Failed to get logs"
+            errMsg = "Failed to get logs",
+            pathDescription = "food log list"
         )
 
     override fun refreshFoodLogs(date: String) {
@@ -53,45 +53,49 @@ class FoodLogRepositoryImpl(
     override suspend fun addFoodLog(
         request: FoodLogAddRequest,
         date: String
-    ): Flow<UiState<FoodLog>> = httpClient.makeRequest(
-        apiCall = { apiClient.add(request) },
-        extractData = { it.foodLogAdded },
-        errMsg = "Failed to add log"
-    )
+    ): Flow<UiState<FoodLog>> =
+        httpClient.makeRequest(
+            apiCall = { apiClient.add(request) },
+            extractData = { it.foodLogAdded },
+            errMsg = "Failed to add log",
+            pathDescription = "add food log"
+        )
 
     override suspend fun updateFoodLog(
         request: FoodLogUpdateRequest,
         date: String
-    ): Flow<UiState<FoodLog>> = httpClient.makeRequest(
-        apiCall = { apiClient.update(request) },
-        extractData = { it.foodLogUpdated },
-        errMsg = "Failed to update log",
-        invalidatedUrls = listOf(
-            ApiUrls.FoodLog.getListByDateUrl(date),
-            ApiUrls.Nutrient.getIntakesByDateUrl(date)
+    ): Flow<UiState<FoodLog>> =
+        httpClient.makeRequest(
+            apiCall = { apiClient.update(request) },
+            extractData = { it.foodLogUpdated },
+            errMsg = "Failed to update log",
+            pathDescription = "update food log"
         )
-    )
 
     override suspend fun deleteFoodLog(
         foodLogId: Int,
         date: String
-    ): Flow<UiState<FoodLogData>> = httpClient.makeRequest(
-        apiCall = { apiClient.delete(foodLogId) },
-        extractData = { it.foodLogDeleted },
-        errMsg = "Failed to delete log"
-    )
+    ): Flow<UiState<FoodLogData>> =
+        httpClient.makeRequest(
+            apiCall = { apiClient.delete(foodLogId) },
+            extractData = { it.foodLogDeleted },
+            errMsg = "Failed to delete log",
+            pathDescription = "delete food log"
+        )
 
     override fun clearFoodLogsUiCache() = _uiState.update { it.copy(foodLogs = emptyMap()) }
 
-    private fun fetchRecentlyLogged(offset: Long) = httpClient.makeRequest(
-        apiCall = {
-            apiClient.getLatestLoggedFoods(
-                PaginationParams(Pagination.LIMIT, offset)
-            )
-        },
-        extractData = { it.recentlyLoggedFoodsPagination },
-        errMsg = "Failed to fetch recently logged foods"
-    )
+    private fun fetchRecentlyLogged(offset: Long) =
+        httpClient.makeRequest(
+            apiCall = {
+                apiClient.getLatestLoggedFoods(
+                    PaginationParams(Pagination.LIMIT, offset)
+                )
+            },
+            extractData = { it.recentlyLoggedFoodsPagination },
+            errMsg = "Failed to fetch recently logged foods",
+            pathDescription = "recently logged food list"
+        )
 
     override fun refreshRecentlyLogged() {
         _uiState.update {

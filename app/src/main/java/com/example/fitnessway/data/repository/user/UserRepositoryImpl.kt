@@ -11,11 +11,11 @@ class UserRepositoryImpl(
     private val apiClient: UserApiClient
 ) : IUserRepository {
 
-    override suspend fun getUser(): Flow<UiState<User>> {
-        return httpClient.makeRequest(
+    override suspend fun getUser(): Flow<UiState<User>> =
+        httpClient.makeRequest(
             apiCall = apiClient::getUser,
             extractData = { it.user },
-            errMsg = "Failed to get user data"
+            errMsg = "Failed to get user data",
+            pathDescription = "user"
         )
-    }
 }

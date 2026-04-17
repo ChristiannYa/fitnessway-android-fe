@@ -27,7 +27,8 @@ class AppFoodRepositoryImpl(
         httpClient.makeRequest(
             apiCall = { apiClient.findAppFoodById(id) },
             extractData = { it.appFood },
-            errMsg = "Failed to fetch food by ID"
+            errMsg = "Failed to fetch food by ID",
+            pathDescription = "app food by id"
         )
 
     private val fetchedAppFoods = mutableListOf<AppFood>()
@@ -58,7 +59,8 @@ class AppFoodRepositoryImpl(
                 )
             },
             extractData = { it.appFoodsPagination },
-            errMsg = "Failed to fetch app foods"
+            errMsg = "Failed to fetch app foods",
+            pathDescription = "app food list"
         )
 
     private var searchJob: Job? = null

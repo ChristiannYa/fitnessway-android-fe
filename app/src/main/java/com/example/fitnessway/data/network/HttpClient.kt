@@ -13,8 +13,7 @@ class HttpClient {
         apiCall: suspend () -> T,
         extractData: (T) -> D,
         errMsg: String = "Error making request",
-        // @TODO: Remove param
-        invalidatedUrls: List<String> = emptyList()
+        pathDescription: String? = null,
     ): Flow<UiState<D>> = flow {
         emit(UiState.Loading)
 
@@ -24,7 +23,7 @@ class HttpClient {
 
         } catch (e: Exception) {
             logcat(
-                message = "makeRequest exception: $e",
+                message = "makeRequest exception ($pathDescription): $e",
                 level = Constants.LogLevel.ERROR
             )
             emit(UiState.Error(errMsg))

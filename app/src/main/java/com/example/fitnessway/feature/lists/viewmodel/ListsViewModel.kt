@@ -26,12 +26,14 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.request.IFoodRequestManager
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UFood.getFoodById
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
+import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -383,11 +385,17 @@ class ListsViewModel(
     private var _pendingFoodsBeforeDeletion: List<PendingFood> = emptyList()
 
     fun dismissReview() {
+        fun log(log: String, level: Constants.LogLevel = Constants.LogLevel.DEBUG) {
+            logcat("[ListsViewModel, dismissReview] $log", level)
+        }
+
         val idToDismiss = managers.request.reviewIdToDismiss.value ?: return
+        log("dismissing #$idToDismiss", Constants.LogLevel.INFO)
 
         val originalPager = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
             .toSuccessOrNull()
             ?: return
+        log("original pager offset (server): ${originalPager.getServerOffset()}")
 
         // Store current pending foods (not already in list) before a successful dismissal
         _pendingFoodsBeforeDeletion = _pendingFoodsBeforeDeletion + run {
@@ -411,19 +419,19 @@ class ListsViewModel(
         // This resets a previously failed dismissal so that the user can try again
         _pendingFoodsFailedDeletions.removeIf { it.second.id == idToDismiss }
 
+        // Optimistic pagination when REMOVING (dismissing) the pending food
+        val optimisticPagination = originalPager
+            .toPaginationData()
+            .calc(OptimisticUpdate.REMOVE, originalPager.getServerOffset())
+            .toResult(originalPager.data.filter { f -> f.id != idToDismiss })
+
         // Update states optimistically
         _uiState.update { it.copy(reviewDismissState = UiState.Success(Unit)) }
 
         pendingFoodRepo.updateState {
             it.copy(
                 pendingFoodsUiStatePager = UiStatePager(
-                    uiState = UiState.Success(
-                        // Optimistic pagination when REMOVING (dismissing) the pending food
-                        originalPager
-                            .toPaginationData()
-                            .calc(OptimisticUpdate.REMOVE, originalPager.offset)
-                            .toResult(originalPager.data.filter { f -> f.id != idToDismiss })
-                    ),
+                    uiState = UiState.Success(optimisticPagination),
                     isLoadingMore = false
                 )
             )
@@ -452,7 +460,7 @@ class ListsViewModel(
 
                         val revertedPagination = currentPager
                             .toPaginationData()
-                            .calc(OptimisticUpdate.ROLLBACK, currentPager.offset)
+                            .calc(OptimisticUpdate.ROLLBACK, currentPager.getServerOffset())
                             .toResult(
                                 // Combine current pending foods (modified after optimistic update)
                                 // with the pending foods in queue to rollback

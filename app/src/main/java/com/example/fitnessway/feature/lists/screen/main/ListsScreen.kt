@@ -36,6 +36,7 @@ import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.extensions.getAppIconSource
+import com.example.fitnessway.util.logcat
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -124,8 +125,11 @@ fun ListsScreen(
                     isVisible = selectedList == ListOption.PendingFood,
                     isUserPremium = user?.isPremium ?: false,
                     isDismissError = uiState.reviewDismissState is UiState.Error,
-                    pendingFoodsUiStatePager = pendingFoodsUiStatePager,
-                    onLoadMore = viewModel::getMorePendingFoods,
+                    uiStatePager = pendingFoodsUiStatePager,
+                    onLoadMore = {
+                        logcat("[ListsScreen, PendingFoodsPagination] onLoadMore -> getMorePendingFoods()")
+                        viewModel.getMorePendingFoods()
+                    },
                     onFoodClick = {
                         viewModel.requestManager.setPendingFood(it)
                         onNavigateToPendingFoodDetails()

@@ -60,7 +60,7 @@ class PendingFoodRepositoryImpl(
         }
 
         repositoryScope.launch {
-            fetchPendingFoods(pagination.offset).collect { state ->
+            fetchPendingFoods(pagination.getNextOffset()).collect { state ->
                 when (state) {
                     is UiState.Success -> _uiState.update {
                         val current = it.pendingFoodsUiStatePager.toPaginationOrNull()

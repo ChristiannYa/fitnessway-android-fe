@@ -1,5 +1,6 @@
 package com.example.fitnessway.data.model.m_26
 
+import com.example.fitnessway.constants.Pagination
 import kotlinx.serialization.Serializable
 
 enum class OptimisticUpdate {
@@ -16,9 +17,9 @@ data class PaginationResult<T>(
 ) {
     val hasMorePages: Boolean
         get() = currentPage < pageCount
-
-    val offset: Long
-        get() = this.data.size.toLong()
+    
+    fun getServerOffset() = ((this.currentPage - 1) * Pagination.LIMIT).toLong()
+    fun getNextOffset() = (this.currentPage * Pagination.LIMIT).toLong()
 }
 
 data class PaginationData(

@@ -4,8 +4,10 @@ import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.data.model.m_26.PendingFoodAddResponse
 import com.example.fitnessway.data.model.m_26.PendingFoodsGetResponse
 import com.example.fitnessway.data.network.ApiUrls
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.extractApiData
 import com.example.fitnessway.util.jsonBody
+import com.example.fitnessway.util.logcat
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -17,11 +19,18 @@ class PendingFoodApiClient(private val client: KtorHttpClient) {
     suspend fun getPendingFoods(
         limit: Int,
         offset: Long
-    ): PendingFoodsGetResponse =
-        client.get(ApiUrls.PendingFood.LIST_URL) {
+    ): PendingFoodsGetResponse {
+        val url = ApiUrls.PendingFood.LIST_URL
+        logcat(
+            "[PendingFoodApiClient, getPendingFoods] url: $url?limit=$limit&offset?=$offset",
+            Constants.LogLevel.INFO
+        )
+
+        return client.get(url) {
             parameter("limit", limit)
             parameter("offset", offset)
         }.extractApiData()
+    }
 
     suspend fun addPendingFood(
         req: PendingFoodAddRequest
@@ -30,7 +39,7 @@ class PendingFoodApiClient(private val client: KtorHttpClient) {
     }.extractApiData()
 
     suspend fun dismissReview(id: Int) {
-        delay(8000)
+        delay(6000)
         client.delete(ApiUrls.PendingFood.getDismissReviewUrl(id))
     }
 }

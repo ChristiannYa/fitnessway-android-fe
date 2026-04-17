@@ -35,6 +35,7 @@ import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.util.Animation
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UFood
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
@@ -42,18 +43,25 @@ import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.OnLoadMore
 import com.example.fitnessway.util.extensions.getAccent
 import com.example.fitnessway.util.extensions.getImageVector
+import com.example.fitnessway.util.logcat
 
 @Composable
 fun PendingFoodsPagination(
     isVisible: Boolean,
     isUserPremium: Boolean,
     isDismissError: Boolean,
-    pendingFoodsUiStatePager: UiStatePager<PendingFood>,
+    uiStatePager: UiStatePager<PendingFood>,
     onLoadMore: () -> Unit,
     onFoodClick: (PendingFood) -> Unit,
     onDismissReview: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (uiStatePager.uiState is UiState.Success) {
+        uiStatePager.uiState.data.data
+            .map { it.id }
+            .also { logcat("[PendingFoodsPagination] pending foods: $it", Constants.LogLevel.INFO) }
+    }
+
     val pendingFoodsListLazyState = rememberLazyListState()
 
     pendingFoodsListLazyState.OnLoadMore(onLoadMore)
@@ -65,7 +73,7 @@ fun PendingFoodsPagination(
         modifier = modifier
     ) {
         Box(modifier = Modifier.fillMaxHeight()) {
-            when (pendingFoodsUiStatePager.uiState) {
+            when (uiStatePager.uiState) {
                 is UiState.Loading -> {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         repeat(12) {
@@ -80,7 +88,7 @@ fun PendingFoodsPagination(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxHeight()
                     ) {
-                        pendingFoodsUiStatePager.toPaginationOrNull()?.let { pagination ->
+                        uiStatePager.toPaginationOrNull()?.let { pagination ->
                             val pendingFoods = pagination.data
 
                             if (pendingFoods.isEmpty()) {
@@ -129,8 +137,8 @@ fun PendingFoodsPagination(
             }
 
             Messages.NotFoundMessageAnimated(
-                isVisible = pendingFoodsUiStatePager.uiState is UiState.Error,
-                message = pendingFoodsUiStatePager.uiState.toErrorMessageOrNull() ?: ""
+                isVisible = uiStatePager.uiState is UiState.Error,
+                message = uiStatePager.uiState.toErrorMessageOrNull() ?: ""
             )
         }
     }

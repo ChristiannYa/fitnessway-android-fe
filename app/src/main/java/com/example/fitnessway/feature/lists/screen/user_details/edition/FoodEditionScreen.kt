@@ -29,6 +29,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toList
+import com.example.fitnessway.data.mappers.toM25NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.lists.screen.user_details.edition.composables.FoodEditionFormField
@@ -127,9 +129,9 @@ fun FoodEditionScreen(
             )
             var nutrientIdsPresent: List<Int>
 
-            val foodWithAddedNutrients = (selectedFoodCopy.nutrients
-                .combine()
-                .map { n -> n.nutrientWithPreferences.nutrient } + addedNutrients)
+            val foodWithAddedNutrients = (selectedFoodCopy.information.nutrients
+                .toList()
+                .map { n -> n.toM25NutrientDataWithAmount().nutrientWithPreferences.nutrient } + addedNutrients)
                 .distinctBy { it.id }
                 .filter { it.id !in deletedNutrients }
                 .also { nutrientIdsPresent = it.map { n -> n.id } }

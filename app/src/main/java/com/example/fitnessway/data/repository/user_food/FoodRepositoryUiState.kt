@@ -1,9 +1,8 @@
 package com.example.fitnessway.data.repository.user_food
 
-import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.util.UiState
+import com.example.fitnessway.data.model.m_26.UserEdible
+import com.example.fitnessway.util.UiStatePager
 
 data class FoodRepositoryUiState(
-    val foodsUiState: UiState<List<FoodInformation>> = UiState.Loading,
-    val foodSortUiState: UiState<String> = UiState.Loading
+    val foodsUiStatePager: UiStatePager<UserEdible> = UiStatePager()
 )

@@ -1,6 +1,7 @@
 package com.example.fitnessway.data.network.ktor_client
 
 import com.example.fitnessway.data.model.MFood
+import com.example.fitnessway.data.model.m_26.UserEdiblesGetResponse
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractApiData
 import com.example.fitnessway.util.jsonBody
@@ -13,35 +14,34 @@ import io.ktor.client.HttpClient as KtorHttpClient
 
 
 class FoodApiClient(private val client: KtorHttpClient) {
-    suspend fun getFoods(): MFood.Api.Res.FoodsGetApiResponse =
-        client.get(ApiUrls.Food.LIST_URL).extractApiData()
+    suspend fun getEdibles(
+        limit: Int,
+        offset: Long,
+        edibleType: String
+    ): UserEdiblesGetResponse =
+        client
+            .get("${ApiUrls.UserEdible.LIST_URL_KT}/$edibleType") {
+                parameter("limit", limit)
+                parameter("offset", offset)
+            }
+            .extractApiData()
 
     suspend fun addFood(
         req: MFood.Api.Req.FoodAddRequest
     ): MFood.Api.Res.FoodAddApiResponse =
-        client.post(ApiUrls.Food.ADD_URL) {
-            jsonBody(req)
-        }.extractApiData()
+        client
+            .post(ApiUrls.UserEdible.ADD_URL) { jsonBody(req) }
+            .extractApiData()
 
     suspend fun updateFood(
         req: MFood.Api.Req.FoodUpdateRequest
     ): MFood.Api.Res.FoodUpdateApiResponse =
-        client.put(ApiUrls.Food.UPDATE_URL) {
-            jsonBody(req)
-        }.extractApiData()
+        client
+            .put(ApiUrls.UserEdible.UPDATE_URL) { jsonBody(req) }
+            .extractApiData()
 
     suspend fun deleteFood(foodId: Int): MFood.Api.Res.FoodDeleteApiResponse =
-        client.delete(ApiUrls.Food.DELETE_URL) {
-            parameter("food-id", foodId)
-        }.extractApiData()
-
-    suspend fun getFoodSort(): MFood.Api.Res.FoodSortGetApiResponse =
-        client.get(ApiUrls.Food.SORT_GET_URL).extractApiData()
-
-    suspend fun updateFoodSort(
-        req: MFood.Api.Req.FoodSortUpdateRequest
-    ): MFood.Api.Res.FoodSortUpdateApiResponse =
-        client.post(ApiUrls.Food.SORT_UPDATE_URL) {
-            jsonBody(req)
-        }.extractApiData()
+        client
+            .delete(ApiUrls.UserEdible.DELETE_URL) { parameter("food-id", foodId) }
+            .extractApiData()
 }

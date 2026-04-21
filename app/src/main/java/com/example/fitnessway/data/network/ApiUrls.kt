@@ -95,9 +95,12 @@ object ApiUrls {
         const val DELETE_URL = "$BASE_URL_GO$DELETE_PATH"
     }
 
-    object Food {
+    object UserEdible {
         const val LIST_PATH = "food/user/get-foods"
         const val LIST_URL = "$BASE_URL_GO$LIST_PATH"
+
+        const val LIST_PATH_KT = "edible/user"
+        const val LIST_URL_KT = "$BASE_URL_KT$LIST_PATH_KT"
 
         const val ADD_PATH = "food/user/add"
         const val ADD_URL = "$BASE_URL_GO$ADD_PATH"

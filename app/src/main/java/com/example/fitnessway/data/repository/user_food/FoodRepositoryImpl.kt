@@ -1,11 +1,17 @@
 package com.example.fitnessway.data.repository.user_food
 
+import com.example.fitnessway.constants.Pagination
+import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
+import com.example.fitnessway.data.model.m_26.EdibleType
+import com.example.fitnessway.data.model.m_26.PaginationResult
+import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.FoodApiClient
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -25,26 +31,72 @@ class FoodRepositoryImpl(
     private val _uiState = MutableStateFlow(FoodRepositoryUiState())
     override val uiState: StateFlow<FoodRepositoryUiState> = _uiState
 
-    private fun fetchFoods(): Flow<UiState<List<FoodInformation>>> =
+    private fun fetchFoods(offset: Long): Flow<UiState<PaginationResult<UserEdible>>> =
         httpClient.makeRequest(
-            apiCall = apiClient::getFoods,
-            extractData = { it.foods ?: emptyList() },
+            apiCall = {
+                apiClient.getEdibles(
+                    edibleType = EdibleType.FOOD.name.lowercase(),
+                    limit = Pagination.LIMIT,
+                    offset = offset
+                )
+            },
+            extractData = { it.userEdiblesPagination },
             errMsg = "Failed to get foods",
             pathDescription = "food list"
         )
 
     override fun refreshFoods() {
-        _uiState.update { it.copy(foodsUiState = UiState.Loading) }
+        _uiState.update { it.copy(foodsUiStatePager = UiStatePager()) }
 
         repositoryScope.launch {
-            fetchFoods().collect { state ->
-                _uiState.update { it.copy(foodsUiState = state) }
+            fetchFoods(offset = 0).collect { state ->
+                _uiState.update { it.copy(foodsUiStatePager = UiStatePager(state)) }
+            }
+        }
+    }
+
+    override fun loadMoreFoods() {
+        val pager = _uiState.value.foodsUiStatePager
+        if (pager.isLoadingMore) return
+
+        val pagination = pager.toPaginationOrNull() ?: return
+        if (!pagination.hasMorePages) return
+
+        _uiState.update {
+            it.copy(foodsUiStatePager = pager.copy(isLoadingMore = true))
+        }
+
+        repositoryScope.launch {
+            fetchFoods(pagination.getNextOffset()).collect { state ->
+                when (state) {
+                    is UiState.Success -> _uiState.update {
+                        val current = it.foodsUiStatePager.toPaginationOrNull()
+                        val accumulated = (current?.data ?: emptyList()) + state.data.data
+
+                        it.copy(
+                            foodsUiStatePager = UiStatePager(
+                                uiState = UiState.Success(state.data.copy(data = accumulated)),
+                                isLoadingMore = false
+                            )
+                        )
+                    }
+
+                    is UiState.Error -> _uiState.update {
+                        it.copy(
+                            foodsUiStatePager = it.foodsUiStatePager.copy(
+                                isLoadingMore = false
+                            )
+                        )
+                    }
+
+                    else -> {}
+                }
             }
         }
     }
 
     override fun loadFoods() {
-        val uiState = _uiState.value.foodsUiState
+        val uiState = _uiState.value.foodsUiStatePager.uiState
         if (uiState.hasState) return
         refreshFoods()
     }

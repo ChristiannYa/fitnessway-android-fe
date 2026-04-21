@@ -1,11 +1,11 @@
 package com.example.fitnessway.feature.lists.manager.edition
 
-import com.example.fitnessway.data.model.MFood.Model.FoodInformation
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.ServingUnit
+import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
-import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
@@ -27,8 +27,8 @@ import kotlinx.coroutines.flow.update
 class EditionManager : IEditionManager, NutrientDvControls() {
     private lateinit var scope: CoroutineScope
 
-    private val _selectedFood = MutableStateFlow<FoodInformation?>(null)
-    override val selectedFood: StateFlow<FoodInformation?> = _selectedFood
+    private val _selectedFood = MutableStateFlow<UserEdible?>(null)
+    override val selectedFood: StateFlow<UserEdible?> = _selectedFood
 
     private val _foodEditionFormState = MutableStateFlow<FormState<FormStates.FoodEdition>?>(null)
     override val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?> =
@@ -129,10 +129,10 @@ class EditionManager : IEditionManager, NutrientDvControls() {
                     amount != null && amount > 0.0
                 }
 
-                val basicNutrients = _selectedFood.value?.nutrients?.basic ?: return@combine false
+                val basicNutrients = _selectedFood.value?.information?.nutrients?.basic ?: return@combine false
 
                 val hasBasicNutrient = basicNutrients.any {
-                    it.nutrientWithPreferences.nutrient.id in formNutrients.keys
+                    it.nutrientData.base.id in formNutrients.keys
                 }
 
                 areAllAmountsValid && hasBasicNutrient
@@ -146,7 +146,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         )
     }
 
-    override fun setSelectedFood(food: FoodInformation) {
+    override fun setSelectedFood(food: UserEdible) {
         _selectedFood.value = food
     }
 
@@ -188,16 +188,16 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         }
     }
 
-    override fun initializeFoodForm(food: FoodInformation) {
-        val foodNutrientsMap = food.nutrients
-            .combine()
-            .associate { it.nutrientWithPreferences.nutrient.id to doubleFormatter(it.amount, 4) }
+    override fun initializeFoodForm(food: UserEdible) {
+        val foodNutrientsMap = food.information.nutrients
+            .toList()
+            .associate { it.nutrientData.base.id to doubleFormatter(it.amount, 4) }
 
         val data = FormStates.FoodEdition(
-            name = food.information.name,
-            brand = food.information.brand ?: "",
-            amountPerServing = doubleFormatter(food.information.amountPerServing, 4),
-            servingUnit = food.information.servingUnit,
+            name = food.information.base.name,
+            brand = food.information.base.brand ?: "",
+            amountPerServing = doubleFormatter(food.information.base.amountPerServing, 4),
+            servingUnit = food.information.base.servingUnit.name.lowercase(),
             nutrients = foodNutrientsMap
         )
 

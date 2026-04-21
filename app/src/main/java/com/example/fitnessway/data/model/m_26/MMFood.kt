@@ -26,6 +26,12 @@ enum class FoodLogCategory {
 }
 
 @Serializable
+enum class EdibleType {
+    FOOD,
+    SUPPLEMENT
+}
+
+@Serializable
 enum class PendingFoodStatus {
     PENDING,
     APPROVED,
@@ -124,6 +130,15 @@ data class PendingFood(
 )
 
 @Serializable
+data class UserEdible(
+    val id: Int,
+    val information: FoodInformation,
+    val lastLoggedAt: Instant? = null,
+    val createdAt: Instant,
+    val updatedAt: Instant
+)
+
+@Serializable
 data class RecentlyLoggedFoodsResponse(
     val recentlyLoggedFoodsPagination: PaginationResult<FoodPreview>
 )
@@ -172,6 +187,11 @@ data class AppFoodSearchResponse(
 @Serializable
 data class PendingFoodsGetResponse(
     val pendingFoodsPagination: PaginationResult<PendingFood>
+)
+
+@Serializable
+data class UserEdiblesGetResponse(
+    val userEdiblesPagination: PaginationResult<UserEdible>
 )
 
 @Serializable

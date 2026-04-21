@@ -12,6 +12,7 @@ import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
+import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.form.FormStates.FoodCreation
 import com.example.fitnessway.util.toEnum
 
@@ -64,6 +65,13 @@ fun PendingFood.toPreview() = FoodPreview(
 fun PendingFood.toFoodInformation() = FoodInformation(
     base = this.information.base,
     nutrients = this.information.nutrients
+)
+
+fun UserEdible.toPreview() = FoodPreview(
+    id = this.id,
+    base = this.information.base,
+    nutrientPreview = this.information.nutrients.toNutrientPreview(),
+    source = FoodSource.USER
 )
 
 fun MFood.Model.FoodBaseInfo.toM26FoodBase() = FoodBase(

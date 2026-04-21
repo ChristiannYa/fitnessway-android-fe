@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toM26FoodInformation
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.mappers.toTypedList
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
@@ -40,7 +39,6 @@ import com.example.fitnessway.util.Ui.handleApiSuccessTempState
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
-import com.example.fitnessway.util.extensions.findById
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -61,7 +59,7 @@ fun FoodLogScreen(
     val category = viewModel.foodLogCategory.collectAsState().value
 
     val appFoodUiState = appFoodRepoUiState.appFood
-    val foodsUiState = foodRepoUiState.foodsUiState
+    val foodsUiState = foodRepoUiState.foodsUiStatePager
     val foodLogAddState = uiState.foodLogAddState
 
     val isLogSuccessFull = handleApiSuccessTempState(
@@ -107,16 +105,16 @@ fun FoodLogScreen(
     }
 
     LaunchedEffect(foodsUiState, searchCriteria) {
-        if (foodsUiState is UiState.Success &&
+        if (foodsUiState.uiState is UiState.Success &&
             searchCriteria?.source == FoodSource.USER
         ) {
-            foodsUiState.data
-                .findById(searchCriteria.id)
+            foodsUiState.uiState.data.data
+                .find { it.id == searchCriteria.id }
                 ?.let {
                     viewModel.setFoodToLog(
                         foodToLog = FoodInformationWithId(
-                            id = it.information.id,
-                            information = it.toM26FoodInformation()
+                            id = it.id,
+                            information = it.information
                         )
                     )
                 }

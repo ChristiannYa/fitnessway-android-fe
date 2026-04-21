@@ -12,6 +12,7 @@ interface IFoodRepository {
 
     fun refreshFoods()
     fun loadFoods()
+    fun loadMoreFoods()
     suspend fun deleteFood(foodId: Int): Flow<UiState<FoodInformation>>
     suspend fun addFood(request: FoodAddRequest): Flow<UiState<FoodInformation>>
     suspend fun updateFood(request: FoodUpdateRequest): Flow<UiState<FoodInformation>>

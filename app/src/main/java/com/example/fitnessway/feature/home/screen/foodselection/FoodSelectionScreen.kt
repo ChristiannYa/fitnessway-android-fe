@@ -29,8 +29,8 @@ import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodResultsPagination
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
 import com.example.fitnessway.feature.home.screen.foodselection.composables.RecentlyLoggedFoods
-import com.example.fitnessway.feature.home.screen.foodselection.composables.UserFoodsList
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
+import com.example.fitnessway.ui.food.FoodPreviewList
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers
@@ -57,7 +57,7 @@ fun FoodSelectionScreen(
 
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
     val recentlyLoggedUiStatePager = foodLogRepoUiState.recentlyLogged
-    val foodsUiState = foodRepoUiState.foodsUiState
+    val foodsUiStatePager = foodRepoUiState.foodsUiStatePager
 
     fun onBackClick() {
         viewModel.onResetFoodSelectionScreen()
@@ -142,12 +142,13 @@ fun FoodSelectionScreen(
                     }
                 )
 
-                UserFoodsList(
-                    foodsUiState = foodsUiState,
+                FoodPreviewList(
+                    uiStatePager = foodsUiStatePager,
                     isVisible = foodList == FoodLogListFilter.USER_FOODS,
                     isUserPremium = user?.isPremium ?: false,
-                    onFoodClick = {
-                        viewModel.setSearchCriteria(FoodToLogSearchCriteria(it.information.id, FoodSource.USER))
+                    onLoadMore = {},
+                    onFoodClick = { food ->
+                        viewModel.setSearchCriteria(FoodToLogSearchCriteria(food.id, FoodSource.USER))
                         onNavigateToSelectedFood()
                     }
                 )

@@ -142,7 +142,7 @@ fun ListsScreen(
                 uiStatePager = foodsUiStatePager,
                 isVisible = selectedList == ListOption.Food,
                 isUserPremium = user?.isPremium ?: false,
-                onLoadMore = {},
+                onLoadMore = viewModel::getMoreFoods,
                 onFoodClick = { food ->
                     viewModel.editionManager.setSelectedFood(food)
                     onNavigateToUserFoodDetails()

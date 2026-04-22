@@ -88,11 +88,11 @@ class ListsViewModel(
 
     fun getFoods() = foodRepo.loadFoods()
 
-    fun getMorePendingFoods() = pendingFoodRepo.loadMorePendingFoods()
+    fun getMoreFoods() = foodRepo.loadMoreFoods()
 
     fun getPendingFoods() = pendingFoodRepo.loadPendingFoods()
 
-    fun refreshFoods() = foodRepo.refreshFoods()
+    fun getMorePendingFoods() = pendingFoodRepo.loadMorePendingFoods()
 
     fun addFoodRequest() {
         val formState = managers.request.formState.value

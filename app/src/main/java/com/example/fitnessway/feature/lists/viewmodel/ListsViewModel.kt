@@ -352,7 +352,7 @@ class ListsViewModel(
                     }
 
                     is UiState.Error -> {
-                        _uiState.update { it.copy(foodDeleteState = UiState.Success(Unit)) }
+                        _uiState.update { it.copy(foodDeleteState = state) }
 
                         _foodFailedDeletions.add(originalIndex to current)
 
@@ -383,6 +383,15 @@ class ListsViewModel(
                                             }
                                     }
                             )
+
+                        foodRepo.updateState {
+                            it.copy(
+                                foodsUiStatePager = UiStatePager(
+                                    uiState = UiState.Success(revertedPagination),
+                                    isLoadingMore = false
+                                )
+                            )
+                        }
                     }
 
                     else -> {}

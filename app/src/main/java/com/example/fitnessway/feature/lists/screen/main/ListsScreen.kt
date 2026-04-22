@@ -168,6 +168,8 @@ fun ListsScreen(
                 )
             }.toTypedArray()
 
+            // @TODO: Fix pop-out animation animation stutter when fetching for pending
+            //   edibles for the first time
             Structure.MoreOptions(
                 state = moreOptionsState,
                 options = options,

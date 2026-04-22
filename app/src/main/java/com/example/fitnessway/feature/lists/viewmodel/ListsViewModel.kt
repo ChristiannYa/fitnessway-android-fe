@@ -324,6 +324,8 @@ class ListsViewModel(
         _foodFailedDeletions.removeIf { it.second.id == foodToRemove.id }
 
         // Update states optimistically
+        _uiState.update { it.copy(foodDeleteState = UiState.Success(Unit)) }
+
         foodRepo.updateState {
             it.copy(
                 foodsUiStatePager = UiStatePager(

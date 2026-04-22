@@ -53,8 +53,8 @@ object ApiUrls {
         fun getByIdUrl(id: Int) = BASE_URL_KT + getByIdPath(id)
     }
 
-    object PendingFood {
-        const val PATH = "food/pending"
+    object PendingEdible {
+        const val PATH = "edible/pending"
 
         const val LIST_PATH = "$PATH/my-own"
         const val LIST_URL = "$BASE_URL_KT$LIST_PATH"

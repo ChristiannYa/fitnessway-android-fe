@@ -18,7 +18,7 @@ class PendingFoodApiClient(private val client: KtorHttpClient) {
         offset: Long
     ): PendingFoodsGetResponse =
         client
-            .get(ApiUrls.PendingFood.LIST_URL) {
+            .get(ApiUrls.PendingEdible.LIST_URL) {
                 parameter("limit", limit)
                 parameter("offset", offset)
             }
@@ -28,11 +28,11 @@ class PendingFoodApiClient(private val client: KtorHttpClient) {
         req: PendingFoodAddRequest
     ): PendingFoodAddResponse =
         client
-            .post(ApiUrls.PendingFood.ADD_URL) {
+            .post(ApiUrls.PendingEdible.ADD_URL) {
                 jsonBody(req)
             }
             .extractApiData()
 
     suspend fun dismissReview(id: Int) =
-        client.delete(ApiUrls.PendingFood.getDismissReviewUrl(id))
+        client.delete(ApiUrls.PendingEdible.getDismissReviewUrl(id))
 }

@@ -73,7 +73,7 @@ object ApiUrls {
     }
 
     object FoodLog {
-        const val PATH = "food/log"
+        const val PATH = "edible/log"
 
         const val LIST_PATH = "$PATH/date"
         const val LIST_URL = "$BASE_URL_KT$LIST_PATH"

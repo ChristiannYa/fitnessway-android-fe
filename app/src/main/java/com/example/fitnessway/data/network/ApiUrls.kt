@@ -96,10 +96,7 @@ object ApiUrls {
     }
 
     object UserEdible {
-        const val LIST_PATH = "food/user/get-foods"
-        const val LIST_URL = "$BASE_URL_GO$LIST_PATH"
-
-        const val LIST_PATH_KT = "edible/user"
+        const val LIST_PATH_KT = "edible/user/me"
         const val LIST_URL_KT = "$BASE_URL_KT$LIST_PATH_KT"
 
         const val ADD_PATH = "food/user/add"
@@ -110,14 +107,5 @@ object ApiUrls {
 
         const val DELETE_PATH = "food/user/delete"
         const val DELETE_URL = "$BASE_URL_GO$DELETE_PATH"
-
-        const val FAVORITE_STATUS_UPDATE_PATH = "food/user/update-favorite-status"
-        const val FAVORITE_STATUS_UPDATE_URL = "$BASE_URL_GO$FAVORITE_STATUS_UPDATE_PATH"
-
-        const val SORT_GET_PATH = "food/user/preferences/get-food-sort"
-        const val SORT_GET_URL = "$BASE_URL_GO$SORT_GET_PATH"
-
-        const val SORT_UPDATE_PATH = "food/user/preferences/update-food-sort"
-        const val SORT_UPDATE_URL = "$BASE_URL_GO$SORT_UPDATE_PATH"
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.mappers.toPreview
 import com.example.fitnessway.data.model.m_26.UserEdible
@@ -102,6 +103,11 @@ fun FoodPreviewList(
 
                 else -> {}
             }
+
+            Messages.NotFoundMessageAnimated(
+                isVisible = uiStatePager.uiState is UiState.Error,
+                message = uiStatePager.uiState.toErrorMessageOrNull() ?: ""
+            )
         }
     }
 }

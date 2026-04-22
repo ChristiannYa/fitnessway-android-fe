@@ -41,7 +41,7 @@ class FoodRepositoryImpl(
                 )
             },
             extractData = { it.userEdiblesPagination },
-            errMsg = "Failed to get foods",
+            errMsg = "Failed to get your foods",
             pathDescription = "food list"
         )
 

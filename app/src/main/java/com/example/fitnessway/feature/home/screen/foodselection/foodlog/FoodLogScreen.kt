@@ -59,7 +59,7 @@ fun FoodLogScreen(
     val category = viewModel.foodLogCategory.collectAsState().value
 
     val appFoodUiState = appFoodRepoUiState.appFood
-    val foodsUiState = foodRepoUiState.foodsUiStatePager
+    val foodsUiState = foodRepoUiState.uiStatePager
     val foodLogAddState = uiState.foodLogAddState
 
     val isLogSuccessFull = handleApiSuccessTempState(

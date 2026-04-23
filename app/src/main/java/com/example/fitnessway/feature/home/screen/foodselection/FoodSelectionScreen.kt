@@ -57,7 +57,7 @@ fun FoodSelectionScreen(
 
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
     val recentlyLoggedUiStatePager = foodLogRepoUiState.recentlyLogged
-    val foodsUiStatePager = foodRepoUiState.foodsUiStatePager
+    val foodsUiStatePager = foodRepoUiState.uiStatePager
 
     fun onBackClick() {
         viewModel.onResetFoodSelectionScreen()

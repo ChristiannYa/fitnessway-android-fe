@@ -1,7 +1,6 @@
 package com.example.fitnessway.data.repository.user_food
 
 import com.example.fitnessway.constants.Pagination
-import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
@@ -9,6 +8,7 @@ import com.example.fitnessway.data.model.m_26.PaginationResult
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.UserFoodApiClient
+import com.example.fitnessway.data.repository._state.loadMore
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +30,7 @@ class UserFoodRepositoryImpl(
     private val _uiState = MutableStateFlow(UserFoodRepositoryUiState())
     override val uiState: StateFlow<UserFoodRepositoryUiState> = _uiState
 
-    private fun fetchFoods(offset: Long): Flow<UiState<PaginationResult<UserEdible>>> =
+    private fun fetchFoods(offset: Long = 0): Flow<UiState<PaginationResult<UserEdible>>> =
         httpClient.makeRequest(
             apiCall = {
                 apiClient.getFoods(
@@ -44,59 +44,19 @@ class UserFoodRepositoryImpl(
         )
 
     override fun refreshFoods() {
-        _uiState.update { it.copy(foodsUiStatePager = UiStatePager()) }
+        _uiState.update { it.copy(uiStatePager = UiStatePager()) }
 
         repositoryScope.launch {
-            fetchFoods(offset = 0).collect { state ->
-                _uiState.update { it.copy(foodsUiStatePager = UiStatePager(state)) }
+            fetchFoods().collect { state ->
+                _uiState.update { it.copy(uiStatePager = UiStatePager(state)) }
             }
         }
     }
 
-    override fun loadMoreFoods() {
-        val pager = _uiState.value.foodsUiStatePager
-        if (pager.isLoadingMore) return
-
-        val pagination = pager.toPaginationOrNull() ?: return
-        if (!pagination.hasMorePages) return
-
-        _uiState.update {
-            it.copy(foodsUiStatePager = pager.copy(isLoadingMore = true))
-        }
-
-        repositoryScope.launch {
-            fetchFoods(pagination.getNextOffset()).collect { state ->
-                when (state) {
-                    is UiState.Success -> _uiState.update {
-                        val current = it.foodsUiStatePager.toPaginationOrNull()
-                        val accumulated = (current?.data ?: emptyList()) + state.data.data
-
-                        it.copy(
-                            foodsUiStatePager = UiStatePager(
-                                uiState = UiState.Success(state.data.copy(data = accumulated)),
-                                isLoadingMore = false
-                            )
-                        )
-                    }
-
-                    is UiState.Error -> _uiState.update {
-                        it.copy(
-                            foodsUiStatePager = it.foodsUiStatePager.copy(
-                                isLoadingMore = false
-                            )
-                        )
-                    }
-
-                    else -> {}
-                }
-            }
-        }
-    }
+    override fun loadMoreFoods() = _uiState.value.loadMore(_uiState, ::fetchFoods, repositoryScope)
 
     override fun loadFoods() {
-        val uiState = _uiState.value.foodsUiStatePager.uiState
-        if (uiState.hasState) return
-        refreshFoods()
+        if (!_uiState.value.uiStatePager.uiState.hasState) refreshFoods()
     }
 
     override suspend fun addFood(

@@ -130,7 +130,7 @@ class ListsViewModel(
         val selectedFoodId = managers.edition.selectedFood.value?.id ?: return
 
         // Get current data to update optimistically
-        val originalFoodsPager = userFoodRepo.uiState.value.foodsUiStatePager.uiState
+        val originalFoodsPager = userFoodRepo.uiState.value.uiStatePager.uiState
             .toSuccessOrNull()
             ?: return
 
@@ -209,7 +209,7 @@ class ListsViewModel(
 
         userFoodRepo.updateState {
             it.copy(
-                foodsUiStatePager = UiStatePager(
+                uiStatePager = UiStatePager(
                     uiState = UiState.Success(
                         originalFoodsPager.copy(
                             data = optimisticFoods
@@ -254,7 +254,7 @@ class ListsViewModel(
                         val revertedFood = _originalFoodBeforeUpdate
 
                         if (revertedFood != null) {
-                            val currentFoodsPager = userFoodRepo.uiState.value.foodsUiStatePager
+                            val currentFoodsPager = userFoodRepo.uiState.value.uiStatePager
                                 .toPaginationOrNull()
                                 ?: return@collect
 
@@ -266,7 +266,7 @@ class ListsViewModel(
 
                             userFoodRepo.updateState {
                                 it.copy(
-                                    foodsUiStatePager = UiStatePager(
+                                    uiStatePager = UiStatePager(
                                         uiState = UiState.Success(
                                             currentFoodsPager.copy(
                                                 data = revertedFoods
@@ -297,7 +297,7 @@ class ListsViewModel(
     fun deleteFood() {
         val foodToRemove = managers.edition.selectedFood.value ?: return
 
-        val originalPager = userFoodRepo.uiState.value.foodsUiStatePager
+        val originalPager = userFoodRepo.uiState.value.uiStatePager
             .toPaginationOrNull()
             ?: return
 
@@ -328,7 +328,7 @@ class ListsViewModel(
 
         userFoodRepo.updateState {
             it.copy(
-                foodsUiStatePager = UiStatePager(
+                uiStatePager = UiStatePager(
                     uiState = UiState.Success(
                         // Optimistic pagination when REMOVING the food
                         originalPager
@@ -358,7 +358,7 @@ class ListsViewModel(
 
                         _foodFailedDeletions.add(originalIndex to current)
 
-                        val currentPager = userFoodRepo.uiState.value.foodsUiStatePager.uiState
+                        val currentPager = userFoodRepo.uiState.value.uiStatePager.uiState
                             .toSuccessOrNull()
                             ?: return@collect
 
@@ -388,7 +388,7 @@ class ListsViewModel(
 
                         userFoodRepo.updateState {
                             it.copy(
-                                foodsUiStatePager = UiStatePager(
+                                uiStatePager = UiStatePager(
                                     uiState = UiState.Success(revertedPagination),
                                     isLoadingMore = false
                                 )

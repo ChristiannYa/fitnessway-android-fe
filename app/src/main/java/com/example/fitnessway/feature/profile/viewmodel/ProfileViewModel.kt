@@ -10,7 +10,7 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.repository.auth.IAuthRepository
-import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
+import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
@@ -33,7 +33,7 @@ class ProfileViewModel(
     private val authRepo: IAuthRepository,
     private val nutrientRepo: INutrientRepository,
     private val foodRepo: IUserFoodRepository,
-    private val foodLogRepo: IFoodLogRepository,
+    private val foodLogRepo: IEdibleLogRepository,
     private val managers: IProfileManagers,
     val dateTimeFormatter: IAppDateTimeFormatter,
     userStateHolder: IUserStateHolder,
@@ -111,7 +111,7 @@ class ProfileViewModel(
 
                         nutrientRepo.clearNutrientIntakesUiCache()
                         foodRepo.refreshFoods()
-                        foodLogRepo.clearFoodLogsUiCache()
+                        foodLogRepo.clearMap()
                     }
 
                     is UiState.Loading -> {
@@ -170,7 +170,7 @@ class ProfileViewModel(
 
                         nutrientRepo.clearNutrientIntakesUiCache()
                         foodRepo.refreshFoods()
-                        foodLogRepo.clearFoodLogsUiCache()
+                        foodLogRepo.clearMap()
                     }
 
                     is UiState.Loading -> {

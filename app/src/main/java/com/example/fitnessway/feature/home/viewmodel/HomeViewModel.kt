@@ -14,7 +14,8 @@ import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
-import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
+import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
+import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
 import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
@@ -46,7 +47,8 @@ class HomeViewModel(
     private val nutrientRepo: INutrientRepository,
     private val userFoodRepo: IUserFoodRepository,
     private val userSupplementRepo: IUserSupplementRepository,
-    private val foodLogRepo: IFoodLogRepository,
+    private val foodLogRepo: IEdibleLogRepository,
+    private val foodRecentLogRepo: IFoodRecentLog,
     private val managers: IHomeManager,
     val appStateStore: IApplicationStateStore,
     val dateTimeFormatter: IAppDateTimeFormatter
@@ -74,6 +76,7 @@ class HomeViewModel(
     val userFoodRepoUiState = userFoodRepo.uiState
     val userSupplementRepoUiState = userSupplementRepo.uiState
     val foodLogRepoUiState = foodLogRepo.uiState
+    val foodRecentLogRepoUiState = foodRecentLogRepo.uiState
 
     private fun getKebabDate() = dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
 
@@ -106,11 +109,11 @@ class HomeViewModel(
     fun getUserSupplements() = userSupplementRepo.load()
     fun getMoreUserSupplements() = userSupplementRepo.loadMore()
 
-    fun getFoodLogs() = foodLogRepo.loadFoodLogs(getKebabDate())
-    fun refreshFoodLogs() = foodLogRepo.refreshFoodLogs(getKebabDate())
+    fun getFoodLogs() = foodLogRepo.load(getKebabDate())
+    fun refreshFoodLogs() = foodLogRepo.refresh(getKebabDate())
 
-    fun getRecentlyLoggedFoods() = foodLogRepo.loadRecentlyLogged()
-    fun getMoreRecentlyLoggedFoods() = foodLogRepo.loadMoreRecentlyLogged()
+    fun getRecentlyLoggedFoods() = foodRecentLogRepo.load()
+    fun getMoreRecentlyLoggedFoods() = foodRecentLogRepo.loadMore()
 
     fun getNutrientIntakes() = nutrientRepo.loadNutrientIntakes(getKebabDate())
     fun refreshNutrientIntakes() = nutrientRepo.refreshNutrientIntakes(getKebabDate())
@@ -130,12 +133,10 @@ class HomeViewModel(
         val searchCriteria = managers.foodLog.searchCriteria.value ?: return
         log("searchCriteria: passed")
 
-        // @TODO: Handle supplements logging
-        val originalRecentlyLoggedListPager = foodLogRepo.uiState.value.recentlyLogged.uiState
+        val originalRecentlyLoggedFoodListPager = foodRecentLogRepo.uiState.value.uiStatePager.uiState
             .toSuccessOrNull()
             ?: return
         log("originalRecentlyLoggedListPager: passed")
-
 
         val loggedFoodPreview = FoodPreview(
             id = selectedFood.id,
@@ -144,15 +145,15 @@ class HomeViewModel(
             source = searchCriteria.source
         )
 
-        val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPager.copy(
+        val optimisticRecentlyLoggedPager = originalRecentlyLoggedFoodListPager.copy(
             data = listOf(loggedFoodPreview) +
-                    originalRecentlyLoggedListPager.data
+                    originalRecentlyLoggedFoodListPager.data
                         .filter { it.id != loggedFoodPreview.id }
         )
 
-        foodLogRepo.updateState {
+        foodRecentLogRepo.updateState {
             it.copy(
-                recentlyLogged = UiStatePager(UiState.Success(optimisticRecentlyLoggedPager))
+                uiStatePager = UiStatePager(UiState.Success(optimisticRecentlyLoggedPager))
             )
         }
 
@@ -167,21 +168,21 @@ class HomeViewModel(
         )
 
         viewModelScope.launch {
-            foodLogRepo.addFoodLog(request, date).collect { state ->
+            foodLogRepo.add(request, date).collect { state ->
 
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
-                        foodLogRepo.refreshFoodLogs(date)
+                        foodLogRepo.refresh(date)
                         nutrientRepo.refreshNutrientIntakes(date)
                     }
 
                     is UiState.Error -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
 
-                        foodLogRepo.updateState {
+                        foodRecentLogRepo.updateState {
                             it.copy(
-                                recentlyLogged = UiStatePager(UiState.Success(originalRecentlyLoggedListPager))
+                                uiStatePager = UiStatePager(UiState.Success(originalRecentlyLoggedFoodListPager))
                             )
                         }
                     }
@@ -287,7 +288,7 @@ class HomeViewModel(
 
         // Send the api request
         viewModelScope.launch {
-            foodLogRepo.updateFoodLog(request, apiDate).collect { state ->
+            foodLogRepo.update(request, apiDate).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogUpdateState = state) }
@@ -406,7 +407,7 @@ class HomeViewModel(
         }
 
         viewModelScope.launch {
-            foodLogRepo.deleteFoodLog(
+            foodLogRepo.delete(
                 foodLogId = selectedFoodLogToRemove.id,
                 date = apiDate
             ).collect { state ->

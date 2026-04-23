@@ -51,7 +51,7 @@ fun FoodSelectionScreen(
     val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
     val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
-    val foodLogRepoUiState by viewModel.foodLogRepoUiState.collectAsState()
+    val foodRecentLogRepoUiState by viewModel.foodRecentLogRepoUiState.collectAsState()
 
     val foodList by viewModel.foodList.collectAsState()
     val appFoodSearchQuery by viewModel.appFoodSearchQuery.collectAsState()
@@ -59,7 +59,7 @@ fun FoodSelectionScreen(
     val foodLogCategory = viewModel.foodLogCategory.collectAsState().value
 
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
-    val recentlyLoggedUiStatePager = foodLogRepoUiState.recentlyLogged
+    val recentlyLoggedUiStatePager = foodRecentLogRepoUiState.uiStatePager
     val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
     val userSupplementsUiStatePager = userSupplementRepoUiState.uiStatePager
 

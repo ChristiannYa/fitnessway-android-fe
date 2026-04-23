@@ -28,6 +28,7 @@ val viewModelModule = module {
             userFoodRepo = get(),
             userSupplementRepo = get(),
             foodLogRepo = get(),
+            foodRecentLogRepo = get(),
             managers = get(),
             appStateStore = get(),
             dateTimeFormatter = get()
@@ -41,6 +42,7 @@ val viewModelModule = module {
             userSupplementRepo = get(),
             nutrientRepo = get(),
             foodLogRepo = get(),
+            foodRecentLogRepo = get(),
             managers = get(),
             userStateHolder = get()
         )

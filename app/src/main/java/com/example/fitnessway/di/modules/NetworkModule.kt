@@ -4,7 +4,8 @@ import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.createKtorHttpClient
 import com.example.fitnessway.data.network.ktor_client.AppFoodApiClient
 import com.example.fitnessway.data.network.ktor_client.AuthApiClient
-import com.example.fitnessway.data.network.ktor_client.FoodLogApiClient
+import com.example.fitnessway.data.network.ktor_client.EdibleLogApiClient
+import com.example.fitnessway.data.network.ktor_client.EdibleRecentLogApiClient
 import com.example.fitnessway.data.network.ktor_client.NutrientApiClient
 import com.example.fitnessway.data.network.ktor_client.PendingFoodApiClient
 import com.example.fitnessway.data.network.ktor_client.UserApiClient
@@ -28,5 +29,6 @@ val networkModule = module {
     single { PendingFoodApiClient(client = get()) }
     single { UserFoodApiClient(client = get()) }
     single { UserSupplementApiClient(client = get()) }
-    single { FoodLogApiClient(client = get()) }
+    single { EdibleLogApiClient(client = get()) }
+    single { EdibleRecentLogApiClient(client = get()) }
 }

@@ -140,8 +140,8 @@ data class UserEdible(
 )
 
 @Serializable
-data class RecentlyLoggedFoodsResponse(
-    val recentlyLoggedFoodsPagination: PaginationResult<FoodPreview>
+data class RecentlyLoggedEdiblesResponse(
+    val recentlyLoggedEdiblesPagination: PaginationResult<FoodPreview>
 )
 
 @Serializable

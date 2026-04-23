@@ -22,7 +22,8 @@ import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.data.model.m_26.OptimisticUpdate
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.UserEdible
-import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
+import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
+import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
 import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
@@ -50,7 +51,8 @@ class ListsViewModel(
     private val pendingFoodRepo: IPendingFoodRepository,
     private val userFoodRepo: IUserFoodRepository,
     private val userSupplementRepo: IUserSupplementRepository,
-    private val foodLogRepo: IFoodLogRepository,
+    private val foodLogRepo: IEdibleLogRepository,
+    private val foodRecentLogRepo: IFoodRecentLog,
     private val nutrientRepo: INutrientRepository,
     private val managers: IListsManagers,
     userStateHolder: IUserStateHolder
@@ -74,6 +76,7 @@ class ListsViewModel(
     val userFoodRepoUiState = userFoodRepo.uiState
     val userSupplementRepoUiState = userSupplementRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
+    val foodRecentLogRepoUiState = foodRecentLogRepo.uiState
 
     val userFlow: StateFlow<MUser.Model.User?> = userStateHolder.userState
         .map { it.user }
@@ -241,7 +244,7 @@ class ListsViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
-                        foodLogRepo.clearFoodLogsUiCache()
+                        foodLogRepo.clearMap()
 
                         // Clear the original food's data
                         _originalFoodBeforeUpdate = null
@@ -280,8 +283,8 @@ class ListsViewModel(
                             managers.edition.setSelectedFood(revertedFood)
                         }
 
-                        if (foodLogRepo.uiState.value.recentlyLogged.uiState.hasState) {
-                            foodLogRepo.refreshRecentlyLogged()
+                        if (foodRecentLogRepo.uiState.value.uiStatePager.uiState.hasState) {
+                            foodRecentLogRepo.refresh()
                         }
                     }
 
@@ -403,12 +406,12 @@ class ListsViewModel(
     }
 
     private fun removeRecentlyLoggedFood(foodId: Int) {
-        foodLogRepo.uiState.value.recentlyLogged.uiState
+        foodRecentLogRepo.uiState.value.uiStatePager.uiState
             .toSuccessOrNull()
             ?.let { pagination ->
-                foodLogRepo.updateState {
+                foodRecentLogRepo.updateState {
                     it.copy(
-                        recentlyLogged = UiStatePager(
+                        uiStatePager = UiStatePager(
                             uiState = UiState.Success(
                                 pagination.copy(
                                     data = pagination.data.filter { it.id != foodId }

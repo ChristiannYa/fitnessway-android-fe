@@ -1,6 +1,7 @@
 package com.example.fitnessway.data.network.ktor_client
 
 import com.example.fitnessway.data.model.MFood
+import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.UserEdiblesGetResponse
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractApiData
@@ -14,14 +15,13 @@ import kotlinx.coroutines.delay
 import io.ktor.client.HttpClient as KtorHttpClient
 
 
-class FoodApiClient(private val client: KtorHttpClient) {
-    suspend fun getEdibles(
+class UserFoodApiClient(private val client: KtorHttpClient) {
+    suspend fun getFoods(
         limit: Int,
         offset: Long,
-        edibleType: String
     ): UserEdiblesGetResponse =
         client
-            .get("${ApiUrls.UserEdible.LIST_URL_KT}/$edibleType") {
+            .get("${ApiUrls.UserEdible.LIST_URL_KT}/${EdibleType.FOOD.name.lowercase()}") {
                 parameter("limit", limit)
                 parameter("offset", offset)
             }

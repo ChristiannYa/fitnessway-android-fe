@@ -23,7 +23,6 @@ import com.example.fitnessway.data.mappers.toClientView
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.feature.lists.screen.main.composables.PendingFoodsPagination
-import com.example.fitnessway.feature.lists.screen.main.composables.UserSupplementsList
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.food.FoodPreviewList
 import com.example.fitnessway.ui.shared.Banners
@@ -50,13 +49,15 @@ fun ListsScreen(
     val selectedList by viewModel.selectedList.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val pendingFoodRepoUiState by viewModel.pendingFoodRepoUiState.collectAsState()
-    val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
+    val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
+    val userSupplementUiState by viewModel.userSupplementRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
     val user = userFlow
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val pendingFoodsUiStatePager = pendingFoodRepoUiState.pendingFoodsUiStatePager
-    val foodsUiStatePager = foodRepoUiState.foodsUiStatePager
+    val userFoodsUiStatePager = userFoodRepoUiState.foodsUiStatePager
+    val userSupplementsUiStatePager = userSupplementUiState.uiStatePager
 
     val moreOptionsState = Structure.rememberMoreOptionsState()
     val view = LocalView.current
@@ -74,7 +75,7 @@ fun ListsScreen(
         when (selectedList) {
             ListOption.PendingFood -> viewModel.getPendingFoods()
             ListOption.Food -> viewModel.getFoods()
-            ListOption.Supplement -> {}
+            ListOption.Supplement -> viewModel.getSupplements()
         }
     }
 
@@ -88,15 +89,15 @@ fun ListsScreen(
                         contentDescription = "Create ${selectedList.name.toPascalSpaced()}",
                         enabled = nutrientsUiState is UiState.Success && when (selectedList) {
                             ListOption.PendingFood -> pendingFoodsUiStatePager.uiState is UiState.Success
-                            ListOption.Food -> foodsUiStatePager.uiState is UiState.Success
-                            ListOption.Supplement -> false
+                            ListOption.Food -> userFoodsUiStatePager.uiState is UiState.Success
+                            ListOption.Supplement -> userSupplementsUiStatePager.uiState is UiState.Success
                         },
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
                             when (selectedList) {
                                 ListOption.PendingFood -> onNavigateToFoodRequestScreen()
                                 ListOption.Food -> onNavigateToFoodCreationForm()
-                                ListOption.Supplement -> {}
+                                ListOption.Supplement -> onNavigateToFoodCreationForm()
                             }
                         }
                     )
@@ -139,7 +140,7 @@ fun ListsScreen(
             }
 
             FoodPreviewList(
-                uiStatePager = foodsUiStatePager,
+                uiStatePager = userFoodsUiStatePager,
                 isVisible = selectedList == ListOption.Food,
                 isUserPremium = user?.isPremium ?: false,
                 onLoadMore = viewModel::getMoreFoods,
@@ -149,8 +150,15 @@ fun ListsScreen(
                 }
             )
 
-            UserSupplementsList(
-                isVisible = selectedList == ListOption.Supplement
+            FoodPreviewList(
+                uiStatePager = userSupplementsUiStatePager,
+                isVisible = selectedList == ListOption.Supplement,
+                isUserPremium = user?.isPremium ?: false,
+                onLoadMore = viewModel::getMoreSupplements,
+                onFoodClick = { food ->
+                    viewModel.editionManager.setSelectedFood(food)
+                    onNavigateToUserFoodDetails()
+                }
             )
 
             val options = enumValues<ListOption>().map { option ->

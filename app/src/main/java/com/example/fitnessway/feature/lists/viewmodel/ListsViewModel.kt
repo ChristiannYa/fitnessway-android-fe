@@ -25,7 +25,8 @@ import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
-import com.example.fitnessway.data.repository.user_food.IFoodRepository
+import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
+import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
@@ -47,7 +48,8 @@ import kotlinx.coroutines.launch
 
 class ListsViewModel(
     private val pendingFoodRepo: IPendingFoodRepository,
-    private val foodRepo: IFoodRepository,
+    private val userFoodRepo: IUserFoodRepository,
+    private val userSupplementRepo: IUserSupplementRepository,
     private val foodLogRepo: IFoodLogRepository,
     private val nutrientRepo: INutrientRepository,
     private val managers: IListsManagers,
@@ -69,7 +71,8 @@ class ListsViewModel(
     val selectedList: StateFlow<ListOption> = _selectedList
 
     val pendingFoodRepoUiState = pendingFoodRepo.uiState
-    val foodRepoUiState = foodRepo.uiState
+    val userFoodRepoUiState = userFoodRepo.uiState
+    val userSupplementRepoUiState = userSupplementRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
 
     val userFlow: StateFlow<MUser.Model.User?> = userStateHolder.userState
@@ -80,18 +83,15 @@ class ListsViewModel(
             initialValue = null
         )
 
-    fun setSelectedList(list: ListOption) {
-        _selectedList.value = list
-    }
-
     fun getNutrients() = nutrientRepo.loadNutrients()
 
-    fun getFoods() = foodRepo.loadFoods()
+    fun getFoods() = userFoodRepo.loadFoods()
+    fun getMoreFoods() = userFoodRepo.loadMoreFoods()
 
-    fun getMoreFoods() = foodRepo.loadMoreFoods()
+    fun getSupplements() = userSupplementRepo.load()
+    fun getMoreSupplements() = userSupplementRepo.loadMore()
 
     fun getPendingFoods() = pendingFoodRepo.loadPendingFoods()
-
     fun getMorePendingFoods() = pendingFoodRepo.loadMorePendingFoods()
 
     fun addFoodRequest() {
@@ -116,7 +116,7 @@ class ListsViewModel(
         val request = formState.toUserFoodRequest(nutrients)
 
         viewModelScope.launch {
-            foodRepo.addFood(request).collect { state ->
+            userFoodRepo.addFood(request).collect { state ->
                 _uiState.update { it.copy(foodAddState = state) }
             }
         }
@@ -130,7 +130,7 @@ class ListsViewModel(
         val selectedFoodId = managers.edition.selectedFood.value?.id ?: return
 
         // Get current data to update optimistically
-        val originalFoodsPager = foodRepo.uiState.value.foodsUiStatePager.uiState
+        val originalFoodsPager = userFoodRepo.uiState.value.foodsUiStatePager.uiState
             .toSuccessOrNull()
             ?: return
 
@@ -207,7 +207,7 @@ class ListsViewModel(
 
         _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
 
-        foodRepo.updateState {
+        userFoodRepo.updateState {
             it.copy(
                 foodsUiStatePager = UiStatePager(
                     uiState = UiState.Success(
@@ -237,7 +237,7 @@ class ListsViewModel(
 
         // Send the api request
         viewModelScope.launch {
-            foodRepo.updateFood(request).collect { state ->
+            userFoodRepo.updateFood(request).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
@@ -254,7 +254,7 @@ class ListsViewModel(
                         val revertedFood = _originalFoodBeforeUpdate
 
                         if (revertedFood != null) {
-                            val currentFoodsPager = foodRepo.uiState.value.foodsUiStatePager
+                            val currentFoodsPager = userFoodRepo.uiState.value.foodsUiStatePager
                                 .toPaginationOrNull()
                                 ?: return@collect
 
@@ -264,7 +264,7 @@ class ListsViewModel(
                                 if (it.id == revertedFood.id) revertedFood else it
                             }
 
-                            foodRepo.updateState {
+                            userFoodRepo.updateState {
                                 it.copy(
                                     foodsUiStatePager = UiStatePager(
                                         uiState = UiState.Success(
@@ -297,7 +297,7 @@ class ListsViewModel(
     fun deleteFood() {
         val foodToRemove = managers.edition.selectedFood.value ?: return
 
-        val originalPager = foodRepo.uiState.value.foodsUiStatePager
+        val originalPager = userFoodRepo.uiState.value.foodsUiStatePager
             .toPaginationOrNull()
             ?: return
 
@@ -326,7 +326,7 @@ class ListsViewModel(
         // Update states optimistically
         _uiState.update { it.copy(foodDeleteState = UiState.Success(Unit)) }
 
-        foodRepo.updateState {
+        userFoodRepo.updateState {
             it.copy(
                 foodsUiStatePager = UiStatePager(
                     uiState = UiState.Success(
@@ -342,7 +342,7 @@ class ListsViewModel(
         }
 
         viewModelScope.launch {
-            foodRepo.deleteFood(foodToRemove.id).collect { state ->
+            userFoodRepo.deleteFood(foodToRemove.id).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodDeleteState = UiState.Success(Unit)) }
@@ -358,7 +358,7 @@ class ListsViewModel(
 
                         _foodFailedDeletions.add(originalIndex to current)
 
-                        val currentPager = foodRepo.uiState.value.foodsUiStatePager.uiState
+                        val currentPager = userFoodRepo.uiState.value.foodsUiStatePager.uiState
                             .toSuccessOrNull()
                             ?: return@collect
 
@@ -386,7 +386,7 @@ class ListsViewModel(
                                     }
                             )
 
-                        foodRepo.updateState {
+                        userFoodRepo.updateState {
                             it.copy(
                                 foodsUiStatePager = UiStatePager(
                                     uiState = UiState.Success(revertedPagination),
@@ -526,6 +526,10 @@ class ListsViewModel(
                 }
             }
         }
+    }
+
+    fun setSelectedList(list: ListOption) {
+        _selectedList.value = list
     }
 
     fun resetFoodRequestState() {

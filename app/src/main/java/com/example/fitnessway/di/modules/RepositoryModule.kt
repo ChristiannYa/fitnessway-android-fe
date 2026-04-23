@@ -12,8 +12,10 @@ import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepositor
 import com.example.fitnessway.data.repository.pending_food.PendingFoodRepositoryImpl
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.repository.user.UserRepositoryImpl
-import com.example.fitnessway.data.repository.user_food.FoodRepositoryImpl
-import com.example.fitnessway.data.repository.user_food.IFoodRepository
+import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
+import com.example.fitnessway.data.repository.user_food.UserFoodRepositoryImpl
+import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
+import com.example.fitnessway.data.repository.user_supplement.UserSupplementRepositoryImpl
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -58,8 +60,16 @@ val repositoryModule = module {
         )
     }
 
-    single<IFoodRepository> {
-        FoodRepositoryImpl(
+    single<IUserFoodRepository> {
+        UserFoodRepositoryImpl(
+            apiClient = get(),
+            httpClient = get(),
+            repositoryScope = get(named("repositoryScope"))
+        )
+    }
+
+    single<IUserSupplementRepository> {
+        UserSupplementRepositoryImpl(
             apiClient = get(),
             httpClient = get(),
             repositoryScope = get(named("repositoryScope"))

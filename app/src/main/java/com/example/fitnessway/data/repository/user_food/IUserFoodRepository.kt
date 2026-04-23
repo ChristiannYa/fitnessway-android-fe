@@ -7,8 +7,8 @@ import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
-interface IFoodRepository {
-    val uiState: StateFlow<FoodRepositoryUiState>
+interface IUserFoodRepository {
+    val uiState: StateFlow<UserFoodRepositoryUiState>
 
     fun refreshFoods()
     fun loadFoods()
@@ -17,6 +17,6 @@ interface IFoodRepository {
     suspend fun addFood(request: FoodAddRequest): Flow<UiState<FoodInformation>>
     suspend fun updateFood(request: FoodUpdateRequest): Flow<UiState<FoodInformation>>
 
-    fun updateState(update: (FoodRepositoryUiState) -> FoodRepositoryUiState)
+    fun updateState(update: (UserFoodRepositoryUiState) -> UserFoodRepositoryUiState)
     fun clearRepository()
 }

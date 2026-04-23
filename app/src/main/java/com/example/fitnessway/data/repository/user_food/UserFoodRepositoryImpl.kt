@@ -5,11 +5,10 @@ import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodAddRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.PaginationResult
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.data.network.HttpClient
-import com.example.fitnessway.data.network.ktor_client.FoodApiClient
+import com.example.fitnessway.data.network.ktor_client.UserFoodApiClient
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.CoroutineScope
@@ -22,27 +21,26 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class FoodRepositoryImpl(
+class UserFoodRepositoryImpl(
     private val httpClient: HttpClient,
-    private val apiClient: FoodApiClient,
+    private val apiClient: UserFoodApiClient,
     private val repositoryScope: CoroutineScope,
-) : IFoodRepository {
+) : IUserFoodRepository {
 
-    private val _uiState = MutableStateFlow(FoodRepositoryUiState())
-    override val uiState: StateFlow<FoodRepositoryUiState> = _uiState
+    private val _uiState = MutableStateFlow(UserFoodRepositoryUiState())
+    override val uiState: StateFlow<UserFoodRepositoryUiState> = _uiState
 
     private fun fetchFoods(offset: Long): Flow<UiState<PaginationResult<UserEdible>>> =
         httpClient.makeRequest(
             apiCall = {
-                apiClient.getEdibles(
-                    edibleType = EdibleType.FOOD.name.lowercase(),
+                apiClient.getFoods(
                     limit = Pagination.LIMIT,
                     offset = offset
                 )
             },
             extractData = { it.userEdiblesPagination },
             errMsg = "Failed to get your foods",
-            pathDescription = "food list"
+            pathDescription = "user food list"
         )
 
     override fun refreshFoods() {
@@ -148,7 +146,7 @@ class FoodRepositoryImpl(
             pathDescription = "delete food"
         )
 
-    override fun updateState(update: (FoodRepositoryUiState) -> FoodRepositoryUiState) = _uiState.update(update)
+    override fun updateState(update: (UserFoodRepositoryUiState) -> UserFoodRepositoryUiState) = _uiState.update(update)
 
-    override fun clearRepository() = _uiState.update { FoodRepositoryUiState() }
+    override fun clearRepository() = _uiState.update { UserFoodRepositoryUiState() }
 }

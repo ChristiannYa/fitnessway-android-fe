@@ -15,7 +15,7 @@ import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
-import com.example.fitnessway.data.repository.user_food.IFoodRepository
+import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.IDateManager
@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val appFoodRepo: IAppFoodRepository,
     private val nutrientRepo: INutrientRepository,
-    private val foodRepo: IFoodRepository,
+    private val foodRepo: IUserFoodRepository,
     private val foodLogRepo: IFoodLogRepository,
     private val managers: IHomeManager,
     val appStateStore: IApplicationStateStore,

@@ -12,7 +12,7 @@ import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
-import com.example.fitnessway.data.repository.user_food.IFoodRepository
+import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val authRepo: IAuthRepository,
     private val nutrientRepo: INutrientRepository,
-    private val foodRepo: IFoodRepository,
+    private val foodRepo: IUserFoodRepository,
     private val foodLogRepo: IFoodLogRepository,
     private val managers: IProfileManagers,
     val dateTimeFormatter: IAppDateTimeFormatter,

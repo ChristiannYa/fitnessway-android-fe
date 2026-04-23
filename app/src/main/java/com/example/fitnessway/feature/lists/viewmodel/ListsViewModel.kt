@@ -426,7 +426,7 @@ class ListsViewModel(
     fun dismissReview() {
         val idToDismiss = managers.request.reviewIdToDismiss.value ?: return
 
-        val originalPager = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
+        val originalPager = pendingFoodRepo.uiState.value.uiStatePager.uiState
             .toSuccessOrNull()
             ?: return
 
@@ -454,7 +454,7 @@ class ListsViewModel(
 
         pendingFoodRepo.updateState {
             it.copy(
-                pendingFoodsUiStatePager = UiStatePager(
+                uiStatePager = UiStatePager(
                     uiState = UiState.Success(
                         // Optimistic pagination when REMOVING (dismissing) the pending food
                         originalPager
@@ -484,7 +484,7 @@ class ListsViewModel(
 
                         _pendingFoodFailedDeletions.add(originalIndex to current)
 
-                        val currentPager = pendingFoodRepo.uiState.value.pendingFoodsUiStatePager.uiState
+                        val currentPager = pendingFoodRepo.uiState.value.uiStatePager.uiState
                             .toSuccessOrNull()
                             ?: return@collect
 
@@ -514,7 +514,7 @@ class ListsViewModel(
 
                         pendingFoodRepo.updateState {
                             it.copy(
-                                pendingFoodsUiStatePager = UiStatePager(
+                                uiStatePager = UiStatePager(
                                     uiState = UiState.Success(revertedPagination),
                                     isLoadingMore = false
                                 )

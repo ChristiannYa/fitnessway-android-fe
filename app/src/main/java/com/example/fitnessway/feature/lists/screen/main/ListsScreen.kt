@@ -55,7 +55,7 @@ fun ListsScreen(
 
     val user = userFlow
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
-    val pendingFoodsUiStatePager = pendingFoodRepoUiState.pendingFoodsUiStatePager
+    val pendingFoodsUiStatePager = pendingFoodRepoUiState.uiStatePager
     val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
     val userSupplementsUiStatePager = userSupplementUiState.uiStatePager
 

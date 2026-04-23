@@ -1,11 +1,11 @@
 package com.example.fitnessway.data.repository.pending_food
 
 import com.example.fitnessway.constants.Pagination
-import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.PendingFoodApiClient
+import com.example.fitnessway.data.repository._state.loadMore
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +25,7 @@ class PendingFoodRepositoryImpl(
     private val _uiState = MutableStateFlow(PendingFoodRepositoryUiState())
     override val uiState: StateFlow<PendingFoodRepositoryUiState> = _uiState
 
-    private fun fetchPendingFoods(offset: Long) =
+    private fun fetchPendingFoods(offset: Long = 0) =
         httpClient.makeRequest(
             apiCall = { apiClient.getPendingFoods(Pagination.LIMIT, offset) },
             extractData = { it.pendingFoodsPagination },
@@ -34,60 +34,20 @@ class PendingFoodRepositoryImpl(
         )
 
     override fun refreshPendingFoods() {
-        _uiState.update { it.copy(pendingFoodsUiStatePager = UiStatePager()) }
+        _uiState.update { it.copy(uiStatePager = UiStatePager()) }
 
         repositoryScope.launch {
-            fetchPendingFoods(offset = 0).collect { state ->
-                _uiState.update { it.copy(pendingFoodsUiStatePager = UiStatePager(state)) }
+            fetchPendingFoods().collect { state ->
+                _uiState.update { it.copy(uiStatePager = UiStatePager(state)) }
             }
         }
     }
 
     override fun loadPendingFoods() {
-        val uiState = _uiState.value.pendingFoodsUiStatePager.uiState
-        if (uiState.hasState) return
-        refreshPendingFoods()
+        if (!_uiState.value.uiStatePager.uiState.hasState) refreshPendingFoods()
     }
 
-    override fun loadMorePendingFoods() {
-        val pager = _uiState.value.pendingFoodsUiStatePager
-        if (pager.isLoadingMore) return
-
-        val pagination = pager.toPaginationOrNull() ?: return
-        if (!pagination.hasMorePages) return
-
-        _uiState.update {
-            it.copy(pendingFoodsUiStatePager = pager.copy(isLoadingMore = true))
-        }
-
-        repositoryScope.launch {
-            fetchPendingFoods(pagination.getNextOffset()).collect { state ->
-                when (state) {
-                    is UiState.Success -> _uiState.update {
-                        val current = it.pendingFoodsUiStatePager.toPaginationOrNull()
-                        val accumulated = (current?.data ?: emptyList()) + state.data.data
-
-                        it.copy(
-                            pendingFoodsUiStatePager = UiStatePager(
-                                uiState = UiState.Success(state.data.copy(data = accumulated)),
-                                isLoadingMore = false
-                            )
-                        )
-                    }
-
-                    is UiState.Error -> _uiState.update {
-                        it.copy(
-                            pendingFoodsUiStatePager = it.pendingFoodsUiStatePager.copy(
-                                isLoadingMore = false
-                            )
-                        )
-                    }
-
-                    else -> {}
-                }
-            }
-        }
-    }
+    override fun loadMorePendingFoods() = _uiState.value.loadMore(_uiState, ::fetchPendingFoods, repositoryScope)
 
     override suspend fun addPendingFood(
         request: PendingFoodAddRequest,

@@ -61,7 +61,8 @@ enum class ListOption {
 
 enum class FoodLogListFilter {
     RECENTLY_LOGGED,
-    USER_FOODS
+    USER_FOODS,
+    USER_SUPPLEMENTS
 }
 
 @Serializable
@@ -212,5 +213,6 @@ data class FoodInformationWithId(
 
 data class FoodToLogSearchCriteria(
     val id: Int,
-    val source: FoodSource
+    val source: FoodSource,
+    val edibleType: EdibleType
 )

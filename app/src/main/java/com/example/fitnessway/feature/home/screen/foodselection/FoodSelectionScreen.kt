@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.model.m_26.EdibleType
+import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogListFilter
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
@@ -47,7 +49,8 @@ fun FoodSelectionScreen(
     val user by viewModel.userFlow.collectAsState()
 
     val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
-    val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
+    val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
+    val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
     val foodLogRepoUiState by viewModel.foodLogRepoUiState.collectAsState()
 
     val foodList by viewModel.foodList.collectAsState()
@@ -57,7 +60,8 @@ fun FoodSelectionScreen(
 
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
     val recentlyLoggedUiStatePager = foodLogRepoUiState.recentlyLogged
-    val foodsUiStatePager = foodRepoUiState.uiStatePager
+    val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
+    val userSupplementsUiStatePager = userSupplementRepoUiState.uiStatePager
 
     fun onBackClick() {
         viewModel.onResetFoodSelectionScreen()
@@ -68,8 +72,15 @@ fun FoodSelectionScreen(
 
     LaunchedEffect(foodList) {
         when (foodList) {
-            FoodLogListFilter.RECENTLY_LOGGED -> viewModel.getRecentlyLoggedFoods()
-            FoodLogListFilter.USER_FOODS -> viewModel.getFoods()
+            FoodLogListFilter.RECENTLY_LOGGED -> {
+                if (foodLogCategory != FoodLogCategory.SUPPLEMENT) viewModel.getRecentlyLoggedFoods()
+            }
+
+            FoodLogListFilter.USER_FOODS -> {
+                if (foodLogCategory != FoodLogCategory.SUPPLEMENT) viewModel.getUserFoods()
+            }
+
+            FoodLogListFilter.USER_SUPPLEMENTS -> viewModel.getUserSupplements()
         }
     }
 
@@ -105,7 +116,13 @@ fun FoodSelectionScreen(
                         onTypingConsumed = { isTyping = false },
                         onLoadMore = { viewModel.getMoreAppFoods(appFoodSearchQuery) },
                         onFoodClick = {
-                            viewModel.setSearchCriteria(FoodToLogSearchCriteria(it, FoodSource.APP))
+                            viewModel.setSearchCriteria(
+                                FoodToLogSearchCriteria(
+                                    id = it,
+                                    source = FoodSource.APP,
+                                    edibleType = EdibleType.FOOD
+                                )
+                            )
                             onNavigateToSelectedFood()
                         },
                         modifier = Modifier
@@ -122,33 +139,75 @@ fun FoodSelectionScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(vertical = 8.dp)
                 ) {
-                    FilterButton("Recently Logged", foodList == FoodLogListFilter.RECENTLY_LOGGED, {
-                        viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED)
-                    })
+                    if (foodLogCategory != FoodLogCategory.SUPPLEMENT) {
+                        FilterButton("Recently Logged", foodList == FoodLogListFilter.RECENTLY_LOGGED, {
+                            viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED)
+                        })
 
-                    FilterButton("My Foods", foodList == FoodLogListFilter.USER_FOODS, {
-                        viewModel.setFoodList(FoodLogListFilter.USER_FOODS)
-                    })
+                        FilterButton("My Foods", foodList == FoodLogListFilter.USER_FOODS, {
+                            viewModel.setFoodList(FoodLogListFilter.USER_FOODS)
+                        })
+                    } else {
+                        FilterButton("Recently Logged", foodList == FoodLogListFilter.RECENTLY_LOGGED, {
+                            viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED)
+                        })
+
+                        FilterButton("My Supplements", foodList == FoodLogListFilter.USER_SUPPLEMENTS, {
+                            viewModel.setFoodList(FoodLogListFilter.USER_SUPPLEMENTS)
+                        })
+                    }
                 }
 
                 RecentlyLoggedFoods(
                     uiStatePager = recentlyLoggedUiStatePager,
-                    isVisible = foodList == FoodLogListFilter.RECENTLY_LOGGED,
+                    isVisible = foodList == FoodLogListFilter.RECENTLY_LOGGED &&
+                            foodLogCategory != FoodLogCategory.SUPPLEMENT,
                     isUserPremium = user?.isPremium ?: false,
                     onLoadMore = viewModel::getMoreRecentlyLoggedFoods,
                     onFoodClick = { id, source ->
-                        viewModel.setSearchCriteria(FoodToLogSearchCriteria(id, source))
+                        viewModel.setSearchCriteria(
+                            FoodToLogSearchCriteria(
+                                id = id,
+                                source = source,
+                                edibleType = EdibleType.FOOD
+                            )
+                        )
                         onNavigateToSelectedFood()
                     }
                 )
 
                 FoodPreviewList(
-                    uiStatePager = foodsUiStatePager,
-                    isVisible = foodList == FoodLogListFilter.USER_FOODS,
+                    uiStatePager = userFoodsUiStatePager,
+                    isVisible = foodList == FoodLogListFilter.USER_FOODS &&
+                            foodLogCategory != FoodLogCategory.SUPPLEMENT,
                     isUserPremium = user?.isPremium ?: false,
-                    onLoadMore = {},
+                    onLoadMore = viewModel::getMoreUserFoods,
                     onFoodClick = { food ->
-                        viewModel.setSearchCriteria(FoodToLogSearchCriteria(food.id, FoodSource.USER))
+                        viewModel.setSearchCriteria(
+                            FoodToLogSearchCriteria(
+                                id = food.id,
+                                source = FoodSource.USER,
+                                edibleType = EdibleType.FOOD
+                            )
+                        )
+                        onNavigateToSelectedFood()
+                    }
+                )
+
+                FoodPreviewList(
+                    uiStatePager = userSupplementsUiStatePager,
+                    isVisible = foodList == FoodLogListFilter.USER_SUPPLEMENTS &&
+                            foodLogCategory == FoodLogCategory.SUPPLEMENT,
+                    isUserPremium = user?.isPremium ?: false,
+                    onLoadMore = viewModel::getMoreUserSupplements,
+                    onFoodClick = { food ->
+                        viewModel.setSearchCriteria(
+                            FoodToLogSearchCriteria(
+                                id = food.id,
+                                source = FoodSource.USER,
+                                edibleType = EdibleType.SUPPLEMENT
+                            )
+                        )
                         onNavigateToSelectedFood()
                     }
                 )

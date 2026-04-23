@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.mappers.toTypedList
+import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.NutrientType
@@ -51,7 +52,8 @@ fun FoodLogScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
-    val foodRepoUiState by viewModel.foodRepoUiState.collectAsState()
+    val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
+    val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
 
     val searchCriteria = viewModel.searchCriteria.collectAsState().value
     val foodToLog = viewModel.foodToLog.collectAsState().value
@@ -59,7 +61,9 @@ fun FoodLogScreen(
     val category = viewModel.foodLogCategory.collectAsState().value
 
     val appFoodUiState = appFoodRepoUiState.appFood
-    val foodsUiState = foodRepoUiState.uiStatePager
+    val userFoodsUiState = userFoodRepoUiState.uiStatePager
+    val userSupplementsUiState = userSupplementRepoUiState.uiStatePager
+
     val foodLogAddState = uiState.foodLogAddState
 
     val isLogSuccessFull = handleApiSuccessTempState(
@@ -83,15 +87,25 @@ fun FoodLogScreen(
     LaunchedEffect(searchCriteria) {
         searchCriteria?.let {
             when (it.source) {
-                FoodSource.APP -> viewModel.getAppFoodById(searchCriteria.id)
-                FoodSource.USER -> viewModel.getFoods()
+                FoodSource.APP -> {
+                    if (it.edibleType == EdibleType.FOOD) {
+                        viewModel.getAppFoodById(searchCriteria.id)
+                    }
+                }
+
+                FoodSource.USER -> {
+                    if (it.edibleType == EdibleType.FOOD) {
+                        viewModel.getUserFoods()
+                    } else viewModel.getUserSupplements()
+                }
             }
         }
     }
 
     LaunchedEffect(appFoodUiState, searchCriteria) {
         if (appFoodUiState is UiState.Success &&
-            searchCriteria?.source == FoodSource.APP
+            searchCriteria?.source == FoodSource.APP &&
+            searchCriteria.edibleType == EdibleType.FOOD
         ) {
             appFoodUiState.data?.let {
                 viewModel.setFoodToLog(
@@ -104,11 +118,30 @@ fun FoodLogScreen(
         }
     }
 
-    LaunchedEffect(foodsUiState, searchCriteria) {
-        if (foodsUiState.uiState is UiState.Success &&
-            searchCriteria?.source == FoodSource.USER
+    LaunchedEffect(userFoodsUiState, searchCriteria) {
+        if (userFoodsUiState.uiState is UiState.Success &&
+            searchCriteria?.source == FoodSource.USER &&
+            searchCriteria.edibleType == EdibleType.FOOD
         ) {
-            foodsUiState.uiState.data.data
+            userFoodsUiState.uiState.data.data
+                .find { it.id == searchCriteria.id }
+                ?.let {
+                    viewModel.setFoodToLog(
+                        foodToLog = FoodInformationWithId(
+                            id = it.id,
+                            information = it.information
+                        )
+                    )
+                }
+        }
+    }
+
+    LaunchedEffect(userSupplementsUiState, searchCriteria) {
+        if (userSupplementsUiState.uiState is UiState.Success &&
+            searchCriteria?.source == FoodSource.USER &&
+            searchCriteria.edibleType == EdibleType.SUPPLEMENT
+        ) {
+            userSupplementsUiState.uiState.data.data
                 .find { it.id == searchCriteria.id }
                 ?.let {
                     viewModel.setFoodToLog(
@@ -177,7 +210,7 @@ fun FoodLogScreen(
 
             Box(Modifier.fillMaxSize()) {
                 val isAppFoodLoading = searchCriteria.source == FoodSource.APP && appFoodUiState is UiState.Loading
-                val isUserFoodLoading = searchCriteria.source == FoodSource.USER && foodsUiState is UiState.Loading
+                val isUserFoodLoading = searchCriteria.source == FoodSource.USER && userFoodsUiState is UiState.Loading
 
                 if (isAppFoodLoading || isUserFoodLoading) {
                     Loading.SpinnerInScreen()

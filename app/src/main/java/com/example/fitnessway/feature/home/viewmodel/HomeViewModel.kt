@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.mappers.mapfl
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toNutrientPreview
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
@@ -16,6 +17,7 @@ import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.food_log.IFoodLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
+import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.IDateManager
@@ -27,6 +29,7 @@ import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import com.example.fitnessway.util.extensions.calcDailyIntakes
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
 import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +44,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val appFoodRepo: IAppFoodRepository,
     private val nutrientRepo: INutrientRepository,
-    private val foodRepo: IUserFoodRepository,
+    private val userFoodRepo: IUserFoodRepository,
+    private val userSupplementRepo: IUserSupplementRepository,
     private val foodLogRepo: IFoodLogRepository,
     private val managers: IHomeManager,
     val appStateStore: IApplicationStateStore,
@@ -67,7 +71,8 @@ class HomeViewModel(
 
     val appFoodRepoUiState = appFoodRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
-    val foodRepoUiState = foodRepo.uiState
+    val userFoodRepoUiState = userFoodRepo.uiState
+    val userSupplementRepoUiState = userSupplementRepo.uiState
     val foodLogRepoUiState = foodLogRepo.uiState
 
     private fun getKebabDate() = dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
@@ -93,44 +98,55 @@ class HomeViewModel(
     }
 
     fun getAppFoodById(id: Int) = appFoodRepo.findAppFoodById(id)
-
     fun getMoreAppFoods(query: String) = appFoodRepo.loadMoreAppFoods(query)
 
-    fun getNutrientIntakes() = nutrientRepo.loadNutrientIntakes(getKebabDate())
+    fun getUserFoods() = userFoodRepo.loadFoods()
+    fun getMoreUserFoods() = userFoodRepo.loadMoreFoods()
 
-    fun getFoods() = foodRepo.loadFoods()
+    fun getUserSupplements() = userSupplementRepo.load()
+    fun getMoreUserSupplements() = userSupplementRepo.loadMore()
 
     fun getFoodLogs() = foodLogRepo.loadFoodLogs(getKebabDate())
-
-    fun getRecentlyLoggedFoods() = foodLogRepo.loadRecentlyLogged()
-
-    fun getMoreRecentlyLoggedFoods() = foodLogRepo.loadMoreRecentlyLogged()
-
-    fun refreshNutrientIntakes() = nutrientRepo.refreshNutrientIntakes(getKebabDate())
-
     fun refreshFoodLogs() = foodLogRepo.refreshFoodLogs(getKebabDate())
 
+    fun getRecentlyLoggedFoods() = foodLogRepo.loadRecentlyLogged()
+    fun getMoreRecentlyLoggedFoods() = foodLogRepo.loadMoreRecentlyLogged()
+
+    fun getNutrientIntakes() = nutrientRepo.loadNutrientIntakes(getKebabDate())
+    fun refreshNutrientIntakes() = nutrientRepo.refreshNutrientIntakes(getKebabDate())
+
     fun addFoodLog() {
+        fun log(log: String) = logcat("[HomeViewModel, addFoodLog] $log")
+
         val foodLogFormState = managers.foodLog.foodLogFormState.value?.data ?: return
+        log("foodLogFormState: passed")
+
         val selectedFood = managers.foodLog.foodToLog.value ?: return
+        log("selectedFood: passed")
+
         val category = managers.foodLog.foodLogCategory.value ?: return
-        val source = managers.foodLog.searchCriteria.value?.source ?: return
+        log("category: passed")
 
-        val originalRecentlyLoggedListPagerState = foodLogRepo.uiState.value.recentlyLogged.uiState
-        if (originalRecentlyLoggedListPagerState !is UiState.Success) return
+        val searchCriteria = managers.foodLog.searchCriteria.value ?: return
+        log("searchCriteria: passed")
 
-        val recentlyLoggedList = originalRecentlyLoggedListPagerState.data
+        // @TODO: Handle supplements logging
+        val originalRecentlyLoggedListPager = foodLogRepo.uiState.value.recentlyLogged.uiState
+            .toSuccessOrNull()
+            ?: return
+        log("originalRecentlyLoggedListPager: passed")
+
 
         val loggedFoodPreview = FoodPreview(
             id = selectedFood.id,
             base = selectedFood.information.base,
             nutrientPreview = selectedFood.information.nutrients.toNutrientPreview(),
-            source = source
+            source = searchCriteria.source
         )
 
-        val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPagerState.data.copy(
+        val optimisticRecentlyLoggedPager = originalRecentlyLoggedListPager.copy(
             data = listOf(loggedFoodPreview) +
-                    recentlyLoggedList.data
+                    originalRecentlyLoggedListPager.data
                         .filter { it.id != loggedFoodPreview.id }
         )
 
@@ -147,7 +163,7 @@ class HomeViewModel(
             servings = foodLogFormState.servings.toDouble(),
             category = category,
             time = "$date ${foodLogFormState.time}",
-            source = source
+            source = searchCriteria.source
         )
 
         viewModelScope.launch {
@@ -165,7 +181,7 @@ class HomeViewModel(
 
                         foodLogRepo.updateState {
                             it.copy(
-                                recentlyLogged = UiStatePager(UiState.Success(recentlyLoggedList))
+                                recentlyLogged = UiStatePager(UiState.Success(originalRecentlyLoggedListPager))
                             )
                         }
                     }

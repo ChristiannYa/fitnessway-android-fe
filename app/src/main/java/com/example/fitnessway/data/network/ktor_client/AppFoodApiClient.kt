@@ -18,9 +18,12 @@ class AppFoodApiClient(private val client: KtorHttpClient) {
     suspend fun searchAppFoods(
         query: String,
         params: PaginationParams
-    ): AppFoodSearchResponse = client.get(ApiUrls.AppFood.LIST_URL) {
-        parameter("limit", params.limit)
-        parameter("offset", params.offset)
-        parameter("q", query)
-    }.extractApiData()
+    ): AppFoodSearchResponse =
+        client
+            .get(ApiUrls.AppFood.LIST_URL) {
+                parameter("limit", params.limit)
+                parameter("offset", params.offset)
+                parameter("q", query)
+            }
+            .extractApiData()
 }

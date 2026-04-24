@@ -70,18 +70,7 @@ fun FoodSelectionScreen(
         onPopBackStack()
     }
 
-    fun handleRecentlyLoggedList() {
-        when (foodLogCategory) {
-            FoodLogCategory.SUPPLEMENT -> viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_SUPPLEMENTS)
-            else -> viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_FOODS)
-        }
-    }
-
     BackHandler { onBackClick() }
-
-    LaunchedEffect(foodLogCategory) {
-        handleRecentlyLoggedList()
-    }
 
     LaunchedEffect(foodList) {
         foodList?.let {
@@ -168,7 +157,12 @@ fun FoodSelectionScreen(
                             FoodLogCategory.SUPPLEMENT -> isRecentlyLoggedSupplementsVisible
                             else -> isRecentlyLoggedFoodsVisible
                         },
-                        onClick = ::handleRecentlyLoggedList
+                        onClick = {
+                            when (foodLogCategory) {
+                                FoodLogCategory.SUPPLEMENT -> viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_SUPPLEMENTS)
+                                else -> viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_FOODS)
+                            }
+                        }
                     )
 
                     when (foodLogCategory) {

@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
+import com.example.fitnessway.data.model.m_26.FoodLogCategory
+import com.example.fitnessway.data.model.m_26.FoodLogListFilter
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.home.screen.main.composables.BasicNutrientIntakes
 import com.example.fitnessway.feature.home.screen.main.composables.DatePicker
@@ -190,6 +192,12 @@ fun HomeScreen(
                     onViewFoodsList = { category ->
                         view.playSoundEffect(SoundEffectConstants.NAVIGATION_RIGHT)
                         viewModel.setFoodLogCategory(category)
+
+                        when (category) {
+                            FoodLogCategory.SUPPLEMENT -> viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_SUPPLEMENTS)
+                            else -> viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_FOODS)
+                        }
+
                         onViewFoodsList()
                     },
                     onViewFoodLogDetails = { foodLog ->

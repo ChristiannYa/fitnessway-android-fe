@@ -33,7 +33,6 @@ import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import com.example.fitnessway.util.extensions.calcDailyIntakes
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
 import com.example.fitnessway.util.extensions.toPrecisedString
-import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -127,19 +126,10 @@ class HomeViewModel(
     fun refreshNutrientIntakes() = nutrientRepo.refreshNutrientIntakes(getKebabDate())
 
     fun addFoodLog() {
-        fun log(log: String) = logcat("[HomeViewModel, addFoodLog] $log")
-
         val foodLogFormState = managers.foodLog.foodLogFormState.value?.data ?: return
-        log("foodLogFormState: passed")
-
         val selectedFood = managers.foodLog.foodToLog.value ?: return
-        log("selectedFood: passed")
-
         val category = managers.foodLog.foodLogCategory.value ?: return
-        log("category: passed")
-
         val searchCriteria = managers.foodLog.searchCriteria.value ?: return
-        log("searchCriteria: passed")
 
         val originalRecentlyLoggedListPager = when (searchCriteria.edibleType) {
             EdibleType.FOOD -> foodRecentLogRepo.uiState.value.uiStatePager.uiState
@@ -147,7 +137,6 @@ class HomeViewModel(
         }
             .toSuccessOrNull()
             ?: return
-        log("originalRecentlyLoggedListPager: passed")
 
         val loggedFoodPreview = FoodPreview(
             id = selectedFood.id,
@@ -173,8 +162,8 @@ class HomeViewModel(
 
         handleRecentListOptimisticUpdate(
             optimisticData = originalRecentlyLoggedListPager.copy(
-                data = (listOf(loggedFoodPreview) + originalRecentlyLoggedListPager.data)
-                    .filter { it.id != loggedFoodPreview.id }
+                data = listOf(loggedFoodPreview) + (originalRecentlyLoggedListPager.data
+                    .filter { it.id != loggedFoodPreview.id })
             ),
             edibleType = searchCriteria.edibleType
         )

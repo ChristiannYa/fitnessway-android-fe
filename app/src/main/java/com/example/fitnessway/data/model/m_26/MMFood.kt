@@ -146,12 +146,13 @@ data class RecentlyLoggedEdiblesResponse(
 )
 
 @Serializable
-data class FoodLogAddRequest(
-    val foodId: Int,
+data class EdibleLogAddRequest(
+    val edibleId: Int,
+    val edibleType: String,
     val servings: Double,
-    val category: FoodLogCategory,
+    val category: String,
     val time: String,
-    val source: FoodSource
+    val source: String
 )
 
 @Serializable

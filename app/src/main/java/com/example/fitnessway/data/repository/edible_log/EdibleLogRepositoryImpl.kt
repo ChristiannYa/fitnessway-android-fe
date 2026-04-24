@@ -1,8 +1,8 @@
 package com.example.fitnessway.data.repository.edible_log
 
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
+import com.example.fitnessway.data.model.m_26.EdibleLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLog
-import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.network.HttpClient
@@ -47,7 +47,7 @@ class EdibleLogRepositoryImpl(
     }
 
     override suspend fun add(
-        request: FoodLogAddRequest,
+        request: EdibleLogAddRequest,
         date: String
     ): Flow<UiState<FoodLog>> =
         httpClient.makeRequest(

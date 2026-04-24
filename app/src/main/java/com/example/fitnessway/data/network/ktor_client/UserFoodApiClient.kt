@@ -11,7 +11,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
-import kotlinx.coroutines.delay
 import io.ktor.client.HttpClient as KtorHttpClient
 
 
@@ -41,11 +40,8 @@ class UserFoodApiClient(private val client: KtorHttpClient) {
             .put(ApiUrls.UserEdible.UPDATE_URL) { jsonBody(req) }
             .extractApiData()
 
-    suspend fun deleteFood(foodId: Int): MFood.Api.Res.FoodDeleteApiResponse {
-        delay(6000)
-
-        return client
+    suspend fun deleteFood(foodId: Int): MFood.Api.Res.FoodDeleteApiResponse =
+        client
             .delete(ApiUrls.UserEdible.DELETE_URL) { parameter("food-id", foodId) }
             .extractApiData()
-    }
 }

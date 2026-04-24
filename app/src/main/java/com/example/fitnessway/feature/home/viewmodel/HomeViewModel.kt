@@ -7,12 +7,14 @@ import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toNutrientPreview
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.MUser
+import com.example.fitnessway.data.model.m_26.EdibleLogAddRequest
+import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodLog
-import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogListFilter
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
+import com.example.fitnessway.data.model.m_26.PaginationResult
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
@@ -139,7 +141,10 @@ class HomeViewModel(
         val searchCriteria = managers.foodLog.searchCriteria.value ?: return
         log("searchCriteria: passed")
 
-        val originalRecentlyLoggedFoodListPager = foodRecentLogRepo.uiState.value.uiStatePager.uiState
+        val originalRecentlyLoggedListPager = when (searchCriteria.edibleType) {
+            EdibleType.FOOD -> foodRecentLogRepo.uiState.value.uiStatePager.uiState
+            EdibleType.SUPPLEMENT -> supplementRecentLogRepo.uiState.value.uiStatePager.uiState
+        }
             .toSuccessOrNull()
             ?: return
         log("originalRecentlyLoggedListPager: passed")
@@ -151,46 +156,57 @@ class HomeViewModel(
             source = searchCriteria.source
         )
 
-        val optimisticRecentlyLoggedPager = originalRecentlyLoggedFoodListPager.copy(
-            data = listOf(loggedFoodPreview) +
-                    originalRecentlyLoggedFoodListPager.data
-                        .filter { it.id != loggedFoodPreview.id }
-        )
+        fun handleRecentListOptimisticUpdate(
+            optimisticData: PaginationResult<FoodPreview>,
+            edibleType: EdibleType
+        ) {
+            when (edibleType) {
+                EdibleType.FOOD -> foodRecentLogRepo.updateState {
+                    it.copy(uiStatePager = UiStatePager(UiState.Success(optimisticData)))
+                }
 
-        foodRecentLogRepo.updateState {
-            it.copy(
-                uiStatePager = UiStatePager(UiState.Success(optimisticRecentlyLoggedPager))
-            )
+                EdibleType.SUPPLEMENT -> supplementRecentLogRepo.updateState {
+                    it.copy(uiStatePager = UiStatePager(UiState.Success(optimisticData)))
+                }
+            }
         }
 
-        val date = getKebabDate()
+        handleRecentListOptimisticUpdate(
+            optimisticData = originalRecentlyLoggedListPager.copy(
+                data = (listOf(loggedFoodPreview) + originalRecentlyLoggedListPager.data)
+                    .filter { it.id != loggedFoodPreview.id }
+            ),
+            edibleType = searchCriteria.edibleType
+        )
 
-        val request = FoodLogAddRequest(
-            foodId = selectedFood.id,
+        val kebabDate = getKebabDate()
+
+        val request = EdibleLogAddRequest(
+            edibleId = selectedFood.id,
+            edibleType = searchCriteria.edibleType.name,
             servings = foodLogFormState.servings.toDouble(),
-            category = category,
-            time = "$date ${foodLogFormState.time}",
-            source = searchCriteria.source
+            category = category.name,
+            time = "$kebabDate ${foodLogFormState.time}",
+            source = searchCriteria.source.name
         )
 
         viewModelScope.launch {
-            foodLogRepo.add(request, date).collect { state ->
+            foodLogRepo.add(request, kebabDate).collect { state ->
 
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
-                        foodLogRepo.refresh(date)
-                        nutrientRepo.refreshNutrientIntakes(date)
+                        foodLogRepo.refresh(kebabDate)
+                        nutrientRepo.refreshNutrientIntakes(kebabDate)
                     }
 
                     is UiState.Error -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
 
-                        foodRecentLogRepo.updateState {
-                            it.copy(
-                                uiStatePager = UiStatePager(UiState.Success(originalRecentlyLoggedFoodListPager))
-                            )
-                        }
+                        handleRecentListOptimisticUpdate(
+                            optimisticData = originalRecentlyLoggedListPager,
+                            edibleType = searchCriteria.edibleType
+                        )
                     }
 
                     is UiState.Loading -> {

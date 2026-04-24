@@ -1,14 +1,11 @@
 package com.example.fitnessway.data.network.ktor_client
 
 import com.example.fitnessway.data.model.MFood
-import com.example.fitnessway.data.model.m_26.EdibleType
-import com.example.fitnessway.data.model.m_26.FoodLogAddRequest
+import com.example.fitnessway.data.model.m_26.EdibleLogAddRequest
 import com.example.fitnessway.data.model.m_26.FoodLogAddResponse
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateResponse
 import com.example.fitnessway.data.model.m_26.FoodLogsResponse
-import com.example.fitnessway.data.model.m_26.PaginationParams
-import com.example.fitnessway.data.model.m_26.RecentlyLoggedEdiblesResponse
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractApiData
 import com.example.fitnessway.util.jsonBody
@@ -25,18 +22,7 @@ class EdibleLogApiClient(private val client: KtorHttpClient) {
             .get(ApiUrls.FoodLog.getListByDateUrl(date))
             .extractApiData()
 
-    suspend fun getLatestLoggedEdibles(
-        params: PaginationParams,
-        edibleType: EdibleType
-    ): RecentlyLoggedEdiblesResponse =
-        client
-            .get("${ApiUrls.FoodLog.LIST_LATEST_FOODS_URL}/${edibleType.name.lowercase()}") {
-                parameter("limit", params.limit)
-                parameter("offset", params.offset)
-            }
-            .extractApiData()
-
-    suspend fun add(req: FoodLogAddRequest): FoodLogAddResponse =
+    suspend fun add(req: EdibleLogAddRequest): FoodLogAddResponse =
         client
             .post(ApiUrls.FoodLog.ADD_URL) { jsonBody(req) }
             .extractApiData()

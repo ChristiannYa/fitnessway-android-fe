@@ -60,7 +60,8 @@ enum class ListOption {
 }
 
 enum class FoodLogListFilter {
-    RECENTLY_LOGGED,
+    RECENTLY_LOGGED_FOODS,
+    RECENTLY_LOGGED_SUPPLEMENTS,
     USER_FOODS,
     USER_SUPPLEMENTS
 }

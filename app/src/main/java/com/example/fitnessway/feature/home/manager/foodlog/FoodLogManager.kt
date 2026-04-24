@@ -21,8 +21,8 @@ class FoodLogManager : IFoodLogManager {
     private val _foodLogCategory = MutableStateFlow<FoodLogCategory?>(null)
     override val foodLogCategory: StateFlow<FoodLogCategory?> = _foodLogCategory
 
-    private val _foodList = MutableStateFlow<FoodLogListFilter>(FoodLogListFilter.RECENTLY_LOGGED)
-    override val foodList: StateFlow<FoodLogListFilter> = _foodList
+    private val _foodList = MutableStateFlow<FoodLogListFilter?>(null)
+    override val foodList: StateFlow<FoodLogListFilter?> = _foodList
 
     private val _selectedFoodLog = MutableStateFlow<FoodLog?>(null)
     override val selectedFoodLog: StateFlow<FoodLog?> = _selectedFoodLog

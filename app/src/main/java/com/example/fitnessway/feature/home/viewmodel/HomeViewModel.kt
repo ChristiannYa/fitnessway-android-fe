@@ -16,6 +16,7 @@ import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
+import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
 import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
@@ -49,6 +50,7 @@ class HomeViewModel(
     private val userSupplementRepo: IUserSupplementRepository,
     private val foodLogRepo: IEdibleLogRepository,
     private val foodRecentLogRepo: IFoodRecentLog,
+    private val supplementRecentLogRepo: ISupplementRecentLog,
     private val managers: IHomeManager,
     val appStateStore: IApplicationStateStore,
     val dateTimeFormatter: IAppDateTimeFormatter
@@ -77,6 +79,7 @@ class HomeViewModel(
     val userSupplementRepoUiState = userSupplementRepo.uiState
     val foodLogRepoUiState = foodLogRepo.uiState
     val foodRecentLogRepoUiState = foodRecentLogRepo.uiState
+    val supplementRecentLogRepoUiState = supplementRecentLogRepo.uiState
 
     private fun getKebabDate() = dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
 
@@ -114,6 +117,9 @@ class HomeViewModel(
 
     fun getRecentlyLoggedFoods() = foodRecentLogRepo.load()
     fun getMoreRecentlyLoggedFoods() = foodRecentLogRepo.loadMore()
+
+    fun getRecentlyLoggedSupplements() = supplementRecentLogRepo.load()
+    fun getMoreRecentlyLoggedSupplements() = supplementRecentLogRepo.loadMore()
 
     fun getNutrientIntakes() = nutrientRepo.loadNutrientIntakes(getKebabDate())
     fun refreshNutrientIntakes() = nutrientRepo.refreshNutrientIntakes(getKebabDate())
@@ -487,7 +493,7 @@ class HomeViewModel(
             delay(500)
             _appFoodSearchQuery.value = ""
             appFoodRepo.clearAppFoods()
-            managers.foodLog.setFoodList(FoodLogListFilter.RECENTLY_LOGGED)
+            managers.foodLog.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_FOODS)
         }
     }
 

@@ -15,8 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.plural
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
+import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.ui.shared.Loading
@@ -31,6 +34,7 @@ import com.example.fitnessway.util.extensions.OnLoadMore
 @Composable
 fun RecentlyLoggedFoods(
     uiStatePager: UiStatePager<FoodPreview>,
+    edibleType: EdibleType,
     isVisible: Boolean,
     isUserPremium: Boolean,
     onLoadMore: () -> Unit,
@@ -67,7 +71,11 @@ fun RecentlyLoggedFoods(
 
                         if (data.isEmpty()) {
                             item {
-                                Messages.NotFoundMessage("Foods that you log will appear here")
+                                Messages.NotFoundMessage(
+                                    "${
+                                        edibleType.name.toPascalSpaced().plural()
+                                    } that you log will appear here"
+                                )
                             }
                         } else {
                             items(

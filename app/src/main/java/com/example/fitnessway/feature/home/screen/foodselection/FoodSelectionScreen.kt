@@ -52,6 +52,7 @@ fun FoodSelectionScreen(
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
     val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
     val foodRecentLogRepoUiState by viewModel.foodRecentLogRepoUiState.collectAsState()
+    val supplementRecentLogRepoUiState by viewModel.supplementRecentLogRepoUiState.collectAsState()
 
     val foodList by viewModel.foodList.collectAsState()
     val appFoodSearchQuery by viewModel.appFoodSearchQuery.collectAsState()
@@ -59,7 +60,8 @@ fun FoodSelectionScreen(
     val foodLogCategory = viewModel.foodLogCategory.collectAsState().value
 
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
-    val recentlyLoggedUiStatePager = foodRecentLogRepoUiState.uiStatePager
+    val foodRecentLogRepoUiStatePager = foodRecentLogRepoUiState.uiStatePager
+    val supplementRecentLogRepoUiStatePager = supplementRecentLogRepoUiState.uiStatePager
     val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
     val userSupplementsUiStatePager = userSupplementRepoUiState.uiStatePager
 
@@ -68,19 +70,34 @@ fun FoodSelectionScreen(
         onPopBackStack()
     }
 
+    fun handleRecentlyLoggedList() {
+        when (foodLogCategory) {
+            FoodLogCategory.SUPPLEMENT -> viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_SUPPLEMENTS)
+            else -> viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_FOODS)
+        }
+    }
+
     BackHandler { onBackClick() }
 
+    LaunchedEffect(foodLogCategory) {
+        handleRecentlyLoggedList()
+    }
+
     LaunchedEffect(foodList) {
-        when (foodList) {
-            FoodLogListFilter.RECENTLY_LOGGED -> {
-                if (foodLogCategory != FoodLogCategory.SUPPLEMENT) viewModel.getRecentlyLoggedFoods()
-            }
+        foodList?.let {
+            when (it) {
+                FoodLogListFilter.RECENTLY_LOGGED_FOODS -> {
+                    if (foodLogCategory != FoodLogCategory.SUPPLEMENT) viewModel.getRecentlyLoggedFoods()
+                }
 
-            FoodLogListFilter.USER_FOODS -> {
-                if (foodLogCategory != FoodLogCategory.SUPPLEMENT) viewModel.getUserFoods()
-            }
+                FoodLogListFilter.RECENTLY_LOGGED_SUPPLEMENTS -> {
+                    if (foodLogCategory == FoodLogCategory.SUPPLEMENT) viewModel.getRecentlyLoggedSupplements()
+                }
 
-            FoodLogListFilter.USER_SUPPLEMENTS -> viewModel.getUserSupplements()
+                FoodLogListFilter.USER_FOODS -> viewModel.getUserFoods()
+
+                FoodLogListFilter.USER_SUPPLEMENTS -> viewModel.getUserSupplements()
+            }
         }
     }
 
@@ -135,33 +152,44 @@ fun FoodSelectionScreen(
                     )
                 }
 
+                val isRecentlyLoggedFoodsVisible = foodList == FoodLogListFilter.RECENTLY_LOGGED_FOODS &&
+                        foodLogCategory != FoodLogCategory.SUPPLEMENT
+
+                val isRecentlyLoggedSupplementsVisible = foodList == FoodLogListFilter.RECENTLY_LOGGED_SUPPLEMENTS &&
+                        foodLogCategory == FoodLogCategory.SUPPLEMENT
+
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(vertical = 8.dp)
                 ) {
-                    if (foodLogCategory != FoodLogCategory.SUPPLEMENT) {
-                        FilterButton("Recently Logged", foodList == FoodLogListFilter.RECENTLY_LOGGED, {
-                            viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED)
-                        })
+                    FilterButton(
+                        text = "Recently Logged",
+                        isSelected = when (foodLogCategory) {
+                            FoodLogCategory.SUPPLEMENT -> isRecentlyLoggedSupplementsVisible
+                            else -> isRecentlyLoggedFoodsVisible
+                        },
+                        onClick = ::handleRecentlyLoggedList
+                    )
 
-                        FilterButton("My Foods", foodList == FoodLogListFilter.USER_FOODS, {
-                            viewModel.setFoodList(FoodLogListFilter.USER_FOODS)
-                        })
-                    } else {
-                        FilterButton("Recently Logged", foodList == FoodLogListFilter.RECENTLY_LOGGED, {
-                            viewModel.setFoodList(FoodLogListFilter.RECENTLY_LOGGED)
-                        })
+                    when (foodLogCategory) {
+                        FoodLogCategory.SUPPLEMENT -> FilterButton(
+                            text = "My Supplements",
+                            isSelected = foodList == FoodLogListFilter.USER_SUPPLEMENTS,
+                            onClick = { viewModel.setFoodList(FoodLogListFilter.USER_SUPPLEMENTS) }
+                        )
 
-                        FilterButton("My Supplements", foodList == FoodLogListFilter.USER_SUPPLEMENTS, {
-                            viewModel.setFoodList(FoodLogListFilter.USER_SUPPLEMENTS)
-                        })
+                        else -> FilterButton(
+                            text = "My Foods",
+                            isSelected = foodList == FoodLogListFilter.USER_FOODS,
+                            onClick = { viewModel.setFoodList(FoodLogListFilter.USER_FOODS) }
+                        )
                     }
                 }
 
                 RecentlyLoggedFoods(
-                    uiStatePager = recentlyLoggedUiStatePager,
-                    isVisible = foodList == FoodLogListFilter.RECENTLY_LOGGED &&
-                            foodLogCategory != FoodLogCategory.SUPPLEMENT,
+                    uiStatePager = foodRecentLogRepoUiStatePager,
+                    edibleType = EdibleType.FOOD,
+                    isVisible = isRecentlyLoggedFoodsVisible,
                     isUserPremium = user?.isPremium ?: false,
                     onLoadMore = viewModel::getMoreRecentlyLoggedFoods,
                     onFoodClick = { id, source ->
@@ -173,6 +201,23 @@ fun FoodSelectionScreen(
                             )
                         )
                         onNavigateToSelectedFood()
+                    }
+                )
+
+                RecentlyLoggedFoods(
+                    uiStatePager = supplementRecentLogRepoUiStatePager,
+                    edibleType = EdibleType.SUPPLEMENT,
+                    isVisible = isRecentlyLoggedSupplementsVisible,
+                    isUserPremium = user?.isPremium ?: false,
+                    onLoadMore = viewModel::getMoreRecentlyLoggedSupplements,
+                    onFoodClick = { id, source ->
+                        viewModel.setSearchCriteria(
+                            FoodToLogSearchCriteria(
+                                id = id,
+                                source = source,
+                                edibleType = EdibleType.SUPPLEMENT
+                            )
+                        )
                     }
                 )
 

@@ -8,6 +8,8 @@ import com.example.fitnessway.data.repository.edible_log.EdibleLogRepositoryImpl
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.FoodRecentLogImpl
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
+import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLog
+import com.example.fitnessway.data.repository.edible_recent_log.supplement.SupplementRecentLogImpl
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.nutrient.NutrientRepositoryImpl
 import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
@@ -88,6 +90,14 @@ val repositoryModule = module {
 
     single<IFoodRecentLog> {
         FoodRecentLogImpl(
+            apiClient = get(),
+            httpClient = get(),
+            repositoryScope = get(named("repositoryScope"))
+        )
+    }
+
+    single<ISupplementRecentLog> {
+        SupplementRecentLogImpl(
             apiClient = get(),
             httpClient = get(),
             repositoryScope = get(named("repositoryScope"))

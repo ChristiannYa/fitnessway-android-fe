@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IFoodLogManager {
     val foodLogCategory: StateFlow<FoodLogCategory?>
-    val foodList: StateFlow<FoodLogListFilter>
+    val foodList: StateFlow<FoodLogListFilter?>
 
     val selectedFoodLog: StateFlow<FoodLog?>
 

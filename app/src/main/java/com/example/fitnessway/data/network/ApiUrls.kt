@@ -43,14 +43,10 @@ object ApiUrls {
     }
 
     object AppFood {
-        const val LIST_PATH = "food/app/search"
+        const val PATH = "edible/app"
+
+        const val LIST_PATH = "$PATH/search"
         const val LIST_URL = "$BASE_URL_KT$LIST_PATH"
-
-        const val BY_ID_PATH = "food/app"
-        const val BY_ID_URL = "$BASE_URL_KT$BY_ID_PATH"
-
-        fun getByIdPath(id: Int) = "$BY_ID_PATH/$id"
-        fun getByIdUrl(id: Int) = BASE_URL_KT + getByIdPath(id)
     }
 
     object PendingEdible {

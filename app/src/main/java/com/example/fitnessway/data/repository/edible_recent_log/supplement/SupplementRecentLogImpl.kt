@@ -7,7 +7,6 @@ import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.EdibleRecentLogApiClient
 import com.example.fitnessway.data.repository._state.loadMore
 import com.example.fitnessway.util.UiStatePager
-import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,16 +49,8 @@ class SupplementRecentLogImpl(
     }
 
     override fun load() {
-        fun log(log: String) = logcat("[SupplementRecentLogImpl, load] $log")
+        if (!_uiState.value.uiStatePager.uiState.hasState) refresh()
 
-        log("called")
-
-        if (!_uiState.value.uiStatePager.uiState.hasState) {
-            log("has not state -> refreshing")
-            refresh()
-        } else {
-            log("has state -> early return")
-        }
     }
 
     override fun loadMore() = _uiState.value.loadMore(_uiState, ::fetch, repositoryScope)

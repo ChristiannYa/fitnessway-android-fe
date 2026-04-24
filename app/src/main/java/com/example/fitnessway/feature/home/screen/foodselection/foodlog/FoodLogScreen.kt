@@ -41,6 +41,7 @@ import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
+import com.example.fitnessway.util.logcat
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -76,11 +77,14 @@ fun FoodLogScreen(
         onTimeOut = viewModel::resetFoodLogAddState
     )
 
+    fun log(log: String) = logcat("[FoodLogScreen] $log")
+
     fun onBackClick() {
         viewModel.resetFoodLogAddState()
-        if (foodLogAddState.hasState) viewModel.resetFoodLogAddState()
         onPopBackStack()
     }
+
+    log("search criteria: $searchCriteria")
 
     BackHandler { onBackClick() }
 

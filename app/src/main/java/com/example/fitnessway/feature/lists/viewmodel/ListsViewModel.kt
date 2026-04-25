@@ -23,11 +23,11 @@ import com.example.fitnessway.data.model.m_26.OptimisticUpdate
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
+import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupplementRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
-import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager

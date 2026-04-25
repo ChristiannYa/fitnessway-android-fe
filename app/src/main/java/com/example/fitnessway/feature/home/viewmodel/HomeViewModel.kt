@@ -17,11 +17,11 @@ import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.model.m_26.PaginationResult
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
+import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupplementRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
 import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
-import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.IDateManager

@@ -10,7 +10,6 @@ import com.example.fitnessway.data.network.ktor_client.NutrientApiClient
 import com.example.fitnessway.data.network.ktor_client.PendingFoodApiClient
 import com.example.fitnessway.data.network.ktor_client.UserApiClient
 import com.example.fitnessway.data.network.ktor_client.UserEdibleApiClient
-import com.example.fitnessway.data.network.ktor_client.UserSupplementApiClient
 import org.koin.dsl.module
 import io.ktor.client.HttpClient as KtorHttpClient
 
@@ -28,7 +27,6 @@ val networkModule = module {
     single { AppFoodApiClient(client = get()) }
     single { PendingFoodApiClient(client = get()) }
     single { UserEdibleApiClient(client = get()) }
-    single { UserSupplementApiClient(client = get()) }
     single { EdibleLogApiClient(client = get()) }
     single { EdibleRecentLogApiClient(client = get()) }
 }

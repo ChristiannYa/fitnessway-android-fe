@@ -15,7 +15,6 @@ class UserSupplementRepositoryImpl(
         edibleType = EdibleType.SUPPLEMENT,
         httpClient = httpClient,
         apiClient = apiClient,
-        repositoryScope = repositoryScope
-    ) {
-    override val initialState = UserSupplementUiState()
-}
+        repositoryScope = repositoryScope,
+        initialState = UserSupplementUiState()
+    )

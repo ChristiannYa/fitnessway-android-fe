@@ -15,7 +15,6 @@ class UserFoodRepositoryImpl(
         edibleType = EdibleType.FOOD,
         httpClient = httpClient,
         apiClient = apiClient,
-        repositoryScope = repositoryScope
-    ) {
-    override val initialState = UserFoodRepositoryUiState()
-}
+        repositoryScope = repositoryScope,
+        initialState = UserFoodRepositoryUiState()
+    )

@@ -33,19 +33,19 @@ import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun UserFoodDetailsScreen(
+fun UserEdibleDetailsScreen(
     viewModel: ListsViewModel = koinViewModel(),
     onBackClick: () -> Unit,
     onNavigateToEditionScreen: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
-    val selectedFood by viewModel.editionManager.selectedFood.collectAsState()
+    val selectedFood by viewModel.editionManager.selectedEdible.collectAsState()
 
     val user = userFlow
     val selectedFoodCopy = selectedFood
 
-    val foodDeleteState = uiState.foodDeleteState
+    val foodDeleteState = uiState.edibleDeleteState
 
     val foodDeleteErrorMessage = handleTempApiErrMsg(
         uiState = foodDeleteState,
@@ -143,7 +143,7 @@ fun UserFoodDetailsScreen(
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
                             moreOptionsState.hide()
-                            viewModel.editionManager.initializeFoodForm(selectedFoodCopy)
+                            viewModel.editionManager.initializeEdibleForm(selectedFoodCopy)
                             onNavigateToEditionScreen()
                         },
                         backgroundColor = MaterialTheme.colorScheme.primary
@@ -169,7 +169,7 @@ fun UserFoodDetailsScreen(
                         view.playSoundEffect(SoundEffectConstants.CLICK)
                         isConfirmDeletionPopupVisible = false
                         moreOptionsState.hide()
-                        viewModel.deleteFood()
+                        viewModel.deleteEdible()
                     },
                     modifier = Modifier.align(Alignment.Center)
                 )

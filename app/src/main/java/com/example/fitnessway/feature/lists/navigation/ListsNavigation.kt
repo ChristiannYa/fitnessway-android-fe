@@ -11,7 +11,7 @@ import com.example.fitnessway.feature.lists.screen.create.CreateFoodFormScreen
 import com.example.fitnessway.feature.lists.screen.main.ListsScreen
 import com.example.fitnessway.feature.lists.screen.pending_details.PendingFoodDetailsScreen
 import com.example.fitnessway.feature.lists.screen.request.FoodRequestScreen
-import com.example.fitnessway.feature.lists.screen.user_details.UserFoodDetailsScreen
+import com.example.fitnessway.feature.lists.screen.user_details.UserEdibleDetailsScreen
 import com.example.fitnessway.feature.lists.screen.user_details.edition.FoodEditionScreen
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.navigation.ListsGraph
@@ -73,7 +73,7 @@ fun NavGraphBuilder.listsNavigationGraph(navController: NavController) {
         }
 
         composable<UserFoodDetailsDest> {
-            UserFoodDetailsScreen(
+            UserEdibleDetailsScreen(
                 viewModel = getViewModel(it),
                 onBackClick = navController::popBackStack,
                 onNavigateToEditionScreen = { navController.navigate(FoodEditionDest) }

@@ -1,7 +1,6 @@
 package com.example.fitnessway.data.network.ktor_client
 
 import com.example.fitnessway.data.model.MFood
-import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.UserEdiblesGetResponse
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractApiData
@@ -14,34 +13,37 @@ import io.ktor.client.request.put
 import io.ktor.client.HttpClient as KtorHttpClient
 
 
-class UserFoodApiClient(private val client: KtorHttpClient) {
-    suspend fun getFoods(
+class UserEdibleApiClient(private val client: KtorHttpClient) {
+    suspend fun getList(
         limit: Int,
         offset: Long,
+        edibleType: String
     ): UserEdiblesGetResponse =
         client
-            .get("${ApiUrls.UserEdible.LIST_URL_KT}/${EdibleType.FOOD.name.lowercase()}") {
+            .get("${ApiUrls.UserEdible.LIST_URL_KT}/$edibleType") {
                 parameter("limit", limit)
                 parameter("offset", offset)
             }
             .extractApiData()
 
-    suspend fun addFood(
+    suspend fun add(
         req: MFood.Api.Req.FoodAddRequest
     ): MFood.Api.Res.FoodAddApiResponse =
         client
             .post(ApiUrls.UserEdible.ADD_URL) { jsonBody(req) }
             .extractApiData()
 
-    suspend fun updateFood(
+    suspend fun update(
         req: MFood.Api.Req.FoodUpdateRequest
     ): MFood.Api.Res.FoodUpdateApiResponse =
         client
             .put(ApiUrls.UserEdible.UPDATE_URL) { jsonBody(req) }
             .extractApiData()
 
-    suspend fun deleteFood(foodId: Int): MFood.Api.Res.FoodDeleteApiResponse =
+    suspend fun delete(foodId: Int): MFood.Api.Res.FoodDeleteApiResponse =
         client
-            .delete(ApiUrls.UserEdible.DELETE_URL) { parameter("food-id", foodId) }
+            .delete(ApiUrls.UserEdible.DELETE_URL) {
+                parameter("food-id", foodId)
+            }
             .extractApiData()
 }

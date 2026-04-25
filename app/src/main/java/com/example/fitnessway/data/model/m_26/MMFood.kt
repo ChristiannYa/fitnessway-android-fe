@@ -90,8 +90,8 @@ data class FoodLogsCategorized(
 
 @Serializable
 data class FoodBase(
-    val name: String,
-    val brand: String? = null,
+    val name: kotlin.String,
+    val brand: kotlin.String? = null,
     val amountPerServing: Double,
     val servingUnit: ServingUnit
 )
@@ -128,7 +128,7 @@ data class PendingFood(
     val reviewedBy: UUID? = null,
     val reviewedAt: Instant? = null,
     val createdAt: Instant,
-    val rejectionReason: String? = null,
+    val rejectionReason: kotlin.String? = null,
 )
 
 @Serializable
@@ -148,11 +148,11 @@ data class RecentlyLoggedEdiblesResponse(
 @Serializable
 data class EdibleLogAddRequest(
     val edibleId: Int,
-    val edibleType: String,
+    val edibleType: kotlin.String,
     val servings: Double,
-    val category: String,
-    val time: String,
-    val source: String
+    val category: kotlin.String,
+    val time: kotlin.String,
+    val source: kotlin.String
 )
 
 @Serializable

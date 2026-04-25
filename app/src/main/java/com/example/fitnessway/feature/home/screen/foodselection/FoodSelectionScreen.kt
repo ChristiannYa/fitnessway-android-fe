@@ -257,7 +257,7 @@ fun FoodSelectionScreen(
 
 @Composable
 private fun FilterButton(
-    text: String,
+    text: kotlin.String,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier

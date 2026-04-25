@@ -16,11 +16,11 @@ import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.model.m_26.PaginationResult
 import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
+import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
 import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
-import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
 import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.manager.IHomeManager
@@ -72,7 +72,7 @@ class HomeViewModel(
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
     private val _appFoodSearchQuery = MutableStateFlow("")
-    val appFoodSearchQuery: StateFlow<String> = _appFoodSearchQuery
+    val appFoodSearchQuery: StateFlow<kotlin.String> = _appFoodSearchQuery
 
     val appFoodRepoUiState = appFoodRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
@@ -86,7 +86,7 @@ class HomeViewModel(
 
     private var debounceJob: Job? = null
 
-    fun getAppFoods(query: String) {
+    fun getAppFoods(query: kotlin.String) {
         _appFoodSearchQuery.value = query
 
         debounceJob?.cancel()
@@ -105,10 +105,10 @@ class HomeViewModel(
     }
 
     fun getAppFoodById(id: Int) = appFoodRepo.findAppFoodById(id)
-    fun getMoreAppFoods(query: String) = appFoodRepo.loadMoreAppFoods(query)
+    fun getMoreAppFoods(query: kotlin.String) = appFoodRepo.loadMoreAppFoods(query)
 
-    fun getUserFoods() = userFoodRepo.loadFoods()
-    fun getMoreUserFoods() = userFoodRepo.loadMoreFoods()
+    fun getUserFoods() = userFoodRepo.load()
+    fun getMoreUserFoods() = userFoodRepo.loadMore()
 
     fun getUserSupplements() = userSupplementRepo.load()
     fun getMoreUserSupplements() = userSupplementRepo.loadMore()
@@ -365,7 +365,7 @@ class HomeViewModel(
         }
     }
 
-    private val _foodLogFailedDeletions = mutableMapOf<String, MutableSet<FoodLog>>()
+    private val _foodLogFailedDeletions = mutableMapOf<kotlin.String, MutableSet<FoodLog>>()
 
     fun deleteFoodLog() {
         val selectedFoodLogToRemove = managers.foodLog.selectedFoodLogToRemove.value ?: return

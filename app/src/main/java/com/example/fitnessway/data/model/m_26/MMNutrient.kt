@@ -41,16 +41,16 @@ data class NutrientPreview(
 @Serializable
 data class NutrientBase(
     val id: Int,
-    val name: String,
+    val name: kotlin.String,
     val unit: ServingUnit,
     val type: NutrientType,
-    val symbol: String? = null,
+    val symbol: kotlin.String? = null,
     val isPremium: Boolean
 )
 
 @Serializable
 data class NutrientPreferences(
-    val hexColor: String? = null,
+    val hexColor: kotlin.String? = null,
     val goal: Double? = null
 )
 

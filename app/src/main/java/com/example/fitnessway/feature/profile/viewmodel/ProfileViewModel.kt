@@ -10,9 +10,9 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.repository.auth.IAuthRepository
+import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
-import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
@@ -110,7 +110,7 @@ class ProfileViewModel(
                         }
 
                         nutrientRepo.clearNutrientIntakesUiCache()
-                        foodRepo.refreshFoods()
+                        foodRepo.refresh()
                         foodLogRepo.clearMap()
                     }
 
@@ -169,7 +169,7 @@ class ProfileViewModel(
                         }
 
                         nutrientRepo.clearNutrientIntakesUiCache()
-                        foodRepo.refreshFoods()
+                        foodRepo.refresh()
                         foodLogRepo.clearMap()
                     }
 
@@ -193,7 +193,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             authRepo.logout().collect { state ->
                 nutrientRepo.clearRepository()
-                foodRepo.clearRepository()
+                foodRepo.clear()
 
                 _uiState.update { it.copy(logoutState = state) }
             }

@@ -22,11 +22,11 @@ import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.data.model.m_26.OptimisticUpdate
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.UserEdible
+import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
-import com.example.fitnessway.data.repository.user_food.IUserFoodRepository
 import com.example.fitnessway.data.repository.user_supplement.IUserSupplementRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
@@ -69,8 +69,8 @@ class ListsViewModel(
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
 
-    private val _selectedList = MutableStateFlow<ListOption>(ListOption.Food)
-    val selectedList: StateFlow<ListOption> = _selectedList
+    private val _listOption = MutableStateFlow<ListOption>(ListOption.Food)
+    val listOption: StateFlow<ListOption> = _listOption
 
     val pendingFoodRepoUiState = pendingFoodRepo.uiState
     val userFoodRepoUiState = userFoodRepo.uiState
@@ -88,8 +88,8 @@ class ListsViewModel(
 
     fun getNutrients() = nutrientRepo.loadNutrients()
 
-    fun getFoods() = userFoodRepo.loadFoods()
-    fun getMoreFoods() = userFoodRepo.loadMoreFoods()
+    fun getFoods() = userFoodRepo.load()
+    fun getMoreFoods() = userFoodRepo.loadMore()
 
     fun getSupplements() = userSupplementRepo.load()
     fun getMoreSupplements() = userSupplementRepo.loadMore()
@@ -119,7 +119,7 @@ class ListsViewModel(
         val request = formState.toUserFoodRequest(nutrients)
 
         viewModelScope.launch {
-            userFoodRepo.addFood(request).collect { state ->
+            userFoodRepo.add(request).collect { state ->
                 _uiState.update { it.copy(foodAddState = state) }
             }
         }
@@ -128,9 +128,9 @@ class ListsViewModel(
     private var _originalFoodBeforeUpdate: UserEdible? = null
 
     fun updateFood() {
-        val formState = managers.edition.foodEditionFormState.value ?: return
+        val formState = managers.edition.edibleEditionFormState.value ?: return
         val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
-        val selectedFoodId = managers.edition.selectedFood.value?.id ?: return
+        val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
 
         // Get current data to update optimistically
         val originalFoodsPager = userFoodRepo.uiState.value.uiStatePager.uiState
@@ -204,13 +204,13 @@ class ListsViewModel(
         }
 
         // Update UI immediately
-        managers.edition.setSelectedFood(optimisticFood)
-        managers.edition.initializeFoodForm(optimisticFood)
+        managers.edition.setSelectedEdible(optimisticFood)
+        managers.edition.initializeEdibleForm(optimisticFood)
         resetFoodEditionStates()
 
         _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
 
-        userFoodRepo.updateState {
+        userFoodRepo.update {
             it.copy(
                 uiStatePager = UiStatePager(
                     uiState = UiState.Success(
@@ -240,7 +240,7 @@ class ListsViewModel(
 
         // Send the api request
         viewModelScope.launch {
-            userFoodRepo.updateFood(request).collect { state ->
+            userFoodRepo.update(request).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
@@ -267,7 +267,7 @@ class ListsViewModel(
                                 if (it.id == revertedFood.id) revertedFood else it
                             }
 
-                            userFoodRepo.updateState {
+                            userFoodRepo.update {
                                 it.copy(
                                     uiStatePager = UiStatePager(
                                         uiState = UiState.Success(
@@ -279,8 +279,8 @@ class ListsViewModel(
                                 )
                             }
 
-                            managers.edition.initializeFoodForm(revertedFood)
-                            managers.edition.setSelectedFood(revertedFood)
+                            managers.edition.initializeEdibleForm(revertedFood)
+                            managers.edition.setSelectedEdible(revertedFood)
                         }
 
                         if (foodRecentLogRepo.uiState.value.uiStatePager.uiState.hasState) {
@@ -294,108 +294,117 @@ class ListsViewModel(
         }
     }
 
-    private val _foodFailedDeletions = mutableSetOf<Pair<Int, UserEdible>>()
-    private var _foodsBeforeDeletion: List<UserEdible> = emptyList()
+    private val _edibleFailedDeletions = mutableSetOf<Pair<Int, UserEdible>>()
+    private var _ediblesBeforeDeletion: List<UserEdible> = emptyList()
 
-    fun deleteFood() {
-        val foodToRemove = managers.edition.selectedFood.value ?: return
+    fun deleteEdible() {
+        val edibleToRemove = managers.edition.selectedEdible.value ?: return
 
-        val originalPager = userFoodRepo.uiState.value.uiStatePager
+        val listOption = listOption.value
+
+        val originalPager = when (listOption) {
+            ListOption.PendingFood -> userSupplementRepo.uiState.value.uiStatePager
+            else -> userFoodRepo.uiState.value.uiStatePager
+        }
             .toPaginationOrNull()
             ?: return
 
         // Store current foods (not already in list) before a successful dismissal
-        _foodsBeforeDeletion = _foodsBeforeDeletion + run {
+        _ediblesBeforeDeletion = _ediblesBeforeDeletion + run {
             originalPager.data.filter {
-                it.id !in _foodsBeforeDeletion.map { f -> f.id }
+                it.id !in _ediblesBeforeDeletion.map { f -> f.id }
             }
         }
 
         // Find the current food from the current list
         val current = originalPager.data
-            .find { it.id == foodToRemove.id }
+            .find { it.id == edibleToRemove.id }
             ?: return
 
         // Store the original index/position of the food removed
-        val originalIndex = _foodsBeforeDeletion
-            .indexOfFirst { it.id == foodToRemove.id }
+        val originalIndex = _ediblesBeforeDeletion
+            .indexOfFirst { it.id == edibleToRemove.id }
             .takeIf { it != -1 }
             ?: return
 
-        // Remove the food removed from the failed deletion list.
+        // Remove the food from the failed deletion list.
         // This resets a previously failed dismissal so that the user can try again
-        _foodFailedDeletions.removeIf { it.second.id == foodToRemove.id }
+        _edibleFailedDeletions.removeIf { it.second.id == edibleToRemove.id }
 
         // Update states optimistically
-        _uiState.update { it.copy(foodDeleteState = UiState.Success(Unit)) }
+        _uiState.update { it.copy(edibleDeleteState = UiState.Success(Unit)) }
 
-        userFoodRepo.updateState {
-            it.copy(
-                uiStatePager = UiStatePager(
-                    uiState = UiState.Success(
-                        // Optimistic pagination when REMOVING the food
-                        originalPager
-                            .toPaginationData()
-                            .calc(OptimisticUpdate.REMOVE, originalPager.getServerOffset())
-                            .toResult(originalPager.data.filter { f -> f.id != foodToRemove.id })
-                    ),
-                    isLoadingMore = false
-                )
-            )
+        val optimisticPager = UiStatePager(
+            uiState = UiState.Success(
+                originalPager
+                    .toPaginationData()
+                    .calc(OptimisticUpdate.REMOVE, originalPager.getServerOffset())
+                    .toResult(originalPager.data.filter { f -> f.id != edibleToRemove.id })
+            ),
+            isLoadingMore = false
+        )
+
+        when (listOption) {
+            ListOption.Supplement -> userSupplementRepo.update { it.copyWithPager(optimisticPager) }
+            else -> userFoodRepo.update { it.copyWithPager(optimisticPager) }
         }
 
         viewModelScope.launch {
-            userFoodRepo.deleteFood(foodToRemove.id).collect { state ->
+            userFoodRepo.delete(edibleToRemove.id).collect { state ->
                 when (state) {
                     is UiState.Success -> {
-                        _uiState.update { it.copy(foodDeleteState = UiState.Success(Unit)) }
+                        _uiState.update { it.copy(edibleDeleteState = UiState.Success(Unit)) }
 
                         // Reset foods before successful deletion if all deletions succeeded
-                        if (_foodFailedDeletions.isEmpty()) {
-                            _foodsBeforeDeletion = emptyList()
+                        if (_edibleFailedDeletions.isEmpty()) {
+                            _ediblesBeforeDeletion = emptyList()
                         }
                     }
 
                     is UiState.Error -> {
-                        _uiState.update { it.copy(foodDeleteState = state) }
+                        _uiState.update { it.copy(edibleDeleteState = state) }
 
-                        _foodFailedDeletions.add(originalIndex to current)
+                        _edibleFailedDeletions.add(originalIndex to current)
 
-                        val currentPager = userFoodRepo.uiState.value.uiStatePager.uiState
-                            .toSuccessOrNull()
+                        val currentPager = when (listOption) {
+                            ListOption.PendingFood -> userSupplementRepo.uiState.value.uiStatePager
+                            else -> userFoodRepo.uiState.value.uiStatePager
+                        }
+                            .toPaginationOrNull()
                             ?: return@collect
 
-                        val revertedPagination = currentPager
-                            .toPaginationData()
-                            .calc(OptimisticUpdate.ROLLBACK, currentPager.getServerOffset())
-                            .toResult(
-                                // Combine the current foods (modified after optimistic update)
-                                // with the foods in the queue to rollback
-                                (currentPager.data + _foodFailedDeletions.map { it.second })
-                                    .distinctBy { it.id }
-                                    .sortedBy { food ->
-                                        // Original position from failed deletion being rolled back
-                                        _foodFailedDeletions
-                                            .find { it.second.id == food.id }
-                                            ?.first
-                                            ?: run {
-                                                // Original position from the current list of a non-dismissed
-                                                // food
-                                                _foodsBeforeDeletion
-                                                    .indexOfFirst { it.id == food.id }
-                                                    .takeIf { it != -1 }
-                                                    ?: Int.MAX_VALUE // Safe fallback
+                        val revertedPager = UiStatePager(
+                            uiState = UiState.Success(
+                                currentPager
+                                    .toPaginationData()
+                                    .calc(OptimisticUpdate.ROLLBACK, currentPager.getServerOffset())
+                                    .toResult(
+                                        // Combine the current foods (modified after optimistic update)
+                                        // with the foods in the queue to rollback
+                                        (currentPager.data + _edibleFailedDeletions.map { it.second })
+                                            .distinctBy { it.id }
+                                            .sortedBy { food ->
+                                                // Original position from failed deletion being rolled back
+                                                _edibleFailedDeletions
+                                                    .find { it.second.id == food.id }
+                                                    ?.first
+                                                    ?: run {
+                                                        // Original position from the current list of a non-dismissed
+                                                        // food
+                                                        _ediblesBeforeDeletion
+                                                            .indexOfFirst { it.id == food.id }
+                                                            .takeIf { it != -1 }
+                                                            ?: Int.MAX_VALUE // Safe fallback
+                                                    }
                                             }
-                                    }
-                            )
+                                    )
+                            ),
+                            isLoadingMore = false
+                        )
 
-                        userFoodRepo.updateState {
-                            it.copy(
-                                uiStatePager = UiStatePager(
-                                    uiState = UiState.Success(revertedPagination),
-                                    isLoadingMore = false
-                                )
-                            )
+                        when (listOption) {
+                            ListOption.Supplement -> userSupplementRepo.update { it.copyWithPager(revertedPager) }
+                            else -> userFoodRepo.update { it.copyWithPager(revertedPager) }
                         }
                     }
 
@@ -532,7 +541,7 @@ class ListsViewModel(
     }
 
     fun setSelectedList(list: ListOption) {
-        _selectedList.value = list
+        _listOption.value = list
     }
 
     fun resetFoodRequestState() {
@@ -548,7 +557,7 @@ class ListsViewModel(
     }
 
     fun resetFoodDeleteState() {
-        _uiState.update { it.copy(foodDeleteState = UiState.Idle) }
+        _uiState.update { it.copy(edibleDeleteState = UiState.Idle) }
     }
 
     fun resetReviewDismissState() {

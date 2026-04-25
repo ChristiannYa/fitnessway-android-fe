@@ -1,14 +1,9 @@
 package com.example.fitnessway.data.repository.user_supplement
 
-import kotlinx.coroutines.flow.StateFlow
+import com.example.fitnessway.data.repository.IRepository
 
-interface IUserSupplementRepository {
-    val uiState: StateFlow<UserSupplementRepositoryUiState>
-
+interface IUserSupplementRepository : IRepository<UserSupplementRepositoryUiState> {
     fun refresh()
     fun load()
     fun loadMore()
-
-    fun updateState(update: (UserSupplementRepositoryUiState) -> UserSupplementRepositoryUiState)
-    fun clear()
 }

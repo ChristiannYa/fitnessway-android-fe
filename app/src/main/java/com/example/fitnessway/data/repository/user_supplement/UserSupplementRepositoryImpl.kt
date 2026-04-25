@@ -49,7 +49,7 @@ class UserSupplementRepositoryImpl(
 
     override fun loadMore() = _uiState.value.loadMore(_uiState, ::fetch, repositoryScope)
 
-    override fun updateState(
+    override fun update(
         update: (UserSupplementRepositoryUiState) -> UserSupplementRepositoryUiState
     ) = _uiState.update(update)
 

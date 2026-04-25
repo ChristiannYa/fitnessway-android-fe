@@ -10,15 +10,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
 interface IEditionManager : INutrientDvControls {
-    val selectedFood: StateFlow<UserEdible?>
-    val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?>
+    val selectedEdible: StateFlow<UserEdible?>
+    val edibleEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?>
     val deletedNutrients: StateFlow<List<Int>>
     val addedNutrients: StateFlow<List<MNutrient.Model.Nutrient>>
-    val isFoodEditionFormValid: StateFlow<Boolean>
+    val isEdibleEditionFormValid: StateFlow<Boolean>
 
-    fun setSelectedFood(food: UserEdible)
-    fun initializeFoodForm(food: UserEdible)
-    fun updateFoodEditionFormField(fieldName: FormFieldName.IFoodEdition, input: String)
+    fun setSelectedEdible(food: UserEdible)
+    fun initializeEdibleForm(food: UserEdible)
+    fun updateEdibleEditionFormField(fieldName: FormFieldName.IFoodEdition, input: String)
     fun addNutrientToForm(nutrient: MNutrient.Model.Nutrient)
     fun filterOutNutrientFromForm(nutrient: MNutrient.Model.Nutrient)
     fun resetDeletedNutrients()

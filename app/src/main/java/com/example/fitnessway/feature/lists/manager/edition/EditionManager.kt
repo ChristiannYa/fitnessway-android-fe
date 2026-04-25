@@ -27,12 +27,12 @@ import kotlinx.coroutines.flow.update
 class EditionManager : IEditionManager, NutrientDvControls() {
     private lateinit var scope: CoroutineScope
 
-    private val _selectedFood = MutableStateFlow<UserEdible?>(null)
-    override val selectedFood: StateFlow<UserEdible?> = _selectedFood
+    private val _selectedEdible = MutableStateFlow<UserEdible?>(null)
+    override val selectedEdible: StateFlow<UserEdible?> = _selectedEdible
 
-    private val _foodEditionFormState = MutableStateFlow<FormState<FormStates.FoodEdition>?>(null)
-    override val foodEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?> =
-        _foodEditionFormState
+    private val _edibleEditionFormState = MutableStateFlow<FormState<FormStates.FoodEdition>?>(null)
+    override val edibleEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?> =
+        _edibleEditionFormState
 
     private val _deletedNutrients = MutableStateFlow<List<Int>>(emptyList())
     override val deletedNutrients: StateFlow<List<Int>> = _deletedNutrients
@@ -41,7 +41,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
     override val addedNutrients: StateFlow<List<MNutrient.Model.Nutrient>> = _addedNutrients
 
     private val _editFormNameError: String?
-        get() = _foodEditionFormState.value?.let { formState ->
+        get() = _edibleEditionFormState.value?.let { formState ->
             formState.data.name.let { value ->
                 if (value.isEmpty()) null else {
                     val result = NameInlineRules(value.trim()) checkWith nameRules
@@ -51,7 +51,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         }
 
     private val _editFormBrandError: String?
-        get() = _foodEditionFormState.value?.let { formState ->
+        get() = _edibleEditionFormState.value?.let { formState ->
             formState.data.brand.let { value ->
                 if (value.isEmpty()) null else {
                     val result = BrandInlineRules(value.trim()) checkWith userBrandRules
@@ -61,7 +61,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         }
 
     private val _editFormAmountPerServingError: String?
-        get() = _foodEditionFormState.value?.let { formState ->
+        get() = _edibleEditionFormState.value?.let { formState ->
             formState.data.amountPerServing.let { value ->
                 validateDoubleAsString(
                     doubleAsString = value,
@@ -71,7 +71,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         }
 
     private val _editFormServingUnitError: String?
-        get() = _foodEditionFormState.value?.let { formState ->
+        get() = _edibleEditionFormState.value?.let { formState ->
             formState.data.servingUnit.let { value ->
                 if (value.isEmpty()) null else {
                     if (value.isValidEnum<ServingUnit>()) null else {
@@ -83,9 +83,9 @@ class EditionManager : IEditionManager, NutrientDvControls() {
 
     private val _originalFormState = MutableStateFlow<FormStates.FoodEdition?>(null)
 
-    override val isFoodEditionFormValid: StateFlow<Boolean> by lazy {
+    override val isEdibleEditionFormValid: StateFlow<Boolean> by lazy {
         combine(
-            _foodEditionFormState,
+            _edibleEditionFormState,
             _originalFormState,
             nutrientDvControls.nutrientDvMap
         ) { editionFormState, originalFormState, nutrientDvMap ->
@@ -129,7 +129,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
                     amount != null && amount > 0.0
                 }
 
-                val basicNutrients = _selectedFood.value?.information?.nutrients?.basic ?: return@combine false
+                val basicNutrients = _selectedEdible.value?.information?.nutrients?.basic ?: return@combine false
 
                 val hasBasicNutrient = basicNutrients.any {
                     it.nutrientData.base.id in formNutrients.keys
@@ -146,15 +146,15 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         )
     }
 
-    override fun setSelectedFood(food: UserEdible) {
-        _selectedFood.value = food
+    override fun setSelectedEdible(food: UserEdible) {
+        _selectedEdible.value = food
     }
 
-    override fun updateFoodEditionFormField(
+    override fun updateEdibleEditionFormField(
         fieldName: FormFieldName.IFoodEdition,
         input: String
     ) {
-        _foodEditionFormState.value?.let { currentState ->
+        _edibleEditionFormState.value?.let { currentState ->
             val updatedData = when (fieldName) {
                 is FormFieldName.FoodEdition.DetailField -> {
                     when (fieldName) {
@@ -184,11 +184,11 @@ class EditionManager : IEditionManager, NutrientDvControls() {
                 }
             }
 
-            _foodEditionFormState.value = currentState.copy(data = updatedData)
+            _edibleEditionFormState.value = currentState.copy(data = updatedData)
         }
     }
 
-    override fun initializeFoodForm(food: UserEdible) {
+    override fun initializeEdibleForm(food: UserEdible) {
         val foodNutrientsMap = food.information.nutrients
             .toList()
             .associate { it.nutrientData.base.id to doubleFormatter(it.amount, 4) }
@@ -202,19 +202,19 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         )
 
         _originalFormState.value = data
-        _foodEditionFormState.value = FormState(data)
+        _edibleEditionFormState.value = FormState(data)
     }
 
     override fun addNutrientToForm(nutrient: MNutrient.Model.Nutrient) {
         removeNutrientIdFromDeletedList(nutrient.id)
         addAddedNutrient(nutrient)
 
-        _foodEditionFormState.value?.let { formState ->
+        _edibleEditionFormState.value?.let { formState ->
             val updatedNutrients = formState.data.nutrients
                 .toMutableMap()
                 .apply { put(nutrient.id, "0") }
 
-            _foodEditionFormState.value = formState.copy(
+            _edibleEditionFormState.value = formState.copy(
                 data = formState.data.copy(nutrients = updatedNutrients)
             )
         }
@@ -224,12 +224,12 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         addNutrientIdToDeletedList(nutrient.id)
         removeAddedNutrient(nutrient)
 
-        _foodEditionFormState.value?.let { formState ->
+        _edibleEditionFormState.value?.let { formState ->
             val updatedNutrients = formState.data.nutrients.toMutableMap().apply {
                 remove(nutrient.id)
             }
 
-            _foodEditionFormState.value = formState.copy(
+            _edibleEditionFormState.value = formState.copy(
                 data = formState.data.copy(nutrients = updatedNutrients)
             )
         }

@@ -46,7 +46,7 @@ fun ListsScreen(
     onNavigateToFoodCreationForm: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val selectedList by viewModel.selectedList.collectAsState()
+    val selectedList by viewModel.listOption.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val pendingFoodRepoUiState by viewModel.pendingFoodRepoUiState.collectAsState()
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
@@ -145,7 +145,7 @@ fun ListsScreen(
                 isUserPremium = user?.isPremium ?: false,
                 onLoadMore = viewModel::getMoreFoods,
                 onFoodClick = { food ->
-                    viewModel.editionManager.setSelectedFood(food)
+                    viewModel.editionManager.setSelectedEdible(food)
                     onNavigateToUserFoodDetails()
                 }
             )
@@ -156,7 +156,7 @@ fun ListsScreen(
                 isUserPremium = user?.isPremium ?: false,
                 onLoadMore = viewModel::getMoreSupplements,
                 onFoodClick = { food ->
-                    viewModel.editionManager.setSelectedFood(food)
+                    viewModel.editionManager.setSelectedEdible(food)
                     onNavigateToUserFoodDetails()
                 }
             )

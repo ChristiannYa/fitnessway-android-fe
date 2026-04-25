@@ -64,11 +64,11 @@ fun FoodEditionScreen(
     val uiState by viewModel.uiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
-    val foodEditionFormState by viewModel.editionManager.foodEditionFormState.collectAsState()
-    val selectedFood by viewModel.editionManager.selectedFood.collectAsState()
+    val foodEditionFormState by viewModel.editionManager.edibleEditionFormState.collectAsState()
+    val selectedFood by viewModel.editionManager.selectedEdible.collectAsState()
     val addedNutrients by viewModel.editionManager.addedNutrients.collectAsState()
     val deletedNutrients by viewModel.editionManager.deletedNutrients.collectAsState()
-    val isFoodEditionFormValid by viewModel.editionManager.isFoodEditionFormValid.collectAsState()
+    val isFoodEditionFormValid by viewModel.editionManager.isEdibleEditionFormValid.collectAsState()
 
     val user = userFlow
     val nutrientUiState = nutrientRepoUiState.nutrientsUiState
@@ -117,7 +117,7 @@ fun FoodEditionScreen(
                 focusManager = focusManager,
                 isFormSubmitting = foodUpdateState is UiState.Loading,
                 onFieldUpdate = { fieldName, value ->
-                    viewModel.editionManager.updateFoodEditionFormField(fieldName, value)
+                    viewModel.editionManager.updateEdibleEditionFormField(fieldName, value)
                 }
             )
 

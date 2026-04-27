@@ -110,10 +110,10 @@ fun FoodLogDetailsScreen(
                             val servings = formState.data.servings.toDoubleOrNull() ?: 0.0
 
                             val nutrients = remember(
-                                foodLog.foodInformation.nutrients,
+                                foodLog.edibleInformation.nutrients,
                                 servings
                             ) {
-                                foodLog.foodInformation.nutrients
+                                foodLog.edibleInformation.nutrients
                                     .calcFoodLogNutrients(
                                         currentServings = foodLog.servings,
                                         newServings = servings
@@ -127,14 +127,14 @@ fun FoodLogDetailsScreen(
 
                             FoodLogDetails(
                                 foodLog = foodLog.copy(
-                                    foodInformation = foodLog.foodInformation.copy(
+                                    edibleInformation = foodLog.edibleInformation.copy(
                                         nutrients = nutrients
                                     )
                                 ),
                                 isBlurredOverlayVisible = formState.isEditing,
                                 servingField = fieldsProvider.servings(),
                                 amountPerServingField = fieldsProvider.amountPerServing(
-                                    servingUnit = foodLog.foodInformation.base.amountPerServing.toString()
+                                    servingUnit = foodLog.edibleInformation.base.amountPerServing.toString()
                                 ),
                                 user = user
                             )

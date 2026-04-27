@@ -1,6 +1,6 @@
-package com.example.fitnessway.util.food.creation
+package com.example.fitnessway.util.edible.creation
 
-import com.example.fitnessway.data.model.m_26.FoodSource
+import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.util.Formatters
 import com.example.fitnessway.util.Formatters.toInputDouble
@@ -14,7 +14,7 @@ import com.example.fitnessway.util.nutrient.NutrientDvControls
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-abstract class FoodCreation(val foodSource: FoodSource) : IFoodCreation, NutrientDvControls() {
+abstract class EdibleCreation(val edibleSource: EdibleSource) : IEdibleCreation, NutrientDvControls() {
 
     private val emptyFoodCreationFormState = FormStates.FoodCreation(
         name = "",
@@ -41,9 +41,9 @@ abstract class FoodCreation(val foodSource: FoodSource) : IFoodCreation, Nutrien
     override val brandError: String?
         get() = _foodCreationFormState.value.brand.let { value ->
             if (value.isEmpty()) null else {
-                val rules = when (foodSource) {
-                    FoodSource.USER -> Rules.FoodCreation.userBrandRules
-                    FoodSource.APP -> Rules.FoodCreation.appBrandRules
+                val rules = when (edibleSource) {
+                    EdibleSource.USER -> Rules.FoodCreation.userBrandRules
+                    EdibleSource.APP -> Rules.FoodCreation.appBrandRules
                 }
 
                 val result = InlineRules.FoodCreation.BrandInlineRules(value.trim()) checkWith rules
@@ -70,8 +70,8 @@ abstract class FoodCreation(val foodSource: FoodSource) : IFoodCreation, Nutrien
 
     override val isBasicDataValid: Boolean
         get() = _foodCreationFormState.value.name.isNotEmpty() && nameError == null &&
-                (foodSource == FoodSource.USER && brandError == null ||
-                        foodSource == FoodSource.APP &&
+                (edibleSource == EdibleSource.USER && brandError == null ||
+                        edibleSource == EdibleSource.APP &&
                         _foodCreationFormState.value.brand.isNotEmpty() &&
                         brandError == null) &&
                 _foodCreationFormState.value.amountPerServing.isNotEmpty() && amountPerServingError == null &&

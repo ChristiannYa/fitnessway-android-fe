@@ -2,6 +2,7 @@ package com.example.fitnessway.data.repository.edible_list
 
 import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.model.MFood
+import com.example.fitnessway.data.model.m_26.EdibleAddRequest
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.PaginationResult
 import com.example.fitnessway.data.model.m_26.UserEdible
@@ -66,11 +67,11 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
     }
 
     override suspend fun add(
-        request: MFood.Api.Req.FoodAddRequest
-    ): Flow<UiState<MFood.Model.FoodInformation>> =
+        request: EdibleAddRequest
+    ): Flow<UiState<Unit>> =
         httpClient.makeRequest(
             apiCall = { apiClient.add(request) },
-            extractData = { it.foodCreated },
+            extractData = { Unit },
             errMsg = "Failed to add $edibleTypeString",
             pathDescription = "add $edibleTypeString"
         )

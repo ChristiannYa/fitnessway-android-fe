@@ -92,12 +92,11 @@ object ApiUrls {
     }
 
     object UserEdible {
-        const val LIST_PATH_KT = "edible/user/me"
+        const val PATH_KT = "edible/user"
+
+        const val LIST_PATH_KT = "$PATH_KT/me"
         const val LIST_URL_KT = "$BASE_URL_KT$LIST_PATH_KT"
-
-        const val ADD_PATH = "food/user/add"
-        const val ADD_URL = "$BASE_URL_GO$ADD_PATH"
-
+        
         const val UPDATE_PATH = "food/user/update"
         const val UPDATE_URL = "$BASE_URL_GO$UPDATE_PATH"
 

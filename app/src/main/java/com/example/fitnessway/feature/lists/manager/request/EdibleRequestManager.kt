@@ -1,12 +1,12 @@
 package com.example.fitnessway.feature.lists.manager.request
 
-import com.example.fitnessway.data.model.m_26.FoodSource
+import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.PendingFood
-import com.example.fitnessway.util.food.creation.FoodCreation
+import com.example.fitnessway.util.edible.creation.EdibleCreation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class FoodRequestManager : IFoodRequestManager, FoodCreation(FoodSource.APP) {
+class EdibleRequestManager : IEdibleRequestManager, EdibleCreation(EdibleSource.APP) {
     private val _pendingFood = MutableStateFlow<PendingFood?>(null)
     override val pendingFood: StateFlow<PendingFood?> = _pendingFood
 

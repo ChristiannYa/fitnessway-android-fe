@@ -8,12 +8,12 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.fitnessway.util.form.field.FoodCreationBaseField
-import com.example.fitnessway.util.form.field.FoodCreationNutrientField
-import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FoodCreationBaseField
+import com.example.fitnessway.util.form.field.FoodCreationNutrientField
+import com.example.fitnessway.util.form.field.FormFieldName
 
 class FoodCreationFieldsProvider(
     private val formState: FormStates.FoodCreation,

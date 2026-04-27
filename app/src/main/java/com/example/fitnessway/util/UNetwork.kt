@@ -8,12 +8,12 @@ import io.ktor.http.contentType
 import io.ktor.client.request.HttpRequestBuilder as KtorHttpRequestBuilder
 import io.ktor.client.statement.HttpResponse as KtorHttpResponse
 
-inline fun <reified T> KtorHttpRequestBuilder.jsonBody(req: T) {
+inline fun <reified T> KtorHttpRequestBuilder.setJson(req: T) {
     contentType(ContentType.Application.Json)
     setBody(req)
 }
 
-suspend inline fun <reified T> KtorHttpResponse.extractApiData(): T {
+suspend inline fun <reified T> KtorHttpResponse.extractData(): T {
     val response = body<MApi.Model.ApiResponseWithContent<T>>()
     return response.data ?: throw Exception("Response data was null: ${response.message}")
 }

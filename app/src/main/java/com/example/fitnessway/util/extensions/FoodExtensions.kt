@@ -8,8 +8,8 @@ import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.fitnessway.R
-import com.example.fitnessway.data.model.MFood
-import com.example.fitnessway.data.model.m_26.FoodBase
+import com.example.fitnessway.data.model.m_26.EdibleBase
+import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.data.model.m_26.PendingFoodStatus
 import com.example.fitnessway.data.model.m_26.ServingUnit
@@ -18,11 +18,14 @@ import com.example.fitnessway.ui.theme.Emerald
 import com.example.fitnessway.ui.theme.ImperialRed
 import com.example.fitnessway.ui.theme.OrangeLight
 
-fun List<MFood.Model.FoodInformation>.findById(id: Int) = find { it.information.id == id }
-
-fun FoodBase.calcAmountPerServing() = if (this.servingUnit == ServingUnit.OZ) {
+fun EdibleBase.calcAmountPerServing() = if (this.servingUnit == ServingUnit.OZ) {
     this.amountPerServing * 28.3495
 } else this.amountPerServing
+
+fun ListOption.getEdibleType() = when (this) {
+    ListOption.Supplement -> EdibleType.SUPPLEMENT
+    else -> EdibleType.FOOD
+}
 
 fun PendingFoodStatus.getAccent(): Color = when (this) {
     PendingFoodStatus.PENDING -> OrangeLight

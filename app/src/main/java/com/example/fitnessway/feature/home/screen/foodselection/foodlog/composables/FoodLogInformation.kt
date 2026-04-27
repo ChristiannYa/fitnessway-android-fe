@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.m_26.FoodInformation
+import com.example.fitnessway.data.model.m_26.EdibleInformation
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UFood
@@ -19,7 +19,7 @@ import com.example.fitnessway.util.form.field.FoodLogField
 
 @Composable
 fun FoodLogInformation(
-    food: FoodInformation,
+    food: EdibleInformation,
     servingsField: FoodLogField,
     amountPerServingsField: FoodLogField,
     timeField: FoodLogField,

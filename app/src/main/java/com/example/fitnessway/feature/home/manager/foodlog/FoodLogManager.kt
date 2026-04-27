@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.home.manager.foodlog
 
-import com.example.fitnessway.data.model.m_26.FoodInformation
+import com.example.fitnessway.data.model.m_26.EdibleInformation
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
@@ -137,7 +137,7 @@ class FoodLogManager : IFoodLogManager {
         _selectedFoodLogToRemove.value = foodLog
     }
 
-    override fun initializeFoodLogForm(food: FoodInformation, time: String) {
+    override fun initializeFoodLogForm(food: EdibleInformation, time: String) {
         val amountPerServingDb = food.base.calcAmountPerServing()
 
         _foodLogFormState.value = FormState(
@@ -151,7 +151,7 @@ class FoodLogManager : IFoodLogManager {
     }
 
     override fun initializeFoodLogEditionForm(foodLog: FoodLog) {
-        val foodAmountPerServing = foodLog.foodInformation.base.calcAmountPerServing()
+        val foodAmountPerServing = foodLog.edibleInformation.base.calcAmountPerServing()
         val amountPerServingCalc = foodLog.servings * foodAmountPerServing
         val amountPerServing = amountPerServingCalc.roundIfClose(0.03)
 
@@ -159,7 +159,7 @@ class FoodLogManager : IFoodLogManager {
             data = FormStates.FoodLogEdition(
                 servings = foodLog.servings.toPrecisedString(3),
                 amountPerServing = amountPerServing.toPrecisedString(3),
-                foodAmountPerServing = foodLog.foodInformation.base.amountPerServing,
+                foodAmountPerServing = foodLog.edibleInformation.base.amountPerServing,
                 servingsPrecised = foodLog.servings
             )
         )
@@ -173,7 +173,7 @@ class FoodLogManager : IFoodLogManager {
     ) {
         _foodLogEditionFormState.value?.let { formState ->
             val foodLog = _selectedFoodLog.value ?: return
-            val foodAmountPerServing = foodLog.foodInformation.base.calcAmountPerServing()
+            val foodAmountPerServing = foodLog.edibleInformation.base.calcAmountPerServing()
 
             val updatedData = when (fieldName) {
                 FormFieldName.FoodLogEdition.SERVINGS -> {

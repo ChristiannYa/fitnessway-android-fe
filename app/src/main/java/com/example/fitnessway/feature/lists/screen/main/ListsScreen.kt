@@ -40,10 +40,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ListsScreen(
     viewModel: ListsViewModel = koinViewModel(),
-    onNavigateToUserFoodDetails: () -> Unit,
-    onNavigateToPendingFoodDetails: () -> Unit,
-    onNavigateToFoodRequestScreen: () -> Unit,
-    onNavigateToFoodCreationForm: () -> Unit
+    onNavigateToUserEdibleDetails: () -> Unit,
+    onNavigateToPendingEdibleDetails: () -> Unit,
+    onNavigateToEdibleRequestScreen: () -> Unit,
+    onNavigateToEdibleCreationForm: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedList by viewModel.listOption.collectAsState()
@@ -95,9 +95,9 @@ fun ListsScreen(
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
                             when (selectedList) {
-                                ListOption.PendingFood -> onNavigateToFoodRequestScreen()
-                                ListOption.Food -> onNavigateToFoodCreationForm()
-                                ListOption.Supplement -> onNavigateToFoodCreationForm()
+                                ListOption.PendingFood -> onNavigateToEdibleRequestScreen()
+                                ListOption.Food -> onNavigateToEdibleCreationForm()
+                                ListOption.Supplement -> onNavigateToEdibleCreationForm()
                             }
                         }
                     )
@@ -129,7 +129,7 @@ fun ListsScreen(
                     onLoadMore = viewModel::getMorePendingFoods,
                     onFoodClick = {
                         viewModel.requestManager.setPendingFood(it)
-                        onNavigateToPendingFoodDetails()
+                        onNavigateToPendingEdibleDetails()
                     },
                     onDismissReview = { id ->
                         viewModel.resetReviewDismissState()
@@ -146,7 +146,7 @@ fun ListsScreen(
                 onLoadMore = viewModel::getMoreFoods,
                 onFoodClick = { food ->
                     viewModel.editionManager.setSelectedEdible(food)
-                    onNavigateToUserFoodDetails()
+                    onNavigateToUserEdibleDetails()
                 }
             )
 
@@ -157,7 +157,7 @@ fun ListsScreen(
                 onLoadMore = viewModel::getMoreSupplements,
                 onFoodClick = { food ->
                     viewModel.editionManager.setSelectedEdible(food)
-                    onNavigateToUserFoodDetails()
+                    onNavigateToUserEdibleDetails()
                 }
             )
 

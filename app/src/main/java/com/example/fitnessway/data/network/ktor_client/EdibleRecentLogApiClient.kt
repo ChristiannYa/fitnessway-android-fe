@@ -4,7 +4,7 @@ import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.model.m_26.RecentlyLoggedEdiblesResponse
 import com.example.fitnessway.data.network.ApiUrls
-import com.example.fitnessway.util.extractApiData
+import com.example.fitnessway.util.extractData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.HttpClient as KtorHttpClient
@@ -21,6 +21,6 @@ class EdibleRecentLogApiClient(private val client: KtorHttpClient) {
                 parameter("limit", params.limit)
                 parameter("offset", params.offset)
             }
-            .extractApiData()
+            .extractData()
 
 }

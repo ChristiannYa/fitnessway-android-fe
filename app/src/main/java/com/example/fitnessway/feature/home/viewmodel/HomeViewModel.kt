@@ -228,14 +228,14 @@ class HomeViewModel(
         val originalNutrientIntakes = originalNutrientIntakesState.data
 
         // Gather new nutrient data based on amount per servings
-        val newNutrientData = selectedFoodLog.foodInformation.nutrients
+        val newNutrientData = selectedFoodLog.edibleInformation.nutrients
             .calcFoodLogNutrients(
                 currentServings = selectedFoodLog.servings,
                 newServings = formState.data.servings.toDouble()
             )
 
         // Update the current food log's nutrients
-        val foodWithUpdatedNutrients = selectedFoodLog.foodInformation.copy(
+        val foodWithUpdatedNutrients = selectedFoodLog.edibleInformation.copy(
             nutrients = newNutrientData
         )
 
@@ -250,7 +250,7 @@ class HomeViewModel(
             userFoodSnapshotId = selectedFoodLog.userFoodSnapshotId,
             source = selectedFoodLog.source,
             foodId = selectedFoodLog.foodId,
-            foodInformation = foodWithUpdatedNutrients
+            edibleInformation = foodWithUpdatedNutrients
         )
 
         // Change the selected food log's nutrients value
@@ -265,12 +265,12 @@ class HomeViewModel(
 
         // Create optimistic nutrient intakes
         val intakesWithoutFoodLog = originalNutrientIntakes.calcDailyIntakes(
-            nutrients = selectedFoodLog.foodInformation.nutrients.toList(),
+            nutrients = selectedFoodLog.edibleInformation.nutrients.toList(),
             intakeMath = NutrientIntakeMath.SUBTRACT
         )
 
         val optimisticIntakes = intakesWithoutFoodLog.calcDailyIntakes(
-            nutrients = updatedFoodLog.foodInformation.nutrients.toList(),
+            nutrients = updatedFoodLog.edibleInformation.nutrients.toList(),
             intakeMath = NutrientIntakeMath.ADD
         )
 
@@ -341,12 +341,12 @@ class HomeViewModel(
                         if (currentNutrientIntakesState is UiState.Success) {
 
                             val intakesWithoutUpdatedFoodLog = currentNutrientIntakesState.data.calcDailyIntakes(
-                                nutrients = updatedFoodLog.foodInformation.nutrients.toList(),
+                                nutrients = updatedFoodLog.edibleInformation.nutrients.toList(),
                                 intakeMath = NutrientIntakeMath.SUBTRACT
                             )
 
                             val revertedIntakes = intakesWithoutUpdatedFoodLog.calcDailyIntakes(
-                                nutrients = selectedFoodLog.foodInformation.nutrients.toList(),
+                                nutrients = selectedFoodLog.edibleInformation.nutrients.toList(),
                                 intakeMath = NutrientIntakeMath.ADD
                             )
 
@@ -398,7 +398,7 @@ class HomeViewModel(
         // Store optimistic intakes by removing the food log's intake amount from
         // the original intakes
         val optimisticIntakes = originalIntakes.calcDailyIntakes(
-            nutrients = selectedFoodLogToRemove.foodInformation.nutrients.toList(),
+            nutrients = selectedFoodLogToRemove.edibleInformation.nutrients.toList(),
             intakeMath = NutrientIntakeMath.SUBTRACT
         )
 
@@ -473,7 +473,7 @@ class HomeViewModel(
 
                             // Revert back to original nutrient intakes state
                             val revertedNutrients = currentIntakes.calcDailyIntakes(
-                                nutrients = selectedFoodLogToRemove.foodInformation.nutrients.toList(),
+                                nutrients = selectedFoodLogToRemove.edibleInformation.nutrients.toList(),
                                 intakeMath = NutrientIntakeMath.ADD
                             )
 

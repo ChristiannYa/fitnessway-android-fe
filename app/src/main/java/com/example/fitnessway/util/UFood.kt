@@ -182,7 +182,7 @@ object UFood {
     }
 
     data class FoodInformationComposables(
-        val foodInformation: com.example.fitnessway.data.model.m_26.FoodInformation,
+        val edibleInformation: com.example.fitnessway.data.model.m_26.EdibleInformation,
         val isUserPremium: Boolean,
     ) {
         @Composable
@@ -216,7 +216,7 @@ object UFood {
                         horizontalAlignment = topHorizontalAlignment,
                         verticalArrangement = Arrangement.spacedBy(verticalSpace)
                     ) {
-                        val foodBrand = foodInformation.base.brand?.ifEmpty { "~" } ?: "~"
+                        val foodBrand = edibleInformation.base.brand?.ifEmpty { "~" } ?: "~"
 
                         Text(
                             text = foodBrand,
@@ -225,7 +225,7 @@ object UFood {
                         )
 
                         Text(
-                            text = foodInformation.base.name,
+                            text = edibleInformation.base.name,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.SemiBold,
                             textAlign = if (foodLogServings != null) null else {
@@ -237,7 +237,7 @@ object UFood {
                     if (foodLogServings != null) {
                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                             val amPerSer = doubleFormatter(
-                                value = foodInformation.base.amountPerServing * foodLogServings
+                                value = edibleInformation.base.amountPerServing * foodLogServings
                             )
 
                             Text(
@@ -248,7 +248,7 @@ object UFood {
                             )
 
                             Text(
-                                text = foodInformation.base.servingUnit.name.lowercase(),
+                                text = edibleInformation.base.servingUnit.name.lowercase(),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = brandColor
                             )
@@ -272,7 +272,7 @@ object UFood {
                     )
 
                     PagedNutrients(
-                        nutrients = foodInformation.nutrients.basic.toList(),
+                        nutrients = edibleInformation.nutrients.basic.toList(),
                         viewFormat = NutrientsViewFormat.CIRCLE,
                         isUserPremium = isUserPremium
                     )
@@ -283,8 +283,8 @@ object UFood {
         @Composable
         fun RemainingNutrients() {
             val remainingNutrients = listOf(
-                NutrientType.VITAMIN to foodInformation.nutrients.vitamins,
-                NutrientType.MINERAL to foodInformation.nutrients.minerals
+                NutrientType.VITAMIN to edibleInformation.nutrients.vitamins,
+                NutrientType.MINERAL to edibleInformation.nutrients.minerals
             )
 
             if (remainingNutrients.any { it.second.isNotEmpty() }) {

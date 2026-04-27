@@ -42,7 +42,7 @@ fun FoodLogDetails(
 ) {
     val foodComposables = remember(foodLog) {
         FoodInformationComposables(
-            foodInformation = foodLog.foodInformation,
+            edibleInformation = foodLog.edibleInformation,
             isUserPremium = user.isPremium
         )
     }
@@ -90,7 +90,7 @@ fun FoodLogDetails(
                                 foodLogServings = null
                             )
 
-                            val amountPerServing = doubleFormatter(foodLog.foodInformation.base.amountPerServing)
+                            val amountPerServing = doubleFormatter(foodLog.edibleInformation.base.amountPerServing)
 
                             Box(
                                 modifier = Modifier.areaContainer(
@@ -116,7 +116,7 @@ fun FoodLogDetails(
                                                 append("$amountPerServing ")
                                             }
 
-                                            append("${foodLog.foodInformation.base.servingUnit.name.lowercase()} =")
+                                            append("${foodLog.edibleInformation.base.servingUnit.name.lowercase()} =")
                                         },
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground.copy(0.8f)

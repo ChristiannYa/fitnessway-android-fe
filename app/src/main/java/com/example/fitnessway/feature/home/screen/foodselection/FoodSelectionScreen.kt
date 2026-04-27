@@ -23,10 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogListFilter
-import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodResultsPagination
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
@@ -125,7 +125,7 @@ fun FoodSelectionScreen(
                             viewModel.setSearchCriteria(
                                 FoodToLogSearchCriteria(
                                     id = it,
-                                    source = FoodSource.APP,
+                                    source = EdibleSource.APP,
                                     edibleType = EdibleType.FOOD
                                 )
                             )
@@ -225,7 +225,7 @@ fun FoodSelectionScreen(
                         viewModel.setSearchCriteria(
                             FoodToLogSearchCriteria(
                                 id = food.id,
-                                source = FoodSource.USER,
+                                source = EdibleSource.USER,
                                 edibleType = EdibleType.FOOD
                             )
                         )
@@ -243,7 +243,7 @@ fun FoodSelectionScreen(
                         viewModel.setSearchCriteria(
                             FoodToLogSearchCriteria(
                                 id = food.id,
-                                source = FoodSource.USER,
+                                source = EdibleSource.USER,
                                 edibleType = EdibleType.SUPPLEMENT
                             )
                         )

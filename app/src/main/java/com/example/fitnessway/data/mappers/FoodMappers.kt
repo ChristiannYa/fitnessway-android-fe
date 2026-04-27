@@ -1,13 +1,14 @@
 package com.example.fitnessway.data.mappers
 
 import com.example.fitnessway.data.model.MFood
-import com.example.fitnessway.data.model.m_26.FoodBase
-import com.example.fitnessway.data.model.m_26.FoodInformation
+import com.example.fitnessway.data.model.m_26.EdibleAddRequest
+import com.example.fitnessway.data.model.m_26.EdibleBase
+import com.example.fitnessway.data.model.m_26.EdibleInformation
+import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.model.m_26.FoodPreview
-import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.PendingFood
@@ -35,7 +36,7 @@ fun FoodLogsCategorized.mapfl(
 )
 
 fun FoodCreation.toPendingRequest(nutrients: List<NutrientIdWithAmount>) = PendingFoodAddRequest(
-    base = FoodBase(
+    base = EdibleBase(
         name = this.name,
         brand = this.brand,
         amountPerServing = this.amountPerServing.toDoubleOrNull() ?: 0.0,
@@ -44,25 +45,28 @@ fun FoodCreation.toPendingRequest(nutrients: List<NutrientIdWithAmount>) = Pendi
     nutrients = nutrients
 )
 
-fun FoodCreation.toUserFoodRequest(nutrients: List<NutrientIdWithAmount>) = MFood.Api.Req.FoodAddRequest(
-    information = MFood.Model.FoodBaseInfo(
-        id = 0,
+fun FoodCreation.toUserEdibleRequest(
+    nutrients: List<NutrientIdWithAmount>,
+    edibleType: String
+) = EdibleAddRequest(
+    base = EdibleBase(
         name = this.name,
         brand = this.brand,
         amountPerServing = this.amountPerServing.toDoubleOrNull() ?: 0.0,
-        servingUnit = this.servingUnit
+        servingUnit = this.servingUnit.toEnum()
     ),
-    nutrients = nutrients
+    nutrients = nutrients,
+    edibleType = edibleType
 )
 
 fun PendingFood.toPreview() = FoodPreview(
     id = this.id,
     base = this.information.base,
     nutrientPreview = this.information.nutrients.toNutrientPreview(),
-    source = FoodSource.APP
+    source = EdibleSource.APP
 )
 
-fun PendingFood.toFoodInformation() = FoodInformation(
+fun PendingFood.toFoodInformation() = EdibleInformation(
     base = this.information.base,
     nutrients = this.information.nutrients
 )
@@ -71,17 +75,17 @@ fun UserEdible.toPreview() = FoodPreview(
     id = this.id,
     base = this.information.base,
     nutrientPreview = this.information.nutrients.toNutrientPreview(),
-    source = FoodSource.USER
+    source = EdibleSource.USER
 )
 
-fun MFood.Model.FoodBaseInfo.toM26FoodBase() = FoodBase(
+fun MFood.Model.FoodBaseInfo.toM26FoodBase() = EdibleBase(
     name = this.name,
     brand = this.brand,
     amountPerServing = this.amountPerServing,
     servingUnit = this.servingUnit.toEnum()
 )
 
-fun MFood.Model.FoodInformation.toM26FoodInformation() = FoodInformation(
+fun MFood.Model.FoodInformation.toM26FoodInformation() = EdibleInformation(
     base = this.information.toM26FoodBase(),
     nutrients = this.nutrients.toM26NutrientsInFood()
 )
@@ -90,5 +94,5 @@ fun MFood.Model.FoodInformation.toMFoodPreview() = FoodPreview(
     id = this.information.id,
     base = this.information.toM26FoodBase(),
     nutrientPreview = this.nutrients.toNutrientPreview(),
-    source = FoodSource.USER
+    source = EdibleSource.USER
 )

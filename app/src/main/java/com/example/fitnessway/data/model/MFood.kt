@@ -1,6 +1,5 @@
 package com.example.fitnessway.data.model
 
-import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfo
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.MFood.Model.FoodLogData
@@ -83,12 +82,6 @@ object MFood {
     object Api {
         object Req {
             @Serializable
-            data class FoodAddRequest(
-                val information: FoodBaseInfo,
-                val nutrients: List<NutrientIdWithAmount>
-            )
-
-            @Serializable
             data class FoodUpdateRequest(
                 val information: FoodBaseInfoNullable,
 
@@ -98,27 +91,9 @@ object MFood {
                 @SerialName("deleted_nutrients")
                 val deletedNutrients: List<Int>
             )
-
-            @Serializable
-            data class FoodSortUpdateRequest(
-                @SerialName("food_sort")
-                val foodSort: String
-            )
         }
 
         object Res {
-            @Serializable
-            data class FoodsGetApiResponse(
-                @SerialName("foods")
-                val foods: List<FoodInformation>?
-            )
-
-            @Serializable
-            data class FoodAddApiResponse(
-                @SerialName("food_created")
-                val foodCreated: FoodInformation
-            )
-
             @Serializable
             data class FoodUpdateApiResponse(
                 @SerialName("food_updated")
@@ -129,24 +104,6 @@ object MFood {
             data class FoodDeleteApiResponse(
                 @SerialName("food_deleted")
                 val foodDeleted: FoodInformation
-            )
-
-            @Serializable
-            data class FoodSortGetApiResponse(
-                @SerialName("food_sort")
-                val foodSort: String
-            )
-
-            @Serializable
-            data class FoodSortUpdateApiResponse(
-                @SerialName("food_sort")
-                val foodSort: String
-            )
-
-            @Serializable
-            data class FoodFavoriteStatusUpdateApiResponse(
-                @SerialName("food_updated")
-                val foodUpdated: FoodInformation
             )
 
             @Serializable

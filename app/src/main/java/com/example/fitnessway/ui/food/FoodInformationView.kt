@@ -7,12 +7,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.m_26.FoodInformation
+import com.example.fitnessway.data.model.m_26.EdibleInformation
 import com.example.fitnessway.util.UFood
 
 @Composable
 fun FoodInformationView(
-    food: FoodInformation,
+    food: EdibleInformation,
     isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {

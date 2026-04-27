@@ -9,7 +9,7 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.ListsManagersImpl
 import com.example.fitnessway.feature.lists.manager.creation.CreationManager
 import com.example.fitnessway.feature.lists.manager.edition.EditionManager
-import com.example.fitnessway.feature.lists.manager.request.FoodRequestManager
+import com.example.fitnessway.feature.lists.manager.request.EdibleRequestManager
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.ProfileManagersImpl
 import com.example.fitnessway.feature.profile.manager.colors.ColorsManager
@@ -30,7 +30,7 @@ fun loadManagerModules(timezone: ZoneId) = module {
         ListsManagersImpl(
             edition = EditionManager(),
             creation = CreationManager(),
-            request = FoodRequestManager()
+            request = EdibleRequestManager()
         )
     }
 

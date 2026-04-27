@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.home.manager.foodlog
 
-import com.example.fitnessway.data.model.m_26.FoodInformation
+import com.example.fitnessway.data.model.m_26.EdibleInformation
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
@@ -39,7 +39,7 @@ interface IFoodLogManager {
     fun setSelectedFoodLogToRemove(foodLog: FoodLog)
 
     fun initializeFoodLogEditionForm(foodLog: FoodLog)
-    fun initializeFoodLogForm(food: FoodInformation, time: String)
+    fun initializeFoodLogForm(food: EdibleInformation, time: String)
     fun updateFoodLogEditionFormField(fieldName: FormFieldName.FoodLogEdition, input: String)
     fun updateFoodLogFormField(fieldName: FormFieldName.FoodLog, input: String)
 }

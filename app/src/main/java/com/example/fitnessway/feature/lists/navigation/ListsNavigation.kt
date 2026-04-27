@@ -51,10 +51,10 @@ fun NavGraphBuilder.listsNavigationGraph(navController: NavController) {
         composable<ListsMainDest> {
             ListsScreen(
                 viewModel = getViewModel(it),
-                onNavigateToUserFoodDetails = { navController.navigate(UserFoodDetailsDest) },
-                onNavigateToPendingFoodDetails = { navController.navigate(PendingFoodDetailsDest) },
-                onNavigateToFoodRequestScreen = { navController.navigate(FoodRequestDest) },
-                onNavigateToFoodCreationForm = { navController.navigate(FoodCreationDest) }
+                onNavigateToUserEdibleDetails = { navController.navigate(UserFoodDetailsDest) },
+                onNavigateToPendingEdibleDetails = { navController.navigate(PendingFoodDetailsDest) },
+                onNavigateToEdibleRequestScreen = { navController.navigate(FoodRequestDest) },
+                onNavigateToEdibleCreationForm = { navController.navigate(FoodCreationDest) }
             )
         }
 

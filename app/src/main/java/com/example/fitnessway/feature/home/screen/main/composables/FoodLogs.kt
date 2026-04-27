@@ -316,7 +316,7 @@ private fun FoodLog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = foodLog.foodInformation.base.name,
+                        text = foodLog.edibleInformation.base.name,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
@@ -341,7 +341,7 @@ private fun FoodLog(
                 }
 
                 Text(
-                    text = getFoodBrandText(foodLog.foodInformation.base.brand),
+                    text = getFoodBrandText(foodLog.edibleInformation.base.brand),
                     style = MaterialTheme.typography.labelLarge,
                     color = foodBrandColor
                 )

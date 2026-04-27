@@ -20,9 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.mappers.toTypedList
+import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
-import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -86,13 +86,13 @@ fun FoodLogScreen(
     LaunchedEffect(searchCriteria) {
         searchCriteria?.let {
             when (it.source) {
-                FoodSource.APP -> {
+                EdibleSource.APP -> {
                     if (it.edibleType == EdibleType.FOOD) {
                         viewModel.getAppFoodById(searchCriteria.id)
                     }
                 }
 
-                FoodSource.USER -> {
+                EdibleSource.USER -> {
                     if (it.edibleType == EdibleType.FOOD) {
                         viewModel.getUserFoods()
                     } else viewModel.getUserSupplements()
@@ -103,7 +103,7 @@ fun FoodLogScreen(
 
     LaunchedEffect(appFoodUiState, searchCriteria) {
         if (appFoodUiState is UiState.Success &&
-            searchCriteria?.source == FoodSource.APP &&
+            searchCriteria?.source == EdibleSource.APP &&
             searchCriteria.edibleType == EdibleType.FOOD
         ) {
             appFoodUiState.data?.let {
@@ -119,7 +119,7 @@ fun FoodLogScreen(
 
     LaunchedEffect(userFoodsUiState, searchCriteria) {
         if (userFoodsUiState.uiState is UiState.Success &&
-            searchCriteria?.source == FoodSource.USER &&
+            searchCriteria?.source == EdibleSource.USER &&
             searchCriteria.edibleType == EdibleType.FOOD
         ) {
             userFoodsUiState.uiState.data.data
@@ -137,7 +137,7 @@ fun FoodLogScreen(
 
     LaunchedEffect(userSupplementsUiState, searchCriteria) {
         if (userSupplementsUiState.uiState is UiState.Success &&
-            searchCriteria?.source == FoodSource.USER &&
+            searchCriteria?.source == EdibleSource.USER &&
             searchCriteria.edibleType == EdibleType.SUPPLEMENT
         ) {
             userSupplementsUiState.uiState.data.data
@@ -208,8 +208,9 @@ fun FoodLogScreen(
             }
 
             Box(Modifier.fillMaxSize()) {
-                val isAppFoodLoading = searchCriteria.source == FoodSource.APP && appFoodUiState is UiState.Loading
-                val isUserFoodLoading = searchCriteria.source == FoodSource.USER && userFoodsUiState is UiState.Loading
+                val isAppFoodLoading = searchCriteria.source == EdibleSource.APP && appFoodUiState is UiState.Loading
+                val isUserFoodLoading =
+                    searchCriteria.source == EdibleSource.USER && userFoodsUiState is UiState.Loading
 
                 if (isAppFoodLoading || isUserFoodLoading) {
                     Loading.SpinnerInScreen()

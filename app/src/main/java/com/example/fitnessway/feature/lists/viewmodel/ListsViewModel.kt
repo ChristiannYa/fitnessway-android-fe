@@ -12,12 +12,12 @@ import com.example.fitnessway.data.mappers.toPendingRequest
 import com.example.fitnessway.data.mappers.toResult
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toType
-import com.example.fitnessway.data.mappers.toUserFoodRequest
+import com.example.fitnessway.data.mappers.toUserEdibleRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MUser
-import com.example.fitnessway.data.model.m_26.FoodBase
+import com.example.fitnessway.data.model.m_26.EdibleBase
 import com.example.fitnessway.data.model.m_26.ListOption
 import com.example.fitnessway.data.model.m_26.OptimisticUpdate
 import com.example.fitnessway.data.model.m_26.PendingFood
@@ -32,11 +32,12 @@ import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
-import com.example.fitnessway.feature.lists.manager.request.IFoodRequestManager
+import com.example.fitnessway.feature.lists.manager.request.IEdibleRequestManager
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
+import com.example.fitnessway.util.extensions.getEdibleType
 import com.example.fitnessway.util.toEnum
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -64,7 +65,7 @@ class ListsViewModel(
 
     val editionManager: IEditionManager get() = managers.edition
     val creationManager: ICreationManager get() = managers.creation
-    val requestManager: IFoodRequestManager get() = managers.request
+    val requestManager: IEdibleRequestManager get() = managers.request
 
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
@@ -111,16 +112,26 @@ class ListsViewModel(
         }
     }
 
-    fun addFood() {
+    fun addEdible() {
         val formState = managers.creation.formState.value
+        val listOption = listOption.value
 
-        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
-        val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
-        val request = formState.toUserFoodRequest(nutrients)
+        val request = formState.toUserEdibleRequest(
+            nutrients = managers.creation.nutrientDvControls.nutrientDvMap.value
+                .let { dvMap -> formState.nutrients.toNutrientIdAmountList(dvMap) },
+            edibleType = listOption.getEdibleType().name
+        )
 
         viewModelScope.launch {
             userFoodRepo.add(request).collect { state ->
                 _uiState.update { it.copy(foodAddState = state) }
+
+                if (state is UiState.Success) {
+                    when (listOption) {
+                        ListOption.Supplement -> userSupplementRepo.refresh()
+                        else -> userFoodRepo.refresh()
+                    }
+                }
             }
         }
     }
@@ -184,8 +195,8 @@ class ListsViewModel(
         // Create the new food
         val optimisticFood = UserEdible(
             id = latestFood.id,
-            information = com.example.fitnessway.data.model.m_26.FoodInformation(
-                base = FoodBase(
+            information = com.example.fitnessway.data.model.m_26.EdibleInformation(
+                base = EdibleBase(
                     formState.data.name,
                     brand = formState.data.brand,
                     amountPerServing = formState.data.amountPerServing.toDouble(),

@@ -4,8 +4,8 @@ import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.data.model.m_26.PendingFoodAddResponse
 import com.example.fitnessway.data.model.m_26.PendingFoodsGetResponse
 import com.example.fitnessway.data.network.ApiUrls
-import com.example.fitnessway.util.extractApiData
-import com.example.fitnessway.util.jsonBody
+import com.example.fitnessway.util.extractData
+import com.example.fitnessway.util.setJson
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -22,16 +22,16 @@ class PendingFoodApiClient(private val client: KtorHttpClient) {
                 parameter("limit", limit)
                 parameter("offset", offset)
             }
-            .extractApiData()
+            .extractData()
 
     suspend fun addPendingFood(
         req: PendingFoodAddRequest
     ): PendingFoodAddResponse =
         client
             .post(ApiUrls.PendingEdible.ADD_URL) {
-                jsonBody(req)
+                setJson(req)
             }
-            .extractApiData()
+            .extractData()
 
     suspend fun dismissReview(id: Int) =
         client.delete(ApiUrls.PendingEdible.getDismissReviewUrl(id))

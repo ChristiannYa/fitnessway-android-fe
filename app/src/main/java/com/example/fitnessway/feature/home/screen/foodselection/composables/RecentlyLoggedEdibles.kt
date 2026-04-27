@@ -19,9 +19,9 @@ import com.example.fitnessway.data.mappers.plural
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodPreview
-import com.example.fitnessway.data.model.m_26.FoodSource
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.util.Animation
@@ -38,7 +38,7 @@ fun RecentlyLoggedFoods(
     isVisible: Boolean,
     isUserPremium: Boolean,
     onLoadMore: () -> Unit,
-    onFoodClick: (Int, FoodSource) -> Unit,
+    onFoodClick: (Int, EdibleSource) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()

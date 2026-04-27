@@ -48,7 +48,7 @@ enum class UserFoodSnapshotStatus {
 }
 
 @Serializable
-enum class FoodSource {
+enum class EdibleSource {
     APP,
     USER
 }
@@ -75,9 +75,9 @@ data class FoodLog(
     val servings: Double,
     val userFoodSnapshotStatus: UserFoodSnapshotStatus? = null,
     val userFoodSnapshotId: Int?,
-    val source: FoodSource,
+    val source: EdibleSource,
     val foodId: Int?,
-    val foodInformation: FoodInformation
+    val edibleInformation: EdibleInformation
 )
 
 @Serializable
@@ -89,31 +89,31 @@ data class FoodLogsCategorized(
 )
 
 @Serializable
-data class FoodBase(
-    val name: kotlin.String,
-    val brand: kotlin.String? = null,
+data class EdibleBase(
+    val name: String,
+    val brand: String? = null,
     val amountPerServing: Double,
     val servingUnit: ServingUnit
 )
 
 @Serializable
-data class FoodInformation(
-    val base: FoodBase,
+data class EdibleInformation(
+    val base: EdibleBase,
     val nutrients: NutrientsByType<NutrientDataAmount>
 )
 
 @Serializable
 data class FoodPreview(
     val id: Int,
-    val base: FoodBase,
+    val base: EdibleBase,
     val nutrientPreview: NutrientPreview,
-    val source: FoodSource
+    val source: EdibleSource
 )
 
 @Serializable
 data class AppFood(
     val id: Int,
-    val information: FoodInformation,
+    val information: EdibleInformation,
     val createdBy: UUID?,
     val createdAt: Instant,
     val updatedAt: Instant? = null
@@ -122,22 +122,29 @@ data class AppFood(
 @Serializable
 data class PendingFood(
     val id: Int,
-    val information: FoodInformation,
+    val information: EdibleInformation,
     val status: PendingFoodStatus,
     val createdBy: UUID?,
     val reviewedBy: UUID? = null,
     val reviewedAt: Instant? = null,
     val createdAt: Instant,
-    val rejectionReason: kotlin.String? = null,
+    val rejectionReason: String? = null,
 )
 
 @Serializable
 data class UserEdible(
     val id: Int,
-    val information: FoodInformation,
+    val information: EdibleInformation,
     val lastLoggedAt: Instant? = null,
     val createdAt: Instant,
     val updatedAt: Instant
+)
+
+@Serializable
+data class EdibleAddRequest(
+    val base: EdibleBase,
+    val nutrients: List<NutrientIdWithAmount>,
+    val edibleType: String
 )
 
 @Serializable
@@ -148,11 +155,11 @@ data class RecentlyLoggedEdiblesResponse(
 @Serializable
 data class EdibleLogAddRequest(
     val edibleId: Int,
-    val edibleType: kotlin.String,
+    val edibleType: String,
     val servings: Double,
-    val category: kotlin.String,
-    val time: kotlin.String,
-    val source: kotlin.String
+    val category: String,
+    val time: String,
+    val source: String
 )
 
 @Serializable
@@ -199,7 +206,7 @@ data class UserEdiblesGetResponse(
 
 @Serializable
 data class PendingFoodAddRequest(
-    val base: FoodBase,
+    val base: EdibleBase,
     val nutrients: List<NutrientIdWithAmount>
 )
 
@@ -210,11 +217,11 @@ data class PendingFoodAddResponse(
 
 data class FoodInformationWithId(
     val id: Int,
-    val information: FoodInformation
+    val information: EdibleInformation
 )
 
 data class FoodToLogSearchCriteria(
     val id: Int,
-    val source: FoodSource,
+    val source: EdibleSource,
     val edibleType: EdibleType
 )

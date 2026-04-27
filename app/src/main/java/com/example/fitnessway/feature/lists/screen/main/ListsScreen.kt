@@ -73,9 +73,9 @@ fun ListsScreen(
 
     LaunchedEffect(selectedList) {
         when (selectedList) {
-            ListOption.PendingFood -> viewModel.getPendingFoods()
-            ListOption.Food -> viewModel.getFoods()
-            ListOption.Supplement -> viewModel.getSupplements()
+            ListOption.PENDING_FOOD -> viewModel.getPendingFoods()
+            ListOption.FOOD -> viewModel.getFoods()
+            ListOption.SUPPLEMENT -> viewModel.getSupplements()
         }
     }
 
@@ -88,16 +88,16 @@ fun ListsScreen(
                         icon = Structure.AppIconSource.Vector(Icons.Default.EditNote),
                         contentDescription = "Create ${selectedList.name.toPascalSpaced()}",
                         enabled = nutrientsUiState is UiState.Success && when (selectedList) {
-                            ListOption.PendingFood -> pendingFoodsUiStatePager.uiState is UiState.Success
-                            ListOption.Food -> userFoodsUiStatePager.uiState is UiState.Success
-                            ListOption.Supplement -> userSupplementsUiStatePager.uiState is UiState.Success
+                            ListOption.PENDING_FOOD -> pendingFoodsUiStatePager.uiState is UiState.Success
+                            ListOption.FOOD -> userFoodsUiStatePager.uiState is UiState.Success
+                            ListOption.SUPPLEMENT -> userSupplementsUiStatePager.uiState is UiState.Success
                         },
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
                             when (selectedList) {
-                                ListOption.PendingFood -> onNavigateToEdibleRequestScreen()
-                                ListOption.Food -> onNavigateToEdibleCreationForm()
-                                ListOption.Supplement -> onNavigateToEdibleCreationForm()
+                                ListOption.PENDING_FOOD -> onNavigateToEdibleRequestScreen()
+                                ListOption.FOOD -> onNavigateToEdibleCreationForm()
+                                ListOption.SUPPLEMENT -> onNavigateToEdibleCreationForm()
                             }
                         }
                     )
@@ -117,12 +117,12 @@ fun ListsScreen(
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Banners.ErrorBannerAnimated(
-                    isVisible = selectedList == ListOption.PendingFood && dismissReviewErrorMessage != null,
+                    isVisible = selectedList == ListOption.PENDING_FOOD && dismissReviewErrorMessage != null,
                     text = dismissReviewErrorMessage ?: ""
                 )
 
                 PendingFoodsPagination(
-                    isVisible = selectedList == ListOption.PendingFood,
+                    isVisible = selectedList == ListOption.PENDING_FOOD,
                     isUserPremium = user?.isPremium ?: false,
                     isDismissError = uiState.reviewDismissState is UiState.Error,
                     uiStatePager = pendingFoodsUiStatePager,
@@ -141,7 +141,7 @@ fun ListsScreen(
 
             FoodPreviewList(
                 uiStatePager = userFoodsUiStatePager,
-                isVisible = selectedList == ListOption.Food,
+                isVisible = selectedList == ListOption.FOOD,
                 isUserPremium = user?.isPremium ?: false,
                 onLoadMore = viewModel::getMoreFoods,
                 onFoodClick = { food ->
@@ -152,7 +152,7 @@ fun ListsScreen(
 
             FoodPreviewList(
                 uiStatePager = userSupplementsUiStatePager,
-                isVisible = selectedList == ListOption.Supplement,
+                isVisible = selectedList == ListOption.SUPPLEMENT,
                 isUserPremium = user?.isPremium ?: false,
                 onLoadMore = viewModel::getMoreSupplements,
                 onFoodClick = { food ->

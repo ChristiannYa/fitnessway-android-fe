@@ -54,9 +54,9 @@ enum class EdibleSource {
 }
 
 enum class ListOption {
-    PendingFood,
-    Food,
-    Supplement
+    PENDING_FOOD,
+    FOOD,
+    SUPPLEMENT
 }
 
 enum class FoodLogListFilter {

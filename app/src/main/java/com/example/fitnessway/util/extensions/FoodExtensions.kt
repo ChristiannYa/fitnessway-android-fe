@@ -23,7 +23,7 @@ fun EdibleBase.calcAmountPerServing() = if (this.servingUnit == ServingUnit.OZ) 
 } else this.amountPerServing
 
 fun ListOption.getEdibleType() = when (this) {
-    ListOption.Supplement -> EdibleType.SUPPLEMENT
+    ListOption.SUPPLEMENT -> EdibleType.SUPPLEMENT
     else -> EdibleType.FOOD
 }
 
@@ -41,7 +41,7 @@ fun PendingFoodStatus.getImageVector(): ImageVector = when (this) {
 
 fun ListOption.getAppIconSource(): Structure.AppIconSource =
     when (this) {
-        ListOption.Food -> Structure.AppIconSource.Resource(R.drawable.food)
-        ListOption.PendingFood -> Structure.AppIconSource.Vector(Icons.Default.AddChart)
-        ListOption.Supplement -> Structure.AppIconSource.Resource(R.drawable.energy)
+        ListOption.FOOD -> Structure.AppIconSource.Resource(R.drawable.food)
+        ListOption.PENDING_FOOD -> Structure.AppIconSource.Vector(Icons.Default.AddChart)
+        ListOption.SUPPLEMENT -> Structure.AppIconSource.Resource(R.drawable.energy)
     }

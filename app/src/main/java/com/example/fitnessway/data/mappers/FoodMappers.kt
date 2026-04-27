@@ -18,9 +18,9 @@ import com.example.fitnessway.util.form.FormStates.FoodCreation
 import com.example.fitnessway.util.toEnum
 
 fun ListOption.toClientView() = when (this) {
-    ListOption.Supplement -> this.name.toPascalSpaced(false)
-    ListOption.Food -> this.name.toPascalSpaced(false)
-    ListOption.PendingFood -> "Food Request"
+    ListOption.SUPPLEMENT -> this.name.toPascalSpaced(false)
+    ListOption.FOOD -> this.name.toPascalSpaced(false)
+    ListOption.PENDING_FOOD -> "Food Request"
 }
 
 fun FoodLogsCategorized.mapfl(

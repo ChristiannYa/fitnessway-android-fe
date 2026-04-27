@@ -303,7 +303,7 @@ class ListsViewModel(
         val listOption = listOption.value
 
         val originalPager = when (listOption) {
-            ListOption.PendingFood -> userSupplementRepo.uiState.value.uiStatePager
+            ListOption.Supplement -> userSupplementRepo.uiState.value.uiStatePager
             else -> userFoodRepo.uiState.value.uiStatePager
         }
             .toPaginationOrNull()

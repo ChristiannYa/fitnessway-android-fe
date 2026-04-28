@@ -146,11 +146,8 @@ class ListsViewModel(
         val edibleType = listOption.value.getEdibleType()
 
         // Get current data to update optimistically
-        val originalPager = when (edibleType) {
-            EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
-            else -> userFoodRepo.uiState.value.uiStatePager
-        }
-            .toPaginationOrNull()
+        val originalPager = edibleType
+            .getUserEdiblePaginationOrNull()
             ?: return
 
         // Obtain nutrient data
@@ -280,11 +277,8 @@ class ListsViewModel(
                             .find { it.id == selectedFoodId }
 
                         if (revertedFood != null) {
-                            val currentFoodsPager = when (edibleType) {
-                                EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
-                                else -> userFoodRepo.uiState.value.uiStatePager
-                            }
-                                .toPaginationOrNull()
+                            val currentFoodsPager = edibleType
+                                .getUserEdiblePaginationOrNull()
                                 ?: return@collect
 
                             val revertedFoods = currentFoodsPager.data.map {
@@ -345,11 +339,8 @@ class ListsViewModel(
 
         val edibleType = listOption.value.getEdibleType()
 
-        val originalPager = when (edibleType) {
-            EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
-            else -> userFoodRepo.uiState.value.uiStatePager
-        }
-            .toPaginationOrNull()
+        val originalPager = edibleType
+            .getUserEdiblePaginationOrNull()
             ?: return
 
         // Store current foods (not already in list) before a successful dismissal
@@ -396,7 +387,10 @@ class ListsViewModel(
         }
 
         viewModelScope.launch {
-            userFoodRepo.delete(edibleToRemove.id).collect { state ->
+            when (edibleType) {
+                EdibleType.SUPPLEMENT -> userSupplementRepo.delete(edibleToRemove.id)
+                else -> userFoodRepo.delete(edibleToRemove.id)
+            }.collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(edibleDeleteState = UiState.Success(Unit)) }
@@ -414,11 +408,8 @@ class ListsViewModel(
                             .getOrPut(edibleType) { mutableSetOf() }
                             .add(originalIndex to current)
 
-                        val currentPager = when (edibleType) {
-                            EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
-                            else -> userFoodRepo.uiState.value.uiStatePager
-                        }
-                            .toPaginationOrNull()
+                        val currentPager = edibleType
+                            .getUserEdiblePaginationOrNull()
                             ?: return@collect
 
                         val revertedPager = (_edibleFailedDeletions[edibleType])
@@ -616,4 +607,13 @@ class ListsViewModel(
         val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
         if (nutrientDvMap.isNotEmpty()) nutrientDvControls.onClearData()
     }
+
+    /**
+     * Returns either the user's supplement or food repository depending on
+     * the edible type
+     */
+    private fun EdibleType.getUserEdiblePaginationOrNull() = when (this) {
+        EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
+        else -> userFoodRepo.uiState.value.uiStatePager
+    }.toPaginationOrNull()
 }

@@ -34,11 +34,13 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.request.IEdibleRequestManager
+import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
 import com.example.fitnessway.util.extensions.getEdibleType
+import com.example.fitnessway.util.logcat
 import com.example.fitnessway.util.toEnum
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -78,7 +80,6 @@ class ListsViewModel(
     val userFoodRepoUiState = userFoodRepo.uiState
     val userSupplementRepoUiState = userSupplementRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
-    val foodRecentLogRepoUiState = foodRecentLogRepo.uiState
 
     val userFlow: StateFlow<MUser.Model.User?> = userStateHolder.userState
         .map { it.user }
@@ -137,17 +138,37 @@ class ListsViewModel(
         }
     }
 
-    private var _originalFoodBeforeUpdate: UserEdible? = null
+    private var _originalEdiblesBeforeUpdate = mutableSetOf<UserEdible>()
 
-    fun updateFood() {
+    fun updateEdible() {
+        fun log(l: String, lvl: Constants.LogLevel = Constants.LogLevel.DEBUG) {
+            logcat("[ListsViewModel, updateEdible] $l", lvl)
+        }
+
+        fun UserEdible.logIdAndName() {
+            log("\t${this.id} ${this.information.base.name}")
+        }
+
+        fun List<UserEdible>.logList() {
+            this.forEach { it.logIdAndName() }
+        }
+
         val formState = managers.edition.edibleEditionFormState.value ?: return
         val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
         val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
+        log("selectedFoodId: $selectedFoodId", Constants.LogLevel.INFO)
+
+        val edibleType = listOption.value.getEdibleType()
 
         // Get current data to update optimistically
-        val originalFoodsPager = userFoodRepo.uiState.value.uiStatePager.uiState
-            .toSuccessOrNull()
+        val originalPager = when (edibleType) {
+            EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
+            else -> userFoodRepo.uiState.value.uiStatePager
+        }
+            .toPaginationOrNull()
             ?: return
+        log("originalPager:")
+        originalPager.data.logList()
 
         // Obtain nutrient data
         val originalNutrients = nutrientRepoUiState.value.nutrientsUiState
@@ -155,12 +176,22 @@ class ListsViewModel(
             ?: return
 
         // Obtain most recent version of the food from the repository
-        val latestFood = originalFoodsPager.data
+        val latestFood = originalPager.data
             .find { it.id == selectedFoodId }
             ?: return
+        log("latestFood:")
+        latestFood.logIdAndName()
 
-        // Store original food if first update
-        if (_originalFoodBeforeUpdate == null) _originalFoodBeforeUpdate = latestFood
+        // Add if this edible isn't already being tracked
+        if (_originalEdiblesBeforeUpdate.none { it.id == latestFood.id }) {
+            log(
+                "latest food is not being tracked already, adding it to _originalEdiblesBeforeUpdate",
+                Constants.LogLevel.INFO
+            )
+            _originalEdiblesBeforeUpdate.add(latestFood)
+        } else {
+            log("latest food is already being tracked, skipping addition to _originalEdiblesBeforeUpdate")
+        }
 
         // Gather updated nutrient data
         val addedNutrients = managers.edition.addedNutrients.value
@@ -169,13 +200,17 @@ class ListsViewModel(
 
         // Obtain added nutrients if they are present
         val addedNutrientsWithPreferences = addedNutrients.mapNotNull { addedNutrient ->
-            originalNutrients.combine().find { it.nutrient.id == addedNutrient.id }
+            originalNutrients
+                .combine()
+                .find { it.nutrient.id == addedNutrient.id }
         }
 
         // Create a list of all original nutrients and added nutrients (if any)'s preferences metadata
         val allNutrientsWithPreferences = (latestFood.information.nutrients
             .toList()
-            .map { it.toM25NutrientDataWithAmount().nutrientWithPreferences } + addedNutrientsWithPreferences)
+            .map {
+                it.toM25NutrientDataWithAmount().nutrientWithPreferences
+            } + addedNutrientsWithPreferences)
             .associateBy { it.nutrient.id }
 
         // Create updated nutrient data
@@ -194,8 +229,7 @@ class ListsViewModel(
             .toType()
 
         // Create the new food
-        val optimisticFood = UserEdible(
-            id = latestFood.id,
+        val optimisticFood = latestFood.copy(
             information = com.example.fitnessway.data.model.m_26.EdibleInformation(
                 base = EdibleBase(
                     formState.data.name,
@@ -204,16 +238,15 @@ class ListsViewModel(
                     servingUnit = formState.data.servingUnit.toEnum()
                 ),
                 nutrients = updatedNutrientsByType
-            ),
-            lastLoggedAt = latestFood.lastLoggedAt,
-            createdAt = latestFood.createdAt,
-            updatedAt = latestFood.updatedAt
+            )
         )
 
         // Create optimistic data
-        val optimisticFoods = originalFoodsPager.data.map {
+        val optimisticFoods = originalPager.data.map {
             if (it.id == latestFood.id) optimisticFood else it
         }
+        log("optimisticFoods:")
+        optimisticFoods.logList()
 
         // Update UI immediately
         managers.edition.setSelectedEdible(optimisticFood)
@@ -222,17 +255,18 @@ class ListsViewModel(
 
         _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
 
-        userFoodRepo.update {
-            it.copy(
-                uiStatePager = UiStatePager(
-                    uiState = UiState.Success(
-                        originalFoodsPager.copy(
-                            data = optimisticFoods
-                        )
-                    ),
-                    isLoadingMore = false
+        val optimisticPager = UiStatePager(
+            uiState = UiState.Success(
+                originalPager.copy(
+                    data = optimisticFoods
                 )
-            )
+            ),
+            isLoadingMore = false
+        )
+
+        when (edibleType) {
+            EdibleType.SUPPLEMENT -> userSupplementRepo.update { it.copyWithPager(optimisticPager) }
+            else -> userFoodRepo.update { it.copyWithPager(optimisticPager) }
         }
 
         removeRecentlyLoggedFood(latestFood.id)
@@ -252,43 +286,57 @@ class ListsViewModel(
 
         // Send the api request
         viewModelScope.launch {
-            userFoodRepo.update(request).collect { state ->
+            when (edibleType) {
+                EdibleType.SUPPLEMENT -> userSupplementRepo.update(request)
+                else -> userFoodRepo.update(request)
+            }.collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
-                        foodLogRepo.clearMap()
+                        foodLogRepo.clearMappedDates()
 
                         // Clear the original food's data
-                        _originalFoodBeforeUpdate = null
+                        _originalEdiblesBeforeUpdate.removeIf { it.id == selectedFoodId }
                     }
 
                     is UiState.Error -> {
+                        log("update failed", Constants.LogLevel.ERROR)
+
                         // Provide ui the error state
                         _uiState.update { it.copy(foodUpdateState = state) }
 
-                        val revertedFood = _originalFoodBeforeUpdate
+                        val revertedFood = _originalEdiblesBeforeUpdate
+                            .find { it.id == selectedFoodId }
+                        log("revertedFood:")
+                        revertedFood?.logIdAndName()
 
                         if (revertedFood != null) {
-                            val currentFoodsPager = userFoodRepo.uiState.value.uiStatePager
+                            val currentFoodsPager = when (edibleType) {
+                                EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
+                                else -> userFoodRepo.uiState.value.uiStatePager
+                            }
                                 .toPaginationOrNull()
                                 ?: return@collect
+                            log("currentFoods [ROLLBACK]:")
+                            currentFoodsPager.data.logList()
 
-                            val currentFoods = currentFoodsPager.data
-
-                            val revertedFoods = currentFoods.map {
+                            val revertedFoods = currentFoodsPager.data.map {
                                 if (it.id == revertedFood.id) revertedFood else it
                             }
+                            log("revertedFoods [ROLLBACK]:")
+                            revertedFoods.logList()
 
-                            userFoodRepo.update {
-                                it.copy(
-                                    uiStatePager = UiStatePager(
-                                        uiState = UiState.Success(
-                                            currentFoodsPager.copy(
-                                                data = revertedFoods
-                                            )
-                                        )
+                            val revertedPager = UiStatePager(
+                                uiState = UiState.Success(
+                                    currentFoodsPager.copy(
+                                        data = revertedFoods
                                     )
                                 )
+                            )
+
+                            when (edibleType) {
+                                EdibleType.SUPPLEMENT -> userSupplementRepo.update { it.copy(uiStatePager = revertedPager) }
+                                else -> userFoodRepo.update { it.copy(uiStatePager = revertedPager) }
                             }
 
                             managers.edition.initializeEdibleForm(revertedFood)
@@ -304,6 +352,24 @@ class ListsViewModel(
                 }
             }
         }
+    }
+
+    private fun removeRecentlyLoggedFood(foodId: Int) {
+        foodRecentLogRepo.uiState.value.uiStatePager.uiState
+            .toSuccessOrNull()
+            ?.let { pagination ->
+                foodRecentLogRepo.updateState {
+                    it.copy(
+                        uiStatePager = UiStatePager(
+                            uiState = UiState.Success(
+                                pagination.copy(
+                                    data = pagination.data.filter { it.id != foodId }
+                                )
+                            )
+                        )
+                    )
+                }
+            }
     }
 
     private val _edibleFailedDeletions = mutableMapOf<EdibleType, MutableSet<Pair<Int, UserEdible>>>()
@@ -433,24 +499,6 @@ class ListsViewModel(
                 }
             }
         }
-    }
-
-    private fun removeRecentlyLoggedFood(foodId: Int) {
-        foodRecentLogRepo.uiState.value.uiStatePager.uiState
-            .toSuccessOrNull()
-            ?.let { pagination ->
-                foodRecentLogRepo.updateState {
-                    it.copy(
-                        uiStatePager = UiStatePager(
-                            uiState = UiState.Success(
-                                pagination.copy(
-                                    data = pagination.data.filter { it.id != foodId }
-                                )
-                            )
-                        )
-                    )
-                }
-            }
     }
 
     private val _pendingFoodFailedDeletions = mutableSetOf<Pair<Int, PendingFood>>()

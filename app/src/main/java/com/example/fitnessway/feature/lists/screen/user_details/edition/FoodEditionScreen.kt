@@ -107,7 +107,7 @@ fun FoodEditionScreen(
                     ) {
                         focusManager.clearFocus()
                         if (foodUpdateState !is UiState.Idle) viewModel.resetFoodUpdateState()
-                        viewModel.updateFood()
+                        viewModel.updateEdible()
                     }
                 }
             }

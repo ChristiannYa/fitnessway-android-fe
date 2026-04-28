@@ -17,7 +17,7 @@ interface IEdibleLogRepository {
     suspend fun update(request: FoodLogUpdateRequest, date: String): Flow<UiState<FoodLog>>
     suspend fun delete(foodLogId: Int, date: String): Flow<UiState<FoodLogData>>
 
-    fun clearMap()
+    fun clearMappedDates()
     fun updateState(update: (EdibleLogRepositoryUiState) -> EdibleLogRepositoryUiState)
     fun clear()
 }

@@ -111,7 +111,7 @@ class ProfileViewModel(
 
                         nutrientRepo.clearNutrientIntakesUiCache()
                         foodRepo.refresh()
-                        foodLogRepo.clearMap()
+                        foodLogRepo.clearMappedDates()
                     }
 
                     is UiState.Loading -> {
@@ -170,7 +170,7 @@ class ProfileViewModel(
 
                         nutrientRepo.clearNutrientIntakesUiCache()
                         foodRepo.refresh()
-                        foodLogRepo.clearMap()
+                        foodLogRepo.clearMappedDates()
                     }
 
                     is UiState.Loading -> {

@@ -14,10 +14,11 @@ import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -77,11 +78,12 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
         )
 
     private var updateEdibleJob: Job? = null
-    private val updateFoodFlow = MutableSharedFlow<UiState<MFood.Model.FoodInformation>>()
     override suspend fun update(
         request: MFood.Api.Req.FoodUpdateRequest
     ): Flow<UiState<MFood.Model.FoodInformation>> {
         updateEdibleJob?.cancel()
+
+        val channel: Channel<UiState<MFood.Model.FoodInformation>> = Channel()
 
         updateEdibleJob = repositoryScope.launch {
             httpClient
@@ -91,10 +93,12 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
                     errMsg = "Failed to update $edibleTypeString",
                     pathDescription = "update $edibleTypeString"
                 )
-                .collect { updateFoodFlow.emit(it) }
+                .collect { channel.send(it) }
+
+            channel.close()
         }
 
-        return updateFoodFlow
+        return channel.receiveAsFlow()
     }
 
     override suspend fun delete(id: Int): Flow<UiState<MFood.Model.FoodInformation>> =

@@ -77,15 +77,25 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
             pathDescription = "add $edibleTypeString"
         )
 
-    private var updateEdibleJob: Job? = null
+    /**
+     * Each food gets its own Job and Channel. This way, a new update for the same
+     * food cancels the previous one, leaving updates for different foods run
+     * concurrently without interfering
+     */
+    private val updateJobs = mutableMapOf<Int, Pair<Job, Channel<UiState<MFood.Model.FoodInformation>>>>()
     override suspend fun update(
         request: MFood.Api.Req.FoodUpdateRequest
     ): Flow<UiState<MFood.Model.FoodInformation>> {
-        updateEdibleJob?.cancel()
+        val foodId = request.information.id
+
+        updateJobs[foodId]?.let { (job, channel) ->
+            job.cancel()
+            channel.close()
+        }
 
         val channel: Channel<UiState<MFood.Model.FoodInformation>> = Channel()
 
-        updateEdibleJob = repositoryScope.launch {
+        updateJobs[foodId] = repositoryScope.launch {
             httpClient
                 .makeRequest(
                     apiCall = { apiClient.update(request) },
@@ -96,7 +106,9 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
                 .collect { channel.send(it) }
 
             channel.close()
-        }
+            updateJobs.remove(foodId)
+
+        } to channel
 
         return channel.receiveAsFlow()
     }

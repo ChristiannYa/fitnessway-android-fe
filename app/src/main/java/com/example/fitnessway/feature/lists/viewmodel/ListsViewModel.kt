@@ -34,13 +34,11 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.request.IEdibleRequestManager
-import com.example.fitnessway.util.Constants
 import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
 import com.example.fitnessway.util.extensions.getEdibleType
-import com.example.fitnessway.util.logcat
 import com.example.fitnessway.util.toEnum
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -141,22 +139,9 @@ class ListsViewModel(
     private var _originalEdiblesBeforeUpdate = mutableSetOf<UserEdible>()
 
     fun updateEdible() {
-        fun log(l: String, lvl: Constants.LogLevel = Constants.LogLevel.DEBUG) {
-            logcat("[ListsViewModel, updateEdible] $l", lvl)
-        }
-
-        fun UserEdible.logIdAndName() {
-            log("\t${this.id} ${this.information.base.name}")
-        }
-
-        fun List<UserEdible>.logList() {
-            this.forEach { it.logIdAndName() }
-        }
-
         val formState = managers.edition.edibleEditionFormState.value ?: return
         val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
         val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
-        log("selectedFoodId: $selectedFoodId", Constants.LogLevel.INFO)
 
         val edibleType = listOption.value.getEdibleType()
 
@@ -167,8 +152,6 @@ class ListsViewModel(
         }
             .toPaginationOrNull()
             ?: return
-        log("originalPager:")
-        originalPager.data.logList()
 
         // Obtain nutrient data
         val originalNutrients = nutrientRepoUiState.value.nutrientsUiState
@@ -179,18 +162,10 @@ class ListsViewModel(
         val latestFood = originalPager.data
             .find { it.id == selectedFoodId }
             ?: return
-        log("latestFood:")
-        latestFood.logIdAndName()
 
         // Add if this edible isn't already being tracked
         if (_originalEdiblesBeforeUpdate.none { it.id == latestFood.id }) {
-            log(
-                "latest food is not being tracked already, adding it to _originalEdiblesBeforeUpdate",
-                Constants.LogLevel.INFO
-            )
             _originalEdiblesBeforeUpdate.add(latestFood)
-        } else {
-            log("latest food is already being tracked, skipping addition to _originalEdiblesBeforeUpdate")
         }
 
         // Gather updated nutrient data
@@ -245,8 +220,6 @@ class ListsViewModel(
         val optimisticFoods = originalPager.data.map {
             if (it.id == latestFood.id) optimisticFood else it
         }
-        log("optimisticFoods:")
-        optimisticFoods.logList()
 
         // Update UI immediately
         managers.edition.setSelectedEdible(optimisticFood)
@@ -300,15 +273,11 @@ class ListsViewModel(
                     }
 
                     is UiState.Error -> {
-                        log("update failed", Constants.LogLevel.ERROR)
-
                         // Provide ui the error state
                         _uiState.update { it.copy(foodUpdateState = state) }
 
                         val revertedFood = _originalEdiblesBeforeUpdate
                             .find { it.id == selectedFoodId }
-                        log("revertedFood:")
-                        revertedFood?.logIdAndName()
 
                         if (revertedFood != null) {
                             val currentFoodsPager = when (edibleType) {
@@ -317,14 +286,10 @@ class ListsViewModel(
                             }
                                 .toPaginationOrNull()
                                 ?: return@collect
-                            log("currentFoods [ROLLBACK]:")
-                            currentFoodsPager.data.logList()
 
                             val revertedFoods = currentFoodsPager.data.map {
                                 if (it.id == revertedFood.id) revertedFood else it
                             }
-                            log("revertedFoods [ROLLBACK]:")
-                            revertedFoods.logList()
 
                             val revertedPager = UiStatePager(
                                 uiState = UiState.Success(

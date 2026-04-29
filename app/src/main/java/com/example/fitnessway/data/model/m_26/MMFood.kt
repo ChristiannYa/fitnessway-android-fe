@@ -53,8 +53,7 @@ enum class EdibleSource {
     USER
 }
 
-enum class ListOptionFilter {
-    PENDING_FOOD,
+enum class EdibleListFilter {
     FOOD,
     FOOD_REQUEST,
     SUPPLEMENT,

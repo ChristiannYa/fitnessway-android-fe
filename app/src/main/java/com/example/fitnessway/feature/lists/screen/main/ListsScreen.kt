@@ -18,10 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.example.fitnessway.data.mappers.plural
-import com.example.fitnessway.data.mappers.toClientView
+import com.example.fitnessway.data.mappers.toEdibleListFilterMatched
+import com.example.fitnessway.data.mappers.toEdibleType
 import com.example.fitnessway.data.mappers.toPascalSpaced
-import com.example.fitnessway.data.model.m_26.ListOptionFilter
+import com.example.fitnessway.data.model.m_26.EdibleListFilter
+import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.feature.lists.screen.main.composables.PendingFoodsPagination
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.edible.FoodPreviewList
@@ -46,7 +47,7 @@ fun ListsScreen(
     onNavigateToEdibleCreationForm: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val selectedList by viewModel.listOptionFilter.collectAsState()
+    val selectedList by viewModel.edibleListFilter.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val pendingFoodRepoUiState by viewModel.pendingFoodRepoUiState.collectAsState()
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
@@ -55,7 +56,7 @@ fun ListsScreen(
 
     val user = userFlow
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
-    val pendingFoodsUiStatePager = pendingFoodRepoUiState.uiStatePager
+    val userPendingFoodsUiStatePager = pendingFoodRepoUiState.uiStatePager
     val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
     val userSupplementsUiStatePager = userSupplementUiState.uiStatePager
 
@@ -73,36 +74,34 @@ fun ListsScreen(
 
     LaunchedEffect(selectedList) {
         when (selectedList) {
-            ListOptionFilter.PENDING_FOOD -> viewModel.getPendingFoods()
-            ListOptionFilter.FOOD -> viewModel.getFoods()
-            ListOptionFilter.FOOD_REQUEST -> {}
-            ListOptionFilter.SUPPLEMENT -> viewModel.getSupplements()
-            ListOptionFilter.SUPPLEMENT_REQUEST -> {}
-            else -> {}
+            EdibleListFilter.FOOD -> viewModel.getFoods()
+            EdibleListFilter.FOOD_REQUEST -> viewModel.getPendingFoods()
+            EdibleListFilter.SUPPLEMENT -> viewModel.getSupplements()
+            EdibleListFilter.SUPPLEMENT_REQUEST -> {}
         }
     }
 
     Screen(
         header = {
             Header(
-                title = "My ${selectedList.toClientView().plural()}",
+                title = "My ${selectedList.name.toPascalSpaced()}s",
                 extraContent = {
                     Clickables.AppPngIconButton(
                         icon = Structure.AppIconSource.Vector(Icons.Default.EditNote),
-                        contentDescription = "Create ${selectedList.name.toPascalSpaced()}",
+                        contentDescription = "Create a ${selectedList.name.toPascalSpaced()}",
                         enabled = nutrientsUiState is UiState.Success && when (selectedList) {
-                            ListOptionFilter.PENDING_FOOD -> pendingFoodsUiStatePager.uiState is UiState.Success
-                            ListOptionFilter.FOOD -> userFoodsUiStatePager.uiState is UiState.Success
-                            ListOptionFilter.SUPPLEMENT -> userSupplementsUiStatePager.uiState is UiState.Success
+                            EdibleListFilter.FOOD -> userFoodsUiStatePager.uiState is UiState.Success
+                            EdibleListFilter.FOOD_REQUEST -> userPendingFoodsUiStatePager.uiState is UiState.Success
+                            EdibleListFilter.SUPPLEMENT -> userSupplementsUiStatePager.uiState is UiState.Success
                             else -> false
                         },
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
                             when (selectedList) {
-                                ListOptionFilter.PENDING_FOOD -> onNavigateToEdibleRequestScreen()
-                                ListOptionFilter.FOOD -> onNavigateToEdibleCreationForm()
-                                ListOptionFilter.SUPPLEMENT -> onNavigateToEdibleCreationForm()
-                                else -> {}
+                                EdibleListFilter.FOOD -> onNavigateToEdibleCreationForm()
+                                EdibleListFilter.FOOD_REQUEST -> onNavigateToEdibleRequestScreen()
+                                EdibleListFilter.SUPPLEMENT -> onNavigateToEdibleCreationForm()
+                                EdibleListFilter.SUPPLEMENT_REQUEST -> {}
                             }
                         }
                     )
@@ -120,69 +119,74 @@ fun ListsScreen(
         }
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Banners.ErrorBannerAnimated(
-                    isVisible = selectedList == ListOptionFilter.PENDING_FOOD && dismissReviewErrorMessage != null,
-                    text = dismissReviewErrorMessage ?: ""
+            Column {
+                val isPendingFoodsVisible = selectedList == EdibleListFilter.FOOD_REQUEST
+
+                Column(verticalArrangement = Arrangement.spacedBy(if (isPendingFoodsVisible) 16.dp else 0.dp)) {
+                    Banners.ErrorBannerAnimated(
+                        isVisible = isPendingFoodsVisible && dismissReviewErrorMessage != null,
+                        text = dismissReviewErrorMessage ?: ""
+                    )
+
+                    PendingFoodsPagination(
+                        uiStatePager = userPendingFoodsUiStatePager,
+                        isVisible = isPendingFoodsVisible,
+                        isUserPremium = user?.isPremium ?: false,
+                        isDismissError = uiState.reviewDismissState is UiState.Error,
+                        onLoadMore = viewModel::getMorePendingFoods,
+                        onFoodClick = {
+                            viewModel.requestManager.setPendingFood(it)
+                            onNavigateToPendingEdibleDetails()
+                        },
+                        onDismissReview = { id ->
+                            viewModel.resetReviewDismissState()
+                            viewModel.requestManager.setReviewIdToRemove(id)
+                            viewModel.dismissReview()
+                        }
+                    )
+                }
+
+                FoodPreviewList(
+                    uiStatePager = userFoodsUiStatePager,
+                    isVisible = selectedList == EdibleListFilter.FOOD,
+                    isUserPremium = user?.isPremium ?: false,
+                    onLoadMore = viewModel::getMoreFoods,
+                    onFoodClick = { food ->
+                        viewModel.editionManager.setSelectedEdible(food)
+                        onNavigateToUserEdibleDetails()
+                    }
                 )
 
-                PendingFoodsPagination(
-                    isVisible = selectedList == ListOptionFilter.PENDING_FOOD,
+                FoodPreviewList(
+                    uiStatePager = userSupplementsUiStatePager,
+                    isVisible = selectedList == EdibleListFilter.SUPPLEMENT,
                     isUserPremium = user?.isPremium ?: false,
-                    isDismissError = uiState.reviewDismissState is UiState.Error,
-                    uiStatePager = pendingFoodsUiStatePager,
-                    onLoadMore = viewModel::getMorePendingFoods,
-                    onFoodClick = {
-                        viewModel.requestManager.setPendingFood(it)
-                        onNavigateToPendingEdibleDetails()
-                    },
-                    onDismissReview = { id ->
-                        viewModel.resetReviewDismissState()
-                        viewModel.requestManager.setReviewIdToRemove(id)
-                        viewModel.dismissReview()
+                    onLoadMore = viewModel::getMoreSupplements,
+                    onFoodClick = { food ->
+                        viewModel.editionManager.setSelectedEdible(food)
+                        onNavigateToUserEdibleDetails()
                     }
                 )
             }
 
-            FoodPreviewList(
-                uiStatePager = userFoodsUiStatePager,
-                isVisible = selectedList == ListOptionFilter.FOOD,
-                isUserPremium = user?.isPremium ?: false,
-                onLoadMore = viewModel::getMoreFoods,
-                onFoodClick = { food ->
-                    viewModel.editionManager.setSelectedEdible(food)
-                    onNavigateToUserEdibleDetails()
-                }
-            )
 
-            FoodPreviewList(
-                uiStatePager = userSupplementsUiStatePager,
-                isVisible = selectedList == ListOptionFilter.SUPPLEMENT,
-                isUserPremium = user?.isPremium ?: false,
-                onLoadMore = viewModel::getMoreSupplements,
-                onFoodClick = { food ->
-                    viewModel.editionManager.setSelectedEdible(food)
-                    onNavigateToUserEdibleDetails()
-                }
-            )
-
-            val options = enumValues<ListOptionFilter>().map { option ->
-                val isSelected = selectedList == option
+            val options = enumValues<EdibleType>().map { option ->
+                val isSelected = selectedList.toEdibleType() == option
 
                 Structure.MoreOptionsConfig(
-                    text = option.toClientView().plural(),
+                    text = "${option.name.toPascalSpaced()}s",
                     backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else null,
                     icon = option.getAppIconSource(),
                     iconTint = if (isSelected) WhiteFont else null,
                     onClick = {
                         moreOptionsState.hide()
-                        viewModel.setSelectedList(option)
+                        viewModel.setListType(option.toEdibleListFilterMatched())
                     }
                 )
             }.toTypedArray()
 
             // @TODO: Fix pop-out animation animation stutter when fetching for pending
-            //   edibles for the first time
+            //        edibles for the first time
             Structure.MoreOptions(
                 state = moreOptionsState,
                 options = options,

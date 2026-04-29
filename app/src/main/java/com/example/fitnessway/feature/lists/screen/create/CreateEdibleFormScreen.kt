@@ -3,11 +3,11 @@ package com.example.fitnessway.feature.lists.screen.create
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.example.fitnessway.data.mappers.toEdibleType
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.edible.creation.composables.FoodCreationFormScreen
-import com.example.fitnessway.util.extensions.getEdibleType
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -18,7 +18,7 @@ fun CreateFoodFormScreen(
     val uiState by viewModel.uiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
-    val listOption by viewModel.listOptionFilter.collectAsState()
+    val listOption by viewModel.edibleListFilter.collectAsState()
 
     val user = userFlow
     val foodAddState = uiState.foodAddState
@@ -34,7 +34,7 @@ fun CreateFoodFormScreen(
             onBackClick = onBackClick,
             edibleCreation = viewModel.creationManager,
             edibleSource = EdibleSource.USER,
-            edibleType = listOption.getEdibleType(),
+            edibleType = listOption.toEdibleType(),
             nutrientsUiState = nutrientsUiState,
             isUserPremium = user.isPremium,
             onResetSubmissionState = viewModel::resetFoodAddState,

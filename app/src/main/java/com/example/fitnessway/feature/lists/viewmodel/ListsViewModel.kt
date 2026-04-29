@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.lists.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.mappers.toEdibleType
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toM25NutrientDataWithAmount
 import com.example.fitnessway.data.mappers.toM26NutrientInFood
@@ -18,8 +19,8 @@ import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.EdibleBase
+import com.example.fitnessway.data.model.m_26.EdibleListFilter
 import com.example.fitnessway.data.model.m_26.EdibleType
-import com.example.fitnessway.data.model.m_26.ListOptionFilter
 import com.example.fitnessway.data.model.m_26.OptimisticUpdate
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.UserEdible
@@ -38,7 +39,6 @@ import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
-import com.example.fitnessway.util.extensions.getEdibleType
 import com.example.fitnessway.util.toEnum
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -71,8 +71,8 @@ class ListsViewModel(
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
 
-    private val _listOptionFilter = MutableStateFlow<ListOptionFilter>(ListOptionFilter.FOOD)
-    val listOptionFilter: StateFlow<ListOptionFilter> = _listOptionFilter
+    private val _edibleListFilter = MutableStateFlow<EdibleListFilter>(EdibleListFilter.FOOD)
+    val edibleListFilter: StateFlow<EdibleListFilter> = _edibleListFilter
 
     val pendingFoodRepoUiState = pendingFoodRepo.uiState
     val userFoodRepoUiState = userFoodRepo.uiState
@@ -116,7 +116,7 @@ class ListsViewModel(
 
     fun addEdible() {
         val formState = managers.creation.formState.value
-        val edibleType = listOptionFilter.value.getEdibleType()
+        val edibleType = edibleListFilter.value.toEdibleType()
 
         val request = formState.toUserEdibleRequest(
             nutrients = managers.creation.nutrientDvControls.nutrientDvMap.value
@@ -130,8 +130,8 @@ class ListsViewModel(
 
                 if (state is UiState.Success) {
                     when (edibleType) {
+                        EdibleType.FOOD -> userFoodRepo.refresh()
                         EdibleType.SUPPLEMENT -> userSupplementRepo.refresh()
-                        else -> userFoodRepo.refresh()
                     }
                 }
             }
@@ -145,7 +145,7 @@ class ListsViewModel(
         val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
         val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
 
-        val edibleType = listOptionFilter.value.getEdibleType()
+        val edibleType = edibleListFilter.value.toEdibleType()
 
         // Get current data to update optimistically
         val originalPager = edibleType
@@ -238,7 +238,7 @@ class ListsViewModel(
 
         when (edibleType) {
             EdibleType.SUPPLEMENT -> userSupplementRepo.update { it.copyWithPager(optimisticPager) }
-            else -> userFoodRepo.update { it.copyWithPager(optimisticPager) }
+            EdibleType.FOOD -> userFoodRepo.update { it.copyWithPager(optimisticPager) }
         }
 
         removeRecentlyLoggedFood(latestFood.id)
@@ -260,7 +260,7 @@ class ListsViewModel(
         viewModelScope.launch {
             when (edibleType) {
                 EdibleType.SUPPLEMENT -> userSupplementRepo.update(request)
-                else -> userFoodRepo.update(request)
+                EdibleType.FOOD -> userFoodRepo.update(request)
             }.collect { state ->
                 when (state) {
                     is UiState.Success -> {
@@ -297,7 +297,7 @@ class ListsViewModel(
 
                             when (edibleType) {
                                 EdibleType.SUPPLEMENT -> userSupplementRepo.update { it.copy(uiStatePager = revertedPager) }
-                                else -> userFoodRepo.update { it.copy(uiStatePager = revertedPager) }
+                                EdibleType.FOOD -> userFoodRepo.update { it.copy(uiStatePager = revertedPager) }
                             }
 
                             managers.edition.initializeEdibleForm(revertedFood)
@@ -323,9 +323,7 @@ class ListsViewModel(
                     it.copy(
                         uiStatePager = UiStatePager(
                             uiState = UiState.Success(
-                                pagination.copy(
-                                    data = pagination.data.filter { it.id != foodId }
-                                )
+                                pagination.copy(data = pagination.data.filter { f -> f.id != foodId })
                             )
                         )
                     )
@@ -339,7 +337,7 @@ class ListsViewModel(
     fun deleteEdible() {
         val edibleToRemove = managers.edition.selectedEdible.value ?: return
 
-        val edibleType = listOptionFilter.value.getEdibleType()
+        val edibleType = edibleListFilter.value.toEdibleType()
 
         val originalPager = edibleType
             .getUserEdiblePaginationOrNull()
@@ -567,8 +565,8 @@ class ListsViewModel(
         }
     }
 
-    fun setSelectedList(list: ListOptionFilter) {
-        _listOptionFilter.value = list
+    fun setListType(list: EdibleListFilter) {
+        _edibleListFilter.value = list
     }
 
     fun resetFoodRequestState() {
@@ -615,7 +613,7 @@ class ListsViewModel(
      * the edible type
      */
     private fun EdibleType.getUserEdiblePaginationOrNull() = when (this) {
+        EdibleType.FOOD -> userFoodRepo.uiState.value.uiStatePager
         EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
-        else -> userFoodRepo.uiState.value.uiStatePager
     }.toPaginationOrNull()
 }

@@ -4,23 +4,30 @@ import com.example.fitnessway.data.model.MFood
 import com.example.fitnessway.data.model.m_26.EdibleAddRequest
 import com.example.fitnessway.data.model.m_26.EdibleBase
 import com.example.fitnessway.data.model.m_26.EdibleInformation
+import com.example.fitnessway.data.model.m_26.EdibleListFilter
 import com.example.fitnessway.data.model.m_26.EdibleSource
+import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.model.m_26.FoodPreview
-import com.example.fitnessway.data.model.m_26.ListOptionFilter
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.form.FormStates.FoodCreation
 import com.example.fitnessway.util.toEnum
 
-fun ListOptionFilter.toClientView() = when (this) {
-    ListOptionFilter.SUPPLEMENT -> this.name.toPascalSpaced()
-    ListOptionFilter.FOOD -> this.name.toPascalSpaced()
-    ListOptionFilter.PENDING_FOOD -> "Food Request"
-    else -> ""
+fun EdibleListFilter.toEdibleType() = when (this) {
+    EdibleListFilter.FOOD,
+    EdibleListFilter.FOOD_REQUEST -> EdibleType.FOOD
+
+    EdibleListFilter.SUPPLEMENT,
+    EdibleListFilter.SUPPLEMENT_REQUEST -> EdibleType.SUPPLEMENT
+}
+
+fun EdibleType.toEdibleListFilterMatched() = when (this) {
+    EdibleType.FOOD -> EdibleListFilter.FOOD
+    EdibleType.SUPPLEMENT -> EdibleListFilter.SUPPLEMENT
 }
 
 fun FoodLogsCategorized.mapfl(

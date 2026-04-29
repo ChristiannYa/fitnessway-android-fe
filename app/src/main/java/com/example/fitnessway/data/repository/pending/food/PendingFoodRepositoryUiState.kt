@@ -1,4 +1,4 @@
-package com.example.fitnessway.data.repository.pending_food
+package com.example.fitnessway.data.repository.pending.food
 
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.repository._state.RepositoryPagerState
@@ -8,5 +8,6 @@ data class PendingFoodRepositoryUiState(
     override val uiStatePager: UiStatePager<PendingFood> = UiStatePager()
 ) : RepositoryPagerState<PendingFood, PendingFoodRepositoryUiState> {
 
-    override fun copyWithPager(pager: UiStatePager<PendingFood>) = copy(uiStatePager = pager)
+    override fun copyWithPager(pager: UiStatePager<PendingFood>): PendingFoodRepositoryUiState =
+        copy(uiStatePager = pager)
 }

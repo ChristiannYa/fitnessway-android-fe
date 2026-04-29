@@ -1,6 +1,6 @@
 package com.example.fitnessway.data.network.ktor_client
 
-import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
+import com.example.fitnessway.data.model.m_26.EdibleAddRequest
 import com.example.fitnessway.data.model.m_26.PendingFoodAddResponse
 import com.example.fitnessway.data.model.m_26.PendingFoodsGetResponse
 import com.example.fitnessway.data.network.ApiUrls
@@ -12,20 +12,21 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.HttpClient as KtorHttpClient
 
-class PendingFoodApiClient(private val client: KtorHttpClient) {
-    suspend fun getPendingFoods(
+class PendingEdibleApiClient(private val client: KtorHttpClient) {
+    suspend fun getList(
         limit: Int,
-        offset: Long
+        offset: Long,
+        edibleType: String
     ): PendingFoodsGetResponse =
         client
-            .get(ApiUrls.PendingEdible.LIST_URL) {
+            .get("${ApiUrls.PendingEdible.LIST_URL}/$edibleType") {
                 parameter("limit", limit)
                 parameter("offset", offset)
             }
             .extractData()
 
-    suspend fun addPendingFood(
-        req: PendingFoodAddRequest
+    suspend fun add(
+        req: EdibleAddRequest
     ): PendingFoodAddResponse =
         client
             .post(ApiUrls.PendingEdible.ADD_URL) {
@@ -33,6 +34,6 @@ class PendingFoodApiClient(private val client: KtorHttpClient) {
             }
             .extractData()
 
-    suspend fun dismissReview(id: Int) =
-        client.delete(ApiUrls.PendingEdible.getDismissReviewUrl(id))
+    suspend fun dismiss(id: Int) =
+        client.delete("${ApiUrls.PendingEdible.DISMISS_REVIEW_URL}/$id")
 }

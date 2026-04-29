@@ -16,8 +16,8 @@ import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupp
 import com.example.fitnessway.data.repository.edible_recent_log.supplement.SupplementRecentLogImpl
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.nutrient.NutrientRepositoryImpl
-import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
-import com.example.fitnessway.data.repository.pending_food.PendingFoodRepositoryImpl
+import com.example.fitnessway.data.repository.pending.food.IPendingFoodRepository
+import com.example.fitnessway.data.repository.pending.food.PendingFoodRepository
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.repository.user.UserRepositoryImpl
 import org.koin.core.qualifier.named
@@ -57,7 +57,7 @@ val repositoryModule = module {
     }
 
     single<IPendingFoodRepository> {
-        PendingFoodRepositoryImpl(
+        PendingFoodRepository(
             httpClient = get(),
             apiClient = get(),
             repositoryScope = get(named("repositoryScope"))

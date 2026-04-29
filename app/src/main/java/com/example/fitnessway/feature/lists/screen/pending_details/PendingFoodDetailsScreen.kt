@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toFoodInformation
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
-import com.example.fitnessway.ui.food.FoodInformationView
+import com.example.fitnessway.ui.edible.FoodInformationView
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation

@@ -18,7 +18,7 @@ fun CreateFoodFormScreen(
     val uiState by viewModel.uiState.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
-    val listOption by viewModel.listOption.collectAsState()
+    val listOption by viewModel.listOptionFilter.collectAsState()
 
     val user = userFlow
     val foodAddState = uiState.foodAddState

@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
-    private val edibleType: EdibleType,
+    edibleType: EdibleType,
     private val httpClient: HttpClient,
     private val apiClient: UserEdibleApiClient,
     private val repositoryScope: CoroutineScope,
@@ -37,13 +37,7 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
 
     private fun fetch(offset: Long = 0L): Flow<UiState<PaginationResult<UserEdible>>> =
         httpClient.makeRequest(
-            apiCall = {
-                apiClient.getList(
-                    limit = Pagination.LIMIT,
-                    offset = offset,
-                    edibleType = edibleType.name
-                )
-            },
+            apiCall = { apiClient.getList(Pagination.LIMIT, offset, edibleTypeString) },
             extractData = { it.userEdiblesPagination },
             errMsg = "Failed to get your ${edibleTypeString}s",
             pathDescription = "User $edibleTypeString list"

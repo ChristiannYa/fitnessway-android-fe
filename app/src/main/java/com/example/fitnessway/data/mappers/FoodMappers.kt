@@ -9,18 +9,18 @@ import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.model.m_26.FoodPreview
-import com.example.fitnessway.data.model.m_26.ListOption
+import com.example.fitnessway.data.model.m_26.ListOptionFilter
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.PendingFood
-import com.example.fitnessway.data.model.m_26.PendingFoodAddRequest
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.form.FormStates.FoodCreation
 import com.example.fitnessway.util.toEnum
 
-fun ListOption.toClientView() = when (this) {
-    ListOption.SUPPLEMENT -> this.name.toPascalSpaced()
-    ListOption.FOOD -> this.name.toPascalSpaced()
-    ListOption.PENDING_FOOD -> "Food Request"
+fun ListOptionFilter.toClientView() = when (this) {
+    ListOptionFilter.SUPPLEMENT -> this.name.toPascalSpaced()
+    ListOptionFilter.FOOD -> this.name.toPascalSpaced()
+    ListOptionFilter.PENDING_FOOD -> "Food Request"
+    else -> ""
 }
 
 fun FoodLogsCategorized.mapfl(
@@ -35,14 +35,18 @@ fun FoodLogsCategorized.mapfl(
     supplement = transform(FoodLogCategory.SUPPLEMENT, supplement)
 )
 
-fun FoodCreation.toPendingRequest(nutrients: List<NutrientIdWithAmount>) = PendingFoodAddRequest(
+fun FoodCreation.toPendingRequest(
+    nutrients: List<NutrientIdWithAmount>,
+    edibleType: String
+) = EdibleAddRequest(
     base = EdibleBase(
         name = this.name,
         brand = this.brand,
         amountPerServing = this.amountPerServing.toDoubleOrNull() ?: 0.0,
         servingUnit = this.servingUnit.toEnum()
     ),
-    nutrients = nutrients
+    nutrients = nutrients,
+    edibleType = edibleType
 )
 
 fun FoodCreation.toUserEdibleRequest(

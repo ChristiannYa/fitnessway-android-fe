@@ -1,8 +1,5 @@
 package com.example.fitnessway.data.network
 
-import com.example.fitnessway.data.mappers.toRequestParams
-import com.example.fitnessway.data.model.m_26.PaginationParams
-
 object ApiUrls {
     const val BASE_URL_GO = "http://10.0.0.4:5050/api/go/"
     const val BASE_URL_KT = "http://10.0.0.4:1144/api/kt/"
@@ -52,20 +49,14 @@ object ApiUrls {
     object PendingEdible {
         const val PATH = "edible/pending"
 
-        const val LIST_PATH = "$PATH/my-own"
+        const val LIST_PATH = "$PATH/me"
         const val LIST_URL = "$BASE_URL_KT$LIST_PATH"
-
-        fun getPaginationPath(params: PaginationParams) = "$LIST_PATH?${params.toRequestParams()}"
-        fun getPaginationUrl(params: PaginationParams) = BASE_URL_KT + getPaginationPath(params)
 
         const val ADD_PATH = "$PATH/add"
         const val ADD_URL = "$BASE_URL_KT$ADD_PATH"
 
         const val DISMISS_REVIEW_PATH = "$PATH/dismiss-review"
         const val DISMISS_REVIEW_URL = "$BASE_URL_KT/$DISMISS_REVIEW_PATH"
-
-        fun getDismissReviewPath(id: Int) = "$DISMISS_REVIEW_PATH/$id"
-        fun getDismissReviewUrl(id: Int) = BASE_URL_KT + getDismissReviewPath(id)
     }
 
     object FoodLog {
@@ -96,7 +87,7 @@ object ApiUrls {
 
         const val LIST_PATH_KT = "$PATH_KT/me"
         const val LIST_URL_KT = "$BASE_URL_KT$LIST_PATH_KT"
-        
+
         const val UPDATE_PATH = "food/user/update"
         const val UPDATE_URL = "$BASE_URL_GO$UPDATE_PATH"
 

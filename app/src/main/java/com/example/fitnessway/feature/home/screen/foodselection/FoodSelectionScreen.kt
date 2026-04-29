@@ -3,13 +3,10 @@ package com.example.fitnessway.feature.home.screen.foodselection
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,8 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.model.m_26.EdibleSource
@@ -32,11 +27,10 @@ import com.example.fitnessway.feature.home.screen.foodselection.composables.AppF
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
 import com.example.fitnessway.feature.home.screen.foodselection.composables.RecentlyLoggedFoods
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
-import com.example.fitnessway.ui.food.FoodPreviewList
+import com.example.fitnessway.ui.edible.EdibleListSelectionTextButton
+import com.example.fitnessway.ui.edible.FoodPreviewList
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.AppModifiers
-import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -151,7 +145,7 @@ fun FoodSelectionScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(vertical = 8.dp)
                 ) {
-                    FilterButton(
+                    EdibleListSelectionTextButton(
                         text = "Recently Logged",
                         isSelected = when (foodLogCategory) {
                             FoodLogCategory.SUPPLEMENT -> isRecentlyLoggedSupplementsVisible
@@ -166,13 +160,13 @@ fun FoodSelectionScreen(
                     )
 
                     when (foodLogCategory) {
-                        FoodLogCategory.SUPPLEMENT -> FilterButton(
+                        FoodLogCategory.SUPPLEMENT -> EdibleListSelectionTextButton(
                             text = "My Supplements",
                             isSelected = foodList == FoodLogListFilter.USER_SUPPLEMENTS,
                             onClick = { viewModel.setFoodList(FoodLogListFilter.USER_SUPPLEMENTS) }
                         )
 
-                        else -> FilterButton(
+                        else -> EdibleListSelectionTextButton(
                             text = "My Foods",
                             isSelected = foodList == FoodLogListFilter.USER_FOODS,
                             onClick = { viewModel.setFoodList(FoodLogListFilter.USER_FOODS) }
@@ -252,33 +246,5 @@ fun FoodSelectionScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun FilterButton(
-    text: kotlin.String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .areaContainer(
-                size = AppModifiers.AreaContainerSize.EXTRA_SMALL,
-                areaColor = Color.Transparent,
-                hugsContent = true,
-                onClick = onClick
-            )
-    ) {
-        val color = MaterialTheme.colorScheme.onBackground
-
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelLarge,
-            textAlign = TextAlign.Center,
-            color = if (isSelected) color else color.copy(0.5f)
-        )
     }
 }

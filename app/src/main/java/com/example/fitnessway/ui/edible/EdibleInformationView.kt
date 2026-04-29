@@ -1,4 +1,4 @@
-package com.example.fitnessway.ui.food
+package com.example.fitnessway.ui.edible
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn

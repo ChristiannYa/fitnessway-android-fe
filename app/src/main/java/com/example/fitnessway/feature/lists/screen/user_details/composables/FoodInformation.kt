@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.data.model.m_26.EdibleInformation
-import com.example.fitnessway.ui.food.FoodInformationView
+import com.example.fitnessway.ui.edible.FoodInformationView
 import com.example.fitnessway.util.Animation
 
 // @TODO: Change `user` parameter to `isUserPremium`

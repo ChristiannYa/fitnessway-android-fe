@@ -1,4 +1,4 @@
-package com.example.fitnessway.ui.food
+package com.example.fitnessway.ui.edible
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement

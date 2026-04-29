@@ -21,10 +21,10 @@ import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.plural
 import com.example.fitnessway.data.mappers.toClientView
 import com.example.fitnessway.data.mappers.toPascalSpaced
-import com.example.fitnessway.data.model.m_26.ListOption
+import com.example.fitnessway.data.model.m_26.ListOptionFilter
 import com.example.fitnessway.feature.lists.screen.main.composables.PendingFoodsPagination
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
-import com.example.fitnessway.ui.food.FoodPreviewList
+import com.example.fitnessway.ui.edible.FoodPreviewList
 import com.example.fitnessway.ui.shared.Banners
 import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
@@ -46,7 +46,7 @@ fun ListsScreen(
     onNavigateToEdibleCreationForm: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val selectedList by viewModel.listOption.collectAsState()
+    val selectedList by viewModel.listOptionFilter.collectAsState()
     val userFlow by viewModel.userFlow.collectAsState()
     val pendingFoodRepoUiState by viewModel.pendingFoodRepoUiState.collectAsState()
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
@@ -73,9 +73,12 @@ fun ListsScreen(
 
     LaunchedEffect(selectedList) {
         when (selectedList) {
-            ListOption.PENDING_FOOD -> viewModel.getPendingFoods()
-            ListOption.FOOD -> viewModel.getFoods()
-            ListOption.SUPPLEMENT -> viewModel.getSupplements()
+            ListOptionFilter.PENDING_FOOD -> viewModel.getPendingFoods()
+            ListOptionFilter.FOOD -> viewModel.getFoods()
+            ListOptionFilter.FOOD_REQUEST -> {}
+            ListOptionFilter.SUPPLEMENT -> viewModel.getSupplements()
+            ListOptionFilter.SUPPLEMENT_REQUEST -> {}
+            else -> {}
         }
     }
 
@@ -88,16 +91,18 @@ fun ListsScreen(
                         icon = Structure.AppIconSource.Vector(Icons.Default.EditNote),
                         contentDescription = "Create ${selectedList.name.toPascalSpaced()}",
                         enabled = nutrientsUiState is UiState.Success && when (selectedList) {
-                            ListOption.PENDING_FOOD -> pendingFoodsUiStatePager.uiState is UiState.Success
-                            ListOption.FOOD -> userFoodsUiStatePager.uiState is UiState.Success
-                            ListOption.SUPPLEMENT -> userSupplementsUiStatePager.uiState is UiState.Success
+                            ListOptionFilter.PENDING_FOOD -> pendingFoodsUiStatePager.uiState is UiState.Success
+                            ListOptionFilter.FOOD -> userFoodsUiStatePager.uiState is UiState.Success
+                            ListOptionFilter.SUPPLEMENT -> userSupplementsUiStatePager.uiState is UiState.Success
+                            else -> false
                         },
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
                             when (selectedList) {
-                                ListOption.PENDING_FOOD -> onNavigateToEdibleRequestScreen()
-                                ListOption.FOOD -> onNavigateToEdibleCreationForm()
-                                ListOption.SUPPLEMENT -> onNavigateToEdibleCreationForm()
+                                ListOptionFilter.PENDING_FOOD -> onNavigateToEdibleRequestScreen()
+                                ListOptionFilter.FOOD -> onNavigateToEdibleCreationForm()
+                                ListOptionFilter.SUPPLEMENT -> onNavigateToEdibleCreationForm()
+                                else -> {}
                             }
                         }
                     )
@@ -117,12 +122,12 @@ fun ListsScreen(
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Banners.ErrorBannerAnimated(
-                    isVisible = selectedList == ListOption.PENDING_FOOD && dismissReviewErrorMessage != null,
+                    isVisible = selectedList == ListOptionFilter.PENDING_FOOD && dismissReviewErrorMessage != null,
                     text = dismissReviewErrorMessage ?: ""
                 )
 
                 PendingFoodsPagination(
-                    isVisible = selectedList == ListOption.PENDING_FOOD,
+                    isVisible = selectedList == ListOptionFilter.PENDING_FOOD,
                     isUserPremium = user?.isPremium ?: false,
                     isDismissError = uiState.reviewDismissState is UiState.Error,
                     uiStatePager = pendingFoodsUiStatePager,
@@ -141,7 +146,7 @@ fun ListsScreen(
 
             FoodPreviewList(
                 uiStatePager = userFoodsUiStatePager,
-                isVisible = selectedList == ListOption.FOOD,
+                isVisible = selectedList == ListOptionFilter.FOOD,
                 isUserPremium = user?.isPremium ?: false,
                 onLoadMore = viewModel::getMoreFoods,
                 onFoodClick = { food ->
@@ -152,7 +157,7 @@ fun ListsScreen(
 
             FoodPreviewList(
                 uiStatePager = userSupplementsUiStatePager,
-                isVisible = selectedList == ListOption.SUPPLEMENT,
+                isVisible = selectedList == ListOptionFilter.SUPPLEMENT,
                 isUserPremium = user?.isPremium ?: false,
                 onLoadMore = viewModel::getMoreSupplements,
                 onFoodClick = { food ->
@@ -161,7 +166,7 @@ fun ListsScreen(
                 }
             )
 
-            val options = enumValues<ListOption>().map { option ->
+            val options = enumValues<ListOptionFilter>().map { option ->
                 val isSelected = selectedList == option
 
                 Structure.MoreOptionsConfig(

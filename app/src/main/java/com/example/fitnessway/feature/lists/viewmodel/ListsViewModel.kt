@@ -19,7 +19,7 @@ import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.EdibleBase
 import com.example.fitnessway.data.model.m_26.EdibleType
-import com.example.fitnessway.data.model.m_26.ListOption
+import com.example.fitnessway.data.model.m_26.ListOptionFilter
 import com.example.fitnessway.data.model.m_26.OptimisticUpdate
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.data.model.m_26.UserEdible
@@ -28,7 +28,7 @@ import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupple
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
-import com.example.fitnessway.data.repository.pending_food.IPendingFoodRepository
+import com.example.fitnessway.data.repository.pending.food.IPendingFoodRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
@@ -71,8 +71,8 @@ class ListsViewModel(
     private val _uiState = MutableStateFlow(ListsScreenUiState())
     val uiState: StateFlow<ListsScreenUiState> = _uiState.asStateFlow()
 
-    private val _listOption = MutableStateFlow<ListOption>(ListOption.FOOD)
-    val listOption: StateFlow<ListOption> = _listOption
+    private val _listOptionFilter = MutableStateFlow<ListOptionFilter>(ListOptionFilter.FOOD)
+    val listOptionFilter: StateFlow<ListOptionFilter> = _listOptionFilter
 
     val pendingFoodRepoUiState = pendingFoodRepo.uiState
     val userFoodRepoUiState = userFoodRepo.uiState
@@ -95,31 +95,33 @@ class ListsViewModel(
     fun getSupplements() = userSupplementRepo.load()
     fun getMoreSupplements() = userSupplementRepo.loadMore()
 
-    fun getPendingFoods() = pendingFoodRepo.loadPendingFoods()
-    fun getMorePendingFoods() = pendingFoodRepo.loadMorePendingFoods()
+    fun getPendingFoods() = pendingFoodRepo.load()
+    fun getMorePendingFoods() = pendingFoodRepo.loadMore()
 
     fun addFoodRequest() {
         val formState = managers.request.formState.value
 
         val nutrientDvMap = managers.request.nutrientDvControls.nutrientDvMap.value
         val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
-        val request = formState.toPendingRequest(nutrients)
+        val request = formState.toPendingRequest(nutrients, EdibleType.FOOD.name)
 
         viewModelScope.launch {
-            pendingFoodRepo.addPendingFood(request).collect { state ->
+            pendingFoodRepo.add(request).collect { state ->
                 _uiState.update { it.copy(foodRequestState = state) }
+
+                if (state is UiState.Success) pendingFoodRepo.refresh()
             }
         }
     }
 
     fun addEdible() {
         val formState = managers.creation.formState.value
-        val listOption = listOption.value
+        val edibleType = listOptionFilter.value.getEdibleType()
 
         val request = formState.toUserEdibleRequest(
             nutrients = managers.creation.nutrientDvControls.nutrientDvMap.value
                 .let { dvMap -> formState.nutrients.toNutrientIdAmountList(dvMap) },
-            edibleType = listOption.getEdibleType().name
+            edibleType = edibleType.name
         )
 
         viewModelScope.launch {
@@ -127,8 +129,8 @@ class ListsViewModel(
                 _uiState.update { it.copy(foodAddState = state) }
 
                 if (state is UiState.Success) {
-                    when (listOption) {
-                        ListOption.SUPPLEMENT -> userSupplementRepo.refresh()
+                    when (edibleType) {
+                        EdibleType.SUPPLEMENT -> userSupplementRepo.refresh()
                         else -> userFoodRepo.refresh()
                     }
                 }
@@ -143,7 +145,7 @@ class ListsViewModel(
         val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
         val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
 
-        val edibleType = listOption.value.getEdibleType()
+        val edibleType = listOptionFilter.value.getEdibleType()
 
         // Get current data to update optimistically
         val originalPager = edibleType
@@ -337,7 +339,7 @@ class ListsViewModel(
     fun deleteEdible() {
         val edibleToRemove = managers.edition.selectedEdible.value ?: return
 
-        val edibleType = listOption.value.getEdibleType()
+        val edibleType = listOptionFilter.value.getEdibleType()
 
         val originalPager = edibleType
             .getUserEdiblePaginationOrNull()
@@ -489,7 +491,7 @@ class ListsViewModel(
         // This resets a previously failed dismissal so that the user can try again
         _pendingFoodFailedDeletions.removeIf { it.second.id == idToDismiss }
 
-        pendingFoodRepo.updateState {
+        pendingFoodRepo.update {
             it.copy(
                 uiStatePager = UiStatePager(
                     uiState = UiState.Success(
@@ -505,7 +507,7 @@ class ListsViewModel(
         }
 
         viewModelScope.launch {
-            pendingFoodRepo.dismissReview(idToDismiss).collect { state ->
+            pendingFoodRepo.dismiss(idToDismiss).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(reviewDismissState = state) }
@@ -549,7 +551,7 @@ class ListsViewModel(
                                     }
                             )
 
-                        pendingFoodRepo.updateState {
+                        pendingFoodRepo.update {
                             it.copy(
                                 uiStatePager = UiStatePager(
                                     uiState = UiState.Success(revertedPagination),
@@ -565,8 +567,8 @@ class ListsViewModel(
         }
     }
 
-    fun setSelectedList(list: ListOption) {
-        _listOption.value = list
+    fun setSelectedList(list: ListOptionFilter) {
+        _listOptionFilter.value = list
     }
 
     fun resetFoodRequestState() {

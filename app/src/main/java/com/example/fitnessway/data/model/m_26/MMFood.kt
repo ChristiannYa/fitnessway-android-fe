@@ -53,10 +53,12 @@ enum class EdibleSource {
     USER
 }
 
-enum class ListOption {
+enum class ListOptionFilter {
     PENDING_FOOD,
     FOOD,
-    SUPPLEMENT
+    FOOD_REQUEST,
+    SUPPLEMENT,
+    SUPPLEMENT_REQUEST
 }
 
 enum class FoodLogListFilter {
@@ -124,7 +126,8 @@ data class PendingFood(
     val id: Int,
     val information: EdibleInformation,
     val status: PendingFoodStatus,
-    val createdBy: UUID?,
+    val edibleType: EdibleType,
+    val createdBy: UUID? = null,
     val reviewedBy: UUID? = null,
     val reviewedAt: Instant? = null,
     val createdAt: Instant,
@@ -202,12 +205,6 @@ data class PendingFoodsGetResponse(
 @Serializable
 data class UserEdiblesGetResponse(
     val userEdiblesPagination: PaginationResult<UserEdible>
-)
-
-@Serializable
-data class PendingFoodAddRequest(
-    val base: EdibleBase,
-    val nutrients: List<NutrientIdWithAmount>
 )
 
 @Serializable

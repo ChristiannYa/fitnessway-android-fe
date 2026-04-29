@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.fitnessway.R
 import com.example.fitnessway.data.model.m_26.EdibleBase
 import com.example.fitnessway.data.model.m_26.EdibleType
-import com.example.fitnessway.data.model.m_26.ListOption
+import com.example.fitnessway.data.model.m_26.ListOptionFilter
 import com.example.fitnessway.data.model.m_26.PendingFoodStatus
 import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.ui.shared.Structure
@@ -22,8 +22,8 @@ fun EdibleBase.calcAmountPerServing() = if (this.servingUnit == ServingUnit.OZ) 
     this.amountPerServing * 28.3495
 } else this.amountPerServing
 
-fun ListOption.getEdibleType() = when (this) {
-    ListOption.SUPPLEMENT -> EdibleType.SUPPLEMENT
+fun ListOptionFilter.getEdibleType() = when (this) {
+    ListOptionFilter.SUPPLEMENT -> EdibleType.SUPPLEMENT
     else -> EdibleType.FOOD
 }
 
@@ -39,9 +39,10 @@ fun PendingFoodStatus.getImageVector(): ImageVector = when (this) {
     PendingFoodStatus.REJECTED -> Icons.Default.ErrorOutline
 }
 
-fun ListOption.getAppIconSource(): Structure.AppIconSource =
+fun ListOptionFilter.getAppIconSource(): Structure.AppIconSource =
     when (this) {
-        ListOption.FOOD -> Structure.AppIconSource.Resource(R.drawable.food)
-        ListOption.PENDING_FOOD -> Structure.AppIconSource.Vector(Icons.Default.AddChart)
-        ListOption.SUPPLEMENT -> Structure.AppIconSource.Resource(R.drawable.energy)
+        ListOptionFilter.FOOD -> Structure.AppIconSource.Resource(R.drawable.food)
+        ListOptionFilter.PENDING_FOOD -> Structure.AppIconSource.Vector(Icons.Default.AddChart)
+        ListOptionFilter.SUPPLEMENT -> Structure.AppIconSource.Resource(R.drawable.energy)
+        else -> Structure.AppIconSource.Resource(R.drawable.food)
     }

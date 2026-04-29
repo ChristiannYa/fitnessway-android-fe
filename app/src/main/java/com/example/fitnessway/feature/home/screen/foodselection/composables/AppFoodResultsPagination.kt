@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.FoodPreview
-import com.example.fitnessway.ui.food.FoodPreviewCard
+import com.example.fitnessway.ui.edible.FoodPreviewCard
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState

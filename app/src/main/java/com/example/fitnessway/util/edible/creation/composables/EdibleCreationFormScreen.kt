@@ -29,7 +29,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
-import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
@@ -79,7 +79,7 @@ fun <T> FoodCreationFormScreen(
         isFormSubmitting = submissionState is UiState.Loading
     )
 
-    val edibleTypePascalSpaced = edibleType.name.toPascalSpaced()
+    val edibleTypePascalSpaced = edibleType.name.toTitleCase()
 
     LaunchedEffect(currentStep) {
         val focusRequester = when (currentStep) {

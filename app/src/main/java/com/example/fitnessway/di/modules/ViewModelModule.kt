@@ -39,6 +39,7 @@ val viewModelModule = module {
     viewModel {
         ListsViewModel(
             pendingFoodRepo = get(),
+            pendingSupplementRepo = get(),
             userFoodRepo = get(),
             userSupplementRepo = get(),
             nutrientRepo = get(),

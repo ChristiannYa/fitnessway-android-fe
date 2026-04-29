@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.robotoSerifFamily
 
 @Composable
 fun EdibleListSelectionTextButton(
@@ -34,7 +35,8 @@ fun EdibleListSelectionTextButton(
             text = text,
             style = MaterialTheme.typography.labelLarge,
             textAlign = TextAlign.Center,
-            color = if (isSelected) color else color.copy(0.5f)
+            color = if (isSelected) color else color.copy(0.5f),
+            fontFamily = robotoSerifFamily
         )
     }
 }

@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.mappers.toTypedList
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
@@ -176,7 +176,7 @@ fun FoodLogScreen(
                     title = "Log Submission"
                 ) {
                     AppLabel<Unit>(
-                        text = category.name.toPascalSpaced(),
+                        text = category.name.toTitleCase(),
                         size = Ui.LabelSize.MEDIUM,
                     )
 
@@ -245,7 +245,7 @@ fun FoodLogScreen(
                                         )
                                 ) {
                                     Text(
-                                        text = type.name.toPascalSpaced(),
+                                        text = type.name.toTitleCase(),
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.SemiBold
                                     )

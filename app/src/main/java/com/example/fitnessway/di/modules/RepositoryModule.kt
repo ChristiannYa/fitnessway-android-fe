@@ -18,6 +18,8 @@ import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.nutrient.NutrientRepositoryImpl
 import com.example.fitnessway.data.repository.pending.food.IPendingFoodRepository
 import com.example.fitnessway.data.repository.pending.food.PendingFoodRepository
+import com.example.fitnessway.data.repository.pending.supplement.IPendingSupplementRepository
+import com.example.fitnessway.data.repository.pending.supplement.PendingSupplementRepository
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.repository.user.UserRepositoryImpl
 import org.koin.core.qualifier.named
@@ -56,14 +58,6 @@ val repositoryModule = module {
         )
     }
 
-    single<IPendingFoodRepository> {
-        PendingFoodRepository(
-            httpClient = get(),
-            apiClient = get(),
-            repositoryScope = get(named("repositoryScope"))
-        )
-    }
-
     single<IUserFoodRepository> {
         UserFoodRepositoryImpl(
             apiClient = get(),
@@ -72,8 +66,24 @@ val repositoryModule = module {
         )
     }
 
+    single<IPendingFoodRepository> {
+        PendingFoodRepository(
+            httpClient = get(),
+            apiClient = get(),
+            repositoryScope = get(named("repositoryScope"))
+        )
+    }
+
     single<IUserSupplementRepository> {
         UserSupplementRepositoryImpl(
+            apiClient = get(),
+            httpClient = get(),
+            repositoryScope = get(named("repositoryScope"))
+        )
+    }
+
+    single<IPendingSupplementRepository> {
+        PendingSupplementRepository(
             apiClient = get(),
             httpClient = get(),
             repositoryScope = get(named("repositoryScope"))

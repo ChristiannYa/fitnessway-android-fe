@@ -26,7 +26,7 @@ fun FoodRequestScreen(
     }
 
     val user = userFlow
-    val foodRequestState = uiState.foodRequestState
+    val foodRequestState = uiState.foodRequestAddState
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
     val foodRequestErrorMessage = Ui.handleTempApiErrMsg(

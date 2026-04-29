@@ -1,0 +1,5 @@
+package com.example.fitnessway.data.repository.pending.supplement
+
+import com.example.fitnessway.data.repository.pending.IPendingEdibleRepository
+
+interface IPendingSupplementRepository : IPendingEdibleRepository<PendingSupplementRepositoryUiState>

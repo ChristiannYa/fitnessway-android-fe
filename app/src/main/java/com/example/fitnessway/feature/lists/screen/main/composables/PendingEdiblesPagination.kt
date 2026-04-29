@@ -28,8 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
-import com.example.fitnessway.data.mappers.toPascalSpaced
 import com.example.fitnessway.data.mappers.toPreview
+import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.PendingFood
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
@@ -44,13 +44,13 @@ import com.example.fitnessway.util.extensions.getAccent
 import com.example.fitnessway.util.extensions.getImageVector
 
 @Composable
-fun PendingFoodsPagination(
+fun PendingEdiblesPagination(
     isVisible: Boolean,
     isUserPremium: Boolean,
     isDismissError: Boolean,
     uiStatePager: UiStatePager<PendingFood>,
     onLoadMore: () -> Unit,
-    onFoodClick: (PendingFood) -> Unit,
+    onEdibleClick: (PendingFood) -> Unit,
     onDismissReview: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -98,7 +98,7 @@ fun PendingFoodsPagination(
                                         pendingFood = pendingFood,
                                         isDismissError = isDismissError,
                                         isUserPremium = isUserPremium,
-                                        onClick = onFoodClick,
+                                        onClick = onEdibleClick,
                                         onDismiss = onDismissReview,
                                         modifier = Modifier.fillMaxWidth()
                                     )
@@ -195,7 +195,7 @@ private fun FoodPreview(
                     source = Structure.AppIconSource.Vector(
                         pendingFood.status.getImageVector()
                     ),
-                    contentDescription = "Food is ${pendingFood.status.name.toPascalSpaced()}",
+                    contentDescription = "Food is ${pendingFood.status.name.toTitleCase()}",
                     tint = pendingFood.status.getAccent()
                 )
             },

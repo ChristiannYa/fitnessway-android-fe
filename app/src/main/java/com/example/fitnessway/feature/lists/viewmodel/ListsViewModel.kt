@@ -30,6 +30,7 @@ import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending.food.IPendingFoodRepository
+import com.example.fitnessway.data.repository.pending.supplement.IPendingSupplementRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
@@ -50,9 +51,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ListsViewModel(
-    private val pendingFoodRepo: IPendingFoodRepository,
     private val userFoodRepo: IUserFoodRepository,
     private val userSupplementRepo: IUserSupplementRepository,
+    private val pendingFoodRepo: IPendingFoodRepository,
+    private val pendingSupplementRepo: IPendingSupplementRepository,
     private val foodLogRepo: IEdibleLogRepository,
     private val foodRecentLogRepo: IFoodRecentLog,
     private val nutrientRepo: INutrientRepository,
@@ -74,9 +76,10 @@ class ListsViewModel(
     private val _edibleListFilter = MutableStateFlow<EdibleListFilter>(EdibleListFilter.FOOD)
     val edibleListFilter: StateFlow<EdibleListFilter> = _edibleListFilter
 
-    val pendingFoodRepoUiState = pendingFoodRepo.uiState
     val userFoodRepoUiState = userFoodRepo.uiState
     val userSupplementRepoUiState = userSupplementRepo.uiState
+    val pendingFoodRepoUiState = pendingFoodRepo.uiState
+    val pendingSupplementRepoUiState = pendingSupplementRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
 
     val userFlow: StateFlow<MUser.Model.User?> = userStateHolder.userState
@@ -98,6 +101,9 @@ class ListsViewModel(
     fun getPendingFoods() = pendingFoodRepo.load()
     fun getMorePendingFoods() = pendingFoodRepo.loadMore()
 
+    fun getPendingSupplements() = pendingSupplementRepo.load()
+    fun getMorePendingSupplements() = pendingSupplementRepo.loadMore()
+
     fun addFoodRequest() {
         val formState = managers.request.formState.value
 
@@ -107,7 +113,7 @@ class ListsViewModel(
 
         viewModelScope.launch {
             pendingFoodRepo.add(request).collect { state ->
-                _uiState.update { it.copy(foodRequestState = state) }
+                _uiState.update { it.copy(foodRequestAddState = state) }
 
                 if (state is UiState.Success) pendingFoodRepo.refresh()
             }
@@ -369,7 +375,7 @@ class ListsViewModel(
             ?.removeIf { it.second.id == edibleToRemove.id }
 
         // Update states optimistically
-        _uiState.update { it.copy(edibleDeleteState = UiState.Success(Unit)) }
+        _uiState.update { it.copy(foodDeleteState = UiState.Success(Unit)) }
 
         val optimisticPager = UiStatePager(
             uiState = UiState.Success(
@@ -393,7 +399,7 @@ class ListsViewModel(
             }.collect { state ->
                 when (state) {
                     is UiState.Success -> {
-                        _uiState.update { it.copy(edibleDeleteState = UiState.Success(Unit)) }
+                        _uiState.update { it.copy(foodDeleteState = UiState.Success(Unit)) }
 
                         // Reset foods before successful deletion if all deletions succeeded
                         if (_edibleFailedDeletions[edibleType].isNullOrEmpty()) {
@@ -402,7 +408,7 @@ class ListsViewModel(
                     }
 
                     is UiState.Error -> {
-                        _uiState.update { it.copy(edibleDeleteState = state) }
+                        _uiState.update { it.copy(foodDeleteState = state) }
 
                         _edibleFailedDeletions
                             .getOrPut(edibleType) { mutableSetOf() }
@@ -508,7 +514,7 @@ class ListsViewModel(
             pendingFoodRepo.dismiss(idToDismiss).collect { state ->
                 when (state) {
                     is UiState.Success -> {
-                        _uiState.update { it.copy(reviewDismissState = state) }
+                        _uiState.update { it.copy(foodReviewDismissState = state) }
 
                         // Reset pending foods before successful deletion if all deletions succeeded
                         if (_pendingFoodFailedDeletions.isEmpty()) {
@@ -517,7 +523,7 @@ class ListsViewModel(
                     }
 
                     is UiState.Error -> {
-                        _uiState.update { it.copy(reviewDismissState = state) }
+                        _uiState.update { it.copy(foodReviewDismissState = state) }
 
                         _pendingFoodFailedDeletions.add(originalIndex to current)
 
@@ -570,7 +576,7 @@ class ListsViewModel(
     }
 
     fun resetFoodRequestState() {
-        _uiState.update { it.copy(foodRequestState = UiState.Idle) }
+        _uiState.update { it.copy(foodRequestAddState = UiState.Idle) }
     }
 
     fun resetFoodAddState() {
@@ -582,11 +588,11 @@ class ListsViewModel(
     }
 
     fun resetFoodDeleteState() {
-        _uiState.update { it.copy(edibleDeleteState = UiState.Idle) }
+        _uiState.update { it.copy(foodDeleteState = UiState.Idle) }
     }
 
     fun resetReviewDismissState() {
-        _uiState.update { it.copy(reviewDismissState = UiState.Idle) }
+        _uiState.update { it.copy(foodReviewDismissState = UiState.Idle) }
     }
 
     /**

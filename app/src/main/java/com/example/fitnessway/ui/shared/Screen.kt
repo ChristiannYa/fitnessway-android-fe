@@ -48,7 +48,7 @@ fun Screen(
                     .padding(
                         start = horizontalPadding,
                         end = horizontalPadding,
-                        top = 4.dp
+                        top = 2.dp
                     ),
             ) { content(focusManager) }
         }

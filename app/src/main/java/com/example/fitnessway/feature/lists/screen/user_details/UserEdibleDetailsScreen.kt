@@ -45,7 +45,7 @@ fun UserEdibleDetailsScreen(
     val user = userFlow
     val selectedFoodCopy = selectedFood
 
-    val foodDeleteState = uiState.edibleDeleteState
+    val foodDeleteState = uiState.foodDeleteState
 
     val foodDeleteErrorMessage = handleTempApiErrMsg(
         uiState = foodDeleteState,

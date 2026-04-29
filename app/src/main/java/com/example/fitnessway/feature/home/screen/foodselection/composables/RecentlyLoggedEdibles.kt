@@ -15,10 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.plural
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
-import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodPreview
@@ -73,8 +72,8 @@ fun RecentlyLoggedFoods(
                             item {
                                 Messages.NotFoundMessage(
                                     "${
-                                        edibleType.name.toPascalSpaced().plural()
-                                    } that you log will appear here"
+                                        edibleType.name.toTitleCase()
+                                    }s that you log will appear here"
                                 )
                             }
                         } else {

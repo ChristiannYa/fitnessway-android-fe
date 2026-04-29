@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
@@ -85,7 +85,7 @@ fun FoodSelectionScreen(
     }
 
     if (foodLogCategory != null) {
-        val categoryString = foodLogCategory.name.toPascalSpaced()
+        val categoryString = foodLogCategory.name.toTitleCase()
 
         Screen(
             header = {

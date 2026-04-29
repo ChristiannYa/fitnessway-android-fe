@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
@@ -74,7 +74,7 @@ fun FoodLogDetailsScreen(
                         title = "Log Details"
                     ) {
                         AppLabel<Unit>(
-                            text = foodLog.category.name.toPascalSpaced(),
+                            text = foodLog.category.name.toTitleCase(),
                             size = Ui.LabelSize.SMALL
                         )
 

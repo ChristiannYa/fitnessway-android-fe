@@ -49,7 +49,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
-import com.example.fitnessway.data.mappers.toPascalSpaced
+import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
@@ -149,7 +149,7 @@ private fun FoodLogsCategorized(
         categoriesWithLogs.forEachIndexed { index, (category, logs) ->
             stickyHeader {
                 Text(
-                    text = category.name.toPascalSpaced(),
+                    text = category.name.toTitleCase(),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
@@ -188,7 +188,7 @@ private fun FoodLogCategory(
     onViewFoodLogDetails: (FoodLog) -> Unit,
     onRemoveFoodLog: (FoodLog) -> Unit
 ) {
-    val categoryFormatted = category.name.toPascalSpaced()
+    val categoryFormatted = category.name.toTitleCase()
 
     Column(
         modifier = Modifier

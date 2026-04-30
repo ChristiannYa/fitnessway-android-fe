@@ -104,19 +104,30 @@ class ListsViewModel(
     fun getPendingSupplements() = pendingSupplementRepo.load()
     fun getMorePendingSupplements() = pendingSupplementRepo.loadMore()
 
-    fun addFoodRequest() {
+    fun addEdibleRequest() {
         val formState = managers.request.formState.value
+        val edibleType = edibleListFilter.value.toEdibleType()
 
         val nutrientDvMap = managers.request.nutrientDvControls.nutrientDvMap.value
         val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
-        val request = formState.toPendingRequest(nutrients, EdibleType.FOOD.name)
+        val request = formState.toPendingRequest(nutrients, edibleType.name)
 
         viewModelScope.launch {
-            pendingFoodRepo.add(request).collect { state ->
-                _uiState.update { it.copy(foodRequestAddState = state) }
-
-                if (state is UiState.Success) pendingFoodRepo.refresh()
-            }
+            edibleType
+                .getPendingRepo()
+                .let { repo ->
+                    repo
+                        .add(request)
+                        .collect { state ->
+                            _uiState.update {
+                                it.copy(
+                                    edibleRequestAddState = it.edibleRequestAddState +
+                                            (edibleType to state)
+                                )
+                            }
+                            if (state is UiState.Success) repo.refresh()
+                        }
+                }
         }
     }
 
@@ -131,16 +142,22 @@ class ListsViewModel(
         )
 
         viewModelScope.launch {
-            userFoodRepo.add(request).collect { state ->
-                _uiState.update { it.copy(foodAddState = state) }
-
-                if (state is UiState.Success) {
-                    when (edibleType) {
-                        EdibleType.FOOD -> userFoodRepo.refresh()
-                        EdibleType.SUPPLEMENT -> userSupplementRepo.refresh()
-                    }
+            edibleType
+                .getUserEdibleRepo()
+                .let { repo ->
+                    repo
+                        .add(request)
+                        .collect { state ->
+                            _uiState.update {
+                                it.copy(
+                                    edibleAddState = it.edibleAddState +
+                                            (edibleType to state)
+                                )
+                            }
+                            if (state is UiState.Success) repo.refresh()
+                        }
                 }
-            }
+
         }
     }
 
@@ -576,11 +593,21 @@ class ListsViewModel(
     }
 
     fun resetFoodRequestState() {
-        _uiState.update { it.copy(foodRequestAddState = UiState.Idle) }
+        _uiState.update {
+            it.copy(
+                edibleRequestAddState = it.edibleRequestAddState +
+                        (edibleListFilter.value.toEdibleType() to UiState.Idle)
+            )
+        }
     }
 
     fun resetFoodAddState() {
-        _uiState.update { it.copy(foodAddState = UiState.Idle) }
+        _uiState.update {
+            it.copy(
+                edibleAddState = it.edibleAddState +
+                        (edibleListFilter.value.toEdibleType() to UiState.Idle)
+            )
+        }
     }
 
     fun resetFoodUpdateState() {
@@ -622,4 +649,15 @@ class ListsViewModel(
         EdibleType.FOOD -> userFoodRepo.uiState.value.uiStatePager
         EdibleType.SUPPLEMENT -> userSupplementRepo.uiState.value.uiStatePager
     }.toPaginationOrNull()
+
+
+    private fun EdibleType.getPendingRepo() = when (this) {
+        EdibleType.FOOD -> pendingFoodRepo
+        EdibleType.SUPPLEMENT -> pendingSupplementRepo
+    }
+
+    private fun EdibleType.getUserEdibleRepo() = when (this) {
+        EdibleType.FOOD -> userFoodRepo
+        EdibleType.SUPPLEMENT -> userSupplementRepo
+    }
 }

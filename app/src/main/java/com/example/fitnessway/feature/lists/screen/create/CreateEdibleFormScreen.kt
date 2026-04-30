@@ -21,11 +21,11 @@ fun CreateFoodFormScreen(
     val listOption by viewModel.edibleListFilter.collectAsState()
 
     val user = userFlow
-    val foodAddState = uiState.foodAddState
+    val edibleAddState = uiState.edibleAddState.getValue(listOption.toEdibleType())
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
-    val foodAddErrMsg = handleTempApiErrMsg(
-        uiState = foodAddState,
+    val edibleAddErrMsg = handleTempApiErrMsg(
+        uiState = edibleAddState,
         onTimeOut = viewModel::resetFoodAddState
     )
 
@@ -38,8 +38,8 @@ fun CreateFoodFormScreen(
             nutrientsUiState = nutrientsUiState,
             isUserPremium = user.isPremium,
             onResetSubmissionState = viewModel::resetFoodAddState,
-            submissionState = uiState.foodAddState,
-            submissionErrorMessage = foodAddErrMsg,
+            submissionState = edibleAddState,
+            submissionErrorMessage = edibleAddErrMsg,
             onSubmit = viewModel::addEdible
         )
     }

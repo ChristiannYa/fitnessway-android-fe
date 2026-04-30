@@ -26,11 +26,11 @@ fun FoodRequestScreen(
     }
 
     val user = userFlow
-    val foodRequestState = uiState.foodRequestAddState
+    val edibleRequestAddState = uiState.edibleRequestAddState.getValue(listOption.toEdibleType())
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
-    val foodRequestErrorMessage = Ui.handleTempApiErrMsg(
-        uiState = foodRequestState,
+    val edibleRequestErrorMessage = Ui.handleTempApiErrMsg(
+        uiState = edibleRequestAddState,
         onTimeOut = viewModel::resetFoodRequestState
     )
 
@@ -43,9 +43,9 @@ fun FoodRequestScreen(
             nutrientsUiState = nutrientsUiState,
             isUserPremium = user.isPremium,
             onResetSubmissionState = viewModel::resetFoodRequestState,
-            submissionState = foodRequestState,
-            submissionErrorMessage = foodRequestErrorMessage,
-            onSubmit = viewModel::addFoodRequest
+            submissionState = edibleRequestAddState,
+            submissionErrorMessage = edibleRequestErrorMessage,
+            onSubmit = viewModel::addEdibleRequest
         )
     }
 }

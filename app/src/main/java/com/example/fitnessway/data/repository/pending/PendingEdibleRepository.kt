@@ -59,7 +59,7 @@ abstract class PendingEdibleRepository<T : RepositoryPagerState<PendingFood, T>>
     override suspend fun add(request: EdibleAddRequest): Flow<UiState<Unit>> =
         httpClient.makeRequest(
             apiCall = { apiClient.add(request) },
-            extractData = { it.pendingFoodSubmitted },
+            extractData = { Unit },
             errMsg = "failed to submit $edibleTypeString request",
             pathDescription = "add $edibleTypeString request"
         )

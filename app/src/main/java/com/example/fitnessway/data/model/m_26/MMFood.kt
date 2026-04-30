@@ -74,8 +74,8 @@ data class FoodLog(
     val time: Instant,
     val loggedAt: Instant,
     val servings: Double,
-    val userFoodSnapshotStatus: UserFoodSnapshotStatus? = null,
-    val userFoodSnapshotId: Int?,
+    val userEdibleSnapshotStatus: UserFoodSnapshotStatus? = null,
+    val userEdibleSnapshotId: Int?,
     val source: EdibleSource,
     val foodId: Int?,
     val edibleInformation: EdibleInformation
@@ -204,11 +204,6 @@ data class PendingFoodsGetResponse(
 @Serializable
 data class UserEdiblesGetResponse(
     val userEdiblesPagination: PaginationResult<UserEdible>
-)
-
-@Serializable
-data class PendingFoodAddResponse(
-    val pendingFoodSubmitted: PendingFood
 )
 
 data class FoodInformationWithId(

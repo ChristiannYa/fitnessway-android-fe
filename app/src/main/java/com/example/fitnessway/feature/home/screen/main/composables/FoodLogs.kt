@@ -324,12 +324,12 @@ private fun FoodLog(
                         modifier = Modifier.weight(1f, false)
                     )
 
-                    if (foodLog.userFoodSnapshotStatus != UserFoodSnapshotStatus.PRESENT) {
+                    foodLog.userEdibleSnapshotStatus?.let { snapshotStatus ->
                         Box(
                             modifier = Modifier
                                 .size(5.dp)
                                 .background(
-                                    color = when (foodLog.userFoodSnapshotStatus) {
+                                    color = when (snapshotStatus) {
                                         UserFoodSnapshotStatus.UPDATED -> MaterialTheme.colorScheme.onSurfaceVariant
                                         UserFoodSnapshotStatus.DELETED -> OrangeWarning
                                         else -> Color.Transparent
@@ -338,6 +338,7 @@ private fun FoodLog(
                                 )
                         )
                     }
+
                 }
 
                 Text(

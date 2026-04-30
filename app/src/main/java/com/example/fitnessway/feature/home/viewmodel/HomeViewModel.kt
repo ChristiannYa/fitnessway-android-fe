@@ -246,8 +246,8 @@ class HomeViewModel(
             time = selectedFoodLog.time,
             loggedAt = selectedFoodLog.loggedAt,
             servings = formState.data.servingsPrecised.toPrecisedString(4).toDouble(),
-            userFoodSnapshotStatus = selectedFoodLog.userFoodSnapshotStatus,
-            userFoodSnapshotId = selectedFoodLog.userFoodSnapshotId,
+            userEdibleSnapshotStatus = selectedFoodLog.userEdibleSnapshotStatus,
+            userEdibleSnapshotId = selectedFoodLog.userEdibleSnapshotId,
             source = selectedFoodLog.source,
             foodId = selectedFoodLog.foodId,
             edibleInformation = foodWithUpdatedNutrients
@@ -276,7 +276,7 @@ class HomeViewModel(
 
         val request = FoodLogUpdateRequest(
             foodLogId = updatedFoodLog.id,
-            userFoodSnapshotId = updatedFoodLog.userFoodSnapshotId,
+            userFoodSnapshotId = updatedFoodLog.userEdibleSnapshotId,
             servings = updatedFoodLog.servings
         )
 

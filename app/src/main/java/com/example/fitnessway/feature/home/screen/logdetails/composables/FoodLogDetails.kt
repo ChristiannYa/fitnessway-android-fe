@@ -56,7 +56,7 @@ fun FoodLogDetails(
     Box(
         modifier = Modifier.fillMaxWidth(),
         content = {
-            val (foodStatusMsg, foodStatusAccent) = when (foodLog.userFoodSnapshotStatus) {
+            val (foodStatusMsg, foodStatusAccent) = when (foodLog.userEdibleSnapshotStatus) {
                 UserFoodSnapshotStatus.DELETED -> deletedFoodMessage to OrangeWarning
                 UserFoodSnapshotStatus.UPDATED -> updatedFoodMessage to MaterialTheme.colorScheme.onSurfaceVariant
                 else -> "" to MaterialTheme.colorScheme.onSurfaceVariant
@@ -66,7 +66,7 @@ fun FoodLogDetails(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
-                    foodLog.userFoodSnapshotStatus?.let {
+                    foodLog.userEdibleSnapshotStatus?.let {
                         if (it != UserFoodSnapshotStatus.PRESENT) {
                             item {
                                 Text(

@@ -40,8 +40,6 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.UNutrient.filterGoalNotSet
-import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.UNutrient.getIds
 import com.example.fitnessway.util.Ui
@@ -207,33 +205,16 @@ fun <T> FoodCreationFormScreen(
                     }
 
                     val foodBaseFields = listOf(
-                        fieldsProvider.name(
-                            focusRequester = focusRequesterName
-                        ),
+                        fieldsProvider.name(focusRequesterName),
                         fieldsProvider.brand(),
                         fieldsProvider.amountPerServing(),
-                        fieldsProvider.servingUnit(
-                            errorMessage = edibleCreation.servingUnitError
-                        ),
+                        fieldsProvider.servingUnit(edibleCreation.servingUnitError),
                     )
 
                     val nutrientFieldsData = NutrientType.entries.associateWith { type ->
-                        val nutrientList = nutrients
-                            .filterNutrientsByType(type)
-                            .let {
-                                if (edibleSource == EdibleSource.USER) {
-                                    it.filterNonPremiumPreferences(isUserPremium)
-                                } else it
-                            }
+                        val nutrientList = nutrients.filterNutrientsByType(type)
 
-
-                        val nutrientsWithGoal = nutrientList.let {
-                            if (edibleSource == EdibleSource.USER) {
-                                it.filter { n -> n.preferences.goal != null }
-                            } else it
-                        }
-
-                        val fields = nutrientsWithGoal.mapIndexed { index, nutrientWithPrefs ->
+                        val fields = nutrientList.mapIndexed { index, nutrientWithPrefs ->
                             // Create focus requester only if the index is 0
                             val focusRequester = if (index == 0) {
                                 when (type) {
@@ -246,17 +227,11 @@ fun <T> FoodCreationFormScreen(
                             fieldsProvider.nutrient(
                                 nutrientWithPreferences = nutrientWithPrefs,
                                 focusRequester = focusRequester,
-                                isLastField = index == nutrientsWithGoal.lastIndex
+                                isLastField = index == nutrientList.lastIndex
                             )
                         }
 
-                        val nutrientsWithoutGoal = if (edibleSource == EdibleSource.USER) {
-                            nutrientList
-                                .filterGoalNotSet()
-                                .map { it.nutrient }
-                        } else null
-
-                        Pair(fields, nutrientsWithoutGoal)
+                        fields
                     }
 
                     val isCurrentStepValid = when (currentStep) {
@@ -300,42 +275,21 @@ fun <T> FoodCreationFormScreen(
                                         )
                                 }
                             ) { step ->
-                                fun getFieldsAndNutrients(type: NutrientType) = Pair(
-                                    nutrientFieldsData[type]?.first.orEmpty(),
-                                    run {
-                                        nutrientFieldsData[type]?.second?.let {
-                                            Pair(type, it)
-                                        }
-                                    }
-                                )
-
-                                val (nutrientFields, nutrientsWithoutGoal) =
-                                    getFieldsAndNutrients(NutrientType.BASIC)
-
-                                val (vitaminFields, vitaminsWithoutGoal) =
-                                    getFieldsAndNutrients(NutrientType.VITAMIN)
-
-                                val (mineralFields, mineralsWithoutGoal) =
-                                    getFieldsAndNutrients(NutrientType.MINERAL)
-
                                 when (step) {
                                     1 -> SetBasicData(foodBaseFields)
 
                                     2 -> SetNutrients(
-                                        fields = nutrientFields,
-                                        nutrientsWithoutGoal = nutrientsWithoutGoal,
+                                        fields = nutrientFieldsData.getValue(NutrientType.BASIC),
                                         nutrientDvControls = edibleCreation.nutrientDvControls
                                     )
 
                                     3 -> SetNutrients(
-                                        fields = vitaminFields,
-                                        nutrientsWithoutGoal = vitaminsWithoutGoal,
+                                        fields = nutrientFieldsData.getValue(NutrientType.VITAMIN),
                                         nutrientDvControls = edibleCreation.nutrientDvControls
                                     )
 
                                     4 -> SetNutrients(
-                                        fields = mineralFields,
-                                        nutrientsWithoutGoal = mineralsWithoutGoal,
+                                        fields = nutrientFieldsData.getValue(NutrientType.MINERAL),
                                         nutrientDvControls = edibleCreation.nutrientDvControls
                                     )
                                 }

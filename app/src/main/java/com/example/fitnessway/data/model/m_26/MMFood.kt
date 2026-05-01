@@ -77,7 +77,7 @@ data class FoodLog(
     val userEdibleSnapshotStatus: UserFoodSnapshotStatus? = null,
     val userEdibleSnapshotId: Int?,
     val source: EdibleSource,
-    val foodId: Int?,
+    val edibleId: Int?,
     val edibleInformation: EdibleInformation
 )
 

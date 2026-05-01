@@ -249,7 +249,7 @@ class HomeViewModel(
             userEdibleSnapshotStatus = selectedFoodLog.userEdibleSnapshotStatus,
             userEdibleSnapshotId = selectedFoodLog.userEdibleSnapshotId,
             source = selectedFoodLog.source,
-            foodId = selectedFoodLog.foodId,
+            edibleId = selectedFoodLog.edibleId,
             edibleInformation = foodWithUpdatedNutrients
         )
 

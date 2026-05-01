@@ -35,7 +35,7 @@ import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun FoodSelectionScreen(
+fun EdibleSelectionScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onNavigateToSelectedFood: () -> Unit,
     onPopBackStack: () -> Unit,
@@ -206,6 +206,7 @@ fun FoodSelectionScreen(
                                 edibleType = EdibleType.SUPPLEMENT
                             )
                         )
+                        onNavigateToSelectedFood()
                     }
                 )
 

@@ -5,7 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.fitnessway.feature.home.screen.foodselection.FoodSelectionScreen
+import com.example.fitnessway.feature.home.screen.foodselection.EdibleSelectionScreen
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoodLogScreen
 import com.example.fitnessway.feature.home.screen.logdetails.FoodLogDetailsScreen
 import com.example.fitnessway.feature.home.screen.main.HomeScreen
@@ -52,7 +52,7 @@ fun NavGraphBuilder.homeNavigationGraph(navController: NavController) {
 
             val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
-            FoodSelectionScreen(
+            EdibleSelectionScreen(
                 viewModel = viewModel,
                 onPopBackStack = navController::popBackStack,
                 onNavigateToSelectedFood = {

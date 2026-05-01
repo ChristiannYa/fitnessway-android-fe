@@ -25,6 +25,8 @@ import com.example.fitnessway.ui.theme.ImperialRed
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
+import com.example.fitnessway.util.PopupOrigin
+import com.example.fitnessway.util.Ui
 
 @Composable
 fun ConfirmFoodDeletionPopup(
@@ -35,13 +37,13 @@ fun ConfirmFoodDeletionPopup(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = Animation.ComposableTransition.ScaleInWithSpring.enter,
-        exit = Animation.ComposableTransition.ScaleInWithSpring.exit,
+        enter = Animation.ComposableTransition.ScaleInWithSpring.enter(PopupOrigin.CENTER),
+        exit = Animation.ComposableTransition.ScaleInWithSpring.exit(PopupOrigin.CENTER),
         modifier = modifier
     ) {
         Box(
             modifier = Modifier
-                .width(260.dp)
+                .width(Ui.Measurements.POP_UP_MESSAGE_WIDTH)
                 .areaContainer(
                     areaColor = MaterialTheme.colorScheme.surfaceVariant
                 )

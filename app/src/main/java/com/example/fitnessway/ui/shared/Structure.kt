@@ -35,6 +35,7 @@ import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
+import com.example.fitnessway.util.PopupOrigin
 import com.example.fitnessway.util.Ui.Measurements.SCREEN_HORIZONTAL_PADDING
 
 object Structure {
@@ -164,8 +165,8 @@ object Structure {
     ) {
         AnimatedVisibility(
             visible = state.isVisible,
-            enter = Animation.ComposableTransition.ScaleInWithSpring.enter,
-            exit = Animation.ComposableTransition.ScaleInWithSpring.exit,
+            enter = Animation.ComposableTransition.ScaleInWithSpring.enter(PopupOrigin.TOP_RIGHT),
+            exit = Animation.ComposableTransition.ScaleInWithSpring.exit(PopupOrigin.TOP_RIGHT),
             modifier = modifier
         ) {
             val shape = 16.dp

@@ -3,6 +3,8 @@ package com.example.fitnessway.data.model.m_26
 import com.example.fitnessway.constants.Pagination
 import kotlinx.serialization.Serializable
 
+// @TODO: Remove from this package since it does not represent
+//        data from any object
 enum class OptimisticUpdate {
     REMOVE,
     ROLLBACK
@@ -17,7 +19,7 @@ data class PaginationResult<T>(
 ) {
     val hasMorePages: Boolean
         get() = currentPage < pageCount
-    
+
     fun getServerOffset() = ((this.currentPage - 1) * Pagination.LIMIT).toLong()
     fun getNextOffset() = (this.currentPage * Pagination.LIMIT).toLong()
 }

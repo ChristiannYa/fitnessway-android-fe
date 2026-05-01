@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -31,6 +32,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+
+enum class PopupOrigin(val origin: TransformOrigin) {
+    TOP_RIGHT(TransformOrigin(1f, 0f)),
+    CENTER(TransformOrigin(0.5f, 0.5f))
+}
 
 object Ui {
     enum class LabelSize(
@@ -47,6 +53,7 @@ object Ui {
 
     object Measurements {
         val SCREEN_HORIZONTAL_PADDING = 16.dp
+        val POP_UP_MESSAGE_WIDTH = 260.dp
         val TEXT_ICON_HORIZONTAL_SPACE = 10.dp
         val LOADING_CIRCLE_IN_HEADER_SIZE = 21.dp
         val LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH = 2.dp

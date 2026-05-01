@@ -17,6 +17,11 @@ import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.form.FormStates.FoodCreation
 import com.example.fitnessway.util.toEnum
 
+fun FoodLogCategory.toEdibleType() = when (this) {
+    FoodLogCategory.SUPPLEMENT -> EdibleType.SUPPLEMENT
+    else -> EdibleType.FOOD
+}
+
 fun EdibleListFilter.toEdibleType() = when (this) {
     EdibleListFilter.FOOD,
     EdibleListFilter.FOOD_REQUEST -> EdibleType.FOOD

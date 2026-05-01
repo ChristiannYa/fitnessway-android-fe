@@ -3,9 +3,10 @@ package com.example.fitnessway.data.repository.app_food
 import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.AppFood
+import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.network.HttpClient
-import com.example.fitnessway.data.network.ktor_client.AppFoodApiClient
+import com.example.fitnessway.data.network.ktor_client.AppEdibleApiClient
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import kotlinx.coroutines.CoroutineScope
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class AppFoodRepositoryImpl(
     private val httpClient: HttpClient,
-    private val apiClient: AppFoodApiClient,
+    private val apiClient: AppEdibleApiClient,
     private val repositoryScope: CoroutineScope
 ) : IAppFoodRepository {
     private val _uiState = MutableStateFlow(AppFoodRepositoryUiState())
@@ -50,12 +51,13 @@ class AppFoodRepositoryImpl(
         }
     }
 
-    private fun fetchAppFoods(query: String, offset: Long) =
+    private fun fetchAppFoods(query: String, edibleType: EdibleType, offset: Long) =
         httpClient.makeRequest(
             apiCall = {
                 apiClient.searchAppFoods(
                     query = query,
-                    params = PaginationParams(Pagination.LIMIT, offset)
+                    params = PaginationParams(Pagination.LIMIT, offset),
+                    edibleType = edibleType.name
                 )
             },
             extractData = { it.appFoodsPagination },
@@ -65,7 +67,7 @@ class AppFoodRepositoryImpl(
 
     private var searchJob: Job? = null
 
-    override fun searchAppFoods(query: String) {
+    override fun searchAppFoods(query: String, edibleType: EdibleType) {
         searchJob?.cancel()
 
         _uiState.update {
@@ -75,7 +77,7 @@ class AppFoodRepositoryImpl(
         }
 
         searchJob = repositoryScope.launch {
-            fetchAppFoods(query, 0).collect { state ->
+            fetchAppFoods(query, edibleType, 0).collect { state ->
                 _uiState.update {
                     it.copy(
                         appFoodsUiStatePager = UiStatePager(state)
@@ -85,7 +87,7 @@ class AppFoodRepositoryImpl(
         }
     }
 
-    override fun loadMoreAppFoods(query: String) {
+    override fun loadMoreAppFoods(query: String, edibleType: EdibleType) {
         val pager = _uiState.value.appFoodsUiStatePager
         if (pager.isLoadingMore) return
 
@@ -101,7 +103,8 @@ class AppFoodRepositoryImpl(
         repositoryScope.launch {
             fetchAppFoods(
                 query = query,
-                offset = pagination.currentPage * Pagination.LIMIT.toLong()
+                offset = pagination.currentPage * Pagination.LIMIT.toLong(),
+                edibleType = edibleType
             ).collect { state ->
                 when (state) {
                     is UiState.Success -> _uiState.update {

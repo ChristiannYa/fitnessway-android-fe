@@ -9,7 +9,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.HttpClient as KtorHttpClient
 
-class AppFoodApiClient(private val client: KtorHttpClient) {
+class AppEdibleApiClient(private val client: KtorHttpClient) {
     suspend fun findAppFoodById(id: Int): AppFoodFindByIdResponse =
         client
             .get("${ApiUrls.BASE_URL_KT}${ApiUrls.AppFood.PATH}/$id")
@@ -17,6 +17,7 @@ class AppFoodApiClient(private val client: KtorHttpClient) {
 
     suspend fun searchAppFoods(
         query: String,
+        edibleType: String,
         params: PaginationParams
     ): AppFoodSearchResponse =
         client
@@ -24,6 +25,7 @@ class AppFoodApiClient(private val client: KtorHttpClient) {
                 parameter("limit", params.limit)
                 parameter("offset", params.offset)
                 parameter("q", query)
+                parameter("edibleType", edibleType)
             }
             .extractData()
 }

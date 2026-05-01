@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toEdibleType
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
@@ -104,7 +105,7 @@ fun EdibleSelectionScreen(
                         query = appFoodSearchQuery,
                         onQueryChange = { q ->
                             isTyping = q.isNotBlank()
-                            viewModel.getAppFoods(q)
+                            viewModel.getAppFoods(q, foodLogCategory.toEdibleType())
                         },
                         focusManager = focusManager
                     )
@@ -114,7 +115,7 @@ fun EdibleSelectionScreen(
                         isUserPremium = user?.isPremium ?: false,
                         appFoodsUiStatePager = appFoodsUiStatePager,
                         onTypingConsumed = { isTyping = false },
-                        onLoadMore = { viewModel.getMoreAppFoods(appFoodSearchQuery) },
+                        onLoadMore = { viewModel.getMoreAppFoods(appFoodSearchQuery, foodLogCategory.toEdibleType()) },
                         onFoodClick = {
                             viewModel.setSearchCriteria(
                                 FoodToLogSearchCriteria(

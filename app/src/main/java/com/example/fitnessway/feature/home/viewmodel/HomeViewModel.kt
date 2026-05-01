@@ -86,7 +86,7 @@ class HomeViewModel(
 
     private var debounceJob: Job? = null
 
-    fun getAppFoods(query: kotlin.String) {
+    fun getAppFoods(query: String, edibleType: EdibleType) {
         _appFoodSearchQuery.value = query
 
         debounceJob?.cancel()
@@ -100,12 +100,12 @@ class HomeViewModel(
 
         debounceJob = viewModelScope.launch {
             delay(600)
-            appFoodRepo.searchAppFoods(query)
+            appFoodRepo.searchAppFoods(query, edibleType)
         }
     }
 
     fun getAppFoodById(id: Int) = appFoodRepo.findAppFoodById(id)
-    fun getMoreAppFoods(query: kotlin.String) = appFoodRepo.loadMoreAppFoods(query)
+    fun getMoreAppFoods(query: String, edibleType: EdibleType) = appFoodRepo.loadMoreAppFoods(query, edibleType)
 
     fun getUserFoods() = userFoodRepo.load()
     fun getMoreUserFoods() = userFoodRepo.loadMore()

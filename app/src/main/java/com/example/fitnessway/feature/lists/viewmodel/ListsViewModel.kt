@@ -27,7 +27,7 @@ import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupplementRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
-import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
+import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending.food.IPendingFoodRepository
 import com.example.fitnessway.data.repository.pending.supplement.IPendingSupplementRepository
@@ -56,7 +56,7 @@ class ListsViewModel(
     private val pendingFoodRepo: IPendingFoodRepository,
     private val pendingSupplementRepo: IPendingSupplementRepository,
     private val foodLogRepo: IEdibleLogRepository,
-    private val foodRecentLogRepo: IFoodRecentLog,
+    private val foodRecentLogRepo: IFoodRecentLogRepository,
     private val nutrientRepo: INutrientRepository,
     private val managers: IListsManagers,
     userStateHolder: IUserStateHolder

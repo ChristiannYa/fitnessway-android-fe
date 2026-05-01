@@ -82,13 +82,13 @@ fun AppFoodResultsPagination(
                             items(
                                 items = appFoods,
                                 key = { it.id }
-                            ) { pendingFood ->
+                            ) { appEdible ->
                                 FoodPreviewCard(
                                     preview = FoodPreview(
-                                        id = pendingFood.id,
-                                        base = pendingFood.base,
-                                        nutrientPreview = pendingFood.nutrientPreview,
-                                        source = pendingFood.source
+                                        id = appEdible.id,
+                                        base = appEdible.base,
+                                        nutrientPreview = appEdible.nutrientPreview,
+                                        source = appEdible.source
                                     ),
                                     isUserPremium = isUserPremium,
                                     onClick = onFoodClick
@@ -96,16 +96,13 @@ fun AppFoodResultsPagination(
                             }
 
                             if (pagination.hasMorePages) {
-                                item("app_foods_more_pages_loading_indicator") {
+                                item("app_edibles_more_pages_loading_indicator") {
                                     Box(
                                         contentAlignment = Alignment.Center,
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         CircularProgressIndicator(
-                                            modifier = Modifier
-                                                .size(
-                                                    Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE
-                                                ),
+                                            modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE),
                                             strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH
                                         )
                                     }

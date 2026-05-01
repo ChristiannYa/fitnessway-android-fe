@@ -10,10 +10,10 @@ import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupple
 import com.example.fitnessway.data.repository.edible_list.supplement.UserSupplementRepositoryImpl
 import com.example.fitnessway.data.repository.edible_log.EdibleLogRepositoryImpl
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
-import com.example.fitnessway.data.repository.edible_recent_log.food.FoodRecentLogImpl
-import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
-import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLog
-import com.example.fitnessway.data.repository.edible_recent_log.supplement.SupplementRecentLogImpl
+import com.example.fitnessway.data.repository.edible_recent_log.food.FoodRecentLogRepositoryImpl
+import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLogRepository
+import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLogRepository
+import com.example.fitnessway.data.repository.edible_recent_log.supplement.SupplementRecentLogRepositoryImpl
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.nutrient.NutrientRepositoryImpl
 import com.example.fitnessway.data.repository.pending.food.IPendingFoodRepository
@@ -98,16 +98,16 @@ val repositoryModule = module {
         )
     }
 
-    single<IFoodRecentLog> {
-        FoodRecentLogImpl(
+    single<IFoodRecentLogRepository> {
+        FoodRecentLogRepositoryImpl(
             apiClient = get(),
             httpClient = get(),
             repositoryScope = get(named("repositoryScope"))
         )
     }
 
-    single<ISupplementRecentLog> {
-        SupplementRecentLogImpl(
+    single<ISupplementRecentLogRepository> {
+        SupplementRecentLogRepositoryImpl(
             apiClient = get(),
             httpClient = get(),
             repositoryScope = get(named("repositoryScope"))

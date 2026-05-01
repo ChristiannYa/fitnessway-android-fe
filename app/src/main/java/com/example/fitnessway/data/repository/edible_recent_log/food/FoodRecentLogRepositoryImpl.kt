@@ -13,14 +13,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class FoodRecentLogImpl(
+class FoodRecentLogRepositoryImpl(
     private val httpClient: HttpClient,
     private val apiClient: EdibleRecentLogApiClient,
     private val repositoryScope: CoroutineScope
-) : IFoodRecentLog {
+) : IFoodRecentLogRepository {
 
-    private val _uiState = MutableStateFlow(FoodRecentLogUiState())
-    override val uiState: StateFlow<FoodRecentLogUiState> = _uiState
+    private val _uiState = MutableStateFlow(FoodRecentLogRepositoryUiState())
+    override val uiState: StateFlow<FoodRecentLogRepositoryUiState> = _uiState
 
     private fun fetch(offset: Long = 0) =
         httpClient.makeRequest(
@@ -53,8 +53,8 @@ class FoodRecentLogImpl(
 
     override fun loadMore() = _uiState.value.loadMore(_uiState, ::fetch, repositoryScope)
 
-    override fun updateState(update: (FoodRecentLogUiState) -> FoodRecentLogUiState) =
+    override fun updateState(update: (FoodRecentLogRepositoryUiState) -> FoodRecentLogRepositoryUiState) =
         _uiState.update(update)
 
-    override fun clear() = _uiState.update { FoodRecentLogUiState() }
+    override fun clear() = _uiState.update { FoodRecentLogRepositoryUiState() }
 }

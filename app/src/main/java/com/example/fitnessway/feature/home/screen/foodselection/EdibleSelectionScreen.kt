@@ -111,17 +111,17 @@ fun EdibleSelectionScreen(
                     )
 
                     AppFoodResultsPagination(
+                        appFoodsUiStatePager = appFoodsUiStatePager,
                         isLoading = isLoading,
                         isUserPremium = user?.isPremium ?: false,
-                        appFoodsUiStatePager = appFoodsUiStatePager,
                         onTypingConsumed = { isTyping = false },
                         onLoadMore = { viewModel.getMoreAppFoods(appFoodSearchQuery, foodLogCategory.toEdibleType()) },
-                        onFoodClick = {
+                        onFoodClick = { id ->
                             viewModel.setSearchCriteria(
                                 FoodToLogSearchCriteria(
-                                    id = it,
+                                    id = id,
                                     source = EdibleSource.APP,
-                                    edibleType = EdibleType.FOOD
+                                    edibleType = foodLogCategory.toEdibleType()
                                 )
                             )
                             onNavigateToSelectedFood()

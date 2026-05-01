@@ -19,8 +19,8 @@ import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupplementRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
-import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLog
-import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLog
+import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLogRepository
+import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.state.IApplicationStateStore
 import com.example.fitnessway.feature.home.manager.IHomeManager
@@ -50,8 +50,8 @@ class HomeViewModel(
     private val userFoodRepo: IUserFoodRepository,
     private val userSupplementRepo: IUserSupplementRepository,
     private val foodLogRepo: IEdibleLogRepository,
-    private val foodRecentLogRepo: IFoodRecentLog,
-    private val supplementRecentLogRepo: ISupplementRecentLog,
+    private val foodRecentLogRepo: IFoodRecentLogRepository,
+    private val supplementRecentLogRepo: ISupplementRecentLogRepository,
     private val managers: IHomeManager,
     val appStateStore: IApplicationStateStore,
     val dateTimeFormatter: IAppDateTimeFormatter

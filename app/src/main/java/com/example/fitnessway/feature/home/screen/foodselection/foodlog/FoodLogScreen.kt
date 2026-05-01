@@ -86,11 +86,7 @@ fun FoodLogScreen(
     LaunchedEffect(searchCriteria) {
         searchCriteria?.let {
             when (it.source) {
-                EdibleSource.APP -> {
-                    if (it.edibleType == EdibleType.FOOD) {
-                        viewModel.getAppFoodById(searchCriteria.id)
-                    }
-                }
+                EdibleSource.APP -> viewModel.getAppFoodById(searchCriteria.id)
 
                 EdibleSource.USER -> {
                     if (it.edibleType == EdibleType.FOOD) {
@@ -103,8 +99,7 @@ fun FoodLogScreen(
 
     LaunchedEffect(appFoodUiState, searchCriteria) {
         if (appFoodUiState is UiState.Success &&
-            searchCriteria?.source == EdibleSource.APP &&
-            searchCriteria.edibleType == EdibleType.FOOD
+            searchCriteria?.source == EdibleSource.APP
         ) {
             appFoodUiState.data?.let {
                 viewModel.setFoodToLog(

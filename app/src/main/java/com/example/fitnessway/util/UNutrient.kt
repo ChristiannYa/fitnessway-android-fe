@@ -199,26 +199,6 @@ object UNutrient {
         return this.basic + this.vitamin + this.mineral
     }
 
-    fun List<NutrientWithPreferences>.filterNonPremiumPreferences(
-        isUserPremium: Boolean
-    ): List<NutrientWithPreferences> {
-        return if (!isUserPremium) this.filter { !it.nutrient.isPremium } else this
-    }
-
-    fun List<NutrientWithPreferences>.filterPremium(
-        isUserPremium: Boolean
-    ): List<NutrientWithPreferences> {
-        return if (!isUserPremium) this.filter { it.nutrient.isPremium } else this
-    }
-
-    fun List<NutrientWithPreferences>.filterGoalSetPreferences(): List<NutrientWithPreferences> {
-        return this.filter { it.preferences.goal != null }
-    }
-
-    fun List<NutrientWithPreferences>.filterGoalNotSet(): List<NutrientWithPreferences> {
-        return this.filter { it.preferences.goal == null }
-    }
-
     fun List<Nutrient>.getIds(): List<Int> = this.map { it.id }
 
     fun getColor(color: String?): Color? {

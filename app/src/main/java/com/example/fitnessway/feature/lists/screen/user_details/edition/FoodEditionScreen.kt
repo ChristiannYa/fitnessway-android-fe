@@ -42,12 +42,11 @@ import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.ScreenOverlay
 import com.example.fitnessway.ui.shared.Structure
-import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Animation
+import com.example.fitnessway.util.PopupOrigin
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.combine
-import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.UNutrient.toTypedList
 import com.example.fitnessway.util.Ui
@@ -195,7 +194,6 @@ fun FoodEditionScreen(
 
                 val nutrients = nutrientUiState.data
                     .combine()
-                    .filterNonPremiumPreferences(user.isPremium)
                     .map { it.nutrient }
 
                 val availableNutrients = nutrients.filter {
@@ -213,11 +211,7 @@ fun FoodEditionScreen(
                 )
             }
         }
-    } else NotFoundScreen(
-        onBackClick = onBackClick,
-        title = title,
-        message = "Data not found"
-    )
+    }
 }
 
 @Composable
@@ -249,25 +243,9 @@ private fun <T> FieldSection(
             }
         }
 
-        Box {
-            if (fields.isNotEmpty()) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    fields.forEach { content(it) }
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .areaContainer(
-                            areaColor = Ui.InputUi.getOutlinedColors().disabledContainerColor,
-                            onClick = onViewAvailableNutrients,
-                            showsIndication = true
-                        )
-                ) {
-                    Messages.NotFoundMessage(
-                        message = "No $title to add",
-                        fillsWidth = false
-                    )
-                }
+        if (!fields.isEmpty()) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                fields.forEach { content(it) }
             }
         }
     }
@@ -283,8 +261,8 @@ private fun AvailableNutrientsPopup(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = Animation.ComposableTransition.VerticalSlideExtra.enter,
-        exit = Animation.ComposableTransition.VerticalSlideExtra.exit,
+        enter = Animation.ComposableTransition.ScaleInWithSpring.enter(PopupOrigin.CENTER),
+        exit = Animation.ComposableTransition.ScaleInWithSpring.exit(PopupOrigin.CENTER),
         modifier = modifier
     ) {
         Box(

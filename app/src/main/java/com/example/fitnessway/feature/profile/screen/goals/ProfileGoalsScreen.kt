@@ -21,9 +21,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.util.UNutrient.combine
-import com.example.fitnessway.util.UNutrient.filterNonPremiumPreferences
 import com.example.fitnessway.util.UNutrient.filterNutrientsByType
-import com.example.fitnessway.util.UNutrient.filterPremium
 import com.example.fitnessway.util.UNutrient.mapNutrients
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
@@ -90,7 +88,7 @@ fun ProfileGoalsScreen(
                     ) {
                         nutrients
                             .filterNutrientsByType(type)
-                            .filterNonPremiumPreferences(user.isPremium)
+                            .filter { n -> user.isPremium || !n.nutrient.isPremium }
                     }
 
                     val fieldsProvider = remember(
@@ -124,7 +122,10 @@ fun ProfileGoalsScreen(
 
                 val premiumNutrientsMap = NutrientType.entries.associateWith { type ->
                     nutrientsUiState.data
-                        .mapNutrients { _, nutrients -> nutrients.filterPremium(user.isPremium) }
+                        .mapNutrients { _, nutrients ->
+                            nutrients
+                                .filter { n -> user.isPremium || n.nutrient.isPremium }
+                        }
                         .filterNutrientsByType(type)
                         .map { it.nutrient }
                 }

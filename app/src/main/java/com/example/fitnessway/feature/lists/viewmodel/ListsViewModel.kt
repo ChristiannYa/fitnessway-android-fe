@@ -165,9 +165,9 @@ class ListsViewModel(
 
     fun updateEdible() {
         val formState = managers.edition.edibleEditionFormState.value ?: return
-        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
         val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
 
+        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
         val edibleType = edibleListFilter.value.toEdibleType()
 
         // Get current data to update optimistically
@@ -281,60 +281,60 @@ class ListsViewModel(
 
         // Send the api request
         viewModelScope.launch {
-            when (edibleType) {
-                EdibleType.SUPPLEMENT -> userSupplementRepo.update(request)
-                EdibleType.FOOD -> userFoodRepo.update(request)
-            }.collect { state ->
-                when (state) {
-                    is UiState.Success -> {
-                        _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
-                        foodLogRepo.clearMappedDates()
+            edibleType
+                .getUserEdibleRepo()
+                .update(request)
+                .collect { state ->
+                    when (state) {
+                        is UiState.Success -> {
+                            _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
+                            foodLogRepo.clearMappedDates()
 
-                        // Clear the original food's data
-                        _originalEdiblesBeforeUpdate.removeIf { it.id == selectedFoodId }
-                    }
+                            // Clear the original food's data
+                            _originalEdiblesBeforeUpdate.removeIf { it.id == selectedFoodId }
+                        }
 
-                    is UiState.Error -> {
-                        // Provide ui the error state
-                        _uiState.update { it.copy(foodUpdateState = state) }
+                        is UiState.Error -> {
+                            // Provide ui the error state
+                            _uiState.update { it.copy(foodUpdateState = state) }
 
-                        val revertedFood = _originalEdiblesBeforeUpdate
-                            .find { it.id == selectedFoodId }
+                            val revertedFood = _originalEdiblesBeforeUpdate
+                                .find { it.id == selectedFoodId }
 
-                        if (revertedFood != null) {
-                            val currentFoodsPager = edibleType
-                                .getUserEdiblePaginationOrNull()
-                                ?: return@collect
+                            if (revertedFood != null) {
+                                val currentFoodsPager = edibleType
+                                    .getUserEdiblePaginationOrNull()
+                                    ?: return@collect
 
-                            val revertedFoods = currentFoodsPager.data.map {
-                                if (it.id == revertedFood.id) revertedFood else it
-                            }
+                                val revertedFoods = currentFoodsPager.data.map {
+                                    if (it.id == revertedFood.id) revertedFood else it
+                                }
 
-                            val revertedPager = UiStatePager(
-                                uiState = UiState.Success(
-                                    currentFoodsPager.copy(
-                                        data = revertedFoods
+                                val revertedPager = UiStatePager(
+                                    uiState = UiState.Success(
+                                        currentFoodsPager.copy(
+                                            data = revertedFoods
+                                        )
                                     )
                                 )
-                            )
 
-                            when (edibleType) {
-                                EdibleType.SUPPLEMENT -> userSupplementRepo.update { it.copy(uiStatePager = revertedPager) }
-                                EdibleType.FOOD -> userFoodRepo.update { it.copy(uiStatePager = revertedPager) }
+                                when (edibleType) {
+                                    EdibleType.SUPPLEMENT -> userSupplementRepo.update { it.copy(uiStatePager = revertedPager) }
+                                    EdibleType.FOOD -> userFoodRepo.update { it.copy(uiStatePager = revertedPager) }
+                                }
+
+                                managers.edition.initializeEdibleForm(revertedFood)
+                                managers.edition.setSelectedEdible(revertedFood)
                             }
 
-                            managers.edition.initializeEdibleForm(revertedFood)
-                            managers.edition.setSelectedEdible(revertedFood)
+                            if (foodRecentLogRepo.uiState.value.uiStatePager.uiState.hasState) {
+                                foodRecentLogRepo.refresh()
+                            }
                         }
 
-                        if (foodRecentLogRepo.uiState.value.uiStatePager.uiState.hasState) {
-                            foodRecentLogRepo.refresh()
-                        }
+                        else -> {}
                     }
-
-                    else -> {}
                 }
-            }
         }
     }
 

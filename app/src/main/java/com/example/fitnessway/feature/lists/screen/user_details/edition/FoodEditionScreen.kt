@@ -72,7 +72,6 @@ fun FoodEditionScreen(
     val user = userFlow
     val nutrientUiState = nutrientRepoUiState.nutrientsUiState
     val foodUpdateState = uiState.foodUpdateState
-    val nutrientDvControls = viewModel.editionManager
 
     val foodUpdateErrorMessage = handleTempApiErrMsg(
         uiState = foodUpdateState,
@@ -135,10 +134,12 @@ fun FoodEditionScreen(
                 .filter { it.id !in deletedNutrients }
                 .also { nutrientIdsPresent = it.map { n -> n.id } }
 
-            val editableNutrients = UNutrient.buildNutrientsByType2(
-                nutrients = foodWithAddedNutrients,
-                getType = { it.type }
-            ).toTypedList()
+            val editableNutrients = UNutrient
+                .buildNutrientsByType2(
+                    nutrients = foodWithAddedNutrients,
+                    getType = { it.type }
+                )
+                .toTypedList()
 
             val nutrientFields = editableNutrients.map { (type, nutrients) ->
                 type to nutrients.map { fieldsProvider.nutrient(it, it.id == nutrientIdsPresent.last()) }

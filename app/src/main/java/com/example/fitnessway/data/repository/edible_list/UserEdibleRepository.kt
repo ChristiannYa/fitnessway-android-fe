@@ -28,7 +28,7 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
     private val apiClient: UserEdibleApiClient,
     private val repositoryScope: CoroutineScope,
     initialState: T
-) : IEdibleRepository<T> {
+) : IUserEdibleRepository<T> {
 
     private val _uiState by lazy { MutableStateFlow(initialState) }
     override val uiState: StateFlow<T> = _uiState

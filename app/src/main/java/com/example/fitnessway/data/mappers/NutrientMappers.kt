@@ -50,6 +50,8 @@ fun <N : NutrientGroupable> List<N>.toType(): NutrientsByType<N> =
             )
         }
 
+// @TODO: Rename this function so that it lets the caller know that
+//        it will transform nutrients into their DV if applicable
 fun Map<Int, String>.toNutrientIdAmountList(
     nutrientDvMap: Map<Int, String>? = null
 ): List<NutrientIdWithAmount> =

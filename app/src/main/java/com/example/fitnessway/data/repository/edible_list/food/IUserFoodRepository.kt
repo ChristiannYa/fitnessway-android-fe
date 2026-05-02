@@ -1,5 +1,5 @@
 package com.example.fitnessway.data.repository.edible_list.food
 
-import com.example.fitnessway.data.repository.edible_list.IEdibleRepository
+import com.example.fitnessway.data.repository.edible_list.IUserEdibleRepository
 
-interface IUserFoodRepository : IEdibleRepository<UserFoodRepositoryUiState>
+interface IUserFoodRepository : IUserEdibleRepository<UserFoodRepositoryUiState>

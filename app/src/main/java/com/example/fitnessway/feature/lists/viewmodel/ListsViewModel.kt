@@ -167,7 +167,7 @@ class ListsViewModel(
         val formState = managers.edition.edibleEditionFormState.value ?: return
         val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
 
-        val nutrientDvMap = managers.creation.nutrientDvControls.nutrientDvMap.value
+        val nutrientDvMap = managers.edition.nutrientDvControls.nutrientDvMap.value
         val edibleType = edibleListFilter.value.toEdibleType()
 
         // Get current data to update optimistically

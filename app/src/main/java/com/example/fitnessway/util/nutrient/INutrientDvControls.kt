@@ -17,5 +17,5 @@ interface INutrientDvControls {
         val nutrientDvControls: NutrientDvControls?
     )
 
-    val nutrientDvControls: NutrientDvControls
+    val dvControls: NutrientDvControls
 }

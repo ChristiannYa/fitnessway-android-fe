@@ -87,7 +87,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         combine(
             _edibleEditionFormState,
             _originalFormState,
-            nutrientDvControls.nutrientDvMap
+            dvControls.nutrientDvMap
         ) { editionFormState, originalFormState, nutrientDvMap ->
             if (editionFormState == null || originalFormState == null) return@combine false
 
@@ -107,6 +107,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
                     !currentFormState.nutrients.contains(id)
                 }
                 val anyNutrientToggledToDv = nutrientDvMap.isNotEmpty()
+
                 val anyNutrientUpdate = anyNutrientChanged || anyNutrientRemoved || anyNutrientToggledToDv
 
                 basicDataUpdate || anyNutrientUpdate

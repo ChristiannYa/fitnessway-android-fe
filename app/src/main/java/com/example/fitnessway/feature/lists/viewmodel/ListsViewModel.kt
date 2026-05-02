@@ -108,7 +108,7 @@ class ListsViewModel(
         val formState = managers.request.formState.value
         val edibleType = edibleListFilter.value.toEdibleType()
 
-        val nutrientDvMap = managers.request.nutrientDvControls.nutrientDvMap.value
+        val nutrientDvMap = managers.request.dvControls.nutrientDvMap.value
         val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
         val request = formState.toPendingRequest(nutrients, edibleType.name)
 
@@ -136,7 +136,7 @@ class ListsViewModel(
         val edibleType = edibleListFilter.value.toEdibleType()
 
         val request = formState.toUserEdibleRequest(
-            nutrients = managers.creation.nutrientDvControls.nutrientDvMap.value
+            nutrients = managers.creation.dvControls.nutrientDvMap.value
                 .let { dvMap -> formState.nutrients.toNutrientIdAmountList(dvMap) },
             edibleType = edibleType.name
         )
@@ -167,7 +167,7 @@ class ListsViewModel(
         val formState = managers.edition.edibleEditionFormState.value ?: return
         val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
 
-        val nutrientDvMap = managers.edition.nutrientDvControls.nutrientDvMap.value
+        val nutrientDvMap = managers.edition.dvControls.nutrientDvMap.value
         val edibleType = edibleListFilter.value.toEdibleType()
 
         // Get current data to update optimistically
@@ -632,13 +632,7 @@ class ListsViewModel(
         if (_uiState.value.foodUpdateState !is UiState.Idle) resetFoodUpdateState()
         editionManager.resetAddedNutrients()
         editionManager.resetDeletedNutrients()
-        resetFoodNutrientDvMap()
-    }
-
-    private fun resetFoodNutrientDvMap() {
-        val nutrientDvControls = managers.creation.nutrientDvControls
-        val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
-        if (nutrientDvMap.isNotEmpty()) nutrientDvControls.onClearData()
+        editionManager.dvControls.onClearData()
     }
 
     /**

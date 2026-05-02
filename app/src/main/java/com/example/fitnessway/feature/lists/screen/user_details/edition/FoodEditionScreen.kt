@@ -177,7 +177,7 @@ fun FoodEditionScreen(
                                 FoodEditionFormField(
                                     field = it,
                                     onRemoveNutrient = viewModel.editionManager::filterOutNutrientFromForm,
-                                    nutrientDvControls = viewModel.editionManager.nutrientDvControls
+                                    nutrientDvControls = viewModel.editionManager.dvControls
                                 )
                             }
                         }

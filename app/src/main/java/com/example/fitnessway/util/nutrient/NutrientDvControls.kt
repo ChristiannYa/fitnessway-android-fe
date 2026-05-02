@@ -17,7 +17,7 @@ abstract class NutrientDvControls : INutrientDvControls {
         _nutrientDvMap.value = emptyMap()
     }
 
-    override val nutrientDvControls = INutrientDvControls.NutrientDvControls(
+    override val dvControls = INutrientDvControls.NutrientDvControls(
         nutrientDvMap = _nutrientDvMap,
         onAdd = ::addNutrientValueToMap,
         onRemove = ::removeNutrientValueFromMap,

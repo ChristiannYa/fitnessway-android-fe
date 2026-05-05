@@ -41,7 +41,7 @@ fun PendingFoodDetailsScreen(
     onBackClick: () -> Unit
 ) {
     val user = viewModel.userFlow.collectAsState().value
-    val pendingFood = viewModel.requestManager.pendingFood.collectAsState().value
+    val pendingFood = viewModel.requestManager.pendingEdible.collectAsState().value
 
     val isScreenDataReady = user != null && pendingFood != null
 

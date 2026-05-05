@@ -25,7 +25,7 @@ import com.example.fitnessway.data.mappers.toEdibleType
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.EdibleListFilter
 import com.example.fitnessway.data.model.m_26.EdibleType
-import com.example.fitnessway.data.model.m_26.PendingFood
+import com.example.fitnessway.data.model.m_26.PendingEdible
 import com.example.fitnessway.feature.lists.screen.main.composables.PendingEdiblesPagination
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.ui.edible.EdibleListSelectionTextButton
@@ -170,7 +170,7 @@ fun ListsScreen(
                     )
                 }
 
-                fun handlePendingEdibleClick(edible: PendingFood) {
+                fun handlePendingEdibleClick(edible: PendingEdible) {
                     viewModel.requestManager.setPendingFood(edible)
                     onNavigateToPendingEdibleDetails()
                 }

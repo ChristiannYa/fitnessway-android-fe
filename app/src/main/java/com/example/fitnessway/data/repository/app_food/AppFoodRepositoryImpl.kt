@@ -2,7 +2,7 @@ package com.example.fitnessway.data.repository.app_food
 
 import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.mappers.toPaginationOrNull
-import com.example.fitnessway.data.model.m_26.AppFood
+import com.example.fitnessway.data.model.m_26.AppEdible
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.network.HttpClient
@@ -27,25 +27,25 @@ class AppFoodRepositoryImpl(
     private fun fetchAppFoodById(id: Int) =
         httpClient.makeRequest(
             apiCall = { apiClient.findAppFoodById(id) },
-            extractData = { it.appFood },
+            extractData = { it.appEdible },
             errMsg = "Failed to fetch food by ID",
             pathDescription = "app food by id"
         )
 
-    private val fetchedAppFoods = mutableListOf<AppFood>()
+    private val fetchedAppEdibles = mutableListOf<AppEdible>()
 
     override fun findAppFoodById(id: Int) {
-        val appFoodFound = fetchedAppFoods.find { it.id == id }
+        val appFoodFound = fetchedAppEdibles.find { it.id == id }
         if (appFoodFound != null) {
-            _uiState.update { it.copy(appFood = UiState.Success(appFoodFound)) }
+            _uiState.update { it.copy(appEdible = UiState.Success(appFoodFound)) }
             return
         }
 
         repositoryScope.launch {
             fetchAppFoodById(id).collect { state ->
-                _uiState.update { it.copy(appFood = state) }
+                _uiState.update { it.copy(appEdible = state) }
                 if (state is UiState.Success) {
-                    state.data?.let { fetchedAppFoods.add(it) }
+                    state.data?.let { fetchedAppEdibles.add(it) }
                 }
             }
         }

@@ -112,7 +112,7 @@ data class FoodPreview(
 )
 
 @Serializable
-data class AppFood(
+data class AppEdible(
     val id: Int,
     val information: EdibleInformation,
     val createdBy: UUID?,
@@ -121,7 +121,7 @@ data class AppFood(
 )
 
 @Serializable
-data class PendingFood(
+data class PendingEdible(
     val id: Int,
     val information: EdibleInformation,
     val status: PendingFoodStatus,
@@ -188,7 +188,7 @@ data class FoodLogUpdateResponse(
 
 @Serializable
 data class AppFoodFindByIdResponse(
-    val appFood: AppFood?
+    val appEdible: AppEdible?
 )
 
 @Serializable
@@ -198,7 +198,7 @@ data class AppFoodSearchResponse(
 
 @Serializable
 data class PendingFoodsGetResponse(
-    val pendingFoodsPagination: PaginationResult<PendingFood>
+    val pendingFoodsPagination: PaginationResult<PendingEdible>
 )
 
 @Serializable

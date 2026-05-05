@@ -3,7 +3,7 @@ package com.example.fitnessway.data.repository.pending
 import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.model.m_26.EdibleAddRequest
 import com.example.fitnessway.data.model.m_26.EdibleType
-import com.example.fitnessway.data.model.m_26.PendingFood
+import com.example.fitnessway.data.model.m_26.PendingEdible
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.PendingEdibleApiClient
 import com.example.fitnessway.data.repository._state.RepositoryPagerState
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-abstract class PendingEdibleRepository<T : RepositoryPagerState<PendingFood, T>>(
+abstract class PendingEdibleRepository<T : RepositoryPagerState<PendingEdible, T>>(
     edibleType: EdibleType,
     private val httpClient: HttpClient,
     private val apiClient: PendingEdibleApiClient,

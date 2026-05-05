@@ -30,7 +30,7 @@ import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.mappers.toPreview
 import com.example.fitnessway.data.mappers.toTitleCase
-import com.example.fitnessway.data.model.m_26.PendingFood
+import com.example.fitnessway.data.model.m_26.PendingEdible
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Structure
@@ -48,9 +48,9 @@ fun PendingEdiblesPagination(
     isVisible: Boolean,
     isUserPremium: Boolean,
     isDismissError: Boolean,
-    uiStatePager: UiStatePager<PendingFood>,
+    uiStatePager: UiStatePager<PendingEdible>,
     onLoadMore: () -> Unit,
-    onEdibleClick: (PendingFood) -> Unit,
+    onEdibleClick: (PendingEdible) -> Unit,
     onDismissReview: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -95,7 +95,7 @@ fun PendingEdiblesPagination(
                                     key = { it.id }
                                 ) { pendingFood ->
                                     FoodPreview(
-                                        pendingFood = pendingFood,
+                                        pendingEdible = pendingFood,
                                         isDismissError = isDismissError,
                                         isUserPremium = isUserPremium,
                                         onClick = onEdibleClick,
@@ -139,10 +139,10 @@ fun PendingEdiblesPagination(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FoodPreview(
-    pendingFood: PendingFood,
+    pendingEdible: PendingEdible,
     isDismissError: Boolean,
     isUserPremium: Boolean,
-    onClick: (PendingFood) -> Unit,
+    onClick: (PendingEdible) -> Unit,
     onDismiss: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -157,7 +157,7 @@ private fun FoodPreview(
 
     LaunchedEffect(swipeToDismissState.settledValue) {
         if (swipeToDismissState.settledValue == SwipeToDismissBoxValue.EndToStart) {
-            onDismiss(pendingFood.id)
+            onDismiss(pendingEdible.id)
         }
     }
 
@@ -168,7 +168,7 @@ private fun FoodPreview(
     SwipeToDismissBox(
         state = swipeToDismissState,
         enableDismissFromStartToEnd = false,
-        enableDismissFromEndToStart = pendingFood.status.isReviewed,
+        enableDismissFromEndToStart = pendingEdible.status.isReviewed,
         modifier = modifier,
         backgroundContent = {
             if (swipeToDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
@@ -187,19 +187,19 @@ private fun FoodPreview(
         }
     ) {
         UFood.Ui.FoodPreview(
-            food = pendingFood.toPreview(),
+            food = pendingEdible.toPreview(),
             isUserPremium = isUserPremium,
             showsNutrientPreview = true,
             contentRight = {
                 Structure.AppIconDynamic(
                     source = Structure.AppIconSource.Vector(
-                        pendingFood.status.getImageVector()
+                        pendingEdible.status.getImageVector()
                     ),
-                    contentDescription = "Food is ${pendingFood.status.name.toTitleCase()}",
-                    tint = pendingFood.status.getAccent()
+                    contentDescription = "Food is ${pendingEdible.status.name.toTitleCase()}",
+                    tint = pendingEdible.status.getAccent()
                 )
             },
-            onClick = { onClick(pendingFood) }
+            onClick = { onClick(pendingEdible) }
         )
     }
 }

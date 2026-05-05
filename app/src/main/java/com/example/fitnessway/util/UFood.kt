@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,17 +21,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.mappers.toMFoodPreview
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
 import com.example.fitnessway.ui.nutrient.PagedNutrients
-import com.example.fitnessway.ui.shared.Loading
-import com.example.fitnessway.ui.shared.Messages.NotFoundMessage
-import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.foodContainer
@@ -123,62 +116,6 @@ object UFood {
                 }
             }
         }
-
-        @Composable
-        fun UserFoodsList(
-            state: UiState<List<FoodInformation>>,
-            isUserPremium: Boolean = false,
-            showsNutrientPreview: Boolean = false,
-            onFoodClick: (FoodInformation) -> Unit,
-            loadingVerticalSpace: Dp = 16.dp,
-            modifier: Modifier = Modifier
-        ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = modifier
-            ) {
-                when (state) {
-                    is UiState.Loading -> item {
-                        Column(verticalArrangement = Arrangement.spacedBy(loadingVerticalSpace)) {
-                            repeat(12) {
-                                Loading.Composable(height = 32.dp)
-                            }
-                        }
-                    }
-
-                    is UiState.Success -> {
-                        val foods = state.data
-
-                        if (foods.isEmpty()) {
-                            item {
-                                NotFoundMessage("Foods that you add to your list will appear here")
-                            }
-                        } else {
-                            items(
-                                items = foods,
-                                key = { food -> food.information.id }
-                            ) { food ->
-                                FoodPreview(
-                                    food = food.toMFoodPreview(),
-                                    isUserPremium = isUserPremium,
-                                    showsNutrientPreview = showsNutrientPreview,
-                                    onClick = { onFoodClick(food) }
-                                )
-                            }
-                        }
-                    }
-
-                    else -> {}
-                }
-
-                item("foodListState_errorMessage") {
-                    NotFoundMessageAnimated(
-                        isVisible = state is UiState.Error,
-                        message = state.toErrorMessageOrNull() ?: ""
-                    )
-                }
-            }
-        }
     }
 
     data class FoodInformationComposables(
@@ -196,7 +133,6 @@ object UFood {
              * Horizontal alignment for the amount per serving
              */
             bottomHorizontalAlignment: Alignment.Horizontal = Alignment.End,
-
 
             /**
              * Vertical space between the brand, name, and amount per serving

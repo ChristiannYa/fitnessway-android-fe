@@ -12,7 +12,7 @@ import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
-import com.example.fitnessway.data.model.m_26.PendingFood
+import com.example.fitnessway.data.model.m_26.PendingEdible
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.form.FormStates.FoodCreation
 import com.example.fitnessway.util.toEnum
@@ -75,14 +75,14 @@ fun FoodCreation.toUserEdibleRequest(
     edibleType = edibleType
 )
 
-fun PendingFood.toPreview() = FoodPreview(
+fun PendingEdible.toPreview() = FoodPreview(
     id = this.id,
     base = this.information.base,
     nutrientPreview = this.information.nutrients.toNutrientPreview(),
     source = EdibleSource.APP
 )
 
-fun PendingFood.toFoodInformation() = EdibleInformation(
+fun PendingEdible.toFoodInformation() = EdibleInformation(
     base = this.information.base,
     nutrients = this.information.nutrients
 )

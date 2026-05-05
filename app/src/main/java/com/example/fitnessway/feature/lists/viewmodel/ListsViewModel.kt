@@ -22,7 +22,7 @@ import com.example.fitnessway.data.model.m_26.EdibleBase
 import com.example.fitnessway.data.model.m_26.EdibleListFilter
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.OptimisticUpdate
-import com.example.fitnessway.data.model.m_26.PendingFood
+import com.example.fitnessway.data.model.m_26.PendingEdible
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupplementRepository
@@ -480,8 +480,8 @@ class ListsViewModel(
         }
     }
 
-    private val _pendingFoodFailedDeletions = mutableSetOf<Pair<Int, PendingFood>>()
-    private var _pendingFoodsBeforeDeletion: List<PendingFood> = emptyList()
+    private val _pendingEdibleFailedDeletions = mutableSetOf<Pair<Int, PendingEdible>>()
+    private var _pendingFoodsBeforeDeletion: List<PendingEdible> = emptyList()
 
     fun dismissReview() {
         val idToDismiss = managers.request.reviewIdToDismiss.value ?: return
@@ -510,7 +510,7 @@ class ListsViewModel(
 
         // Remove the dismissed pending food from the failed deletion list.
         // This resets a previously failed dismissal so that the user can try again
-        _pendingFoodFailedDeletions.removeIf { it.second.id == idToDismiss }
+        _pendingEdibleFailedDeletions.removeIf { it.second.id == idToDismiss }
 
         pendingFoodRepo.update {
             it.copy(
@@ -534,7 +534,7 @@ class ListsViewModel(
                         _uiState.update { it.copy(foodReviewDismissState = state) }
 
                         // Reset pending foods before successful deletion if all deletions succeeded
-                        if (_pendingFoodFailedDeletions.isEmpty()) {
+                        if (_pendingEdibleFailedDeletions.isEmpty()) {
                             _pendingFoodsBeforeDeletion = emptyList()
                         }
                     }
@@ -542,7 +542,7 @@ class ListsViewModel(
                     is UiState.Error -> {
                         _uiState.update { it.copy(foodReviewDismissState = state) }
 
-                        _pendingFoodFailedDeletions.add(originalIndex to current)
+                        _pendingEdibleFailedDeletions.add(originalIndex to current)
 
                         val currentPager = pendingFoodRepo.uiState.value.uiStatePager.uiState
                             .toSuccessOrNull()
@@ -554,11 +554,11 @@ class ListsViewModel(
                             .toResult(
                                 // Combine current pending foods (modified after optimistic update)
                                 // with the pending foods in queue to rollback
-                                (currentPager.data + _pendingFoodFailedDeletions.map { it.second })
+                                (currentPager.data + _pendingEdibleFailedDeletions.map { it.second })
                                     .distinctBy { it.id }
                                     .sortedBy { pendingFood ->
                                         // Original position from failed deletions being rolled back
-                                        _pendingFoodFailedDeletions
+                                        _pendingEdibleFailedDeletions
                                             .find { it.second.id == pendingFood.id }
                                             ?.first
                                             ?: run {

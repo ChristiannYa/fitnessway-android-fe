@@ -60,7 +60,7 @@ fun FoodLogScreen(
     val formState = viewModel.foodLogFormState.collectAsState().value
     val category = viewModel.foodLogCategory.collectAsState().value
 
-    val appFoodUiState = appFoodRepoUiState.appFood
+    val appFoodUiState = appFoodRepoUiState.appEdible
     val userFoodsUiState = userFoodRepoUiState.uiStatePager
     val userSupplementsUiState = userSupplementRepoUiState.uiStatePager
 

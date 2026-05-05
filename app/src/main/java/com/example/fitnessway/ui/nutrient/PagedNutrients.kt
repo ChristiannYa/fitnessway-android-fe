@@ -65,7 +65,6 @@ fun PagedNutrients(
 
                         val verticalSpace = if (isBaseSizeDisplay) 10.dp else 12.dp
 
-
                         NutrientsAsBox(
                             nutrients = chunkedNutrients[page],
                             isDataMinimal = isDataMinimal,

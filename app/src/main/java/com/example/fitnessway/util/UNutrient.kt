@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
@@ -52,12 +51,13 @@ import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.util.Formatters.doubleFormatter
-import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.ClickableConfiguration
 import com.example.fitnessway.util.Ui.InputUi
 import com.example.fitnessway.util.Ui.LabelSize
 import com.example.fitnessway.util.extensions.calcIntakes
+import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.data.model.m_26.NutrientPreferences as NutrientPreferencesM26
 
 
 object UNutrient {
@@ -522,23 +522,14 @@ object UNutrient {
                             isUserPremium = isUserPremium
                         )
 
-                        val targetProgress =
-                            if (preferences.goal != null) {
-                                (nutrientInFood.amount / preferences.goal)
-                            } else {
-                                0.0
-                            }
+                        val targetProgress = if (preferences.goal != null) {
+                            (nutrientInFood.amount / preferences.goal)
+                        } else 0.0
 
                         val animatedProgress by animateFloatAsState(
                             targetValue = targetProgress.toFloat(),
                             animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                         )
-
-                        val percentage = if (preferences.goal != null) {
-                            (nutrientInFood.amount / preferences.goal) * 100
-                        } else {
-                            0.0
-                        }
 
                         val contentWidth = 70.dp
 
@@ -573,7 +564,7 @@ object UNutrient {
                                 verticalArrangement = Arrangement.spacedBy(2.dp),
                             ) {
                                 Text(
-                                    text = "${doubleFormatter(percentage)}%",
+                                    text = preferences.getGoalRatioText(nutrientInFood.amount),
                                     style = MaterialTheme.typography.labelLarge,
                                     color = nutrientColor.copy(0.8f),
                                     fontFamily = FontFamily.Default,
@@ -604,26 +595,17 @@ object UNutrient {
 
                     val targetProgress = if (preferences.goal != null) {
                         ((nutrientInFood.amount / preferences.goal).toFloat())
-                    } else {
-                        0f
-                    }
+                    } else 0f
+
 
                     val animatedProgress by animateFloatAsState(
                         targetValue = targetProgress,
                         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                     )
 
-                    val percentage = if (preferences.goal != null) {
-                        ((nutrientInFood.amount / preferences.goal) * 100).toFloat()
-                    } else {
-                        0f
-                    }
-
                     val color = if (preferences.hexColor != null) {
                         Color(preferences.hexColor.toColorInt())
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    }
+                    } else MaterialTheme.colorScheme.primary
 
                     Column(
                         // Space between the nutrient left-right pair and bar
@@ -688,7 +670,8 @@ object UNutrient {
                                 )
 
                                 Text(
-                                    text = "${doubleFormatter(percentage.toDouble())}%",
+                                    // text = "${doubleFormatter(percentage.toDouble())}%",
+                                    text = preferences.getGoalRatioText(nutrientInFood.amount),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Default,
                                     color = color,
@@ -702,25 +685,6 @@ object UNutrient {
                     }
                 }
             }
-        }
-    }
-
-    object Debug {
-        fun Nutrient.logNutrientData() {
-            val id = if (this.id < 10) "0${this.id}" else this.id
-
-            val type = when (this.type) {
-                NutrientType.BASIC -> "Ba"
-                NutrientType.VITAMIN -> "Vi"
-                NutrientType.MINERAL -> "Mi"
-            }
-
-            logcat("    [${id}]: ${if (this.isPremium) "✨" else "🆓"} $type ${this.name}")
-        }
-
-        fun NutrientDataWithAmount.logNutrientWithAmountData() {
-            val nutrient = this.nutrientWithPreferences.nutrient
-            logcat("    [${nutrient.id}] ${nutrient.name}: ${this.amount}")
         }
     }
 
@@ -815,3 +779,9 @@ object UNutrient {
         }
     }
 }
+
+fun NutrientPreferencesM26.getGoalRatioText(amount: Double) =
+    this.goal
+        ?.let { (amount / it) * 100 }
+        ?.let { "${it.toPrecisedString()}%" }
+        ?: "N/A"

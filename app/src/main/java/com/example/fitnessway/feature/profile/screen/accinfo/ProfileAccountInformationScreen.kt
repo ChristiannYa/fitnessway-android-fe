@@ -11,15 +11,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MUser.Model.User
+import com.example.fitnessway.feature.profile.screen.accinfo.composables.Timezone
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.util.logcat
 import org.koin.androidx.compose.koinViewModel
-import kotlin.time.Instant
 
 @Composable
 fun ProfileAccountInformationScreen(
@@ -39,45 +38,41 @@ fun ProfileAccountInformationScreen(
         },
     ) {
         if (user != null) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.areaContainer(size = AreaContainerSize.SMALL),
-            ) {
-                val userInformation = getUserAccountInformation(
-                    user = user,
-                    formatDisplayDate = viewModel.dateTimeFormatter::formatDisplayDate
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.areaContainer(size = AreaContainerSize.SMALL),
+                ) {
+                    val userInformation = listOf(
+                        "Email" to user.email,
+                        "Date Joined" to viewModel.dateTimeFormatter.formatDisplayDate(user.createdAt)
+                    )
 
-                userInformation.forEach {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        val textStyle = MaterialTheme.typography.bodyMedium
+                    userInformation.forEach {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val textStyle = MaterialTheme.typography.bodyMedium
 
-                        Text(
-                            text = it.first,
-                            style = textStyle
-                        )
+                            Text(
+                                text = it.first,
+                                style = textStyle
+                            )
 
-                        Text(
-                            text = it.second,
-                            style = textStyle,
-                            color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
-                        )
+                            Text(
+                                text = it.second,
+                                style = textStyle,
+                                color = MaterialTheme.colorScheme.onBackground.copy(0.7f)
+                            )
+                        }
                     }
                 }
-            }
-        } else NotFoundScreen(message = "No user found")
-    }
-}
 
-private fun getUserAccountInformation(
-    user: User,
-    formatDisplayDate: (Instant) -> String
-): List<Pair<String, String>> {
-    return listOf(
-        Pair("Email", user.email),
-        Pair("Date Joined", formatDisplayDate(user.createdAt))
-    )
+                Timezone(
+                    onSet = { timezone -> logcat(timezone) }
+                )
+            }
+        }
+    }
 }

@@ -32,9 +32,7 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.foodContainer
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.logcat
-import com.example.fitnessway.util.UNutrient.Debug.logNutrientWithAmountData
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
-import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.getColor
 
 object UFood {
@@ -273,13 +271,6 @@ object UFood {
             logcat("  ${this.metadata.lastLoggedAt}")
             logcat("  ${this.metadata.updatedAt}")
             logcat("  ${this.metadata.createdAt}")
-        }
-
-        fun FoodInformation.logFoodNutrients() {
-            logcat("[${this.information.id}] - food nutrients:")
-            this.nutrients.combine().forEach {
-                it.logNutrientWithAmountData()
-            }
         }
     }
 }

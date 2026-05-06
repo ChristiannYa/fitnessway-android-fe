@@ -34,7 +34,7 @@ fun ProfileGoalsScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userFlow by viewModel.user.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val goalsEditionFormState by viewModel.goalsEditionFormState.collectAsState()
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
@@ -67,7 +67,7 @@ fun ProfileGoalsScreen(
                     isOnBackEnabled = nutrientGoalsSetUiState !is UiState.Loading,
                     title = "My Goals"
                 ) {
-                    Clickables.HeaderDoneButton(
+                    Clickables.DoneButton(
                         onClick = {
                             viewModel.setGoalsThatChanged()
                             viewModel.setNutrientGoals()

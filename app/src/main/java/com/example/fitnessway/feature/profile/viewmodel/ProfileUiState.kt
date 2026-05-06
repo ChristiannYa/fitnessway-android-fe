@@ -7,5 +7,6 @@ import com.example.fitnessway.util.UiState
 data class ProfileUiState(
     val nutrientGoalsSetUiState: UiState<List<NutrientIdWithGoal>> = UiState.Idle,
     val nutrientColorsSetUiState: UiState<List<NutrientIdWithColor>> = UiState.Idle,
+    val userTimezoneSetUiState: UiState<Unit> = UiState.Idle,
     val logoutState: UiState<Unit> = UiState.Idle
 )

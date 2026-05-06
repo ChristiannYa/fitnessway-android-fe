@@ -2,6 +2,7 @@ package com.example.fitnessway.data.repository.edible_recent_log.food
 
 import kotlinx.coroutines.flow.StateFlow
 
+// @TODO: Refactor with recently logged supplement repository
 interface IFoodRecentLogRepository {
     val uiState: StateFlow<FoodRecentLogRepositoryUiState>
 

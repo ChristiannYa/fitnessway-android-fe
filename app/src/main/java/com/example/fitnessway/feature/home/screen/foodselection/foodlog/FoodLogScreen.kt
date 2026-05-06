@@ -175,7 +175,7 @@ fun FoodLogScreen(
                         size = Ui.LabelSize.MEDIUM,
                     )
 
-                    Clickables.HeaderDoneButton(
+                    Clickables.DoneButton(
                         onClick = viewModel::addFoodLog,
                         enabled = viewModel.isFoodLogFormValid,
                         isLoading = foodLogAddState is UiState.Loading

@@ -38,6 +38,7 @@ fun NavGraphBuilder.profileNavigationGraph(navController: NavController) {
                 navController.getBackStackEntry<ProfileGraph>()
             }
 
+            // @TODO: Only 1 viewmodel  should be used throughout the navigation graph
             val viewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
 
             ProfileScreen(

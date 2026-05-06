@@ -53,6 +53,7 @@ val viewModelModule = module {
     viewModel {
         ProfileViewModel(
             authRepo = get(),
+            userRepo = get(),
             nutrientRepo = get(),
             foodRepo = get(),
             foodLogRepo = get(),

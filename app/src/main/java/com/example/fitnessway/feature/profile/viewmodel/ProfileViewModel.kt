@@ -9,10 +9,12 @@ import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MUser
+import com.example.fitnessway.data.model.m_26.UserTimezoneSetRequest
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
+import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
@@ -31,6 +33,7 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val authRepo: IAuthRepository,
+    private val userRepo: IUserRepository,
     private val nutrientRepo: INutrientRepository,
     private val foodRepo: IUserFoodRepository,
     private val foodLogRepo: IEdibleLogRepository,
@@ -50,7 +53,7 @@ class ProfileViewModel(
     // .map() returns a cold `Flow`. `stateIn()` converts it to a hot `StateFlow`
     // This creates a reactive reference to the user value from userStateHolder
     // that updates automatically when the user changes.
-    val userFlow: StateFlow<MUser.Model.User?> = userStateHolder.userState
+    val user: StateFlow<MUser.Model.User?> = userStateHolder.userState
         .map { it.user }
         .stateIn(
             scope = viewModelScope,
@@ -186,6 +189,30 @@ class ProfileViewModel(
                     else -> {}
                 }
             }
+        }
+    }
+
+    fun setUserTimezone(timezone: String) {
+        viewModelScope.launch {
+            userRepo
+                .setTimezone(UserTimezoneSetRequest(timezone))
+                .collect { state ->
+                    when (state) {
+                        is UiState.Success -> {
+                            _uiState.update { it.copy(userTimezoneSetUiState = state) }
+                        }
+
+                        is UiState.Loading -> {
+                            _uiState.update { it.copy(userTimezoneSetUiState = state) }
+                        }
+
+                        is UiState.Error -> {
+                            _uiState.update { it.copy(userTimezoneSetUiState = state) }
+                        }
+
+                        else -> {}
+                    }
+                }
         }
     }
 

@@ -83,7 +83,7 @@ fun FoodLogDetailsScreen(
                             size = Ui.LabelSize.SMALL
                         )
 
-                        Clickables.HeaderDoneButton(
+                        Clickables.DoneButton(
                             onClick = {
                                 focusManager.clearFocus()
                                 viewModel.updateFoodLog()

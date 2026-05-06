@@ -28,6 +28,7 @@ class AppInitializer(
                     userState.user == null &&
                     !userState.isLoading
                 ) {
+                    // @TODO: See if user state holder is really needed
                     userRepo.getUser().collect { uiState ->
                         when (uiState) {
                             is UiState.Success -> {

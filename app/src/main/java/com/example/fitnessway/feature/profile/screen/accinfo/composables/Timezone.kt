@@ -3,15 +3,14 @@ package com.example.fitnessway.feature.profile.screen.accinfo.composables
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,34 +18,40 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.constants.timezones
+import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 
 @Composable
 fun Timezone(
+    userTimezone: String,
+    isRequestLoading: Boolean,
     onSet: (String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     var isDialogVisible by remember { mutableStateOf(false) }
-    var selectedTimezone by remember { mutableStateOf("America/Chicago") }
+    var selectedTimezone by remember { mutableStateOf(userTimezone) }
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .areaContainer(
-                onClick = { isDialogVisible = true }
-            )
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.areaContainer()
     ) {
         Text("Timezone")
+
+        Text(
+            text = userTimezone,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .clickable(
+                    onClick = { isDialogVisible = true }
+                )
+        )
     }
 
     if (isDialogVisible) {
         AlertDialog(
-            onDismissRequest = { isDialogVisible = false },
             title = {
                 Column {
                     Text("Select a Timezone")
@@ -98,15 +103,18 @@ fun Timezone(
                     }
                 }
             },
+            onDismissRequest = {
+                if (isRequestLoading) return@AlertDialog
+
+                isDialogVisible = false
+                selectedTimezone = userTimezone
+            },
             confirmButton = {
-                Button(
-                    onClick = {
-                        onSet(selectedTimezone)
-                        isDialogVisible = false
-                    }
-                ) {
-                    Text("OK")
-                }
+                Clickables.DoneButton(
+                    enabled = !isRequestLoading,
+                    isLoading = isRequestLoading,
+                    onClick = { onSet(selectedTimezone) }
+                )
             },
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         )

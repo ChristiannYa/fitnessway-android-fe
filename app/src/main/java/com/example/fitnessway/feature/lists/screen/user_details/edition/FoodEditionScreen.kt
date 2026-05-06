@@ -100,7 +100,7 @@ fun FoodEditionScreen(
                     },
                     title = title
                 ) {
-                    Clickables.HeaderDoneButton(
+                    Clickables.DoneButton(
                         enabled = isFoodEditionFormValid
                     ) {
                         focusManager.clearFocus()

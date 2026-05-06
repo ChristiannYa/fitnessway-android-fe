@@ -32,7 +32,7 @@ fun ProfileColorsScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userFlow by viewModel.user.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val colorsEditionFormState by viewModel.colorsEditionFormState.collectAsState()
     val isColorsFormValid by viewModel.isColorsFormValid.collectAsState()
@@ -63,7 +63,7 @@ fun ProfileColorsScreen(
                     title = title,
                     extraContent = {
                         if (nutrientsUiState is UiState.Success) {
-                            Clickables.HeaderDoneButton(
+                            Clickables.DoneButton(
                                 onClick = {
                                     viewModel.setColorsThatChanged()
                                     viewModel.setNutrientColors()

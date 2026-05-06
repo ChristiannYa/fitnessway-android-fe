@@ -17,7 +17,7 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
-import com.example.fitnessway.util.logcat
+import com.example.fitnessway.util.UiState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -25,7 +25,10 @@ fun ProfileAccountInformationScreen(
     onBackClick: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
-    val userFlow by viewModel.userFlow.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val userFlow by viewModel.user.collectAsState()
+
+    val userTimezoneSetState = uiState.userTimezoneSetUiState
 
     val user = userFlow
 
@@ -70,7 +73,9 @@ fun ProfileAccountInformationScreen(
                 }
 
                 Timezone(
-                    onSet = { timezone -> logcat(timezone) }
+                    userTimezone = user.timezone,
+                    isRequestLoading = userTimezoneSetState is UiState.Loading,
+                    onSet = viewModel::setUserTimezone
                 )
             }
         }

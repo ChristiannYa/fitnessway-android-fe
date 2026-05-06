@@ -66,7 +66,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userFlow by viewModel.user.collectAsState()
 
     val user = userFlow
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState

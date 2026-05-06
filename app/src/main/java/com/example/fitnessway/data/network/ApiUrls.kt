@@ -19,8 +19,10 @@ object ApiUrls {
     }
 
     object User {
-        const val USER_PATH = "user"
-        const val USER_URL = "$BASE_URL_KT$USER_PATH"
+        private const val PATH = "user"
+
+        const val USER_URL = "$BASE_URL_KT$PATH"
+        const val USER_TIMEZONE_SET_URL = "$BASE_URL_KT$PATH/set-timezone"
     }
 
     object Nutrient {

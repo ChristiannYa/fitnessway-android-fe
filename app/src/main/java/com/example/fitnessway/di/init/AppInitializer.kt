@@ -3,69 +3,61 @@ package com.example.fitnessway.di.init
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.fitnessway.data.repository.user.IUserRepository
-import com.example.fitnessway.data.state.token.ITokensStateHolder
-import com.example.fitnessway.data.state.user.IUserStateHolder
+import com.example.fitnessway.data.state.IAppStateStore
 import com.example.fitnessway.di.modules.loadAppDateTimeFormatterModule
 import com.example.fitnessway.di.modules.loadManagerModules
-import com.example.fitnessway.util.Constants
-import com.example.fitnessway.util.Formatters.logcat
+import com.example.fitnessway.di.modules.privateViewModelModule
 import com.example.fitnessway.util.UiState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import org.koin.core.context.loadKoinModules
 import java.time.ZoneId
 
 class AppInitializer(
-    private val tokensStateHolder: ITokensStateHolder,
-    private val userStateHolder: IUserStateHolder,
+    private val appStateStore: IAppStateStore,
     private val userRepo: IUserRepository,
 ) {
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun initialize() {
         ProcessLifecycleOwner.get().lifecycleScope.launch {
-            tokensStateHolder.tokensState.collect { tokensState ->
-                val userState = userStateHolder.userState.value
+            appStateStore.tokensStateHolder.tokensState
+                .flatMapLatest { tokensState ->
+                    if (!tokensState.isAuthenticated) {
+                        clearStateHolders()
+                        appStateStore.setAppReady()
+                        return@flatMapLatest emptyFlow()
+                    }
 
-                if (tokensState.isAuthenticated &&
-                    userState.user == null &&
-                    !userState.isLoading
-                ) {
-                    // @TODO: See if user state holder is really needed
-                    userRepo.getUser().collect { uiState ->
-                        when (uiState) {
-                            is UiState.Success -> {
-                                val user = uiState.data
-                                userStateHolder.setUser(user)
+                    userRepo.load()
+                    userRepo.uiState
+                }
+                .collect { userRepoUiState ->
+                    when (val userUiState = userRepoUiState.userUiState) {
 
-                                val timezoneId = ZoneId.of(user.timezone)
-
-                                loadKoinModules(
-                                    listOf(
-                                        loadAppDateTimeFormatterModule(timezoneId),
-                                        loadManagerModules(timezoneId)
-                                    )
+                        is UiState.Success -> userUiState.data.let { user ->
+                            val timezoneId = ZoneId.of(user.timezone)
+                            loadKoinModules(
+                                listOf(
+                                    loadAppDateTimeFormatterModule(timezoneId),
+                                    loadManagerModules(timezoneId),
+                                    privateViewModelModule
                                 )
-                            }
-
-                            is UiState.Error -> {
-                                logcat(
-                                    message = "error collecting user state",
-                                    level = Constants.LogLevel.ERROR
-                                )
-
-                                clearCachedData()
-                            }
-
-                            else -> {}
+                            )
+                            appStateStore.setAppReady()
                         }
+
+                        is UiState.Error -> clearStateHolders()
+
+                        else -> {}
                     }
                 }
-
-                if (!tokensState.isAuthenticated && userState.user != null) clearCachedData()
-            }
         }
     }
 
-    fun clearCachedData() {
-        tokensStateHolder.clearTokens()
-        userStateHolder.clearUser()
+    fun clearStateHolders() {
+        appStateStore.tokensStateHolder.clearTokens()
     }
 }

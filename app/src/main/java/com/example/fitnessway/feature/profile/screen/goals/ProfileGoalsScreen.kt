@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientFields
 import com.example.fitnessway.feature.profile.screen.goals.composables.UpgradePromptSection
@@ -34,12 +35,12 @@ fun ProfileGoalsScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.user.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val goalsEditionFormState by viewModel.goalsEditionFormState.collectAsState()
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
 
-    val user = userFlow
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val nutrientGoalsSetUiState = uiState.nutrientGoalsSetUiState
 

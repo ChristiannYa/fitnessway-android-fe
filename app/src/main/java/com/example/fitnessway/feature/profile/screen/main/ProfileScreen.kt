@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.feature.profile.screen.main.composables.UpgradePromptDialog
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
@@ -66,9 +67,9 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
-    val userFlow by viewModel.user.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
 
-    val user = userFlow
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
     LaunchedEffect(Unit) {

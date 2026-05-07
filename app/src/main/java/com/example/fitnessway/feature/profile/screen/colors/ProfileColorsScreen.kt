@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.profile.screen.colors.composables.NutrientColorsContent
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
@@ -32,12 +33,12 @@ fun ProfileColorsScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.user.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val colorsEditionFormState by viewModel.colorsEditionFormState.collectAsState()
     val isColorsFormValid by viewModel.isColorsFormValid.collectAsState()
 
-    val user = userFlow
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val nutrientColorsSetUiState = uiState.nutrientColorsSetUiState
 

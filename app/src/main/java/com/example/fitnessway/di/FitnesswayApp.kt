@@ -13,14 +13,12 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import java.io.File
 
 class FitnesswayApp : Application() {
     private val appInitializer: AppInitializer by inject()
 
     override fun onCreate() {
         super.onCreate()
-        clearOkHttpCache()
 
         // @TODO: Move auth-related modules in the App's `initialize()` upon auth
         startKoin {
@@ -41,8 +39,4 @@ class FitnesswayApp : Application() {
         appInitializer.initialize()
     }
 
-    private fun clearOkHttpCache() {
-        val cacheDir = File(cacheDir, "okhttp_cache")
-        if (cacheDir.exists()) cacheDir.deleteRecursively()
-    }
 }

@@ -8,14 +8,12 @@ import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
-import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.UserTimezoneSetRequest
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.user.IUserRepository
-import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
@@ -23,11 +21,8 @@ import com.example.fitnessway.util.UNutrient.mapNutrients
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -39,7 +34,6 @@ class ProfileViewModel(
     private val foodLogRepo: IEdibleLogRepository,
     private val managers: IProfileManagers,
     val dateTimeFormatter: IAppDateTimeFormatter,
-    userStateHolder: IUserStateHolder,
 ) : ViewModel(),
     IGoalsManager by managers.goals,
     IColorsManager by managers.colors {
@@ -49,21 +43,10 @@ class ProfileViewModel(
         managers.colors.init(viewModelScope)
     }
 
-    // @NOTE:
-    // .map() returns a cold `Flow`. `stateIn()` converts it to a hot `StateFlow`
-    // This creates a reactive reference to the user value from userStateHolder
-    // that updates automatically when the user changes.
-    val user: StateFlow<MUser.Model.User?> = userStateHolder.userState
-        .map { it.user }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
+    val userRepoUiState = userRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
 
     fun refreshNutrients() {

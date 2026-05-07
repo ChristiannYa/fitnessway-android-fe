@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toEdibleType
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
@@ -41,10 +42,9 @@ fun EdibleSelectionScreen(
     onNavigateToSelectedFood: () -> Unit,
     onPopBackStack: () -> Unit,
 ) {
-    val user by viewModel.userFlow.collectAsState()
-
-    val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
+    val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
     val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
     val foodRecentLogRepoUiState by viewModel.foodRecentLogRepoUiState.collectAsState()
     val supplementRecentLogRepoUiState by viewModel.supplementRecentLogRepoUiState.collectAsState()
@@ -54,6 +54,7 @@ fun EdibleSelectionScreen(
 
     val foodLogCategory = viewModel.foodLogCategory.collectAsState().value
 
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val appFoodsUiStatePager = appFoodRepoUiState.appFoodsUiStatePager
     val foodRecentLogRepoUiStatePager = foodRecentLogRepoUiState.uiStatePager
     val supplementRecentLogRepoUiStatePager = supplementRecentLogRepoUiState.uiStatePager

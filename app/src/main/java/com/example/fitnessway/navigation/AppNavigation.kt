@@ -13,7 +13,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.fitnessway.data.state.IApplicationStateStore
+import com.example.fitnessway.data.state.IAppStateStore
 import com.example.fitnessway.feature.home.navigation.HomeMainDest
 import com.example.fitnessway.feature.home.navigation.homeNavigationGraph
 import com.example.fitnessway.feature.lists.navigation.ListsMainDest
@@ -32,13 +32,11 @@ private val screenWithBottomNavBar = listOf(
 )
 
 @Composable
-fun AppNavigation(appStateStore: IApplicationStateStore = koinInject()) {
-    val tokensState by appStateStore.authStateHolder.tokensState.collectAsState()
-    val userState by appStateStore.userStateHolder.userState.collectAsState()
+fun AppNavigation(appStateStore: IAppStateStore = koinInject()) {
+    val tokensState by appStateStore.tokensStateHolder.tokensState.collectAsState()
+    val isAppReady by appStateStore.isAppReady.collectAsState()
 
-    val isUserLoading = tokensState.isAuthenticated && userState.user == null
-
-    if (tokensState.isLoading || isUserLoading) {
+    if (!isAppReady) {
         SplashScreen()
         return
     }

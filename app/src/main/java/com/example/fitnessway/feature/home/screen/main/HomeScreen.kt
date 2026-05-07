@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogListFilter
 import com.example.fitnessway.data.model.m_26.NutrientType
@@ -48,13 +49,13 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val foodLogRepoUiState by viewModel.foodLogRepoUiState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     val areFoodLogsVisible by viewModel.areFoodLogsVisible.collectAsState()
 
-    val user = userFlow
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
 
     val deleteFoodLogErrMsg = handleTempApiErrMsg(
         uiState = uiState.foodLogDeleteState,

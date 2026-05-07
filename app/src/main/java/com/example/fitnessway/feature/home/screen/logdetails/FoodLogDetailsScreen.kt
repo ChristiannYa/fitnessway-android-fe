@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
@@ -34,11 +35,11 @@ fun FoodLogDetailsScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val selectedFoodLog by viewModel.selectedFoodLog.collectAsState()
     val foodLogDetailsFormState by viewModel.foodLogEditionFormState.collectAsState()
 
-    val user = userFlow
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val foodLog = selectedFoodLog
     val foodLogUpdateState = uiState.foodLogUpdateState
     val focusManager = LocalFocusManager.current

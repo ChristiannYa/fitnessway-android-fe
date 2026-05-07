@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.mappers.toTypedList
 import com.example.fitnessway.data.model.m_26.EdibleSource
@@ -48,9 +49,8 @@ fun FoodLogScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onPopBackStack: () -> Unit
 ) {
-    val user by viewModel.userFlow.collectAsState()
-
     val uiState by viewModel.uiState.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
     val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
@@ -60,6 +60,7 @@ fun FoodLogScreen(
     val formState = viewModel.foodLogFormState.collectAsState().value
     val category = viewModel.foodLogCategory.collectAsState().value
 
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val appFoodUiState = appFoodRepoUiState.appEdible
     val userFoodsUiState = userFoodRepoUiState.uiStatePager
     val userSupplementsUiState = userSupplementRepoUiState.uiStatePager

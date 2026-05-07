@@ -30,15 +30,15 @@ val repositoryModule = module {
         AuthRepositoryImpl(
             apiClient = get(),
             httpClient = get(),
-            tokensStateHolder = get(),
-            userStateHolder = get()
+            tokensStateHolder = get()
         )
     }
 
     single<IUserRepository> {
         UserRepositoryImpl(
             apiClient = get(),
-            httpClient = get()
+            httpClient = get(),
+            repositoryScope = get(named("repositoryScope"))
         )
     }
 

@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.fitnessway.data.mappers.toEdibleType
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.util.Ui
@@ -17,17 +18,17 @@ fun FoodRequestScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val listOption by viewModel.edibleListFilter.collectAsState()
+
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
+    val edibleRequestAddState = uiState.edibleRequestAddState.getValue(listOption.toEdibleType())
+    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
     LaunchedEffect(Unit) {
         viewModel.getNutrients()
     }
-
-    val user = userFlow
-    val edibleRequestAddState = uiState.edibleRequestAddState.getValue(listOption.toEdibleType())
-    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
 
     val edibleRequestErrorMessage = Ui.handleTempApiErrMsg(
         uiState = edibleRequestAddState,

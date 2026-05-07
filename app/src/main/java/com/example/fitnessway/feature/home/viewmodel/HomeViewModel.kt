@@ -6,7 +6,6 @@ import com.example.fitnessway.data.mappers.mapfl
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toNutrientPreview
 import com.example.fitnessway.data.mappers.toSuccessOrNull
-import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.EdibleLogAddRequest
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodLog
@@ -22,7 +21,7 @@ import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
-import com.example.fitnessway.data.state.IApplicationStateStore
+import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.IDateManager
 import com.example.fitnessway.feature.home.manager.foodlog.IFoodLogManager
@@ -36,44 +35,34 @@ import com.example.fitnessway.util.extensions.toPrecisedString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val appFoodRepo: IAppFoodRepository,
     private val nutrientRepo: INutrientRepository,
+    private val userRepo: IUserRepository,
     private val userFoodRepo: IUserFoodRepository,
     private val userSupplementRepo: IUserSupplementRepository,
     private val foodLogRepo: IEdibleLogRepository,
     private val foodRecentLogRepo: IFoodRecentLogRepository,
     private val supplementRecentLogRepo: ISupplementRecentLogRepository,
     private val managers: IHomeManager,
-    val appStateStore: IApplicationStateStore,
     val dateTimeFormatter: IAppDateTimeFormatter
 ) : ViewModel(),
     IFoodLogManager by managers.foodLog,
     IDateManager by managers.date,
     IUiManager by managers.ui {
 
-    val userFlow: StateFlow<MUser.Model.User?> = appStateStore.userStateHolder.userState
-        .map { it.user }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
     private val _appFoodSearchQuery = MutableStateFlow("")
-    val appFoodSearchQuery: StateFlow<kotlin.String> = _appFoodSearchQuery
+    val appFoodSearchQuery: StateFlow<String> = _appFoodSearchQuery
 
+    val userRepoUiState = userRepo.uiState
     val appFoodRepoUiState = appFoodRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
     val userFoodRepoUiState = userFoodRepo.uiState
@@ -84,12 +73,11 @@ class HomeViewModel(
 
     private fun getKebabDate() = dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
 
-    private var debounceJob: Job? = null
-
+    private var getAppFoodsDebounceJob: Job? = null
     fun getAppFoods(query: String, edibleType: EdibleType) {
         _appFoodSearchQuery.value = query
 
-        debounceJob?.cancel()
+        getAppFoodsDebounceJob?.cancel()
 
         if (query.isBlank()) {
             appFoodRepo.clearAppFoods()
@@ -98,7 +86,7 @@ class HomeViewModel(
 
         appFoodRepo.clearAppFoods()
 
-        debounceJob = viewModelScope.launch {
+        getAppFoodsDebounceJob = viewModelScope.launch {
             delay(600)
             appFoodRepo.searchAppFoods(query, edibleType)
         }

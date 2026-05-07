@@ -5,7 +5,6 @@ import com.example.fitnessway.data.model.MAuth.Api.Req.LogoutRequest
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.AuthApiClient
 import com.example.fitnessway.data.state.token.ITokensStateHolder
-import com.example.fitnessway.data.state.user.IUserStateHolder
 import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +16,6 @@ class AuthRepositoryImpl(
     private val httpClient: HttpClient,
     private val apiClient: AuthApiClient,
     private val tokensStateHolder: ITokensStateHolder,
-    private val userStateHolder: IUserStateHolder,
 ) : IAuthRepository {
     override suspend fun register(req: MAuth.Api.Req.RegisterRequest): Flow<UiState<Unit>> =
         httpClient.makeRequest(
@@ -47,7 +45,7 @@ class AuthRepositoryImpl(
         val refreshToken = tokensStateHolder.tokensState.value.refreshToken
 
         if (refreshToken == null) {
-            clearCachedData()
+            clearStateHolders()
             emit(UiState.Success(Unit))
             return@flow
         }
@@ -58,13 +56,12 @@ class AuthRepositoryImpl(
             logcat("logout exception: ${e.message}")
         } finally {
             // Always clear auth regardless of success or failure
-            clearCachedData()
+            clearStateHolders()
             emit(UiState.Success(Unit))
         }
     }.flowOn(Dispatchers.IO)
 
-    private fun clearCachedData() {
+    private fun clearStateHolders() {
         tokensStateHolder.clearTokens()
-        userStateHolder.clearUser()
     }
 }

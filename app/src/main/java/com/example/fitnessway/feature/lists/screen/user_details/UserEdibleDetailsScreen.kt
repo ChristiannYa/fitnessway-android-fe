@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.feature.lists.screen.user_details.composables.ConfirmFoodDeletionPopup
 import com.example.fitnessway.feature.lists.screen.user_details.composables.FoodInformation
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
@@ -39,10 +40,10 @@ fun UserEdibleDetailsScreen(
     onNavigateToEditionScreen: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val selectedFood by viewModel.editionManager.selectedEdible.collectAsState()
 
-    val user = userFlow
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val selectedFoodCopy = selectedFood
 
     val foodDeleteState = uiState.foodDeleteState

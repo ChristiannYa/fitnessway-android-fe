@@ -21,6 +21,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toFoodInformation
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.PendingFoodStatus
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
@@ -40,7 +41,9 @@ fun PendingFoodDetailsScreen(
     viewModel: ListsViewModel = koinViewModel(),
     onBackClick: () -> Unit
 ) {
-    val user = viewModel.userFlow.collectAsState().value
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
+
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val pendingFood = viewModel.requestManager.pendingEdible.collectAsState().value
 
     val isScreenDataReady = user != null && pendingFood != null

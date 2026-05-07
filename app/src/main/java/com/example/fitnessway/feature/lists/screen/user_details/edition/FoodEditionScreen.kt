@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toM25NutrientDataWithAmount
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.lists.screen.user_details.edition.composables.FoodEditionFormField
@@ -61,7 +62,7 @@ fun FoodEditionScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
     val foodEditionFormState by viewModel.editionManager.edibleEditionFormState.collectAsState()
     val selectedFood by viewModel.editionManager.selectedEdible.collectAsState()
@@ -69,7 +70,7 @@ fun FoodEditionScreen(
     val deletedNutrients by viewModel.editionManager.deletedNutrients.collectAsState()
     val isFoodEditionFormValid by viewModel.editionManager.isEdibleEditionFormValid.collectAsState()
 
-    val user = userFlow
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val nutrientUiState = nutrientRepoUiState.nutrientsUiState
     val foodUpdateState = uiState.foodUpdateState
 

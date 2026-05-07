@@ -3,26 +3,13 @@ package com.example.fitnessway.di.modules
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
-import com.example.fitnessway.feature.welcome.screen.login.viewmodel.LoginViewModel
-import com.example.fitnessway.feature.welcome.screen.register.viewmodel.RegisterViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val viewModelModule = module {
-    viewModel {
-        LoginViewModel(
-            repo = get()
-        )
-    }
-
-    viewModel {
-        RegisterViewModel(
-            repo = get()
-        )
-    }
-
+val privateViewModelModule = module {
     viewModel {
         HomeViewModel(
+            userRepo = get(),
             appFoodRepo = get(),
             nutrientRepo = get(),
             userFoodRepo = get(),
@@ -31,13 +18,13 @@ val viewModelModule = module {
             foodRecentLogRepo = get(),
             supplementRecentLogRepo = get(),
             managers = get(),
-            appStateStore = get(),
             dateTimeFormatter = get()
         )
     }
 
     viewModel {
         ListsViewModel(
+            userRepo = get(),
             pendingFoodRepo = get(),
             pendingSupplementRepo = get(),
             userFoodRepo = get(),
@@ -45,8 +32,7 @@ val viewModelModule = module {
             nutrientRepo = get(),
             foodLogRepo = get(),
             foodRecentLogRepo = get(),
-            managers = get(),
-            userStateHolder = get()
+            managers = get()
         )
     }
 
@@ -59,7 +45,6 @@ val viewModelModule = module {
             foodLogRepo = get(),
             managers = get(),
             dateTimeFormatter = get(),
-            userStateHolder = get()
         )
     }
 }

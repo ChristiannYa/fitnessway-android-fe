@@ -17,7 +17,6 @@ import com.example.fitnessway.data.mappers.toUserEdibleRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
-import com.example.fitnessway.data.model.MUser
 import com.example.fitnessway.data.model.m_26.EdibleBase
 import com.example.fitnessway.data.model.m_26.EdibleListFilter
 import com.example.fitnessway.data.model.m_26.EdibleType
@@ -31,7 +30,7 @@ import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecent
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.pending.food.IPendingFoodRepository
 import com.example.fitnessway.data.repository.pending.supplement.IPendingSupplementRepository
-import com.example.fitnessway.data.state.user.IUserStateHolder
+import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
@@ -42,15 +41,13 @@ import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
 import com.example.fitnessway.util.toEnum
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ListsViewModel(
+    private val userRepo: IUserRepository,
     private val userFoodRepo: IUserFoodRepository,
     private val userSupplementRepo: IUserSupplementRepository,
     private val pendingFoodRepo: IPendingFoodRepository,
@@ -59,7 +56,6 @@ class ListsViewModel(
     private val foodRecentLogRepo: IFoodRecentLogRepository,
     private val nutrientRepo: INutrientRepository,
     private val managers: IListsManagers,
-    userStateHolder: IUserStateHolder
 ) : ViewModel() {
 
     init {
@@ -76,19 +72,12 @@ class ListsViewModel(
     private val _edibleListFilter = MutableStateFlow<EdibleListFilter>(EdibleListFilter.FOOD)
     val edibleListFilter: StateFlow<EdibleListFilter> = _edibleListFilter
 
+    val userRepoUiState = userRepo.uiState
     val userFoodRepoUiState = userFoodRepo.uiState
     val userSupplementRepoUiState = userSupplementRepo.uiState
     val pendingFoodRepoUiState = pendingFoodRepo.uiState
     val pendingSupplementRepoUiState = pendingSupplementRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
-
-    val userFlow: StateFlow<MUser.Model.User?> = userStateHolder.userState
-        .map { it.user }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
 
     fun getNutrients() = nutrientRepo.loadNutrients()
 

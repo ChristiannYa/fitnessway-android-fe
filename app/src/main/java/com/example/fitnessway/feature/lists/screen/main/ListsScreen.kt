@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.toEdibleListFilterMatched
 import com.example.fitnessway.data.mappers.toEdibleType
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.EdibleListFilter
 import com.example.fitnessway.data.model.m_26.EdibleType
@@ -52,14 +53,14 @@ fun ListsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedList by viewModel.edibleListFilter.collectAsState()
-    val userFlow by viewModel.userFlow.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
     val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
     val pendingFoodRepoUiState by viewModel.pendingFoodRepoUiState.collectAsState()
     val pendingSupplementRepoUiState by viewModel.pendingSupplementRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
-    val user = userFlow
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
     val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
     val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
     val userSupplementsUiStatePager = userSupplementRepoUiState.uiStatePager

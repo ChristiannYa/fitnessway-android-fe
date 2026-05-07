@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.feature.profile.screen.accinfo.composables.Timezone
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import com.example.fitnessway.ui.shared.Header
@@ -26,11 +27,11 @@ fun ProfileAccountInformationScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userFlow by viewModel.user.collectAsState()
+    val userRepoUiState by viewModel.userRepoUiState.collectAsState()
+
+    val user = userRepoUiState.userUiState.toSuccessOrNull()
 
     val userTimezoneSetState = uiState.userTimezoneSetUiState
-
-    val user = userFlow
 
     Screen(
         header = {

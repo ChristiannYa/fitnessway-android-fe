@@ -78,11 +78,11 @@ class EdibleLogRepositoryImpl(
             errMsg = "Failed to delete log",
             pathDescription = "delete food log"
         )
-
-    override fun clearMappedDates() = _uiState.update { it.copy(foodLogs = emptyMap()) }
-
-    override fun updateState(update: (EdibleLogRepositoryUiState) -> EdibleLogRepositoryUiState) =
+    
+    override fun update(update: (EdibleLogRepositoryUiState) -> EdibleLogRepositoryUiState) =
         _uiState.update(update)
 
-    override fun clear() = _uiState.update { EdibleLogRepositoryUiState() }
+    override fun clear() = _uiState.update {
+        EdibleLogRepositoryUiState()
+    }
 }

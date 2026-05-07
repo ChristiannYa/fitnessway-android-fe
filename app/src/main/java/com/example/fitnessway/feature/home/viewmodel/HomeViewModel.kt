@@ -21,6 +21,7 @@ import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.food.IFoodRecentLogRepository
 import com.example.fitnessway.data.repository.edible_recent_log.supplement.ISupplementRecentLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
+import com.example.fitnessway.data.repository.nutrient_intakes.INutrientIntakesRepository
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.feature.home.manager.IHomeManager
 import com.example.fitnessway.feature.home.manager.date.IDateManager
@@ -43,10 +44,11 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val appFoodRepo: IAppFoodRepository,
     private val nutrientRepo: INutrientRepository,
+    private val nutrientIntakesRepo: INutrientIntakesRepository,
     private val userRepo: IUserRepository,
     private val userFoodRepo: IUserFoodRepository,
     private val userSupplementRepo: IUserSupplementRepository,
-    private val foodLogRepo: IEdibleLogRepository,
+    private val edibleLogRepo: IEdibleLogRepository,
     private val foodRecentLogRepo: IFoodRecentLogRepository,
     private val supplementRecentLogRepo: ISupplementRecentLogRepository,
     private val managers: IHomeManager,
@@ -64,10 +66,11 @@ class HomeViewModel(
 
     val userRepoUiState = userRepo.uiState
     val appFoodRepoUiState = appFoodRepo.uiState
+    val nutrientIntakesRepoUiState = nutrientIntakesRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
     val userFoodRepoUiState = userFoodRepo.uiState
     val userSupplementRepoUiState = userSupplementRepo.uiState
-    val foodLogRepoUiState = foodLogRepo.uiState
+    val foodLogRepoUiState = edibleLogRepo.uiState
     val foodRecentLogRepoUiState = foodRecentLogRepo.uiState
     val supplementRecentLogRepoUiState = supplementRecentLogRepo.uiState
 
@@ -101,8 +104,8 @@ class HomeViewModel(
     fun getUserSupplements() = userSupplementRepo.load()
     fun getMoreUserSupplements() = userSupplementRepo.loadMore()
 
-    fun getFoodLogs() = foodLogRepo.load(getKebabDate())
-    fun refreshFoodLogs() = foodLogRepo.refresh(getKebabDate())
+    fun getFoodLogs() = edibleLogRepo.load(getKebabDate())
+    fun refreshFoodLogs() = edibleLogRepo.refresh(getKebabDate())
 
     fun getRecentlyLoggedFoods() = foodRecentLogRepo.load()
     fun getMoreRecentlyLoggedFoods() = foodRecentLogRepo.loadMore()
@@ -110,8 +113,8 @@ class HomeViewModel(
     fun getRecentlyLoggedSupplements() = supplementRecentLogRepo.load()
     fun getMoreRecentlyLoggedSupplements() = supplementRecentLogRepo.loadMore()
 
-    fun getNutrientIntakes() = nutrientRepo.loadNutrientIntakes(getKebabDate())
-    fun refreshNutrientIntakes() = nutrientRepo.refreshNutrientIntakes(getKebabDate())
+    fun getNutrientIntakes() = nutrientIntakesRepo.load(getKebabDate())
+    fun refreshNutrientIntakes() = nutrientIntakesRepo.refresh(getKebabDate())
 
     fun addFoodLog() {
         val foodLogFormState = managers.foodLog.foodLogFormState.value?.data ?: return
@@ -168,13 +171,13 @@ class HomeViewModel(
         )
 
         viewModelScope.launch {
-            foodLogRepo.add(request, kebabDate).collect { state ->
+            edibleLogRepo.add(request, kebabDate).collect { state ->
 
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
-                        foodLogRepo.refresh(kebabDate)
-                        nutrientRepo.refreshNutrientIntakes(kebabDate)
+                        edibleLogRepo.refresh(kebabDate)
+                        nutrientIntakesRepo.refresh(kebabDate)
                     }
 
                     is UiState.Error -> {
@@ -204,8 +207,8 @@ class HomeViewModel(
         val apiDate = getKebabDate()
 
         // Get original data to update optimistically
-        val originalFoodLogsState = foodLogRepo.uiState.value.foodLogs[apiDate]
-        val originalNutrientIntakesState = nutrientRepo.uiState.value.nutrientIntakesCache[apiDate]
+        val originalFoodLogsState = edibleLogRepo.uiState.value.foodLogs[apiDate]
+        val originalNutrientIntakesState = nutrientIntakesRepo.uiState.value.nutrientIntakes[apiDate]
 
         // Only proceed if there are food logs
         if (originalFoodLogsState !is UiState.Success ||
@@ -269,7 +272,7 @@ class HomeViewModel(
         )
 
         // Update UI immediately
-        foodLogRepo.updateState {
+        edibleLogRepo.update {
             it.copy(
                 foodLogs = it.foodLogs + (apiDate to UiState.Success(
                     optimisticFoodLogs
@@ -277,9 +280,9 @@ class HomeViewModel(
             )
         }
 
-        nutrientRepo.updateState {
+        nutrientIntakesRepo.update {
             it.copy(
-                nutrientIntakesCache = it.nutrientIntakesCache + (apiDate to UiState.Success(
+                nutrientIntakes = it.nutrientIntakes + (apiDate to UiState.Success(
                     optimisticIntakes
                 ))
             )
@@ -287,7 +290,7 @@ class HomeViewModel(
 
         // Send the api request
         viewModelScope.launch {
-            foodLogRepo.update(request, apiDate).collect { state ->
+            edibleLogRepo.update(request, apiDate).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogUpdateState = state) }
@@ -301,11 +304,11 @@ class HomeViewModel(
                         managers.foodLog.setSelectedFoodLog(selectedFoodLog)
 
                         // Obtain updated UI states after optimistic update
-                        val currentFoodLogsState = foodLogRepo.uiState.value
+                        val currentFoodLogsState = edibleLogRepo.uiState.value
                             .foodLogs[apiDate]
 
-                        val currentNutrientIntakesState = nutrientRepo.uiState.value
-                            .nutrientIntakesCache[apiDate]
+                        val currentNutrientIntakesState = nutrientIntakesRepo.uiState.value
+                            .nutrientIntakes[apiDate]
 
                         if (currentFoodLogsState is UiState.Success) {
                             val revertedFoodLogs = currentFoodLogsState.data.mapfl { category, logs ->
@@ -318,7 +321,7 @@ class HomeViewModel(
                                     .sortedByDescending { it.id }
                             }
 
-                            foodLogRepo.updateState {
+                            edibleLogRepo.update {
                                 it.copy(
                                     foodLogs = it.foodLogs +
                                             (apiDate to UiState.Success(revertedFoodLogs))
@@ -338,9 +341,9 @@ class HomeViewModel(
                                 intakeMath = NutrientIntakeMath.ADD
                             )
 
-                            nutrientRepo.updateState {
+                            nutrientIntakesRepo.update {
                                 it.copy(
-                                    nutrientIntakesCache = it.nutrientIntakesCache +
+                                    nutrientIntakes = it.nutrientIntakes +
                                             (apiDate to UiState.Success(revertedIntakes))
                                 )
                             }
@@ -360,8 +363,8 @@ class HomeViewModel(
         val apiDate = getKebabDate()
 
         // Get current data to update optimistically
-        val originalFoodLogsState = foodLogRepo.uiState.value.foodLogs[apiDate]
-        val originalIntakesState = nutrientRepo.uiState.value.nutrientIntakesCache[apiDate]
+        val originalFoodLogsState = edibleLogRepo.uiState.value.foodLogs[apiDate]
+        val originalIntakesState = nutrientIntakesRepo.uiState.value.nutrientIntakes[apiDate]
 
         // Only proceed if we have data
         if (originalFoodLogsState !is UiState.Success ||
@@ -391,22 +394,22 @@ class HomeViewModel(
         )
 
         // Update UI immediately
-        foodLogRepo.updateState {
+        edibleLogRepo.update {
             it.copy(
                 foodLogs = it.foodLogs
                         + (apiDate to UiState.Success(optimisticFoodLogs))
             )
         }
 
-        nutrientRepo.updateState {
+        nutrientIntakesRepo.update {
             it.copy(
-                nutrientIntakesCache = it.nutrientIntakesCache
+                nutrientIntakes = it.nutrientIntakes
                         + (apiDate to UiState.Success(optimisticIntakes))
             )
         }
 
         viewModelScope.launch {
-            foodLogRepo.delete(
+            edibleLogRepo.delete(
                 foodLogId = selectedFoodLogToRemove.id,
                 date = apiDate
             ).collect { state ->
@@ -427,11 +430,11 @@ class HomeViewModel(
                         failedDeletionsForDate.add(selectedFoodLogToRemove)
 
                         // Obtain updated UI states after optimistic update
-                        val currentFoodLogsState = foodLogRepo.uiState.value
+                        val currentFoodLogsState = edibleLogRepo.uiState.value
                             .foodLogs[apiDate]
 
-                        val currentIntakesState = nutrientRepo.uiState.value
-                            .nutrientIntakesCache[apiDate]
+                        val currentIntakesState = nutrientIntakesRepo.uiState.value
+                            .nutrientIntakes[apiDate]
 
                         // Update food logs data after failed deletion
                         if (currentFoodLogsState is UiState.Success) {
@@ -447,7 +450,7 @@ class HomeViewModel(
                                         .sortedByDescending { it.id }
                                 }
 
-                            foodLogRepo.updateState {
+                            edibleLogRepo.update {
                                 it.copy(
                                     foodLogs = it.foodLogs + (apiDate to UiState.Success(
                                         revertedFoodLogs
@@ -465,9 +468,9 @@ class HomeViewModel(
                                 intakeMath = NutrientIntakeMath.ADD
                             )
 
-                            nutrientRepo.updateState {
+                            nutrientIntakesRepo.update {
                                 it.copy(
-                                    nutrientIntakesCache = it.nutrientIntakesCache + (apiDate to UiState.Success(
+                                    nutrientIntakes = it.nutrientIntakes + (apiDate to UiState.Success(
                                         revertedNutrients
                                     ))
                                 )

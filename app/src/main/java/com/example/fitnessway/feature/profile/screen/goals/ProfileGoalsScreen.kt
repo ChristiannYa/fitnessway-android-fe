@@ -41,7 +41,7 @@ fun ProfileGoalsScreen(
     val isGoalsFormValid by viewModel.isGoalsFormValid.collectAsState()
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
-    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
+    val nutrientsUiState = nutrientRepoUiState.nutrients
     val nutrientGoalsSetUiState = uiState.nutrientGoalsSetUiState
 
     val nutrientGoalsSetErrorMessage = handleTempApiErrMsg(

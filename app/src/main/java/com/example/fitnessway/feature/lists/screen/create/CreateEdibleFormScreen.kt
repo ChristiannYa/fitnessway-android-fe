@@ -23,7 +23,7 @@ fun CreateFoodFormScreen(
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
     val edibleAddState = uiState.edibleAddState.getValue(listOption.toEdibleType())
-    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
+    val nutrientsUiState = nutrientRepoUiState.nutrients
 
     val edibleAddErrMsg = handleTempApiErrMsg(
         uiState = edibleAddState,

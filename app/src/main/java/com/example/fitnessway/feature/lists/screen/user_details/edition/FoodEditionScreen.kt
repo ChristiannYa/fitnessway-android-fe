@@ -71,7 +71,7 @@ fun FoodEditionScreen(
     val isFoodEditionFormValid by viewModel.editionManager.isEdibleEditionFormValid.collectAsState()
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
-    val nutrientUiState = nutrientRepoUiState.nutrientsUiState
+    val nutrientUiState = nutrientRepoUiState.nutrients
     val foodUpdateState = uiState.foodUpdateState
 
     val foodUpdateErrorMessage = handleTempApiErrMsg(

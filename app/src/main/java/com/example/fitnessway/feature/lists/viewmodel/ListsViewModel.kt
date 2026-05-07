@@ -79,7 +79,7 @@ class ListsViewModel(
     val pendingSupplementRepoUiState = pendingSupplementRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
 
-    fun getNutrients() = nutrientRepo.loadNutrients()
+    fun getNutrients() = nutrientRepo.load()
 
     fun getFoods() = userFoodRepo.load()
     fun getMoreFoods() = userFoodRepo.loadMore()
@@ -165,7 +165,7 @@ class ListsViewModel(
             ?: return
 
         // Obtain nutrient data
-        val originalNutrients = nutrientRepoUiState.value.nutrientsUiState
+        val originalNutrients = nutrientRepoUiState.value.nutrients
             .toSuccessOrNull()
             ?: return
 
@@ -277,7 +277,7 @@ class ListsViewModel(
                     when (state) {
                         is UiState.Success -> {
                             _uiState.update { it.copy(foodUpdateState = UiState.Success(Unit)) }
-                            foodLogRepo.clearMappedDates()
+                            foodLogRepo.clear()
 
                             // Clear the original food's data
                             _originalEdiblesBeforeUpdate.removeIf { it.id == selectedFoodId }

@@ -39,7 +39,7 @@ fun ProfileColorsScreen(
     val isColorsFormValid by viewModel.isColorsFormValid.collectAsState()
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
-    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
+    val nutrientsUiState = nutrientRepoUiState.nutrients
     val nutrientColorsSetUiState = uiState.nutrientColorsSetUiState
 
     val nutrientColorsUpdateErrMsg = handleTempApiErrMsg(

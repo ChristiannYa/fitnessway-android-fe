@@ -4,23 +4,14 @@ import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostReq
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
+import com.example.fitnessway.data.repository.IRepository
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
-interface INutrientRepository {
-    val uiState: StateFlow<NutrientRepositoryUiState>
+interface INutrientRepository : IRepository<NutrientRepositoryUiState> {
+    fun refresh()
+    fun load()
 
-    fun clearNutrientIntakesUiCache()
-    fun refreshNutrientIntakes(date: String)
-    fun loadNutrientIntakes(date: String)
-
-    fun refreshNutrients()
-    fun loadNutrients()
-    fun setNutrientGoals(request: NutrientGoalsPostRequest): Flow<UiState<List<NutrientIdWithGoal>>>
-    fun setNutrientColors(request: NutrientColorsPostRequest): Flow<UiState<List<NutrientIdWithColor>>>
-
-    fun updateState(update: (NutrientRepositoryUiState) -> NutrientRepositoryUiState)
-
-    fun clearRepository()
+    fun setGoals(request: NutrientGoalsPostRequest): Flow<UiState<List<NutrientIdWithGoal>>>
+    fun setColors(request: NutrientColorsPostRequest): Flow<UiState<List<NutrientIdWithColor>>>
 }

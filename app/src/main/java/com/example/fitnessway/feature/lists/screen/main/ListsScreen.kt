@@ -61,7 +61,7 @@ fun ListsScreen(
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
-    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
+    val nutrientsUiState = nutrientRepoUiState.nutrients
     val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
     val userSupplementsUiStatePager = userSupplementRepoUiState.uiStatePager
     val pendingFoodsUiStatePager = pendingFoodRepoUiState.uiStatePager

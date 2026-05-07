@@ -51,6 +51,7 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
+    val nutrientIntakesRepoUiState by viewModel.nutrientIntakesRepoUiState.collectAsState()
     val foodLogRepoUiState by viewModel.foodLogRepoUiState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     val areFoodLogsVisible by viewModel.areFoodLogsVisible.collectAsState()
@@ -66,21 +67,20 @@ fun HomeScreen(
         viewModel.dateTimeFormatter.formatKebabDate(selectedDate)
     }
 
-    // Recompose when either nutrientRepoUiState OR apiDateFormat changes
-    val nutrientIntakesState = remember(nutrientRepoUiState, apiDateFormat) {
-        nutrientRepoUiState.nutrientIntakesCache[apiDateFormat] ?: UiState.Loading
+    // Recompose when either nutrientIntakesRepoUiState OR apiDateFormat changes
+    val nutrientIntakesState = remember(nutrientIntakesRepoUiState, apiDateFormat) {
+        nutrientIntakesRepoUiState.nutrientIntakes[apiDateFormat] ?: UiState.Loading
     }
 
     val foodLogsState = remember(foodLogRepoUiState, apiDateFormat) {
         foodLogRepoUiState.foodLogs[apiDateFormat] ?: UiState.Loading
-
     }
 
     val pullToRefreshState = rememberPullToRefreshState()
     val pullToRefreshThresholdReached = pullToRefreshState.distanceFraction >= 1f
 
     val isRefreshing = pullToRefreshThresholdReached &&
-            (nutrientRepoUiState.nutrientIntakesCache[apiDateFormat] is UiState.Loading ||
+            (nutrientIntakesRepoUiState.nutrientIntakes[apiDateFormat] is UiState.Loading ||
                     foodLogRepoUiState.foodLogs[apiDateFormat] is UiState.Loading)
 
     LaunchedEffect(key1 = selectedDate) {

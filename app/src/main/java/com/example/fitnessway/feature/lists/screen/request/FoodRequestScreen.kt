@@ -24,7 +24,7 @@ fun FoodRequestScreen(
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
     val edibleRequestAddState = uiState.edibleRequestAddState.getValue(listOption.toEdibleType())
-    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
+    val nutrientsUiState = nutrientRepoUiState.nutrients
 
     LaunchedEffect(Unit) {
         viewModel.getNutrients()

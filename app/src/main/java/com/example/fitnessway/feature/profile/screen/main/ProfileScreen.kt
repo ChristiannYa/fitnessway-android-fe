@@ -70,7 +70,7 @@ fun ProfileScreen(
     val userRepoUiState by viewModel.userRepoUiState.collectAsState()
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
-    val nutrientsUiState = nutrientRepoUiState.nutrientsUiState
+    val nutrientsUiState = nutrientRepoUiState.nutrients
 
     LaunchedEffect(Unit) {
         viewModel.getNutrients()

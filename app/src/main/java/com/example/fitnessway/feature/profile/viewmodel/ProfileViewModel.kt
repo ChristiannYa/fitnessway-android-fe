@@ -13,6 +13,7 @@ import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
+import com.example.fitnessway.data.repository.nutrient_intakes.INutrientIntakesRepository
 import com.example.fitnessway.data.repository.user.IUserRepository
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
@@ -30,8 +31,9 @@ class ProfileViewModel(
     private val authRepo: IAuthRepository,
     private val userRepo: IUserRepository,
     private val nutrientRepo: INutrientRepository,
-    private val foodRepo: IUserFoodRepository,
-    private val foodLogRepo: IEdibleLogRepository,
+    private val nutrientIntakesRepo: INutrientIntakesRepository,
+    private val userFoodRepo: IUserFoodRepository,
+    private val edibleLogRepo: IEdibleLogRepository,
     private val managers: IProfileManagers,
     val dateTimeFormatter: IAppDateTimeFormatter,
 ) : ViewModel(),
@@ -49,17 +51,12 @@ class ProfileViewModel(
     val userRepoUiState = userRepo.uiState
     val nutrientRepoUiState = nutrientRepo.uiState
 
-    fun refreshNutrients() {
-        nutrientRepo.refreshNutrients()
-    }
-
-    fun getNutrients() {
-        nutrientRepo.loadNutrients()
-    }
+    fun getNutrients() = nutrientRepo.load()
+    fun refreshNutrients() = nutrientRepo.refresh()
 
     fun setNutrientGoals() {
         // Get current goals data to update it optimistically
-        val currentNutrientsData = nutrientRepoUiState.value.nutrientsUiState
+        val currentNutrientsData = nutrientRepoUiState.value.nutrients
 
         // Only proceed if there are nutrient goals data
         if (currentNutrientsData !is UiState.Success) return
@@ -83,7 +80,7 @@ class ProfileViewModel(
         )
 
         viewModelScope.launch {
-            nutrientRepo.setNutrientGoals(request).collect { state ->
+            nutrientRepo.setGoals(request).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(nutrientGoalsSetUiState = state) }
@@ -91,13 +88,13 @@ class ProfileViewModel(
                         // Update UI immediately
                         managers.goals.initNutrientGoalsForm(optimisticNutrientData)
 
-                        nutrientRepo.updateState {
-                            it.copy(nutrientsUiState = UiState.Success(optimisticNutrientData))
+                        nutrientRepo.update {
+                            it.copy(nutrients = UiState.Success(optimisticNutrientData))
                         }
 
-                        nutrientRepo.clearNutrientIntakesUiCache()
-                        foodRepo.refresh()
-                        foodLogRepo.clearMappedDates()
+                        nutrientIntakesRepo.clear()
+                        userFoodRepo.refresh()
+                        edibleLogRepo.clear()
                     }
 
                     is UiState.Loading -> {
@@ -118,7 +115,7 @@ class ProfileViewModel(
 
     fun setNutrientColors() {
         // Get current nutrients UI data to update it optimistically
-        val currentNutrientsData = nutrientRepoUiState.value.nutrientsUiState
+        val currentNutrientsData = nutrientRepoUiState.value.nutrients
 
         // Only proceed if there is UI data
         if (currentNutrientsData !is UiState.Success) return
@@ -142,7 +139,7 @@ class ProfileViewModel(
         )
 
         viewModelScope.launch {
-            nutrientRepo.setNutrientColors(request).collect { state ->
+            nutrientRepo.setColors(request).collect { state ->
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(nutrientColorsSetUiState = state) }
@@ -150,13 +147,13 @@ class ProfileViewModel(
                         // Update UI immediately
                         managers.colors.initNutrientColorsForm(optimisticNutrientsData)
 
-                        nutrientRepo.updateState {
-                            it.copy(nutrientsUiState = UiState.Success(optimisticNutrientsData))
+                        nutrientRepo.update {
+                            it.copy(nutrients = UiState.Success(optimisticNutrientsData))
                         }
 
-                        nutrientRepo.clearNutrientIntakesUiCache()
-                        foodRepo.refresh()
-                        foodLogRepo.clearMappedDates()
+                        nutrientIntakesRepo.clear()
+                        userFoodRepo.refresh()
+                        edibleLogRepo.clear()
                     }
 
                     is UiState.Loading -> {
@@ -202,8 +199,8 @@ class ProfileViewModel(
     fun logout() {
         viewModelScope.launch {
             authRepo.logout().collect { state ->
-                nutrientRepo.clearRepository()
-                foodRepo.clear()
+                nutrientRepo.clear()
+                userFoodRepo.clear()
 
                 _uiState.update { it.copy(logoutState = state) }
             }

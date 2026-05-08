@@ -1,7 +1,13 @@
 package com.example.fitnessway.util.date_time
 
+import com.example.fitnessway.data.state.timezone.ITimezoneStateHolder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
@@ -9,24 +15,39 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 
-class AppDateTimeFormatter(private val timezone: ZoneId) : IAppDateTimeFormatter {
-    private val displayDateFormatter = DateTimeFormatter
-        .ofLocalizedDate(FormatStyle.MEDIUM)
-        .withZone(timezone)
+class AppDateTimeFormatter(
+    timezoneStateHolder: ITimezoneStateHolder,
+    scope: CoroutineScope
+) : IAppDateTimeFormatter {
 
-    private val kebabDateFormatter = DateTimeFormatter
-        .ofPattern("MM-dd-yyyy")
-        .withZone(timezone)
+    private data class Formatters(
+        val display: DateTimeFormatter,
+        val kebab: DateTimeFormatter,
+        val time: DateTimeFormatter
+    )
 
-    private val timeFormatter = DateTimeFormatter
-        .ofPattern("hh:mm a")
-        .withZone(timezone)
+    private val formatters: StateFlow<Formatters?> = timezoneStateHolder.state
+        .mapNotNull { it.timezone }
+        .map { timezone ->
+            Formatters(
+                display = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withZone(timezone),
+                kebab = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(timezone),
+                time = DateTimeFormatter.ofPattern("hh:mm a").withZone(timezone),
+            )
+        }
+        .stateIn(scope, SharingStarted.Eagerly, null)
 
-    override fun formatDisplayDate(instant: Instant): String = displayDateFormatter.format(instant.toJavaInstant())
-    override fun formatKebabDate(instant: Instant): String = kebabDateFormatter.format(instant.toJavaInstant())
-    override fun formatTime(instant: Instant): String = timeFormatter.format(instant.toJavaInstant())
+    private fun formatters() =
+        formatters.value ?: throw IllegalStateException("[AppDateTimeFormatter] Timezone not set")
+
+    private val timezone = timezoneStateHolder.state.value.timezone
+
+    override fun formatDisplayDate(instant: Instant): String = formatters().display.format(instant.toJavaInstant())
+    override fun formatKebabDate(instant: Instant): String = formatters().kebab.format(instant.toJavaInstant())
+    override fun formatTime(instant: Instant): String = formatters().time.format(instant.toJavaInstant())
 
     override fun getCurrentTime(): String = formatTime(Clock.System.now())
+
     override fun getDayDisplay(instant: Instant): String {
         val selectedDate = instant
             .toJavaInstant()

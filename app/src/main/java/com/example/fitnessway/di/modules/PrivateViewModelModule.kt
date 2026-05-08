@@ -6,6 +6,7 @@ import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
+// @TODO: Figure reduce the amount repositories passed in to every view model
 val privateViewModelModule = module {
     viewModel {
         HomeViewModel(
@@ -46,6 +47,7 @@ val privateViewModelModule = module {
             userFoodRepo = get(),
             edibleLogRepo = get(),
             managers = get(),
+            timezoneStateHolder = get(),
             dateTimeFormatter = get(),
         )
     }

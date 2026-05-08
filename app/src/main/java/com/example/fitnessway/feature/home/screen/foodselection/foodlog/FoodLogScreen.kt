@@ -204,9 +204,12 @@ fun FoodLogScreen(
             }
 
             Box(Modifier.fillMaxSize()) {
-                val isAppFoodLoading = searchCriteria.source == EdibleSource.APP && appFoodUiState is UiState.Loading
+                val isAppFoodLoading = searchCriteria.source == EdibleSource.APP &&
+                        appFoodUiState is UiState.Loading
+
                 val isUserFoodLoading =
-                    searchCriteria.source == EdibleSource.USER && userFoodsUiState is UiState.Loading
+                    searchCriteria.source == EdibleSource.USER &&
+                            userFoodsUiState is UiState.Loading
 
                 if (isAppFoodLoading || isUserFoodLoading) {
                     Loading.SpinnerInScreen()

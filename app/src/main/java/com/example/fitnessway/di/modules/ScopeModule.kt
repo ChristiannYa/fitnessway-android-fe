@@ -10,4 +10,8 @@ val scopeModule = module {
     single(named("repositoryScope")) {
         CoroutineScope(SupervisorJob() + Dispatchers.IO)
     }
+
+    single(named("appScope")) {
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    }
 }

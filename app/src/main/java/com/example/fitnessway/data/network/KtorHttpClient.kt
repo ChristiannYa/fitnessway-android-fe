@@ -53,8 +53,8 @@ fun createKtorHttpClient(tokensStateHolder: ITokensStateHolder): KtorHttpClient 
             bearer {
                 // Load the current tokens
                 loadTokens {
-                    val accessToken = tokensStateHolder.tokensState.value.accessToken
-                    val refreshToken = tokensStateHolder.tokensState.value.refreshToken
+                    val accessToken = tokensStateHolder.state.value.accessToken
+                    val refreshToken = tokensStateHolder.state.value.refreshToken
 
                     if (accessToken != null && refreshToken != null) {
                         BearerTokens(accessToken, refreshToken)
@@ -63,7 +63,7 @@ fun createKtorHttpClient(tokensStateHolder: ITokensStateHolder): KtorHttpClient 
 
                 // Called on 401
                 refreshTokens {
-                    val refreshToken = tokensStateHolder.tokensState.value.refreshToken
+                    val refreshToken = tokensStateHolder.state.value.refreshToken
 
                     if (refreshToken == null) {
                         tokensStateHolder.clearTokens()

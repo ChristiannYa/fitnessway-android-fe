@@ -23,7 +23,7 @@ class AppInitializer(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun initialize() {
         ProcessLifecycleOwner.get().lifecycleScope.launch {
-            appStateStore.tokensStateHolder.tokensState
+            appStateStore.tokensStateHolder.state
                 .flatMapLatest { tokensState ->
                     if (!tokensState.isAuthenticated) {
                         clearStateHolders()
@@ -39,13 +39,16 @@ class AppInitializer(
 
                         is UiState.Success -> userUiState.data.let { user ->
                             val timezoneId = ZoneId.of(user.timezone)
+                            appStateStore.timezoneStateHolder.setTimezone(timezoneId)
+
                             loadKoinModules(
                                 listOf(
-                                    loadAppDateTimeFormatterModule(timezoneId),
-                                    loadManagerModules(timezoneId),
+                                    loadAppDateTimeFormatterModule(),
+                                    loadManagerModules(),
                                     privateViewModelModule
                                 )
                             )
+
                             appStateStore.setAppReady()
                         }
 

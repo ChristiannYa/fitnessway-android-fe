@@ -33,7 +33,7 @@ private val screenWithBottomNavBar = listOf(
 
 @Composable
 fun AppNavigation(appStateStore: IAppStateStore = koinInject()) {
-    val tokensState by appStateStore.tokensStateHolder.tokensState.collectAsState()
+    val tokensState by appStateStore.tokensStateHolder.state.collectAsState()
     val isAppReady by appStateStore.isAppReady.collectAsState()
 
     if (!isAppReady) {

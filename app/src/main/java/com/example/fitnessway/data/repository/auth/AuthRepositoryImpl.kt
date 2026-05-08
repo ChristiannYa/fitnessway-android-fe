@@ -42,7 +42,7 @@ class AuthRepositoryImpl(
     override suspend fun logout(): Flow<UiState<Unit>> = flow {
         emit(UiState.Loading)
 
-        val refreshToken = tokensStateHolder.tokensState.value.refreshToken
+        val refreshToken = tokensStateHolder.state.value.refreshToken
 
         if (refreshToken == null) {
             clearStateHolders()

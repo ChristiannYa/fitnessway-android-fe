@@ -2,6 +2,7 @@ package com.example.fitnessway.feature.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
@@ -15,6 +16,7 @@ import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
 import com.example.fitnessway.data.repository.nutrient.INutrientRepository
 import com.example.fitnessway.data.repository.nutrient_intakes.INutrientIntakesRepository
 import com.example.fitnessway.data.repository.user.IUserRepository
+import com.example.fitnessway.data.state.timezone.ITimezoneStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.ZoneId
 
 class ProfileViewModel(
     private val authRepo: IAuthRepository,
@@ -35,6 +38,7 @@ class ProfileViewModel(
     private val userFoodRepo: IUserFoodRepository,
     private val edibleLogRepo: IEdibleLogRepository,
     private val managers: IProfileManagers,
+    private val timezoneStateHolder: ITimezoneStateHolder,
     val dateTimeFormatter: IAppDateTimeFormatter,
 ) : ViewModel(),
     IGoalsManager by managers.goals,
@@ -173,6 +177,8 @@ class ProfileViewModel(
     }
 
     fun setUserTimezone(timezone: String) {
+        val originalUser = userRepoUiState.value.userUiState.toSuccessOrNull() ?: return
+
         viewModelScope.launch {
             userRepo
                 .setTimezone(UserTimezoneSetRequest(timezone))
@@ -180,6 +186,13 @@ class ProfileViewModel(
                     when (state) {
                         is UiState.Success -> {
                             _uiState.update { it.copy(userTimezoneSetUiState = state) }
+
+                            // @TODO: Refresh recently logged edibles as well and any other time-related
+                            //        data
+                            nutrientIntakesRepo.clear()
+                            edibleLogRepo.clear()
+                            userRepo.update { it.copy(userUiState = UiState.Success(originalUser.copy(timezone = timezone))) }
+                            timezoneStateHolder.setTimezone(ZoneId.of(timezone))
                         }
 
                         is UiState.Loading -> {

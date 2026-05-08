@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 class TokenStateHolderImpl(
     private val dataStore: DataStore<Preferences>
 ) : ITokensStateHolder {
-    private val _tokensState = MutableStateFlow(TokensState())
-    override val tokensState: StateFlow<TokensState> = _tokensState
+    private val _state = MutableStateFlow(TokensState())
+    override val state: StateFlow<TokensState> = _state
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -33,7 +33,7 @@ class TokenStateHolderImpl(
                     }
                 }
                 .collect { prefs ->
-                    _tokensState.value = TokensState(
+                    _state.value = TokensState(
                         accessToken = prefs[PreferencesStoreKeys.ACCESS_TOKEN],
                         refreshToken = prefs[PreferencesStoreKeys.REFRESH_TOKEN],
                         isLoading = false
@@ -43,17 +43,17 @@ class TokenStateHolderImpl(
     }
 
     override fun setAccessToken(token: String) {
-        _tokensState.value = _tokensState.value.copy(accessToken = token)
+        _state.value = _state.value.copy(accessToken = token)
         scope.launch { dataStore.edit { it[PreferencesStoreKeys.ACCESS_TOKEN] = token } }
     }
 
     override fun setRefreshToken(token: String) {
-        _tokensState.value = _tokensState.value.copy(refreshToken = token)
+        _state.value = _state.value.copy(refreshToken = token)
         scope.launch { dataStore.edit { it[PreferencesStoreKeys.REFRESH_TOKEN] = token } }
     }
 
     override fun clearTokens() {
-        _tokensState.value = TokensState(isLoading = false)
+        _state.value = TokensState(isLoading = false)
         scope.launch { dataStore.edit { it.clear() } }
     }
 }

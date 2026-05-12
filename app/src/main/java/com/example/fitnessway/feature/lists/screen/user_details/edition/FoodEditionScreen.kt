@@ -263,8 +263,8 @@ private fun AvailableNutrientsPopup(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = Animation.ComposableTransition.ScaleInWithSpring.enter(PopupOrigin.CENTER),
-        exit = Animation.ComposableTransition.ScaleInWithSpring.exit(PopupOrigin.CENTER),
+        enter = Animation.ComposableTransition.ScaleWithSpring.enter(PopupOrigin.CENTER),
+        exit = Animation.ComposableTransition.ScaleWithSpring.exit(PopupOrigin.CENTER),
         modifier = modifier
     ) {
         Box(
@@ -273,7 +273,7 @@ private fun AvailableNutrientsPopup(
                 .areaContainer(
                     areaColor = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(32.dp),
-                    hugsContent = true
+                    isContentHugged = true
                 )
         ) {
             Column(

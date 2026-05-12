@@ -4,6 +4,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +56,7 @@ import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.ClickableConfiguration
 import com.example.fitnessway.util.Ui.InputUi
 import com.example.fitnessway.util.Ui.LabelSize
-import com.example.fitnessway.util.extensions.calcIntakes
+import com.example.fitnessway.util.extensions.getIntakeCalculation
 import com.example.fitnessway.util.extensions.toPrecisedString
 import com.example.fitnessway.data.model.m_26.NutrientPreferences as NutrientPreferencesM26
 
@@ -380,19 +381,21 @@ object UNutrient {
              * and nutrient name
              */
             verticalSpace: Dp = 12.dp,
+
+            onNutrientPress: ((Int) -> Unit)? = null,
             modifier: Modifier = Modifier
         ) {
             val barShape = 16.dp
 
-            nutrients.forEach { nutrientInFood ->
-                val preferences = nutrientInFood.nutrientData.preferences
+            nutrients.forEach { nutrientDataAmount ->
+                val preferences = nutrientDataAmount.data.preferences
 
                 val nutrientColor = getUserNutrientColor(
                     color = preferences.hexColor,
                     isUserPremium = isUserPremium
                 )
 
-                val calculatedNutrientData = nutrientInFood.calcIntakes()
+                val calculatedNutrientData = nutrientDataAmount.getIntakeCalculation()
 
                 val animatedProgress by animateFloatAsState(
                     targetValue = (calculatedNutrientData.progress / 100f).toFloat(),
@@ -424,7 +427,7 @@ object UNutrient {
                             }
 
                             Text(
-                                text = nutrientInFood.nutrientData.base.unit.name.lowercase(),
+                                text = nutrientDataAmount.data.base.unit.name.lowercase(),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = nutrientColor.copy(0.5f)
                             )
@@ -440,9 +443,15 @@ object UNutrient {
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(barShape)
                                 )
+                                .then(
+                                    onNutrientPress?.let {
+                                        Modifier
+                                            .clickable(onClick = { it(nutrientDataAmount.data.base.id) })
+                                    } ?: Modifier
+                                )
                         ) {
                             val progressModifier =
-                                if (nutrientInFood.nutrientData.iNutrientType == NutrientType.BASIC) {
+                                if (nutrientDataAmount.data.iNutrientType == NutrientType.BASIC) {
                                     Modifier
                                         .align(Alignment.BottomCenter)
                                         .offset(y = -(verticalSpace * 2))
@@ -463,7 +472,7 @@ object UNutrient {
                             )
 
                             Text(
-                                text = doubleFormatter(nutrientInFood.amount),
+                                text = doubleFormatter(nutrientDataAmount.amount),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = FontFamily.Default,
                                 color = WhiteFont,
@@ -474,11 +483,11 @@ object UNutrient {
                         }
 
                         // Bottom part: nutrient name
-                        val name = if (nutrientInFood.nutrientData.iNutrientType == NutrientType.VITAMIN
-                            || nutrientInFood.nutrientData.iNutrientType == NutrientType.MINERAL
+                        val name = if (nutrientDataAmount.data.iNutrientType == NutrientType.VITAMIN
+                            || nutrientDataAmount.data.iNutrientType == NutrientType.MINERAL
                         ) {
-                            nutrientInFood.nutrientData.base.symbol ?: nutrientInFood.nutrientData.base.name
-                        } else nutrientInFood.nutrientData.base.name
+                            nutrientDataAmount.data.base.symbol ?: nutrientDataAmount.data.base.name
+                        } else nutrientDataAmount.data.base.name
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -515,7 +524,7 @@ object UNutrient {
                 modifier = Modifier.fillMaxWidth(),
                 content = {
                     nutrients.forEach { nutrientInFood ->
-                        val preferences = nutrientInFood.nutrientData.preferences
+                        val preferences = nutrientInFood.data.preferences
 
                         val nutrientColor = getUserNutrientColor(
                             color = preferences.hexColor,
@@ -573,7 +582,7 @@ object UNutrient {
                                 )
 
                                 Text(
-                                    text = nutrientInFood.nutrientData.base.name,
+                                    text = nutrientInFood.data.base.name,
                                     style = MaterialTheme.typography.labelLarge,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
@@ -591,7 +600,7 @@ object UNutrient {
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 nutrients.forEach { nutrientInFood ->
-                    val preferences = nutrientInFood.nutrientData.preferences
+                    val preferences = nutrientInFood.data.preferences
 
                     val targetProgress = if (preferences.goal != null) {
                         ((nutrientInFood.amount / preferences.goal).toFloat())
@@ -616,14 +625,14 @@ object UNutrient {
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             // Left side: nutrient name and symbol
-                            if (nutrientInFood.nutrientData.iNutrientType == NutrientType.MINERAL) {
+                            if (nutrientInFood.data.iNutrientType == NutrientType.MINERAL) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                     Text(
-                                        text = nutrientInFood.nutrientData.base.name,
+                                        text = nutrientInFood.data.base.name,
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Medium
                                     )
-                                    nutrientInFood.nutrientData.base.symbol?.let {
+                                    nutrientInFood.data.base.symbol?.let {
                                         Text(
                                             text = it,
                                             style = MaterialTheme.typography.bodyMedium,
@@ -636,7 +645,7 @@ object UNutrient {
                                 }
                             } else {
                                 Text(
-                                    text = nutrientInFood.nutrientData.base.name,
+                                    text = nutrientInFood.data.base.name,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -649,7 +658,7 @@ object UNutrient {
                                     fontFamily = FontFamily.Default,
                                 )
                                 Text(
-                                    text = nutrientInFood.nutrientData.base.unit.name.lowercase(),
+                                    text = nutrientInFood.data.base.unit.name.lowercase(),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
                                 )

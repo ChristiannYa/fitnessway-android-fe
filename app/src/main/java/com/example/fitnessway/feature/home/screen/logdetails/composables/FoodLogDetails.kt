@@ -95,7 +95,7 @@ fun FoodLogDetails(
                             Box(
                                 modifier = Modifier.areaContainer(
                                     size = AppModifiers.AreaContainerSize.EXTRA_SMALL,
-                                    hugsContent = true
+                                    isContentHugged = true
                                 )
                             ) {
                                 Row(

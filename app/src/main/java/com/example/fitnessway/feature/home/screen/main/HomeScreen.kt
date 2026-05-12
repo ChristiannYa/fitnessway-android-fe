@@ -16,11 +16,15 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
@@ -31,12 +35,14 @@ import com.example.fitnessway.feature.home.screen.main.composables.DatePicker
 import com.example.fitnessway.feature.home.screen.main.composables.FoodLogs
 import com.example.fitnessway.feature.home.screen.main.composables.HomeHeader
 import com.example.fitnessway.feature.home.screen.main.composables.OtherNutrientIntakes
+import com.example.fitnessway.feature.home.screen.main.composables.nutrient_contribution.NutrientContribution
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBannerAnimated
 import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Loading.RefreshByPullIndicator
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
+import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -57,15 +63,16 @@ fun HomeScreen(
     val areFoodLogsVisible by viewModel.areFoodLogsVisible.collectAsState()
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
+    val nutrientsUiState = nutrientRepoUiState.nutrients
+
+    val apiDateFormat = remember(selectedDate) {
+        viewModel.dateTimeFormatter.formatKebabDate(selectedDate)
+    }
 
     val deleteFoodLogErrMsg = handleTempApiErrMsg(
         uiState = uiState.foodLogDeleteState,
         onTimeOut = viewModel::resetFoodLogDeleteState
     )
-
-    val apiDateFormat = remember(selectedDate) {
-        viewModel.dateTimeFormatter.formatKebabDate(selectedDate)
-    }
 
     // Recompose when either nutrientIntakesRepoUiState OR apiDateFormat changes
     val nutrientIntakesState = remember(nutrientIntakesRepoUiState, apiDateFormat) {
@@ -86,6 +93,7 @@ fun HomeScreen(
     LaunchedEffect(key1 = selectedDate) {
         viewModel.getNutrientIntakes()
         viewModel.getFoodLogs()
+        viewModel.getNutrients()
     }
 
     DisposableEffect(Unit) {
@@ -95,6 +103,14 @@ fun HomeScreen(
     }
 
     val view = LocalView.current
+
+    var nutrientIdTapped by remember { mutableIntStateOf(0) }
+    var isNutrientContributionVisible by remember { mutableStateOf(false) }
+
+    fun handleNutrientTap(id: Int) {
+        nutrientIdTapped = id
+        isNutrientContributionVisible = true
+    }
 
     Screen {
         if (user != null) {
@@ -119,9 +135,7 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             HomeHeader(
                                 onToggleFoodLogsVisibility = {
                                     view.playSoundEffect(SoundEffectConstants.CLICK)
@@ -158,6 +172,7 @@ fun HomeScreen(
                                 BasicNutrientIntakes(
                                     state = nutrientIntakesState,
                                     isUserPremium = user.isPremium,
+                                    onViewNutrientContribution = ::handleNutrientTap,
                                     onNavigateToGoals = onNavigateToGoals
                                 )
 
@@ -165,6 +180,7 @@ fun HomeScreen(
                                     state = nutrientIntakesState,
                                     nutrientType = NutrientType.VITAMIN,
                                     isUserPremium = user.isPremium,
+                                    onViewNutrientContribution = ::handleNutrientTap,
                                     onNavigateToGoals = onNavigateToGoals
                                 )
 
@@ -172,6 +188,7 @@ fun HomeScreen(
                                     state = nutrientIntakesState,
                                     nutrientType = NutrientType.MINERAL,
                                     isUserPremium = user.isPremium,
+                                    onViewNutrientContribution = ::handleNutrientTap,
                                     onNavigateToGoals = onNavigateToGoals
                                 )
 
@@ -211,14 +228,32 @@ fun HomeScreen(
                         viewModel.setSelectedFoodLogToRemove(foodLog)
                         viewModel.deleteFoodLog()
                     },
-                    modifier = Modifier.align(Alignment.BottomCenter)
+                    modifier = Modifier
+                        .zIndex(2f)
+                        .align(Alignment.BottomCenter)
+                )
+
+                NutrientContribution(
+                    edibleLogs = foodLogsState.toSuccessOrNull(),
+                    nutrientList = nutrientsUiState.toSuccessOrNull()?.combine(),
+                    nutrientId = nutrientIdTapped,
+                    isVisible = isNutrientContributionVisible,
+                    isUserPremium = user.isPremium,
+                    formatTime = viewModel.dateTimeFormatter::formatTime,
+                    modifier = Modifier
+                        .zIndex(2f)
+                        .align(Alignment.Center)
                 )
 
                 DarkOverlay(
-                    isVisible = areFoodLogsVisible,
+                    isVisible = areFoodLogsVisible || isNutrientContributionVisible,
                     onClick = {
                         view.playSoundEffect(SoundEffectConstants.CLICK)
-                        viewModel.toggleFoodLogsVisibility()
+
+                        when {
+                            areFoodLogsVisible -> viewModel.toggleFoodLogsVisibility()
+                            isNutrientContributionVisible -> isNutrientContributionVisible = false
+                        }
                     }
                 )
 

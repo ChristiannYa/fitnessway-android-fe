@@ -73,16 +73,16 @@ fun NutrientsByType<NutrientDataAmount>.toNutrientPreview() =
     this.basic.let { nutrients ->
         NutrientPreview(
             calories = nutrients
-                .find { it.nutrientData.base.id == NutrientId.CALORIES }
+                .find { it.data.base.id == NutrientId.CALORIES }
                 .toNutrientAmountWithColorOrNull(),
             carbs = nutrients
-                .find { it.nutrientData.base.id == NutrientId.CARBS }
+                .find { it.data.base.id == NutrientId.CARBS }
                 .toNutrientAmountWithColorOrNull(),
             fats = nutrients
-                .find { it.nutrientData.base.id == NutrientId.FATS }
+                .find { it.data.base.id == NutrientId.FATS }
                 .toNutrientAmountWithColorOrNull(),
             protein = nutrients
-                .find { it.nutrientData.base.id == NutrientId.PROTEIN }
+                .find { it.data.base.id == NutrientId.PROTEIN }
                 .toNutrientAmountWithColorOrNull()
         )
     }
@@ -90,7 +90,7 @@ fun NutrientsByType<NutrientDataAmount>.toNutrientPreview() =
 fun NutrientDataAmount.toNutrientAmountWithColor() =
     NutrientAmountWithColor(
         amount = this.amount,
-        color = this.nutrientData.preferences.hexColor
+        color = this.data.preferences.hexColor
     )
 
 fun NutrientDataAmount?.toNutrientAmountWithColorOrNull() =
@@ -107,7 +107,7 @@ fun MNutrient.Model.NutrientDataWithAmount?.toM26NutrientAmountWithColorOrNull()
 
 fun MNutrient.Model.NutrientDataWithAmount.toM26NutrientInFood() =
     NutrientDataAmount(
-        nutrientData = NutrientData(
+        data = NutrientData(
             base = NutrientBase(
                 id = this.nutrientWithPreferences.nutrient.id,
                 name = this.nutrientWithPreferences.nutrient.name,
@@ -122,6 +122,28 @@ fun MNutrient.Model.NutrientDataWithAmount.toM26NutrientInFood() =
             )
         ),
         amount = this.amount
+    )
+
+fun MNutrient.Model.Nutrient.toM26NutrientBase(): NutrientBase =
+    NutrientBase(
+        id = this.id,
+        name = this.name,
+        unit = this.unit.toEnum(),
+        type = this.type,
+        symbol = this.symbol,
+        isPremium = this.isPremium
+    )
+
+fun MNutrient.Model.NutrientPreferences.toM26NutrientPreferences(): NutrientPreferences =
+    NutrientPreferences(
+        hexColor = this.hexColor,
+        goal = this.goal
+    )
+
+fun MNutrient.Model.NutrientWithPreferences.toM26NutrientData(): NutrientData =
+    NutrientData(
+        base = this.nutrient.toM26NutrientBase(),
+        preferences = this.preferences.toM26NutrientPreferences()
     )
 
 fun MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>.toM26NutrientsInFood() =
@@ -160,16 +182,16 @@ fun NutrientsByType<NutrientDataAmount>.toM25NutrientsInFood() =
 fun NutrientDataAmount.toM25NutrientDataWithAmount() = MNutrient.Model.NutrientDataWithAmount(
     nutrientWithPreferences = MNutrient.Model.NutrientWithPreferences(
         nutrient = MNutrient.Model.Nutrient(
-            id = this.nutrientData.base.id,
-            name = this.nutrientData.base.name,
-            symbol = this.nutrientData.base.symbol,
-            unit = this.nutrientData.base.unit.toString(),
-            type = this.nutrientData.base.type,
-            isPremium = this.nutrientData.base.isPremium
+            id = this.data.base.id,
+            name = this.data.base.name,
+            symbol = this.data.base.symbol,
+            unit = this.data.base.unit.toString(),
+            type = this.data.base.type,
+            isPremium = this.data.base.isPremium
         ),
         preferences = MNutrient.Model.NutrientPreferences(
-            goal = this.nutrientData.preferences.goal,
-            hexColor = this.nutrientData.preferences.hexColor
+            goal = this.data.preferences.goal,
+            hexColor = this.data.preferences.hexColor
         ),
     ),
     amount = this.amount

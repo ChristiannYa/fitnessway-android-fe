@@ -23,6 +23,7 @@ import com.example.fitnessway.util.UiState
 fun BasicNutrientIntakes(
     state: UiState<NutrientIntakes>,
     isUserPremium: Boolean,
+    onViewNutrientContribution: (Int) -> Unit,
     onNavigateToGoals: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -39,8 +40,8 @@ fun BasicNutrientIntakes(
                     .areaContainer(
                         size = AppModifiers.AreaContainerSize.EXTRA_SMALL,
                         borderColor = MaterialTheme.colorScheme.surfaceVariant,
-                        showsIndication = true,
-                        onClickEnabled = isEmpty,
+                        isTapIndicationVisible = true,
+                        isClickEnabled = isEmpty,
                         onClick = onNavigateToGoals
                     )
             ) {
@@ -62,7 +63,8 @@ fun BasicNutrientIntakes(
                         PagedNutrients(
                             nutrients = nutrients,
                             viewFormat = NutrientsViewFormat.BOX,
-                            isUserPremium = isUserPremium
+                            isUserPremium = isUserPremium,
+                            onNutrientPress = onViewNutrientContribution
                         )
                     }
                 }

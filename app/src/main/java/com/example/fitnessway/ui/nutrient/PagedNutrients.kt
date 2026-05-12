@@ -28,6 +28,7 @@ fun PagedNutrients(
     isBasicNutrient: Boolean = true,
     isBaseSizeDisplay: Boolean = true,
     isUserPremium: Boolean,
+    onNutrientPress: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val chunkedNutrients = nutrients.chunked(4)
@@ -71,7 +72,8 @@ fun PagedNutrients(
                             isUserPremium = isUserPremium,
                             progressBarHeight = progressBarHeight,
                             contentWidth = contentWidth,
-                            verticalSpace = verticalSpace
+                            verticalSpace = verticalSpace,
+                            onNutrientPress = onNutrientPress
                         )
                     }
 

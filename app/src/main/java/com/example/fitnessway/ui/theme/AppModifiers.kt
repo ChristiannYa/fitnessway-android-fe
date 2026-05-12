@@ -4,6 +4,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -25,7 +27,7 @@ object AppModifiers {
         LARGE(16.dp, 18.dp),
         MEDIUM(14.dp, 16.dp),
         SMALL(12.dp, 14.dp),
-        EXTRA_SMALL(10.dp, 12.dp)
+        EXTRA_SMALL(8.dp, 10.dp)
     }
 
     @Composable
@@ -33,11 +35,12 @@ object AppModifiers {
         size: AreaContainerSize = AreaContainerSize.LARGE,
         areaColor: Color = MaterialTheme.colorScheme.primaryContainer,
         shape: RoundedCornerShape = RoundedCornerShape(size.cornerRadius),
-        showsIndication: Boolean = false,
-        onClickEnabled: Boolean = true,
-        hugsContent: Boolean = false,
         borderWidth: Dp = 1.dp,
         borderColor: Color = Color.Transparent,
+        isTapIndicationVisible: Boolean = false,
+        isClickEnabled: Boolean = true,
+        isContentHugged: Boolean = false,
+        isBottomPaddingIncluded: Boolean = true,
         onClick: (() -> Unit)? = null
     ) = this
         .then(
@@ -45,16 +48,16 @@ object AppModifiers {
                 Modifier
                     .clip(shape)
                     .clickable(
-                        interactionSource = if (showsIndication) null else {
+                        interactionSource = if (isTapIndicationVisible) null else {
                             remember { MutableInteractionSource() }
                         },
-                        indication = if (showsIndication) LocalIndication.current else null,
+                        indication = if (isTapIndicationVisible) LocalIndication.current else null,
                         onClick = onClick,
-                        enabled = onClickEnabled
+                        enabled = isClickEnabled
                     )
             } else Modifier
         )
-        .then(if (!hugsContent) Modifier.fillMaxWidth() else Modifier)
+        .then(if (!isContentHugged) Modifier.fillMaxWidth() else Modifier)
         .border(
             width = borderWidth,
             color = borderColor,
@@ -64,7 +67,12 @@ object AppModifiers {
             color = areaColor,
             shape = shape
         )
-        .padding(size.padding)
+        .padding(
+            top = size.padding,
+            bottom = if (isBottomPaddingIncluded) size.padding else 0.dp,
+            start = size.padding,
+            end = size.padding
+        )
 
     @Composable
     fun Modifier.foodContainer(
@@ -72,8 +80,16 @@ object AppModifiers {
     ) = this.areaContainer(
         size = AreaContainerSize.SMALL,
         borderColor = MaterialTheme.colorScheme.surfaceVariant,
-        showsIndication = true,
-        onClickEnabled = onClick != null,
+        isTapIndicationVisible = true,
+        isClickEnabled = onClick != null,
         onClick = { onClick?.let { it() } }
     )
+}
+
+@Composable
+fun Modifier.consumeTap(
+    vararg pointerInputKeys: Any?,
+    onTap: (() -> Unit)? = null
+) = this.pointerInput(pointerInputKeys) {
+    detectTapGestures { onTap?.let { it() } }
 }

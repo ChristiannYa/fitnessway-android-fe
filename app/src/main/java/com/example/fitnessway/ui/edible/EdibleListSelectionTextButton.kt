@@ -25,7 +25,7 @@ fun EdibleListSelectionTextButton(
             .areaContainer(
                 size = AppModifiers.AreaContainerSize.EXTRA_SMALL,
                 areaColor = Color.Transparent,
-                hugsContent = true,
+                isContentHugged = true,
                 onClick = onClick
             )
     ) {

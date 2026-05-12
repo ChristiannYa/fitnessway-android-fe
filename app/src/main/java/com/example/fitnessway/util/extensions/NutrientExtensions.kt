@@ -7,17 +7,15 @@ import com.example.fitnessway.data.model.m_26.NutrientIntakes
 import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.util.UNutrient
 
-fun NutrientDataAmount.calcIntakes(): UNutrient.NutrientIntakeCalculation {
-    val goal = this.nutrientData.preferences.goal ?: 0.0
-    val progress = if (goal > 0) ((this.amount / goal) * 100) else 0.0
+fun NutrientDataAmount.getIntakeCalculation(): UNutrient.NutrientIntakeCalculation {
+    val goal = this.data.preferences.goal ?: 0.0
     val remaining = goal - this.amount
-    val over = this.amount - goal
 
     return UNutrient.NutrientIntakeCalculation(
         intake = this.amount,
-        progress = progress,
+        progress = if (goal > 0) ((this.amount / goal) * 100) else 0.0,
         remaining = remaining,
-        over = over,
+        over = this.amount - goal,
         isGoalMet = remaining == 0.0,
         isOverGoal = remaining < 0
     )
@@ -40,11 +38,11 @@ fun NutrientIntakes.calcDailyIntakes(
     nutrients: List<NutrientDataAmount>,
     intakeMath: NutrientIntakeMath
 ): NutrientIntakes {
-    val foodNutrientsMap = nutrients.associateBy { it.nutrientData.base.id }
+    val foodNutrientsMap = nutrients.associateBy { it.data.base.id }
 
     return this.mapnbt { _, intakes ->
         intakes.map { intake ->
-            val nutrientDataAmount = foodNutrientsMap[intake.nutrientData.base.id]
+            val nutrientDataAmount = foodNutrientsMap[intake.data.base.id]
 
             if (nutrientDataAmount != null) {
                 val amount = when (intakeMath) {

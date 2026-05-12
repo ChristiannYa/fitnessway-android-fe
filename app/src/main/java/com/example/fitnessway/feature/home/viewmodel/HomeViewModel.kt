@@ -2,7 +2,7 @@ package com.example.fitnessway.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessway.data.mappers.mapfl
+import com.example.fitnessway.data.mappers.mapFl
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toNutrientPreview
 import com.example.fitnessway.data.mappers.toSuccessOrNull
@@ -115,6 +115,8 @@ class HomeViewModel(
 
     fun getNutrientIntakes() = nutrientIntakesRepo.load(getKebabDate())
     fun refreshNutrientIntakes() = nutrientIntakesRepo.refresh(getKebabDate())
+
+    fun getNutrients() = nutrientRepo.load()
 
     fun addFoodLog() {
         val foodLogFormState = managers.foodLog.foodLogFormState.value?.data ?: return
@@ -248,7 +250,7 @@ class HomeViewModel(
         managers.foodLog.setSelectedFoodLog(updatedFoodLog)
 
         // Create optimistic food logs
-        val optimisticFoodLogs = originalFoodLogs.mapfl { category, logs ->
+        val optimisticFoodLogs = originalFoodLogs.mapFl { category, logs ->
             logs
                 .filter { it.id != selectedFoodLog.id }
                 .let { if (category == updatedFoodLog.category) it + updatedFoodLog else it }
@@ -311,7 +313,7 @@ class HomeViewModel(
                             .nutrientIntakes[apiDate]
 
                         if (currentFoodLogsState is UiState.Success) {
-                            val revertedFoodLogs = currentFoodLogsState.data.mapfl { category, logs ->
+                            val revertedFoodLogs = currentFoodLogsState.data.mapFl { category, logs ->
                                 (logs.filter { it.id != updatedFoodLog.id }
                                     .let {
                                         if (category == selectedFoodLog.category) {
@@ -382,7 +384,7 @@ class HomeViewModel(
         failedDeletionsForDate.remove(selectedFoodLogToRemove)
 
         // Store optimistic food logs by filtering out the food log
-        val optimisticFoodLogs = originalFoodLogs.mapfl { _, logs ->
+        val optimisticFoodLogs = originalFoodLogs.mapFl { _, logs ->
             logs.filter { it.id != selectedFoodLogToRemove.id }
         }
 
@@ -442,7 +444,7 @@ class HomeViewModel(
 
                             // Revert back to original food logs state
                             val revertedFoodLogs = currentFoodLogs
-                                .mapfl { category, logs ->
+                                .mapFl { category, logs ->
                                     (logs + failedDeletionsForDate.filter {
                                         it.category == category
                                     })

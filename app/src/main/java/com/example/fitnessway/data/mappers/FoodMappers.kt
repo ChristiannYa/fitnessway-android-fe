@@ -35,7 +35,7 @@ fun EdibleType.toEdibleListFilterMatched() = when (this) {
     EdibleType.SUPPLEMENT -> EdibleListFilter.SUPPLEMENT
 }
 
-fun FoodLogsCategorized.mapfl(
+fun FoodLogsCategorized.mapFl(
     transform: (
         category: FoodLogCategory,
         logs: List<FoodLog>
@@ -45,6 +45,16 @@ fun FoodLogsCategorized.mapfl(
     lunch = transform(FoodLogCategory.LUNCH, lunch),
     dinner = transform(FoodLogCategory.DINNER, dinner),
     supplement = transform(FoodLogCategory.SUPPLEMENT, supplement)
+)
+
+fun FoodLogsCategorized.toListFl(): List<FoodLog> =
+    this.breakfast + this.lunch + this.dinner + this.supplement
+
+fun FoodLogsCategorized.toListByCategory(): List<Pair<FoodLogCategory, List<FoodLog>>> = listOf(
+    FoodLogCategory.BREAKFAST to breakfast,
+    FoodLogCategory.LUNCH to lunch,
+    FoodLogCategory.DINNER to dinner,
+    FoodLogCategory.SUPPLEMENT to supplement,
 )
 
 fun FoodCreation.toPendingRequest(

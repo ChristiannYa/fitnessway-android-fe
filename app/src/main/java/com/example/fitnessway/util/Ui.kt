@@ -54,12 +54,14 @@ object Ui {
     object Measurements {
         val SCREEN_HORIZONTAL_PADDING = 16.dp
         val POP_UP_MESSAGE_WIDTH = 260.dp
+        val POP_UP_CONTAINER_WIDTH = 320.dp
+        val POP_UP_HEIGHT_SMALL = 480.dp
+        val POP_UP_HEIGHT_MEDIUM = 520.dp
         val TEXT_ICON_HORIZONTAL_SPACE = 10.dp
         val LOADING_CIRCLE_IN_HEADER_SIZE = 21.dp
         val LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH = 2.dp
         val LOADING_CIRCLE_IN_SCREEN_SIZE = 32.dp
         val LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH = 3.dp
-        val UPWARDS_SLIDEABLE_HEIGHT_SMALL = 480.dp
     }
 
     object InputUi {

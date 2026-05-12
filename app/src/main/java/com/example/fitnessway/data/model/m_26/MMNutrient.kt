@@ -65,11 +65,11 @@ data class NutrientData(
 
 @Serializable
 data class NutrientDataAmount(
-    val nutrientData: NutrientData,
+    val data: NutrientData,
     val amount: Double
 ) : NutrientGroupable {
     override val iNutrientType: NutrientType
-        get() = this.nutrientData.base.type
+        get() = this.data.base.type
 }
 
 @Serializable

@@ -27,6 +27,7 @@ fun OtherNutrientIntakes(
     state: UiState<NutrientIntakes>,
     nutrientType: NutrientType,
     isUserPremium: Boolean,
+    onViewNutrientContribution: (Int) -> Unit,
     onNavigateToGoals: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -50,8 +51,8 @@ fun OtherNutrientIntakes(
                     .areaContainer(
                         size = AppModifiers.AreaContainerSize.EXTRA_SMALL,
                         borderColor = MaterialTheme.colorScheme.surfaceVariant,
-                        showsIndication = true,
-                        onClickEnabled = isEmpty,
+                        isTapIndicationVisible = true,
+                        isClickEnabled = isEmpty,
                         onClick = onNavigateToGoals
                     )
             ) {
@@ -75,6 +76,7 @@ fun OtherNutrientIntakes(
                             viewFormat = NutrientsViewFormat.BOX,
                             isBasicNutrient = false,
                             isUserPremium = isUserPremium,
+                            onNutrientPress = onViewNutrientContribution
                         )
                     }
                 }

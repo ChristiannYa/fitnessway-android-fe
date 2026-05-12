@@ -23,7 +23,7 @@ object Animation {
         val fadeIn = fadeIn(animationSpec = tween(300))
         val fadeOut = fadeOut(animationSpec = tween(300))
 
-        object ScaleInWithSpring {
+        object ScaleWithSpring {
 
             fun enter(transformOrigin: PopupOrigin) = fadeIn + scaleIn(
                 initialScale = 0.2f,

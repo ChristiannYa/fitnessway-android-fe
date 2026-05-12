@@ -133,7 +133,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
                 val basicNutrients = _selectedEdible.value?.information?.nutrients?.basic ?: return@combine false
 
                 val hasBasicNutrient = basicNutrients.any {
-                    it.nutrientData.base.id in formNutrients.keys
+                    it.data.base.id in formNutrients.keys
                 }
 
                 areAllAmountsValid && hasBasicNutrient
@@ -192,7 +192,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
     override fun initializeEdibleForm(food: UserEdible) {
         val foodNutrientsMap = food.information.nutrients
             .toList()
-            .associate { it.nutrientData.base.id to doubleFormatter(it.amount, 4) }
+            .associate { it.data.base.id to doubleFormatter(it.amount, 4) }
 
         val data = FormStates.FoodEdition(
             name = food.information.base.name,

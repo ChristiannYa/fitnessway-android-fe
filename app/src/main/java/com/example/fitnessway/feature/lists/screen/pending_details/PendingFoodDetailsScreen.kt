@@ -1,7 +1,6 @@
 package com.example.fitnessway.feature.lists.screen.pending_details
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toFoodInformation
@@ -30,6 +28,7 @@ import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.consumeTap
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.PopupOrigin
 import com.example.fitnessway.util.Ui
@@ -82,8 +81,8 @@ fun PendingFoodDetailsScreen(
 
                 AnimatedVisibility(
                     visible = isRejectionReasonVisible,
-                    enter = Animation.ComposableTransition.ScaleInWithSpring.enter(PopupOrigin.CENTER),
-                    exit = Animation.ComposableTransition.ScaleInWithSpring.exit(PopupOrigin.CENTER),
+                    enter = Animation.ComposableTransition.ScaleWithSpring.enter(PopupOrigin.CENTER),
+                    exit = Animation.ComposableTransition.ScaleWithSpring.exit(PopupOrigin.CENTER),
                     modifier = Modifier.align(Alignment.Center)
                 ) {
                     Box(
@@ -93,8 +92,7 @@ fun PendingFoodDetailsScreen(
                             .areaContainer(
                                 areaColor = MaterialTheme.colorScheme.surfaceVariant,
                             )
-                            // Consume tap so that `DarkOverlay` does not
-                            .pointerInput(Unit) { detectTapGestures { } }
+                            .consumeTap()
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,

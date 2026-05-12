@@ -47,7 +47,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.FoodLog
@@ -89,9 +88,7 @@ fun FoodLogs(
         visible = isVisible,
         enter = Animation.ComposableTransition.VerticalSlideFromTop.enter,
         exit = Animation.ComposableTransition.VerticalSlideFromTop.exit,
-        modifier = modifier
-            .height(Ui.Measurements.UPWARDS_SLIDEABLE_HEIGHT_SMALL)
-            .zIndex(2f)
+        modifier = modifier.height(Ui.Measurements.POP_UP_HEIGHT_SMALL)
     ) {
         Box(
             contentAlignment = Alignment.Center,

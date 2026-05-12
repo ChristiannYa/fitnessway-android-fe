@@ -165,8 +165,8 @@ object Structure {
     ) {
         AnimatedVisibility(
             visible = state.isVisible,
-            enter = Animation.ComposableTransition.ScaleInWithSpring.enter(PopupOrigin.TOP_RIGHT),
-            exit = Animation.ComposableTransition.ScaleInWithSpring.exit(PopupOrigin.TOP_RIGHT),
+            enter = Animation.ComposableTransition.ScaleWithSpring.enter(PopupOrigin.TOP_RIGHT),
+            exit = Animation.ComposableTransition.ScaleWithSpring.exit(PopupOrigin.TOP_RIGHT),
             modifier = modifier
         ) {
             val shape = 16.dp

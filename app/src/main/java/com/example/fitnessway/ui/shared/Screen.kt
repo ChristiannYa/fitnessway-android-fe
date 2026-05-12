@@ -36,7 +36,7 @@ fun Screen(
 
             Box(
                 modifier = Modifier
-                    .pointerInput(isImeVisible) {
+                    .pointerInput(isImeVisible, header != null, usesInnerHorizontalPadding) {
                         if (isImeVisible) {
                             detectTapGestures(
                                 onTap = {

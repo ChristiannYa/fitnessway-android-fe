@@ -10,5 +10,5 @@ interface IAppStateStore {
 
     val isAppReady: StateFlow<Boolean>
 
-    fun setAppReady()
+    fun setIsAppReady(isAppReady: Boolean)
 }

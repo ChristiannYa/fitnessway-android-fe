@@ -27,10 +27,11 @@ class AppInitializer(
                 .flatMapLatest { tokensState ->
                     if (!tokensState.isAuthenticated) {
                         clearStateHolders()
-                        appStateStore.setAppReady()
+                        appStateStore.setIsAppReady(true)
                         return@flatMapLatest emptyFlow()
                     }
 
+                    appStateStore.setIsAppReady(false)
                     userRepo.load()
                     userRepo.uiState
                 }
@@ -49,7 +50,7 @@ class AppInitializer(
                                 )
                             )
 
-                            appStateStore.setAppReady()
+                            appStateStore.setIsAppReady(true)
                         }
 
                         is UiState.Error -> clearStateHolders()

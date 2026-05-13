@@ -13,7 +13,7 @@ class AppStateStoreImpl(
     private val _isAppReady = MutableStateFlow(false)
     override val isAppReady: StateFlow<Boolean> = _isAppReady
 
-    override fun setAppReady() {
-        _isAppReady.value = true
+    override fun setIsAppReady(isAppReady: Boolean) {
+        _isAppReady.value = isAppReady
     }
 }

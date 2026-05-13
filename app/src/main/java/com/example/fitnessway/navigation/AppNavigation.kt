@@ -35,13 +35,13 @@ private val screenWithBottomNavBar = listOf(
 fun AppNavigation(appStateStore: IAppStateStore = koinInject()) {
     val tokensState by appStateStore.tokensStateHolder.state.collectAsState()
     val isAppReady by appStateStore.isAppReady.collectAsState()
+    val navController = rememberNavController()
 
     if (!isAppReady) {
         SplashScreen()
         return
     }
 
-    val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 

@@ -89,11 +89,12 @@ object Clickables {
     fun DoneButton(
         enabled: Boolean,
         isLoading: Boolean = false,
-        onClick: () -> Unit
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(Clickables.AppIconButtonSize.LARGE.size)
+            modifier = modifier.size(Clickables.AppIconButtonSize.LARGE.size)
         ) {
             if (isLoading) {
                 CircularProgressIndicator(

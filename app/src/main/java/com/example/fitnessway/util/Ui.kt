@@ -109,13 +109,14 @@ object Ui {
 
         @Composable
         fun getBackgroundColorAnimated(
+            color: Color? = null,
             isFocused: Boolean,
             isEnabled: Boolean,
             label: String
         ): Color {
-            val inputBackgroundColor = this.getBackgroundColor()
+            val inputBackgroundColor = color ?: this.getBackgroundColor()
 
-            val color by animateColorAsState(
+            val colorAnimated by animateColorAsState(
                 targetValue = if (isFocused) {
                     inputBackgroundColor
                 } else if (isEnabled) inputBackgroundColor.copy(0.6f) else {
@@ -125,11 +126,12 @@ object Ui {
                 label = label + "_backgroundColor"
             )
 
-            return color
+            return colorAnimated
         }
 
         @Composable
         fun getBorderColorAnimated(
+            color: Color? = null,
             isFocused: Boolean,
             label: String
         ): Color {
@@ -137,7 +139,7 @@ object Ui {
 
             val color by animateColorAsState(
                 targetValue = if (isFocused) {
-                    inputTextStyle.color
+                    color ?: inputTextStyle.color
                 } else Color.Transparent,
                 animationSpec = Animation.colorSpec,
                 label = label + "_borderColor"

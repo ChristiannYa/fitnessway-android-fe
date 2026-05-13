@@ -39,3 +39,5 @@ fun Double.toPrecisedString(decimalPlaces: Int = 1): String {
 
     return decimalFormat.format(finalValue)
 }
+
+fun Float.toPercentage(): Int = (this * 100).toInt()

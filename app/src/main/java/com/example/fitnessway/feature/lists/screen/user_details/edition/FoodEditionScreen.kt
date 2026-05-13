@@ -102,12 +102,13 @@ fun FoodEditionScreen(
                     title = title
                 ) {
                     Clickables.DoneButton(
-                        enabled = isFoodEditionFormValid
-                    ) {
-                        focusManager.clearFocus()
-                        if (foodUpdateState !is UiState.Idle) viewModel.resetFoodUpdateState()
-                        viewModel.updateEdible()
-                    }
+                        enabled = isFoodEditionFormValid,
+                        onClick = {
+                            focusManager.clearFocus()
+                            if (foodUpdateState !is UiState.Idle) viewModel.resetFoodUpdateState()
+                            viewModel.updateEdible()
+                        }
+                    )
                 }
             }
         ) {

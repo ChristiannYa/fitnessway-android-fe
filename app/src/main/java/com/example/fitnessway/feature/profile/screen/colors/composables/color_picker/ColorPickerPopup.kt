@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -49,6 +50,7 @@ import com.example.fitnessway.util.extensions.toPercentage
 
 @Composable
 fun ColorPickerPopup(
+    title: String,
     isVisible: Boolean,
     initialHex: String,
     onSetHex: (String) -> Unit,
@@ -59,7 +61,6 @@ fun ColorPickerPopup(
     var hex: String by remember(initialHex) { mutableStateOf(initialHex) }
     var typedHex: String by remember(initialHex) { mutableStateOf(initialHex) }
     var brightness: Float by remember(initialHex) { mutableFloatStateOf(initialColor.toHsv()[2]) }
-
 
     LaunchedEffect(brightness, hex) {
         val newColor = color.toHsv().let { hsv ->
@@ -78,52 +79,63 @@ fun ColorPickerPopup(
         exit = Animation.ComposableTransition.ScaleWithSpring.exit(PopupOrigin.CENTER),
         modifier = modifier
     ) {
-        Box(
-            modifier = Modifier
-                .width(Ui.Measurements.POP_UP_CONTAINER_WIDTH)
-                .areaContainer(
-                    areaColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-        ) {
+        Box(modifier = Modifier.width(Ui.Measurements.POP_UP_CONTAINER_WIDTH)) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val colorWheelSize = Ui.Measurements.POP_UP_CONTAINER_WIDTH.times(0.5f)
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.SemiBold
+                )
 
-                SelectedColor(
-                    wheelSize = colorWheelSize,
-                    color = color,
-                    hex = typedHex,
-                    onHexChange = {
-                        typedHex = it
+                Box(
+                    modifier = Modifier
+                        .areaContainer(
+                            areaColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        val colorWheelSize = Ui.Measurements.POP_UP_CONTAINER_WIDTH.times(0.5f)
 
-                        if (it.isValidHexColor()) {
-                            val newColor = Color("#$it".toColorInt())
+                        SelectedColor(
+                            wheelSize = colorWheelSize,
+                            color = color,
+                            hex = typedHex,
+                            onHexChange = {
+                                typedHex = it
 
-                            color = newColor
-                            hex = it
-                            brightness = newColor.toHsv()[2]
-                        }
+                                if (it.isValidHexColor()) {
+                                    val newColor = Color("#$it".toColorInt())
+
+                                    color = newColor
+                                    hex = it
+                                    brightness = newColor.toHsv()[2]
+                                }
+                            }
+                        )
+
+                        ColorWheel(
+                            initialHex = hex,
+                            brightness = brightness,
+                            onColorSelected = { c, h -> color = c; hex = h },
+                            modifier = Modifier.size(colorWheelSize)
+                        )
+
+                        BrightnessSlider(brightness) { brightness = it }
                     }
-                )
 
-                ColorWheel(
-                    initialHex = hex,
-                    brightness = brightness,
-                    onColorSelected = { c, h -> color = c; hex = h },
-                    modifier = Modifier.size(colorWheelSize)
-                )
-
-                BrightnessSlider(brightness) { brightness = it }
+                    Clickables.DoneButton(
+                        enabled = typedHex.isValidHexColor(),
+                        isLoading = false,
+                        onClick = { onSetHex(typedHex) },
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    )
+                }
             }
-
-            Clickables.DoneButton(
-                enabled = typedHex.isValidHexColor(),
-                isLoading = false,
-                onClick = { onSetHex(typedHex) },
-                modifier = Modifier.align(Alignment.TopEnd)
-            )
         }
     }
 }

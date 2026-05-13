@@ -111,7 +111,7 @@ fun ProfileColorsScreen(
                     fields = fields,
                     onColorBoxTap = { fieldName, hexInput ->
                         focusManager.clearFocus()
-                        hex = hexInput;
+                        hex = hexInput
                         isColorPickerVisible = true
                         fieldSelected = fieldName
                     }
@@ -120,10 +120,11 @@ fun ProfileColorsScreen(
 
             DarkOverlay(
                 isVisible = isColorPickerVisible,
-                onClick = { isColorPickerVisible = false },
+                onClick = { isColorPickerVisible = false; },
             )
 
             ColorPickerPopup(
+                title = "${fieldSelected?.nutrientData?.nutrient?.name}",
                 isVisible = isColorPickerVisible,
                 initialHex = hex,
                 onSetHex = { hexInput ->

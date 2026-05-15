@@ -49,7 +49,7 @@ abstract class PendingEdibleRepository<T : RepositoryPagerState<PendingEdible, T
     }
 
     override fun load() {
-        if (!_uiState.value.uiStatePager.uiState.hasState) refresh()
+        if (!_uiState.value.uiStatePager.uiState.hasResult) refresh()
     }
 
     override fun loadMore() {

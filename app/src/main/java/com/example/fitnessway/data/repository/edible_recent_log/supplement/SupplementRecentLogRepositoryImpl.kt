@@ -52,7 +52,7 @@ class SupplementRecentLogRepositoryImpl(
     }
 
     override fun load() {
-        if (!_uiState.value.uiStatePager.uiState.hasState) refresh()
+        if (!_uiState.value.uiStatePager.uiState.hasResult) refresh()
     }
 
     override fun loadMore() = _uiState.value.loadMore(_uiState, ::fetch, repositoryScope)

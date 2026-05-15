@@ -137,7 +137,7 @@ fun FoodLogDetailsScreen(
                                 amountPerServingField = fieldsProvider.amountPerServing(
                                     servingUnit = foodLog.edibleInformation.base.amountPerServing.toString()
                                 ),
-                                user = user
+                                isUserPremium = user.isPremium
                             )
                         }
                     }

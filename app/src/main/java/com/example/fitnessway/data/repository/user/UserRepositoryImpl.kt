@@ -38,7 +38,7 @@ class UserRepositoryImpl(
     }
 
     override fun load() {
-        if (!_uiState.value.userUiState.hasState) refresh()
+        if (!_uiState.value.userUiState.hasResult) refresh()
     }
 
     override suspend fun setTimezone(request: UserTimezoneSetRequest): Flow<UiState<Unit>> =

@@ -54,7 +54,7 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
     }
 
     override fun load() {
-        if (!_uiState.value.uiStatePager.uiState.hasState) refresh()
+        if (!_uiState.value.uiStatePager.uiState.hasResult) refresh()
     }
 
     override fun loadMore() {

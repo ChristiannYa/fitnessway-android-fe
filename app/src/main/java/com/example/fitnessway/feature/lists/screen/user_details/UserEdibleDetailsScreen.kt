@@ -128,7 +128,7 @@ fun UserEdibleDetailsScreen(
                     FoodInformation(
                         food = selectedFoodCopy.information,
                         isFoodDeletionSuccess = foodDeleteState is UiState.Success,
-                        user = user
+                        isUserPremium = user.isPremium
                     )
                 }
 

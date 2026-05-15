@@ -40,7 +40,7 @@ class NutrientIntakesRepositoryImpl(
 
     override fun load(date: String) {
         val uiState = _uiState.value.nutrientIntakes[date]
-        uiState?.let { if (it.hasState) return }
+        uiState?.let { if (it.hasResult) return }
         refresh(date)
     }
 

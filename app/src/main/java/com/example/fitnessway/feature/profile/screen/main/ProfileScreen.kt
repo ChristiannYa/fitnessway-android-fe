@@ -206,8 +206,8 @@ private fun ProfileScreenMainButton(
     text: String,
     imageVector: ImageVector,
     onClick: () -> Unit,
-    isButtonPremium: Boolean = false,
-    isUserPremium: Boolean,
+    isButtonPremium: kotlin.Boolean = false,
+    isUserPremium: kotlin.Boolean,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current

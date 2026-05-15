@@ -50,21 +50,17 @@ fun <N : NutrientGroupable> List<N>.toType(): NutrientsByType<N> =
             )
         }
 
-// @TODO: Rename this function so that it lets the caller know that
-//        it will transform nutrients into their DV if applicable
-fun Map<Int, String>.toNutrientIdAmountList(
-    nutrientDvMap: Map<Int, String>? = null
+fun Map<Int, String>.toNutrientDvList(
+    nutrientDvMap: Map<Int, String>
 ): List<NutrientIdWithAmount> =
     this.filter { (it.value.toDoubleOrNull() ?: 0.0) > 0 }
         .map {
             val nutrientId = it.key
             val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
 
-            val amount = nutrientDvMap?.let { dvMap ->
-                if (dvMap.containsKey(nutrientId)) {
-                    UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
-                } else amountLiteral
-            } ?: amountLiteral
+            val amount = if (nutrientDvMap.containsKey(nutrientId)) {
+                UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
+            } else amountLiteral
 
             NutrientIdWithAmount(nutrientId, amount)
         }

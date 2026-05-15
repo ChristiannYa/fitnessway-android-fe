@@ -47,7 +47,7 @@ class NutrientRepositoryImpl(
 
     override fun load() {
         val nutrientsUiState = _uiState.value.nutrients
-        if (nutrientsUiState.hasState) return
+        if (nutrientsUiState.hasResult) return
         refresh()
     }
 
@@ -61,7 +61,6 @@ class NutrientRepositoryImpl(
             pathDescription = "set nutrient goal(s)"
         )
 
-    // @TODO: Re-fetch all nutrient related data when updating the colors
     override fun setColors(
         request: NutrientColorsPostRequest
     ): Flow<UiState<List<NutrientIdWithColor>>> =

@@ -42,7 +42,7 @@ class EdibleLogRepositoryImpl(
 
     override fun load(date: String) {
         val uiState = _uiState.value.foodLogs[date]
-        uiState?.let { if (it.hasState) return }
+        uiState?.let { if (it.hasResult) return }
         refresh(date)
     }
 
@@ -78,7 +78,7 @@ class EdibleLogRepositoryImpl(
             errMsg = "Failed to delete log",
             pathDescription = "delete food log"
         )
-    
+
     override fun update(update: (EdibleLogRepositoryUiState) -> EdibleLogRepositoryUiState) =
         _uiState.update(update)
 

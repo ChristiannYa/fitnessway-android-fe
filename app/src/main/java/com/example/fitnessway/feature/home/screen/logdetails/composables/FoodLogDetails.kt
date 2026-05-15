@@ -17,7 +17,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MUser.Model.User
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.UserFoodSnapshotStatus
 import com.example.fitnessway.ui.shared.DarkOverlay
@@ -31,19 +30,18 @@ import com.example.fitnessway.util.form.field.FoodLogEditionField
 private const val deletedFoodMessage = "You have removed this food from your food list"
 private const val updatedFoodMessage = "You have updated this food information"
 
-// @TODO: Change `user` parameter to `isUserPremium`
 @Composable
 fun FoodLogDetails(
     foodLog: FoodLog,
     isBlurredOverlayVisible: Boolean,
     servingField: FoodLogEditionField,
     amountPerServingField: FoodLogEditionField,
-    user: User
+    isUserPremium: Boolean
 ) {
     val foodComposables = remember(foodLog) {
         FoodInformationComposables(
             edibleInformation = foodLog.edibleInformation,
-            isUserPremium = user.isPremium
+            isUserPremium = isUserPremium
         )
     }
 

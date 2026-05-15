@@ -6,7 +6,7 @@ import com.example.fitnessway.data.mappers.toEdibleType
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toM25NutrientDataWithAmount
 import com.example.fitnessway.data.mappers.toM26NutrientInFood
-import com.example.fitnessway.data.mappers.toNutrientIdAmountList
+import com.example.fitnessway.data.mappers.toNutrientDvList
 import com.example.fitnessway.data.mappers.toPaginationData
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.mappers.toPendingRequest
@@ -98,7 +98,7 @@ class ListsViewModel(
         val edibleType = edibleListFilter.value.toEdibleType()
 
         val nutrientDvMap = managers.request.dvControls.nutrientDvMap.value
-        val nutrients = formState.nutrients.toNutrientIdAmountList(nutrientDvMap)
+        val nutrients = formState.nutrients.toNutrientDvList(nutrientDvMap)
         val request = formState.toPendingRequest(nutrients, edibleType.name)
 
         viewModelScope.launch {
@@ -126,7 +126,7 @@ class ListsViewModel(
 
         val request = formState.toUserEdibleRequest(
             nutrients = managers.creation.dvControls.nutrientDvMap.value
-                .let { dvMap -> formState.nutrients.toNutrientIdAmountList(dvMap) },
+                .let { dvMap -> formState.nutrients.toNutrientDvList(dvMap) },
             edibleType = edibleType.name
         )
 
@@ -182,7 +182,7 @@ class ListsViewModel(
         // Gather updated nutrient data
         val addedNutrients = managers.edition.addedNutrients.value
         val deletedNutrients = managers.edition.deletedNutrients.value
-        val upsertedNutrients = formState.data.nutrients.toNutrientIdAmountList(nutrientDvMap)
+        val upsertedNutrients = formState.data.nutrients.toNutrientDvList(nutrientDvMap)
 
         // Obtain added nutrients if they are present
         val addedNutrientsWithPreferences = addedNutrients.mapNotNull { addedNutrient ->
@@ -316,7 +316,7 @@ class ListsViewModel(
                                 managers.edition.setSelectedEdible(revertedFood)
                             }
 
-                            if (foodRecentLogRepo.uiState.value.uiStatePager.uiState.hasState) {
+                            if (foodRecentLogRepo.uiState.value.uiStatePager.uiState.hasResult) {
                                 foodRecentLogRepo.refresh()
                             }
                         }

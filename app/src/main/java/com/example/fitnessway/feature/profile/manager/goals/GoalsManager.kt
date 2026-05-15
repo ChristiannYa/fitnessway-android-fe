@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
-import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.util.Formatters.doubleFormatter
@@ -8,6 +7,7 @@ import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.UNutrient.formatNutrientsDataAsMap
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FormFieldName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -70,12 +70,6 @@ class GoalsManager() : IGoalsManager {
                         )
                     }
                 }
-                /*
-                .also { errors ->
-                logcat("validation errors: $errors")
-            }
-
-                 */
 
                 hasChanges && validationErrors.isEmpty()
             } ?: false

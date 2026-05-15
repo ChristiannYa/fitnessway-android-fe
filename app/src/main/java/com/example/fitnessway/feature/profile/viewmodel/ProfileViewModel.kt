@@ -212,9 +212,6 @@ class ProfileViewModel(
     fun logout() {
         viewModelScope.launch {
             authRepo.logout().collect { state ->
-                nutrientRepo.clear()
-                userFoodRepo.clear()
-
                 _uiState.update { it.copy(logoutState = state) }
             }
         }

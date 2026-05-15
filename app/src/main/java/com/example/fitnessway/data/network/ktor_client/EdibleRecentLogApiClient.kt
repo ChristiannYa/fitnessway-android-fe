@@ -12,6 +12,7 @@ import io.ktor.client.HttpClient as KtorHttpClient
 
 class EdibleRecentLogApiClient(private val client: KtorHttpClient) {
 
+    // @TODO: Should receive the edible type as a String
     suspend fun getLatestLoggedEdibles(
         params: PaginationParams,
         edibleType: EdibleType

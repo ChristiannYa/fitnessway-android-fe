@@ -331,7 +331,7 @@ class ListsViewModel(
         foodRecentLogRepo.uiState.value.uiStatePager.uiState
             .toSuccessOrNull()
             ?.let { pagination ->
-                foodRecentLogRepo.updateState {
+                foodRecentLogRepo.update {
                     it.copy(
                         uiStatePager = UiStatePager(
                             uiState = UiState.Success(

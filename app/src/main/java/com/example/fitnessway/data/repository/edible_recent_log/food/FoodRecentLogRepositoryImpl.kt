@@ -1,60 +1,20 @@
 package com.example.fitnessway.data.repository.edible_recent_log.food
 
-import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.model.m_26.EdibleType
-import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.EdibleRecentLogApiClient
-import com.example.fitnessway.data.repository._state.loadMore
-import com.example.fitnessway.util.UiStatePager
+import com.example.fitnessway.data.repository.edible_recent_log.EdibleRecentLogRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class FoodRecentLogRepositoryImpl(
-    private val httpClient: HttpClient,
-    private val apiClient: EdibleRecentLogApiClient,
-    private val repositoryScope: CoroutineScope
-) : IFoodRecentLogRepository {
-
-    private val _uiState = MutableStateFlow(FoodRecentLogRepositoryUiState())
-    override val uiState: StateFlow<FoodRecentLogRepositoryUiState> = _uiState
-
-    private fun fetch(offset: Long = 0) =
-        httpClient.makeRequest(
-            apiCall = {
-                apiClient.getLatestLoggedEdibles(
-                    PaginationParams(Pagination.LIMIT, offset),
-                    EdibleType.FOOD
-                )
-            },
-            extractData = { it.recentlyLoggedEdiblesPagination },
-            errMsg = "Failed to fetch recently logged foods",
-            pathDescription = "recently logged food list"
-        )
-
-    override fun refresh() {
-        _uiState.update { it.copy(uiStatePager = UiStatePager()) }
-
-        repositoryScope.launch {
-            fetch().collect { state ->
-                _uiState.update {
-                    it.copy(uiStatePager = UiStatePager(state))
-                }
-            }
-        }
-    }
-
-    override fun load() {
-        if (!_uiState.value.uiStatePager.uiState.hasResult) refresh()
-    }
-
-    override fun loadMore() = _uiState.value.loadMore(_uiState, ::fetch, repositoryScope)
-
-    override fun updateState(update: (FoodRecentLogRepositoryUiState) -> FoodRecentLogRepositoryUiState) =
-        _uiState.update(update)
-
-    override fun clear() = _uiState.update { FoodRecentLogRepositoryUiState() }
-}
+    httpClient: HttpClient,
+    apiClient: EdibleRecentLogApiClient,
+    repositoryScope: CoroutineScope
+) : IFoodRecentLogRepository,
+    EdibleRecentLogRepository<FoodRecentLogRepositoryUiState>(
+        edibleType = EdibleType.FOOD,
+        httpClient = httpClient,
+        apiClient = apiClient,
+        repositoryScope = repositoryScope,
+        initialState = FoodRecentLogRepositoryUiState()
+    )

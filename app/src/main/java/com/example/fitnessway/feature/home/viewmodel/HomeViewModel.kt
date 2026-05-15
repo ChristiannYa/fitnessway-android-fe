@@ -143,11 +143,11 @@ class HomeViewModel(
             edibleType: EdibleType
         ) {
             when (edibleType) {
-                EdibleType.FOOD -> foodRecentLogRepo.updateState {
+                EdibleType.FOOD -> foodRecentLogRepo.update {
                     it.copy(uiStatePager = UiStatePager(UiState.Success(optimisticData)))
                 }
 
-                EdibleType.SUPPLEMENT -> supplementRecentLogRepo.updateState {
+                EdibleType.SUPPLEMENT -> supplementRecentLogRepo.update {
                     it.copy(uiStatePager = UiStatePager(UiState.Success(optimisticData)))
                 }
             }

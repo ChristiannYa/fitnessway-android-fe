@@ -24,6 +24,12 @@ class EdibleLogRepositoryImpl(
     private val _uiState = MutableStateFlow(EdibleLogRepositoryUiState())
     override val uiState: StateFlow<EdibleLogRepositoryUiState> = _uiState
 
+    private val _date = MutableStateFlow("")
+
+    override fun setDate(date: String) {
+        _date.value = date
+    }
+
     private fun fetchFoodLogs(date: String): Flow<UiState<FoodLogsCategorized>> =
         httpClient.makeRequest(
             apiCall = { apiClient.getByDate(date) },
@@ -32,18 +38,20 @@ class EdibleLogRepositoryImpl(
             pathDescription = "food log list"
         )
 
-    override fun refresh(date: String) {
+    override fun refresh() {
+        val dateValue = _date.value
+
         repositoryScope.launch {
-            fetchFoodLogs(date).collect { state ->
-                _uiState.update { it.copy(foodLogs = it.foodLogs + (date to state)) }
+            fetchFoodLogs(dateValue).collect { state ->
+                _uiState.update { it.copy(foodLogs = it.foodLogs + (dateValue to state)) }
             }
         }
     }
 
-    override fun load(date: String) {
-        val uiState = _uiState.value.foodLogs[date]
+    override fun load() {
+        val uiState = _uiState.value.foodLogs[_date.value]
         uiState?.let { if (it.hasResult) return }
-        refresh(date)
+        refresh()
     }
 
     override suspend fun add(

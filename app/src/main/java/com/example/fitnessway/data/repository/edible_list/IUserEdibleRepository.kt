@@ -8,7 +8,6 @@ import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 
 interface IUserEdibleRepository<T> : IRepository<T> {
-    fun refresh()
     fun load()
     fun loadMore()
 

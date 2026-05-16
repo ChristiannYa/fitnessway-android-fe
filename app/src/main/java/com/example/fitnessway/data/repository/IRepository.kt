@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface IRepository<T> {
     val uiState: StateFlow<T>
 
+    fun refresh()
     fun update(update: (T) -> T)
     fun clear()
 }

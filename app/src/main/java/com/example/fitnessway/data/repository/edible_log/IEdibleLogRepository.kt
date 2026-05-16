@@ -9,8 +9,10 @@ import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 
 interface IEdibleLogRepository : IRepository<EdibleLogRepositoryUiState> {
-    fun refresh(date: String)
-    fun load(date: String)
+    fun setDate(date: String)
+
+    fun load()
+
     suspend fun add(request: EdibleLogAddRequest, date: String): Flow<UiState<FoodLog>>
     suspend fun update(request: FoodLogUpdateRequest, date: String): Flow<UiState<FoodLog>>
     suspend fun delete(foodLogId: Int, date: String): Flow<UiState<FoodLogData>>

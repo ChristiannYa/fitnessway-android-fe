@@ -9,7 +9,6 @@ import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 
 interface INutrientRepository : IRepository<NutrientRepositoryUiState> {
-    fun refresh()
     fun load()
 
     fun setGoals(request: NutrientGoalsPostRequest): Flow<UiState<List<NutrientIdWithGoal>>>

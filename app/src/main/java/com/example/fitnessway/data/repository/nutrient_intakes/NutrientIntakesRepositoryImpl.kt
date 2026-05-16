@@ -20,6 +20,12 @@ class NutrientIntakesRepositoryImpl(
     private val _uiState = MutableStateFlow(NutrientIntakesRepositoryUiState())
     override val uiState: StateFlow<NutrientIntakesRepositoryUiState> = _uiState
 
+    private val _date = MutableStateFlow("")
+
+    override fun setDate(date: String) {
+        _date.value = date
+    }
+
     private fun fetch(date: String): Flow<UiState<NutrientIntakes>> =
         httpClient.makeRequest(
             apiCall = { apiClient.get(date) },
@@ -28,20 +34,20 @@ class NutrientIntakesRepositoryImpl(
             pathDescription = "nutrient intakes"
         )
 
-    override fun refresh(date: String) {
+    override fun refresh() {
+        val dateValue = _date.value
+
         repositoryScope.launch {
-            fetch(date).collect { state ->
-                _uiState.update {
-                    it.copy(nutrientIntakes = it.nutrientIntakes + (date to state))
-                }
+            fetch(dateValue).collect { state ->
+                _uiState.update { it.copy(nutrientIntakes = it.nutrientIntakes + (dateValue to state)) }
             }
         }
     }
 
-    override fun load(date: String) {
-        val uiState = _uiState.value.nutrientIntakes[date]
+    override fun load() {
+        val uiState = _uiState.value.nutrientIntakes[_date.value]
         uiState?.let { if (it.hasResult) return }
-        refresh(date)
+        refresh()
     }
 
     override fun update(update: (NutrientIntakesRepositoryUiState) -> NutrientIntakesRepositoryUiState) =

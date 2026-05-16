@@ -6,7 +6,6 @@ import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.flow.Flow
 
 interface IPendingEdibleRepository<T> : IRepository<T> {
-    fun refresh()
     fun load()
     fun loadMore()
 

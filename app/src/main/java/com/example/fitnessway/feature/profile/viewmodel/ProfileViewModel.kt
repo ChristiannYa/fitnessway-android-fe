@@ -20,6 +20,7 @@ import com.example.fitnessway.data.state.timezone.ITimezoneStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
+import com.example.fitnessway.feature.profile.viewmodel.operation.ProfileOperations
 import com.example.fitnessway.util.UNutrient.mapNutrients
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
@@ -37,6 +38,7 @@ class ProfileViewModel(
     private val nutrientIntakesRepo: INutrientIntakesRepository,
     private val userFoodRepo: IUserFoodRepository,
     private val edibleLogRepo: IEdibleLogRepository,
+    private val operations: ProfileOperations,
     private val managers: IProfileManagers,
     private val timezoneStateHolder: ITimezoneStateHolder,
     val dateTimeFormatter: IAppDateTimeFormatter,
@@ -186,11 +188,8 @@ class ProfileViewModel(
                     when (state) {
                         is UiState.Success -> {
                             _uiState.update { it.copy(userTimezoneSetUiState = state) }
-
-                            // @TODO: Refresh recently logged edibles as well and any other time-related
-                            //        data
-                            nutrientIntakesRepo.clear()
-                            edibleLogRepo.clear()
+                            
+                            operations.timezoneChange.clearRepositories()
                             userRepo.update { it.copy(userUiState = UiState.Success(originalUser.copy(timezone = timezone))) }
                             timezoneStateHolder.setTimezone(ZoneId.of(timezone))
                         }

@@ -58,6 +58,18 @@ class HomeViewModel(
     IDateManager by managers.date,
     IUiManager by managers.ui {
 
+    private fun getKebabDate(): String =
+        dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
+
+    init {
+        viewModelScope.launch {
+            managers.date.selectedDate.collect { _ ->
+                edibleLogRepo.setDate(getKebabDate())
+                nutrientIntakesRepo.setDate(getKebabDate())
+            }
+        }
+    }
+
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
@@ -73,8 +85,6 @@ class HomeViewModel(
     val foodLogRepoUiState = edibleLogRepo.uiState
     val foodRecentLogRepoUiState = foodRecentLogRepo.uiState
     val supplementRecentLogRepoUiState = supplementRecentLogRepo.uiState
-
-    private fun getKebabDate() = dateTimeFormatter.formatKebabDate(managers.date.selectedDate.value)
 
     private var getAppFoodsDebounceJob: Job? = null
     fun getAppFoods(query: String, edibleType: EdibleType) {
@@ -104,8 +114,8 @@ class HomeViewModel(
     fun getUserSupplements() = userSupplementRepo.load()
     fun getMoreUserSupplements() = userSupplementRepo.loadMore()
 
-    fun getFoodLogs() = edibleLogRepo.load(getKebabDate())
-    fun refreshFoodLogs() = edibleLogRepo.refresh(getKebabDate())
+    fun getFoodLogs() = edibleLogRepo.load()
+    fun refreshFoodLogs() = edibleLogRepo.refresh()
 
     fun getRecentlyLoggedFoods() = foodRecentLogRepo.load()
     fun getMoreRecentlyLoggedFoods() = foodRecentLogRepo.loadMore()
@@ -113,8 +123,8 @@ class HomeViewModel(
     fun getRecentlyLoggedSupplements() = supplementRecentLogRepo.load()
     fun getMoreRecentlyLoggedSupplements() = supplementRecentLogRepo.loadMore()
 
-    fun getNutrientIntakes() = nutrientIntakesRepo.load(getKebabDate())
-    fun refreshNutrientIntakes() = nutrientIntakesRepo.refresh(getKebabDate())
+    fun getNutrientIntakes() = nutrientIntakesRepo.load()
+    fun refreshNutrientIntakes() = nutrientIntakesRepo.refresh()
 
     fun getNutrients() = nutrientRepo.load()
 
@@ -178,8 +188,8 @@ class HomeViewModel(
                 when (state) {
                     is UiState.Success -> {
                         _uiState.update { it.copy(foodLogAddState = state) }
-                        edibleLogRepo.refresh(kebabDate)
-                        nutrientIntakesRepo.refresh(kebabDate)
+                        edibleLogRepo.refresh()
+                        nutrientIntakesRepo.refresh()
                     }
 
                     is UiState.Error -> {

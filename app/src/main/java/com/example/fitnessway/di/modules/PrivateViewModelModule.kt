@@ -3,8 +3,6 @@ package com.example.fitnessway.di.modules
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
 import com.example.fitnessway.feature.profile.viewmodel.ProfileViewModel
-import com.example.fitnessway.feature.profile.viewmodel.operation.ProfileOperations
-import com.example.fitnessway.feature.profile.viewmodel.operation.TimeZoneChangeOperation
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -48,14 +46,7 @@ val privateViewModelModule = module {
             nutrientIntakesRepo = get(),
             userFoodRepo = get(),
             edibleLogRepo = get(),
-            operations = ProfileOperations(
-                timezoneChange = TimeZoneChangeOperation(
-                    edibleLogRepo = get(),
-                    foodRecentLogRepo = get(),
-                    supplementRecentLogRepo = get(),
-                    nutrientIntakeRepo = get()
-                )
-            ),
+            repoOperations = get(),
             managers = get(),
             timezoneStateHolder = get(),
             dateTimeFormatter = get(),

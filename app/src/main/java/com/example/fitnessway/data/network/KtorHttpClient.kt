@@ -28,6 +28,7 @@ import io.ktor.client.HttpClient as KtorHttpClient
 
 @OptIn(ExperimentalSerializationApi::class)
 fun createKtorHttpClient(tokensStateHolder: ITokensStateHolder): KtorHttpClient {
+
     val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
@@ -59,6 +60,7 @@ fun createKtorHttpClient(tokensStateHolder: ITokensStateHolder): KtorHttpClient 
                     if (accessToken != null && refreshToken != null) {
                         BearerTokens(accessToken, refreshToken)
                     } else null
+
                 }
 
                 // Called on 401

@@ -10,6 +10,7 @@ import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.m_26.UserTimezoneSetRequest
+import com.example.fitnessway.data.repository.RepositoryOperations
 import com.example.fitnessway.data.repository.auth.IAuthRepository
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
@@ -20,7 +21,6 @@ import com.example.fitnessway.data.state.timezone.ITimezoneStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
-import com.example.fitnessway.feature.profile.viewmodel.operation.ProfileOperations
 import com.example.fitnessway.util.UNutrient.mapNutrients
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
@@ -38,7 +38,7 @@ class ProfileViewModel(
     private val nutrientIntakesRepo: INutrientIntakesRepository,
     private val userFoodRepo: IUserFoodRepository,
     private val edibleLogRepo: IEdibleLogRepository,
-    private val operations: ProfileOperations,
+    private val repoOperations: RepositoryOperations,
     private val managers: IProfileManagers,
     private val timezoneStateHolder: ITimezoneStateHolder,
     val dateTimeFormatter: IAppDateTimeFormatter,
@@ -188,8 +188,8 @@ class ProfileViewModel(
                     when (state) {
                         is UiState.Success -> {
                             _uiState.update { it.copy(userTimezoneSetUiState = state) }
-                            
-                            operations.timezoneChange.clearRepositories()
+
+                            repoOperations.onTimezoneChange()
                             userRepo.update { it.copy(userUiState = UiState.Success(originalUser.copy(timezone = timezone))) }
                             timezoneStateHolder.setTimezone(ZoneId.of(timezone))
                         }
@@ -211,6 +211,7 @@ class ProfileViewModel(
     fun logout() {
         viewModelScope.launch {
             authRepo.logout().collect { state ->
+                repoOperations.onLogout()
                 _uiState.update { it.copy(logoutState = state) }
             }
         }

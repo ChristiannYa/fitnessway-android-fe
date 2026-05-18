@@ -4,6 +4,7 @@ import com.example.fitnessway.data.model.m_26.NutrientIntakes
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.NutrientIntakeApiClient
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,5 +54,8 @@ class NutrientIntakesRepositoryImpl(
     override fun update(update: (NutrientIntakesRepositoryUiState) -> NutrientIntakesRepositoryUiState) =
         _uiState.update(update)
 
-    override fun clear() = _uiState.update { NutrientIntakesRepositoryUiState() }
+    override fun clear() {
+        logcat("clearing nutrient intakes repo")
+        _uiState.update { NutrientIntakesRepositoryUiState() }
+    }
 }

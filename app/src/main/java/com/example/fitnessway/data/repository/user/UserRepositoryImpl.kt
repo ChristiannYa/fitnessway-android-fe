@@ -5,6 +5,7 @@ import com.example.fitnessway.data.model.m_26.UserTimezoneSetRequest
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.UserApiClient
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,6 +55,7 @@ class UserRepositoryImpl(
     }
 
     override fun clear() {
+        logcat("clearing user repo")
         _uiState.update { UserRepositoryUiState() }
     }
 }

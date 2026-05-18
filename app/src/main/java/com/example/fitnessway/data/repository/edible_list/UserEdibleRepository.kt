@@ -12,6 +12,7 @@ import com.example.fitnessway.data.repository._state.RepositoryPagerState
 import com.example.fitnessway.data.repository._state.loadMore
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
+import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -120,6 +121,7 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
     }
 
     override fun clear() {
+        logcat("clearing user $edibleTypeString edible repo")
         _uiState.update { it.copyWithPager(UiStatePager()) }
     }
 }

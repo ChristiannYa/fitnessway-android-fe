@@ -7,6 +7,7 @@ import com.example.fitnessway.data.state.IAppStateStore
 import com.example.fitnessway.di.modules.loadAppDateTimeFormatterModule
 import com.example.fitnessway.di.modules.loadManagerModules
 import com.example.fitnessway.di.modules.privateViewModelModule
+import com.example.fitnessway.di.modules.repositoryOperationsModule
 import com.example.fitnessway.util.UiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
@@ -22,46 +23,51 @@ class AppInitializer(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun initialize() {
+
         ProcessLifecycleOwner.get().lifecycleScope.launch {
             appStateStore.tokensStateHolder.state
                 .flatMapLatest { tokensState ->
-                    if (!tokensState.isAuthenticated) {
-                        clearStateHolders()
-                        appStateStore.setIsAppReady(true)
-                        return@flatMapLatest emptyFlow()
-                    }
+                    userRepo.clear()
 
-                    appStateStore.setIsAppReady(false)
-                    userRepo.load()
-                    userRepo.uiState
+                    when {
+                        !tokensState.isAuthenticated -> {
+                            appStateStore.clearStateHolders()
+                            appStateStore.setIsAppReady(true)
+                            emptyFlow()
+                        }
+
+                        else -> {
+                            appStateStore.setIsAppReady(false)
+                            userRepo.load()
+                            userRepo.uiState
+                        }
+                    }
                 }
                 .collect { userRepoUiState ->
                     when (val userUiState = userRepoUiState.userUiState) {
 
                         is UiState.Success -> userUiState.data.let { user ->
-                            val timezoneId = ZoneId.of(user.timezone)
-                            appStateStore.timezoneStateHolder.setTimezone(timezoneId)
+
+                            appStateStore.timezoneStateHolder
+                                .setTimezone(ZoneId.of(user.timezone))
 
                             loadKoinModules(
                                 listOf(
                                     loadAppDateTimeFormatterModule(),
                                     loadManagerModules(),
-                                    privateViewModelModule
+                                    privateViewModelModule,
+                                    repositoryOperationsModule
                                 )
                             )
 
                             appStateStore.setIsAppReady(true)
                         }
 
-                        is UiState.Error -> clearStateHolders()
+                        is UiState.Error -> appStateStore.clearStateHolders()
 
                         else -> {}
                     }
                 }
         }
-    }
-
-    fun clearStateHolders() {
-        appStateStore.tokensStateHolder.clearTokens()
     }
 }

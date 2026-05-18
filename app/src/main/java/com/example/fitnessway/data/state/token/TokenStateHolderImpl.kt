@@ -33,27 +33,44 @@ class TokenStateHolderImpl(
                     }
                 }
                 .collect { prefs ->
+                    val accessToken = prefs[PreferencesStoreKeys.ACCESS_TOKEN]
+                    val refreshToken = prefs[PreferencesStoreKeys.REFRESH_TOKEN]
+
                     _state.value = TokensState(
-                        accessToken = prefs[PreferencesStoreKeys.ACCESS_TOKEN],
-                        refreshToken = prefs[PreferencesStoreKeys.REFRESH_TOKEN],
+                        accessToken = accessToken,
+                        refreshToken = refreshToken,
                         isLoading = false
                     )
                 }
         }
     }
 
+    override fun setTokens(accessToken: String, refreshToken: String) {
+        scope.launch {
+            dataStore.edit {
+                it[PreferencesStoreKeys.ACCESS_TOKEN] = accessToken
+                it[PreferencesStoreKeys.REFRESH_TOKEN] = refreshToken
+            }
+        }
+    }
+
     override fun setAccessToken(token: String) {
-        _state.value = _state.value.copy(accessToken = token)
-        scope.launch { dataStore.edit { it[PreferencesStoreKeys.ACCESS_TOKEN] = token } }
+        scope.launch {
+            dataStore.edit {
+                it[PreferencesStoreKeys.ACCESS_TOKEN] = token
+            }
+        }
     }
 
     override fun setRefreshToken(token: String) {
-        _state.value = _state.value.copy(refreshToken = token)
-        scope.launch { dataStore.edit { it[PreferencesStoreKeys.REFRESH_TOKEN] = token } }
+        scope.launch {
+            dataStore.edit {
+                it[PreferencesStoreKeys.REFRESH_TOKEN] = token
+            }
+        }
     }
 
     override fun clearTokens() {
-        _state.value = TokensState(isLoading = false)
         scope.launch { dataStore.edit { it.clear() } }
     }
 }

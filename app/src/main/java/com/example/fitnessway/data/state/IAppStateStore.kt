@@ -11,4 +11,10 @@ interface IAppStateStore {
     val isAppReady: StateFlow<Boolean>
 
     fun setIsAppReady(isAppReady: Boolean)
+
+    /**
+     * Clears
+     * - Auth tokens
+     */
+    fun clearStateHolders() // New
 }

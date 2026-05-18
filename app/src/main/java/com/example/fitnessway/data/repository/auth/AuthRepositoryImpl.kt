@@ -21,8 +21,10 @@ class AuthRepositoryImpl(
         httpClient.makeRequest(
             apiCall = { apiClient.register(req) },
             extractData = {
-                tokensStateHolder.setAccessToken(it.accessToken)
-                tokensStateHolder.setRefreshToken(it.refreshToken)
+                tokensStateHolder.setTokens(
+                    accessToken = it.accessToken,
+                    refreshToken = it.refreshToken
+                )
             },
             errMsg = "Failed to register",
             pathDescription = "register"
@@ -32,8 +34,10 @@ class AuthRepositoryImpl(
         httpClient.makeRequest(
             apiCall = { apiClient.login(req) },
             extractData = {
-                tokensStateHolder.setAccessToken(it.accessToken)
-                tokensStateHolder.setRefreshToken(it.refreshToken)
+                tokensStateHolder.setTokens(
+                    accessToken = it.accessToken,
+                    refreshToken = it.refreshToken
+                )
             },
             errMsg = "Failed to login",
             pathDescription = "login"
@@ -45,7 +49,7 @@ class AuthRepositoryImpl(
         val refreshToken = tokensStateHolder.state.value.refreshToken
 
         if (refreshToken == null) {
-            clearStateHolders()
+            tokensStateHolder.clearTokens()
             emit(UiState.Success(Unit))
             return@flow
         }
@@ -56,12 +60,9 @@ class AuthRepositoryImpl(
             logcat("logout exception: ${e.message}")
         } finally {
             // Always clear auth regardless of success or failure
-            clearStateHolders()
+            tokensStateHolder.clearTokens()
             emit(UiState.Success(Unit))
         }
-    }.flowOn(Dispatchers.IO)
 
-    private fun clearStateHolders() {
-        tokensStateHolder.clearTokens()
-    }
+    }.flowOn(Dispatchers.IO)
 }

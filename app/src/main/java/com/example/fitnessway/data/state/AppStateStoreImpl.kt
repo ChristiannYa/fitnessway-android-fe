@@ -16,4 +16,8 @@ class AppStateStoreImpl(
     override fun setIsAppReady(isAppReady: Boolean) {
         _isAppReady.value = isAppReady
     }
+
+    override fun clearStateHolders() {
+        tokensStateHolder.clearTokens()
+    }
 }

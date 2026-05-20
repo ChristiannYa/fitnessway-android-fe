@@ -5,7 +5,7 @@ import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-fun loadAppDateTimeFormatterModule() = module {
+val dateTimeFormatterModule = module {
     single<IAppDateTimeFormatter> {
         AppDateTimeFormatter(
             timezoneStateHolder = get(),

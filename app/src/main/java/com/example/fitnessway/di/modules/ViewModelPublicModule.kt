@@ -5,7 +5,7 @@ import com.example.fitnessway.feature.welcome.screen.register.viewmodel.Register
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val viewModelModule = module {
+val viewModelPublicModule = module {
     viewModel {
         LoginViewModel(
             repo = get()

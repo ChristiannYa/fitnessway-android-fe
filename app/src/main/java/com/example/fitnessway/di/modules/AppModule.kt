@@ -5,9 +5,6 @@ import org.koin.dsl.module
 
 val appModule = module {
     single {
-        AppInitializer(
-            appStateStore = get(),
-            userRepo = get()
-        )
+        AppInitializer(appStateStore = get())
     }
 }

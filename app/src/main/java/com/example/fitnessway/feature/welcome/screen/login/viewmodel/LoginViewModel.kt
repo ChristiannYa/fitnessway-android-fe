@@ -23,11 +23,6 @@ class LoginViewModel(
     private val _loginUiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val loginUiState: StateFlow<UiState<Unit>> = _loginUiState
 
-    // @NOTE
-    // - `private set` is mainly for `mutableStateOf`
-    // - `derivedStateOf` is read-only. It is computed from other
-    //    state, so there is no need to make it private
-
     var email by mutableStateOf("")
         private set
 

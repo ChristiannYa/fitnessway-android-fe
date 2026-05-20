@@ -1,6 +1,5 @@
 package com.example.fitnessway.feature.welcome.screen.login
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,19 +36,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.R
-import com.example.fitnessway.util.form.field.FormFieldName
-import com.example.fitnessway.util.form.field.LoginField
 import com.example.fitnessway.feature.welcome.screen.login.viewmodel.LoginViewModel
 import com.example.fitnessway.ui.shared.Banners.ErrorBanner
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.ui.theme.FitnesswayTheme
 import com.example.fitnessway.ui.theme.SilverMist
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.form.field.LoginField
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -253,12 +250,4 @@ private fun getLoginFields(
             ),
         )
     )
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun LoginScreenPreview() {
-    FitnesswayTheme {
-        LoginScreen(onBackClick = {})
-    }
 }

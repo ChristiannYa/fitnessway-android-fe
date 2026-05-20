@@ -5,7 +5,6 @@ import com.example.fitnessway.data.model.m_26.UserTimezoneSetRequest
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.UserApiClient
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +38,9 @@ class UserRepositoryImpl(
     }
 
     override fun load() {
-        if (!_uiState.value.userUiState.hasResult) refresh()
+        val uiState = _uiState.value.userUiState
+        if (uiState.hasResult) return
+        refresh()
     }
 
     override suspend fun setTimezone(request: UserTimezoneSetRequest): Flow<UiState<Unit>> =
@@ -50,12 +51,9 @@ class UserRepositoryImpl(
             pathDescription = "user timezone set"
         )
 
-    override fun update(update: (UserRepositoryUiState) -> UserRepositoryUiState) {
+    override fun update(update: (UserRepositoryUiState) -> UserRepositoryUiState) =
         _uiState.update(update)
-    }
 
-    override fun clear() {
-        logcat("clearing user repo")
+    override fun clear() =
         _uiState.update { UserRepositoryUiState() }
-    }
 }

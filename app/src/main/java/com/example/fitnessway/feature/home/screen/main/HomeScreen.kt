@@ -90,10 +90,13 @@ fun HomeScreen(
             (nutrientIntakesRepoUiState.nutrientIntakes[apiDateFormat] is UiState.Loading ||
                     foodLogRepoUiState.foodLogs[apiDateFormat] is UiState.Loading)
 
-    LaunchedEffect(key1 = selectedDate) {
+    LaunchedEffect(Unit) {
+        viewModel.getNutrients()
+    }
+
+    LaunchedEffect(selectedDate) {
         viewModel.getNutrientIntakes()
         viewModel.getFoodLogs()
-        viewModel.getNutrients()
     }
 
     DisposableEffect(Unit) {

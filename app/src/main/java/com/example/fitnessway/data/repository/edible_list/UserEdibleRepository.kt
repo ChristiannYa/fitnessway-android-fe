@@ -12,7 +12,6 @@ import com.example.fitnessway.data.repository._state.RepositoryPagerState
 import com.example.fitnessway.data.repository._state.loadMore
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
-import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -31,10 +30,10 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
     initialState: T
 ) : IUserEdibleRepository<T> {
 
+    private val edibleTypeString = edibleType.name.lowercase()
+
     private val _uiState by lazy { MutableStateFlow(initialState) }
     override val uiState: StateFlow<T> = _uiState
-
-    private val edibleTypeString = edibleType.name.lowercase()
 
     private fun fetch(offset: Long = 0L): Flow<UiState<PaginationResult<UserEdible>>> =
         httpClient.makeRequest(
@@ -55,12 +54,13 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
     }
 
     override fun load() {
-        if (!_uiState.value.uiStatePager.uiState.hasResult) refresh()
+        val uiState = _uiState.value.uiStatePager.uiState
+        if (uiState.hasResult) return
+        refresh()
     }
 
-    override fun loadMore() {
+    override fun loadMore() =
         _uiState.value.loadMore(_uiState, ::fetch, repositoryScope)
-    }
 
     override suspend fun add(
         request: EdibleAddRequest
@@ -116,12 +116,9 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
             pathDescription = "delete $edibleTypeString"
         )
 
-    override fun update(update: (T) -> T) {
+    override fun update(update: (T) -> T) =
         _uiState.update(update)
-    }
 
-    override fun clear() {
-        logcat("clearing user $edibleTypeString edible repo")
+    override fun clear() =
         _uiState.update { it.copyWithPager(UiStatePager()) }
-    }
 }

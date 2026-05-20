@@ -51,7 +51,6 @@ import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure
-import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Ui.Measurements.SCREEN_HORIZONTAL_PADDING
 import com.example.fitnessway.util.Ui.Measurements.TEXT_ICON_HORIZONTAL_SPACE
@@ -84,7 +83,7 @@ fun ProfileScreen(
     var hasRefreshed by remember { mutableStateOf(false) }
     var isUpgradePromptDialogDisplayed by remember { mutableStateOf(false) }
 
-    if (user != null) {
+    user?.let { u ->
         Screen {
             Box(modifier = Modifier.fillMaxSize()) {
                 PullToRefreshBox(
@@ -124,9 +123,9 @@ fun ProfileScreen(
                             message = nutrientsUiState.toErrorMessageOrNull() ?: ""
                         )
 
-                        ProfileImage(user = user) {
+                        ProfileImage(user = u) {
                             Text(
-                                text = "${user.name.first()}",
+                                text = "${u.name.first()}",
                                 style = MaterialTheme.typography.displayLarge,
                                 color = MaterialTheme.colorScheme.surfaceTint
                             )
@@ -141,7 +140,7 @@ fun ProfileScreen(
                              */
                         }
 
-                        ProfileInformation(user)
+                        ProfileInformation(u)
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -155,20 +154,20 @@ fun ProfileScreen(
                                         viewModel.initNutrientGoalsForm(nutrientsUiState.data)
                                         onNavigateToGoals()
                                     },
-                                    isUserPremium = user.isPremium,
+                                    isUserPremium = u.isPremium,
                                 )
 
                                 ProfileScreenMainButton(
                                     text = "Color Palette",
                                     imageVector = Icons.Outlined.Palette,
                                     onClick = {
-                                        if (user.isPremium) {
+                                        if (u.isPremium) {
                                             viewModel.initNutrientColorsForm(nutrientsUiState.data)
                                             onNavigateToColors()
                                         } else isUpgradePromptDialogDisplayed = true
                                     },
                                     isButtonPremium = true,
-                                    isUserPremium = user.isPremium
+                                    isUserPremium = u.isPremium
                                 )
                             }
 
@@ -176,14 +175,14 @@ fun ProfileScreen(
                                 text = "Account",
                                 imageVector = Icons.Outlined.AccountCircle,
                                 onClick = onNavigateToAccInfo,
-                                isUserPremium = user.isPremium
+                                isUserPremium = u.isPremium
                             )
 
                             ProfileScreenMainButton(
                                 text = "Settings",
                                 imageVector = Icons.Outlined.Settings,
                                 onClick = onNavigateToSettings,
-                                isUserPremium = user.isPremium
+                                isUserPremium = u.isPremium
                             )
                         }
 
@@ -197,7 +196,7 @@ fun ProfileScreen(
                 }
             }
         }
-    } else NotFoundScreen(message = "user not found")
+    }
 
 }
 

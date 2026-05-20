@@ -210,8 +210,9 @@ class ProfileViewModel(
 
     fun logout() {
         viewModelScope.launch {
+            repoOperations.onLogout()
+
             authRepo.logout().collect { state ->
-                repoOperations.onLogout()
                 _uiState.update { it.copy(logoutState = state) }
             }
         }

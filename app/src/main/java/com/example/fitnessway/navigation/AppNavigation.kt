@@ -7,6 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -35,85 +36,85 @@ private val screenWithBottomNavBar = listOf(
 fun AppNavigation(appStateStore: IAppStateStore = koinInject()) {
     val tokensState by appStateStore.tokensStateHolder.state.collectAsState()
     val isAppReady by appStateStore.isAppReady.collectAsState()
-    val navController = rememberNavController()
 
     if (!isAppReady) {
         SplashScreen()
         return
     }
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    val isAuthenticated = tokensState.isAuthenticated
 
-    val shouldShowBottomBar = screenWithBottomNavBar.any { route ->
-        currentDestination?.hasRoute(route) == true
-    }
+    key(isAuthenticated) {
+        val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
 
-    Scaffold(
-        bottomBar = {
-            if (shouldShowBottomBar) {
-                BottomNavigationBar(navController, currentDestination)
-            }
-        },
-        content = { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = if (tokensState.isAuthenticated) HomeGraph else WelcomeGraph,
-                exitTransition = {
-                    if (isTabNavigation()) {
-                        Animation.ComposableTransition.fadeOut
-                    } else {
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            tween(300)
-                        )
-                    }
-                },
-                popEnterTransition = {
-                    if (isTabNavigation()) {
-                        Animation.ComposableTransition.fadeIn
-                    } else {
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            tween(300)
-                        )
-                    }
-                },
-                enterTransition = {
-                    if (isTabNavigation()) {
-                        Animation.ComposableTransition.fadeIn
-                    } else {
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            tween(300)
-                        )
-                    }
-                },
-                popExitTransition = {
-                    if (isTabNavigation()) {
-                        Animation.ComposableTransition.fadeOut
-                    } else {
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            tween(300)
-                        )
-                    }
-                },
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                welcomeNavigationGraph(navController)
-                homeNavigationGraph(navController)
-                listsNavigationGraph(navController)
-                profileNavigationGraph(navController)
-            }
+        val shouldShowBottomBar = screenWithBottomNavBar.any { route ->
+            currentDestination?.hasRoute(route) == true
         }
-    )
-}
 
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.isTabNavigation(): Boolean {
-    return screenWithBottomNavBar.any { route ->
-        targetState.destination.hasRoute(route)
-    } && screenWithBottomNavBar.any { route ->
-        initialState.destination.hasRoute(route)
+        Scaffold(
+            bottomBar = {
+                if (shouldShowBottomBar) {
+                    BottomNavigationBar(navController, currentDestination)
+                }
+            },
+            content = { innerPadding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = if (isAuthenticated) HomeGraph else WelcomeGraph,
+                    exitTransition = {
+                        if (isTabNavigation()) {
+                            Animation.ComposableTransition.fadeOut
+                        } else {
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                tween(300)
+                            )
+                        }
+                    },
+                    popEnterTransition = {
+                        if (isTabNavigation()) {
+                            Animation.ComposableTransition.fadeIn
+                        } else {
+                            slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                tween(300)
+                            )
+                        }
+                    },
+                    enterTransition = {
+                        if (isTabNavigation()) {
+                            Animation.ComposableTransition.fadeIn
+                        } else {
+                            slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                tween(300)
+                            )
+                        }
+                    },
+                    popExitTransition = {
+                        if (isTabNavigation()) {
+                            Animation.ComposableTransition.fadeOut
+                        } else {
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                tween(300)
+                            )
+                        }
+                    },
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    welcomeNavigationGraph(navController)
+                    homeNavigationGraph(navController)
+                    listsNavigationGraph(navController)
+                    profileNavigationGraph(navController)
+                }
+            }
+        )
     }
 }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.isTabNavigation(): Boolean =
+    screenWithBottomNavBar.any { targetState.destination.hasRoute(it) } &&
+            screenWithBottomNavBar.any { initialState.destination.hasRoute(it) }

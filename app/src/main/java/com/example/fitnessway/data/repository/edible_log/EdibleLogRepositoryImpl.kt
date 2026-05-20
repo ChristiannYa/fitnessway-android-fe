@@ -8,7 +8,6 @@ import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.EdibleLogApiClient
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -91,8 +90,6 @@ class EdibleLogRepositoryImpl(
     override fun update(update: (EdibleLogRepositoryUiState) -> EdibleLogRepositoryUiState) =
         _uiState.update(update)
 
-    override fun clear() {
-        logcat("clearing edible logs repo")
+    override fun clear() =
         _uiState.update { EdibleLogRepositoryUiState() }
-    }
 }

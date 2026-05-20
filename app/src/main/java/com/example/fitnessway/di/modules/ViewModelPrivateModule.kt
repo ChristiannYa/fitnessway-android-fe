@@ -7,7 +7,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 // @TODO: Figure reduce the amount repositories passed in to every view model
-val privateViewModelModule = module {
+val viewModelPrivateModule = module {
     viewModel {
         HomeViewModel(
             userRepo = get(),

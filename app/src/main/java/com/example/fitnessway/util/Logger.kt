@@ -3,10 +3,7 @@ package com.example.fitnessway.util
 import android.util.Log
 import com.example.fitnessway.util.Constants.LogLevel
 
-fun logcat(
-    message: String,
-    level: LogLevel = LogLevel.DEBUG
-) {
+fun logcat(message: String, level: LogLevel = LogLevel.DEBUG) {
     when (level) {
         LogLevel.DEBUG -> Log.d(Constants.DEBUG_TAG, message)
         LogLevel.ERROR -> Log.e(Constants.DEBUG_TAG, message)

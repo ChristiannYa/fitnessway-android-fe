@@ -9,7 +9,6 @@ import com.example.fitnessway.data.network.ktor_client.EdibleRecentLogApiClient
 import com.example.fitnessway.data.repository._state.RepositoryPagerState
 import com.example.fitnessway.data.repository._state.loadMore
 import com.example.fitnessway.util.UiStatePager
-import com.example.fitnessway.util.logcat
 import com.example.fitnessway.util.toEnum
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,8 +63,6 @@ abstract class EdibleRecentLogRepository<T : RepositoryPagerState<FoodPreview, T
     override fun update(update: (T) -> T) =
         _uiState.update(update)
 
-    override fun clear() {
-        logcat("clearing recently logged $edibleTypeString repo")
+    override fun clear() =
         _uiState.update { it.copyWithPager(UiStatePager()) }
-    }
 }

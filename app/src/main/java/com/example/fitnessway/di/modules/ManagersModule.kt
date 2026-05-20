@@ -16,7 +16,7 @@ import com.example.fitnessway.feature.profile.manager.colors.ColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.GoalsManager
 import org.koin.dsl.module
 
-fun loadManagerModules() = module {
+val managerModules = module {
     single<IHomeManager> {
         HomeManagerImpl(
             date = DateManager(timezoneStateHolder = get()),

@@ -4,11 +4,10 @@ import android.app.Application
 import com.example.fitnessway.di.init.AppInitializer
 import com.example.fitnessway.di.modules.appModule
 import com.example.fitnessway.di.modules.dataStoreModule
-import com.example.fitnessway.di.modules.networkModule
-import com.example.fitnessway.di.modules.repositoryModule
-import com.example.fitnessway.di.modules.scopeModule
+import com.example.fitnessway.di.modules.networkPublicModule
+import com.example.fitnessway.di.modules.repositoryPublicModule
 import com.example.fitnessway.di.modules.stateModule
-import com.example.fitnessway.di.modules.viewModelModule
+import com.example.fitnessway.di.modules.viewModelPublicModule
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -28,11 +27,10 @@ class FitnesswayApp : Application() {
             modules(
                 appModule,
                 stateModule,
-                networkModule,
-                viewModelModule,
-                repositoryModule,
+                networkPublicModule,
+                viewModelPublicModule,
+                repositoryPublicModule,
                 dataStoreModule,
-                scopeModule
             )
         }
 

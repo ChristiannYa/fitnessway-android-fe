@@ -71,11 +71,9 @@ class NutrientRepositoryImpl(
             pathDescription = "ser nutrient color(s)"
         )
 
-    override fun update(update: (NutrientRepositoryUiState) -> NutrientRepositoryUiState) {
+    override fun update(update: (NutrientRepositoryUiState) -> NutrientRepositoryUiState) =
         _uiState.update(update)
-    }
 
-    override fun clear() {
+    override fun clear() =
         _uiState.update { NutrientRepositoryUiState() }
-    }
 }

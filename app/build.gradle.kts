@@ -83,6 +83,8 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.compose.animation.core)
 
+    // Google code scanner
+    implementation(libs.play.services.code.scanner)
 
     // Added
     testImplementation(libs.junit)

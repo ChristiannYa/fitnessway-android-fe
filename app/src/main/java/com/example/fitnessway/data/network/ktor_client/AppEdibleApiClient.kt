@@ -1,5 +1,6 @@
 package com.example.fitnessway.data.network.ktor_client
 
+import com.example.fitnessway.data.model.m_26.AppFoodFindByBarcodeResponse
 import com.example.fitnessway.data.model.m_26.AppFoodFindByIdResponse
 import com.example.fitnessway.data.model.m_26.AppFoodSearchResponse
 import com.example.fitnessway.data.model.m_26.PaginationParams
@@ -10,9 +11,15 @@ import io.ktor.client.request.parameter
 import io.ktor.client.HttpClient as KtorHttpClient
 
 class AppEdibleApiClient(private val client: KtorHttpClient) {
+
     suspend fun findAppFoodById(id: Int): AppFoodFindByIdResponse =
         client
             .get("${ApiUrls.BASE_URL_KT}${ApiUrls.AppFood.PATH}/$id")
+            .extractData()
+
+    suspend fun findByBarcode(barcode: String): AppFoodFindByBarcodeResponse =
+        client
+            .get("${ApiUrls.BASE_URL_KT}${ApiUrls.AppFood.PATH}/barcode/$barcode")
             .extractData()
 
     suspend fun searchAppFoods(

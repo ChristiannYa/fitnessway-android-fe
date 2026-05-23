@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PremiumIcon(
-    modifier: Modifier = Modifier,
     size: Dp = 14.dp,
+    modifier: Modifier = Modifier,
 ) {
     Icon(
         imageVector = Icons.Default.AutoAwesome,

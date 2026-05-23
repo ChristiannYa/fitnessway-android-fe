@@ -16,15 +16,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AppFoodRepositoryImpl(
+private data class AppEdibleWithBarcode(
+    val edible: AppEdible,
+    val barcode: String? = null
+)
+
+class AppEdibleRepositoryImpl(
     private val httpClient: HttpClient,
     private val apiClient: AppEdibleApiClient,
     private val repositoryScope: CoroutineScope
-) : IAppFoodRepository {
-    private val _uiState = MutableStateFlow(AppFoodRepositoryUiState())
-    override val uiState: StateFlow<AppFoodRepositoryUiState> = _uiState
+) : IAppEdibleRepository {
+    private val _uiState = MutableStateFlow(AppEdibleRepositoryUiState())
+    override val uiState: StateFlow<AppEdibleRepositoryUiState> = _uiState
 
-    private fun fetchAppFoodById(id: Int) =
+    private fun fetchById(id: Int) =
         httpClient.makeRequest(
             apiCall = { apiClient.findAppFoodById(id) },
             extractData = { it.appEdible },
@@ -32,20 +37,47 @@ class AppFoodRepositoryImpl(
             pathDescription = "app food by id"
         )
 
-    private val fetchedAppEdibles = mutableListOf<AppEdible>()
+    private fun fetchByBarcode(barcode: String) =
+        httpClient.makeRequest(
+            apiCall = { apiClient.findByBarcode(barcode) },
+            extractData = { it.appEdible },
+            errMsg = "Failed to fetch food by Barcode",
+            pathDescription = "app food by barcode"
+        )
 
-    override fun findAppFoodById(id: Int) {
-        val appFoodFound = fetchedAppEdibles.find { it.id == id }
-        if (appFoodFound != null) {
-            _uiState.update { it.copy(appEdible = UiState.Success(appFoodFound)) }
+    private val fetchedEdibleWithBarcodeList = mutableListOf<AppEdibleWithBarcode>()
+
+    override fun findById(id: Int) {
+        val edibleWithBarcode = fetchedEdibleWithBarcodeList.find { it.edible.id == id }
+        edibleWithBarcode?.let { ewb ->
+            _uiState.update { it.copy(appEdible = UiState.Success(ewb.edible)) }
             return
         }
 
         repositoryScope.launch {
-            fetchAppFoodById(id).collect { state ->
+            fetchById(id).collect { state ->
                 _uiState.update { it.copy(appEdible = state) }
+
                 if (state is UiState.Success) {
-                    state.data?.let { fetchedAppEdibles.add(it) }
+                    state.data?.let { fetchedEdibleWithBarcodeList.add(AppEdibleWithBarcode(it, null)) }
+                }
+            }
+        }
+    }
+
+    override fun findByBarcode(barcode: String) {
+        val edibleWithBarcode = fetchedEdibleWithBarcodeList.find { it.barcode == barcode }
+        edibleWithBarcode?.let { ewb ->
+            _uiState.update { it.copy(appEdible = UiState.Success(ewb.edible)) }
+            return
+        }
+
+        repositoryScope.launch {
+            fetchByBarcode(barcode).collect { state ->
+                _uiState.update { it.copy(appEdible = state) }
+
+                if (state is UiState.Success) {
+                    state.data?.let { fetchedEdibleWithBarcodeList.add(AppEdibleWithBarcode(it, barcode)) }
                 }
             }
         }
@@ -67,12 +99,12 @@ class AppFoodRepositoryImpl(
 
     private var searchJob: Job? = null
 
-    override fun searchAppFoods(query: String, edibleType: EdibleType) {
+    override fun search(query: String, edibleType: EdibleType) {
         searchJob?.cancel()
 
         _uiState.update {
             it.copy(
-                appFoodsUiStatePager = UiStatePager(),
+                appEdiblesUiStatePager = UiStatePager(),
             )
         }
 
@@ -80,15 +112,15 @@ class AppFoodRepositoryImpl(
             fetchAppFoods(query, edibleType, 0).collect { state ->
                 _uiState.update {
                     it.copy(
-                        appFoodsUiStatePager = UiStatePager(state)
+                        appEdiblesUiStatePager = UiStatePager(state)
                     )
                 }
             }
         }
     }
 
-    override fun loadMoreAppFoods(query: String, edibleType: EdibleType) {
-        val pager = _uiState.value.appFoodsUiStatePager
+    override fun loadMore(query: String, edibleType: EdibleType) {
+        val pager = _uiState.value.appEdiblesUiStatePager
         if (pager.isLoadingMore) return
 
         val pagination = pager.toPaginationOrNull() ?: return
@@ -96,7 +128,7 @@ class AppFoodRepositoryImpl(
 
         _uiState.update {
             it.copy(
-                appFoodsUiStatePager = pager.copy(isLoadingMore = true)
+                appEdiblesUiStatePager = pager.copy(isLoadingMore = true)
             )
         }
 
@@ -108,11 +140,11 @@ class AppFoodRepositoryImpl(
             ).collect { state ->
                 when (state) {
                     is UiState.Success -> _uiState.update {
-                        val current = it.appFoodsUiStatePager.toPaginationOrNull()
+                        val current = it.appEdiblesUiStatePager.toPaginationOrNull()
                         val accumulated = (current?.data ?: emptyList()) + state.data.data
 
                         it.copy(
-                            appFoodsUiStatePager = UiStatePager(
+                            appEdiblesUiStatePager = UiStatePager(
                                 uiState = UiState.Success(
                                     data = state.data.copy(data = accumulated),
                                 ),
@@ -123,7 +155,7 @@ class AppFoodRepositoryImpl(
 
                     is UiState.Error -> _uiState.update {
                         it.copy(
-                            appFoodsUiStatePager = it.appFoodsUiStatePager.copy(
+                            appEdiblesUiStatePager = it.appEdiblesUiStatePager.copy(
                                 isLoadingMore = false
                             )
                         )
@@ -135,8 +167,8 @@ class AppFoodRepositoryImpl(
         }
     }
 
-    override fun clearAppFoods() {
+    override fun clear() {
         searchJob?.cancel()
-        _uiState.update { it.copy(appFoodsUiStatePager = UiStatePager(UiState.Idle)) }
+        _uiState.update { it.copy(appEdiblesUiStatePager = UiStatePager(UiState.Idle)) }
     }
 }

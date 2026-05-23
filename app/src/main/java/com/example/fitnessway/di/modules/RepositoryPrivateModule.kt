@@ -1,7 +1,7 @@
 package com.example.fitnessway.di.modules
 
-import com.example.fitnessway.data.repository.app_food.AppFoodRepositoryImpl
-import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
+import com.example.fitnessway.data.repository.app_food.AppEdibleRepositoryImpl
+import com.example.fitnessway.data.repository.app_food.IAppEdibleRepository
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_list.food.UserFoodRepositoryImpl
 import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupplementRepository
@@ -51,8 +51,8 @@ val repositoryPrivateModule = module {
         )
     }
 
-    single<IAppFoodRepository> {
-        AppFoodRepositoryImpl(
+    single<IAppEdibleRepository> {
+        AppEdibleRepositoryImpl(
             httpClient = get(),
             apiClient = get(),
             repositoryScope = get(named("repositoryScope"))

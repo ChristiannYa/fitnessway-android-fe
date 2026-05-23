@@ -67,6 +67,11 @@ enum class FoodLogListFilter {
     USER_SUPPLEMENTS
 }
 
+sealed class EdibleScope {
+    data class Id(val id: Int) : EdibleScope()
+    data class Barcode(val barcode: String) : EdibleScope()
+}
+
 @Serializable
 data class FoodLog(
     val id: Int,
@@ -192,6 +197,11 @@ data class AppFoodFindByIdResponse(
 )
 
 @Serializable
+data class AppFoodFindByBarcodeResponse(
+    val appEdible: AppEdible?
+)
+
+@Serializable
 data class AppFoodSearchResponse(
     val appFoodsPagination: PaginationResult<FoodPreview>
 )
@@ -212,7 +222,7 @@ data class FoodInformationWithId(
 )
 
 data class FoodToLogSearchCriteria(
-    val id: Int,
+    val scope: EdibleScope,
     val source: EdibleSource,
     val edibleType: EdibleType
 )

@@ -14,7 +14,7 @@ import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientIntakeMath
 import com.example.fitnessway.data.model.m_26.PaginationResult
-import com.example.fitnessway.data.repository.app_food.IAppFoodRepository
+import com.example.fitnessway.data.repository.app_food.IAppEdibleRepository
 import com.example.fitnessway.data.repository.edible_list.food.IUserFoodRepository
 import com.example.fitnessway.data.repository.edible_list.supplement.IUserSupplementRepository
 import com.example.fitnessway.data.repository.edible_log.IEdibleLogRepository
@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val appFoodRepo: IAppFoodRepository,
+    private val appFoodRepo: IAppEdibleRepository,
     private val nutrientRepo: INutrientRepository,
     private val nutrientIntakesRepo: INutrientIntakesRepository,
     private val userRepo: IUserRepository,
@@ -93,20 +93,21 @@ class HomeViewModel(
         getAppFoodsDebounceJob?.cancel()
 
         if (query.isBlank()) {
-            appFoodRepo.clearAppFoods()
+            appFoodRepo.clear()
             return
         }
 
-        appFoodRepo.clearAppFoods()
+        appFoodRepo.clear()
 
         getAppFoodsDebounceJob = viewModelScope.launch {
             delay(600)
-            appFoodRepo.searchAppFoods(query, edibleType)
+            appFoodRepo.search(query, edibleType)
         }
     }
 
-    fun getAppFoodById(id: Int) = appFoodRepo.findAppFoodById(id)
-    fun getMoreAppFoods(query: String, edibleType: EdibleType) = appFoodRepo.loadMoreAppFoods(query, edibleType)
+    fun getAppEdibleById(id: Int) = appFoodRepo.findById(id)
+    fun getAppEdibleByBarcode(barcode: String) = appFoodRepo.findByBarcode(barcode)
+    fun getMoreAppEdibles(query: String, edibleType: EdibleType) = appFoodRepo.loadMore(query, edibleType)
 
     fun getUserFoods() = userFoodRepo.load()
     fun getMoreUserFoods() = userFoodRepo.loadMore()
@@ -500,7 +501,7 @@ class HomeViewModel(
         viewModelScope.launch {
             delay(500)
             _appFoodSearchQuery.value = ""
-            appFoodRepo.clearAppFoods()
+            appFoodRepo.clear()
             managers.foodLog.setFoodList(FoodLogListFilter.RECENTLY_LOGGED_FOODS)
         }
     }

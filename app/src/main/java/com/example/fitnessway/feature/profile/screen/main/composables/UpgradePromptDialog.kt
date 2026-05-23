@@ -41,7 +41,7 @@ fun UpgradePromptDialog(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         content = {
                             Text(
-                                text = "You're currently on a Free account",
+                                text = "You're currently on the Free plan",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -60,9 +60,10 @@ fun UpgradePromptDialog(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.padding(vertical = 8.dp),
                         content = {
+                            PremiumBenefit("Barcode Scan")
                             PremiumBenefit("Unlimited nutrient tracking")
+                            PremiumBenefit("Detailed nutrient intakes")
                             PremiumBenefit("Custom color themes")
-                            PremiumBenefit("Advanced analytics")
                         }
                     )
                 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.mappers.toTypedList
+import com.example.fitnessway.data.model.m_26.EdibleScope
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
@@ -87,7 +88,12 @@ fun FoodLogScreen(
     LaunchedEffect(searchCriteria) {
         searchCriteria?.let {
             when (it.source) {
-                EdibleSource.APP -> viewModel.getAppFoodById(searchCriteria.id)
+                EdibleSource.APP -> {
+                    when (it.scope) {
+                        is EdibleScope.Id -> viewModel.getAppEdibleById(it.scope.id)
+                        is EdibleScope.Barcode -> viewModel.getAppEdibleByBarcode(it.scope.barcode)
+                    }
+                }
 
                 EdibleSource.USER -> {
                     if (it.edibleType == EdibleType.FOOD) {
@@ -116,10 +122,11 @@ fun FoodLogScreen(
     LaunchedEffect(userFoodsUiState, searchCriteria) {
         if (userFoodsUiState.uiState is UiState.Success &&
             searchCriteria?.source == EdibleSource.USER &&
-            searchCriteria.edibleType == EdibleType.FOOD
+            searchCriteria.edibleType == EdibleType.FOOD &&
+            searchCriteria.scope is EdibleScope.Id
         ) {
             userFoodsUiState.uiState.data.data
-                .find { it.id == searchCriteria.id }
+                .find { it.id == searchCriteria.scope.id }
                 ?.let {
                     viewModel.setFoodToLog(
                         foodToLog = FoodInformationWithId(
@@ -134,10 +141,11 @@ fun FoodLogScreen(
     LaunchedEffect(userSupplementsUiState, searchCriteria) {
         if (userSupplementsUiState.uiState is UiState.Success &&
             searchCriteria?.source == EdibleSource.USER &&
-            searchCriteria.edibleType == EdibleType.SUPPLEMENT
+            searchCriteria.edibleType == EdibleType.SUPPLEMENT &&
+            searchCriteria.scope is EdibleScope.Id
         ) {
             userSupplementsUiState.uiState.data.data
-                .find { it.id == searchCriteria.id }
+                .find { it.id == searchCriteria.scope.id }
                 ?.let {
                     viewModel.setFoodToLog(
                         foodToLog = FoodInformationWithId(
@@ -207,9 +215,8 @@ fun FoodLogScreen(
                 val isAppFoodLoading = searchCriteria.source == EdibleSource.APP &&
                         appFoodUiState is UiState.Loading
 
-                val isUserFoodLoading =
-                    searchCriteria.source == EdibleSource.USER &&
-                            userFoodsUiState is UiState.Loading
+                val isUserFoodLoading = searchCriteria.source == EdibleSource.USER &&
+                        userFoodsUiState is UiState.Loading
 
                 if (isAppFoodLoading || isUserFoodLoading) {
                     Loading.SpinnerInScreen()

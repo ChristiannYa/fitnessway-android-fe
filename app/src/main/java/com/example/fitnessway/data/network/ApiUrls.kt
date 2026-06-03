@@ -26,8 +26,8 @@ object ApiUrls {
     }
 
     object Nutrient {
-        const val NUTRIENT_LIST_PATH = "nutrient/get-nutrients"
-        const val NUTRIENT_LIST_URL = "$BASE_URL_GO$NUTRIENT_LIST_PATH"
+        const val NUTRIENT_LIST_PATH = "nutrient/all-by-type"
+        const val NUTRIENT_LIST_URL = "$BASE_URL_KT$NUTRIENT_LIST_PATH"
 
         const val NUTRIENT_INTAKES_PATH = "nutrient/intake/date"
 

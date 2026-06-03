@@ -42,7 +42,6 @@ fun FoodRequestScreen(
             edibleSource = EdibleSource.APP,
             edibleType = listOption.toEdibleType(),
             nutrientsUiState = nutrientsUiState,
-            isUserPremium = user.isPremium,
             onResetSubmissionState = viewModel::resetFoodRequestState,
             submissionState = edibleRequestAddState,
             submissionErrorMessage = edibleRequestErrorMessage,

@@ -8,7 +8,7 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FoodCreationBaseField
@@ -180,22 +180,22 @@ class FoodCreationFieldsProvider(
 
     @Composable
     fun nutrient(
-        nutrientWithPreferences: NutrientWithPreferences,
+        nutrientData: NutrientData,
         focusRequester: FocusRequester? = null,
         isLastField: Boolean,
     ): FoodCreationNutrientField {
-        val value = formState.nutrients[nutrientWithPreferences.nutrient.id] ?: ""
+        val value = formState.nutrients[nutrientData.base.id] ?: ""
 
         val textFieldValue = Ui.InputUi.rememberTextFieldValueWithCursor(
             text = value,
-            key = nutrientWithPreferences.nutrient.id
+            key = nutrientData.base.id
         )
 
-        val nutrient = nutrientWithPreferences.nutrient
+        val nutrientBase = nutrientData.base
 
         return FoodCreationNutrientField(
-            name = FormFieldName.FoodCreation.NutrientField(nutrientWithPreferences),
-            label = "${nutrient.name} ${nutrient.unit}",
+            name = FormFieldName.FoodCreation.NutrientField(nutrientData),
+            label = "${nutrientBase.name} ${nutrientBase.unit}",
             value = value,
             textFieldValue = textFieldValue.value,
             enabled = !isFormSubmitting,
@@ -213,14 +213,14 @@ class FoodCreationFieldsProvider(
             ),
             updateState = { newValue ->
                 onFieldUpdate(
-                    FormFieldName.FoodCreation.NutrientField(nutrientWithPreferences),
+                    FormFieldName.FoodCreation.NutrientField(nutrientData),
                     newValue
                 )
             },
             updateTextFieldValueState = {
                 textFieldValue.value = it
                 onFieldUpdate(
-                    FormFieldName.FoodCreation.NutrientField(nutrientWithPreferences),
+                    FormFieldName.FoodCreation.NutrientField(nutrientData),
                     it.text
                 )
             },

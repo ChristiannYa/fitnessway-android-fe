@@ -48,7 +48,7 @@ fun NutrientColorFields(
 
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         fields.forEach { field ->
-                            key(field.name.nutrientData.nutrient.id) {
+                            key(field.name.nutrientData.base.id) {
                                 NutrientColorField(field) { onColorBoxTap(field.name, it) }
                             }
                         }

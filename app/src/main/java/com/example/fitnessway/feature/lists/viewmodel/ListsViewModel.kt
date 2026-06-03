@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessway.data.mappers.toEdibleType
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.mappers.toM25NutrientDataWithAmount
-import com.example.fitnessway.data.mappers.toM26NutrientInFood
 import com.example.fitnessway.data.mappers.toNutrientDvList
 import com.example.fitnessway.data.mappers.toPaginationData
 import com.example.fitnessway.data.mappers.toPaginationOrNull
@@ -16,10 +14,10 @@ import com.example.fitnessway.data.mappers.toType
 import com.example.fitnessway.data.mappers.toUserEdibleRequest
 import com.example.fitnessway.data.model.MFood.Api.Req.FoodUpdateRequest
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.m_26.EdibleBase
 import com.example.fitnessway.data.model.m_26.EdibleListFilter
 import com.example.fitnessway.data.model.m_26.EdibleType
+import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.data.model.m_26.OptimisticUpdate
 import com.example.fitnessway.data.model.m_26.PendingEdible
 import com.example.fitnessway.data.model.m_26.UserEdible
@@ -35,7 +33,6 @@ import com.example.fitnessway.feature.lists.manager.IListsManagers
 import com.example.fitnessway.feature.lists.manager.creation.ICreationManager
 import com.example.fitnessway.feature.lists.manager.edition.IEditionManager
 import com.example.fitnessway.feature.lists.manager.request.IEdibleRequestManager
-import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.extensions.calc
@@ -187,32 +184,29 @@ class ListsViewModel(
         // Obtain added nutrients if they are present
         val addedNutrientsWithPreferences = addedNutrients.mapNotNull { addedNutrient ->
             originalNutrients
-                .combine()
-                .find { it.nutrient.id == addedNutrient.id }
+                .toList()
+                .find { it.base.id == addedNutrient.id }
         }
 
         // Create a list of all original nutrients and added nutrients (if any)'s preferences metadata
-        val allNutrientsWithPreferences = (latestFood.information.nutrients
+        val allNutrientsWithPreferences = latestFood.information.nutrients
             .toList()
-            .map {
-                it.toM25NutrientDataWithAmount().nutrientWithPreferences
-            } + addedNutrientsWithPreferences)
-            .associateBy { it.nutrient.id }
+            .map { it.data }
+            .plus(addedNutrientsWithPreferences)
+            .associateBy { it.base.id }
 
         // Create updated nutrient data
         val updatedFoodNutrientData = upsertedNutrients.mapNotNull { upsertedNutrient ->
             allNutrientsWithPreferences[upsertedNutrient.nutrientId]?.let {
-                NutrientDataWithAmount(
-                    nutrientWithPreferences = it,
+                NutrientDataAmount(
+                    data = it,
                     amount = upsertedNutrient.amount
                 )
             }
         }
 
         // Filter updated nutrients by type
-        val updatedNutrientsByType = updatedFoodNutrientData
-            .map { it.toM26NutrientInFood() }
-            .toType()
+        val updatedNutrientsByType = updatedFoodNutrientData.toType()
 
         // Create the new food
         val optimisticFood = latestFood.copy(

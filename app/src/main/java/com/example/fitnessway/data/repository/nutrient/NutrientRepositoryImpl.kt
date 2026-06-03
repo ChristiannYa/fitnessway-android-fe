@@ -4,8 +4,8 @@ import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostReq
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.model.m_26.NutrientData
+import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.data.network.HttpClient
 import com.example.fitnessway.data.network.ktor_client.NutrientApiClient
 import com.example.fitnessway.util.UiState
@@ -27,10 +27,10 @@ class NutrientRepositoryImpl(
     private val _uiState = MutableStateFlow(NutrientRepositoryUiState())
     override val uiState: StateFlow<NutrientRepositoryUiState> = _uiState.asStateFlow()
 
-    private fun fetch(): Flow<UiState<NutrientsByType<NutrientWithPreferences>>> =
+    private fun fetch(): Flow<UiState<NutrientsByType<NutrientData>>> =
         httpClient.makeRequest(
             apiCall = apiClient::get,
-            extractData = { it.nutrients },
+            extractData = { it.nutrientsByType },
             errMsg = "Failed to get nutrients",
             pathDescription = "nutrient list"
         )

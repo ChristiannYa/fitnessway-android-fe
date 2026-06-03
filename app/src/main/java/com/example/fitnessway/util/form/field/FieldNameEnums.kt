@@ -1,7 +1,7 @@
 package com.example.fitnessway.util.form.field
 
-import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
+import com.example.fitnessway.data.model.m_26.NutrientBase
+import com.example.fitnessway.data.model.m_26.NutrientData
 
 sealed interface FormFieldName {
     enum class Login : FormFieldName {
@@ -37,7 +37,7 @@ sealed interface FormFieldName {
             SERVING_UNIT
         }
 
-        data class NutrientField(val nutrientWithPreferences: NutrientWithPreferences) : IFoodCreation
+        data class NutrientField(val nutrientData: NutrientData) : IFoodCreation
     }
 
     sealed interface IFoodEdition : FormFieldName
@@ -50,10 +50,10 @@ sealed interface FormFieldName {
             SERVING_UNIT
         }
 
-        data class NutrientField(val nutrient: Nutrient) : IFoodEdition
+        data class NutrientField(val nutrient: NutrientBase) : IFoodEdition
     }
 
-    data class NutrientGoalData(val nutrientData: NutrientWithPreferences) : FormFieldName
+    data class NutrientGoalData(val nutrientData: NutrientData) : FormFieldName
 
-    data class NutrientColorUpdate(val nutrientData: NutrientWithPreferences) : FormFieldName
+    data class NutrientColorUpdate(val nutrientData: NutrientData) : FormFieldName
 }

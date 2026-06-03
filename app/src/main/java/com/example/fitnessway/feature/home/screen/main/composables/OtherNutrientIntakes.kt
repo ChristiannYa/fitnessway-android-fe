@@ -39,8 +39,8 @@ fun OtherNutrientIntakes(
         is UiState.Success -> {
             val nutrients = when (nutrientType) {
                 NutrientType.BASIC -> state.data.basic // Just to satisfy the linter
-                NutrientType.VITAMIN -> state.data.vitamins
-                NutrientType.MINERAL -> state.data.minerals
+                NutrientType.VITAMIN -> state.data.vitamin
+                NutrientType.MINERAL -> state.data.mineral
             }
 
             val isEmpty = nutrients.isEmpty()

@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toListByCategory
 import com.example.fitnessway.data.mappers.toTitleCase
-import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.consumeTap
@@ -36,7 +36,7 @@ import kotlin.time.Instant
 @Composable
 fun NutrientContribution(
     edibleLogs: FoodLogsCategorized?,
-    nutrientList: List<MNutrient.Model.NutrientWithPreferences>?,
+    nutrientList: List<NutrientData>?,
     nutrientId: Int,
     isVisible: Boolean,
     isUserPremium: Boolean,
@@ -58,7 +58,7 @@ fun NutrientContribution(
             val logListByCategory = logsCategorized.toListByCategory()
 
             nutrientList
-                ?.find { it.nutrient.id == nutrientId }
+                ?.find { it.base.id == nutrientId }
                 ?.let { nutrientData ->
 
                     val nutrientColor = UNutrient.getUserNutrientColor(

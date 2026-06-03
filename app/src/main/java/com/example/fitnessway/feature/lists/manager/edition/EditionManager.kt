@@ -1,7 +1,7 @@
 package com.example.fitnessway.feature.lists.manager.edition
 
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.model.MNutrient
+import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.Formatters.doubleFormatter
@@ -37,8 +37,8 @@ class EditionManager : IEditionManager, NutrientDvControls() {
     private val _deletedNutrients = MutableStateFlow<List<Int>>(emptyList())
     override val deletedNutrients: StateFlow<List<Int>> = _deletedNutrients
 
-    private val _addedNutrients = MutableStateFlow<List<MNutrient.Model.Nutrient>>(emptyList())
-    override val addedNutrients: StateFlow<List<MNutrient.Model.Nutrient>> = _addedNutrients
+    private val _addedNutrients = MutableStateFlow<List<NutrientBase>>(emptyList())
+    override val addedNutrients: StateFlow<List<NutrientBase>> = _addedNutrients
 
     private val _editFormNameError: String?
         get() = _edibleEditionFormState.value?.let { formState ->
@@ -206,7 +206,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         _edibleEditionFormState.value = FormState(data)
     }
 
-    override fun addNutrientToForm(nutrient: MNutrient.Model.Nutrient) {
+    override fun addNutrientToForm(nutrient: NutrientBase) {
         removeNutrientIdFromDeletedList(nutrient.id)
         addAddedNutrient(nutrient)
 
@@ -221,7 +221,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         }
     }
 
-    override fun filterOutNutrientFromForm(nutrient: MNutrient.Model.Nutrient) {
+    override fun filterOutNutrientFromForm(nutrient: NutrientBase) {
         addNutrientIdToDeletedList(nutrient.id)
         removeAddedNutrient(nutrient)
 
@@ -236,11 +236,11 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         }
     }
 
-    private fun addAddedNutrient(nutrient: MNutrient.Model.Nutrient) {
+    private fun addAddedNutrient(nutrient: NutrientBase) {
         _addedNutrients.update { it + nutrient }
     }
 
-    private fun removeAddedNutrient(nutrient: MNutrient.Model.Nutrient) {
+    private fun removeAddedNutrient(nutrient: NutrientBase) {
         if (nutrient in _addedNutrients.value) _addedNutrients.update { it - nutrient }
     }
 

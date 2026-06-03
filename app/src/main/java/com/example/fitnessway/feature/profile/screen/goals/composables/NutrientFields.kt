@@ -16,7 +16,6 @@ import com.example.fitnessway.util.form.field.NutrientGoalEditionField
 @Composable
 fun NutrientFields(
     nutrientFields: Map<NutrientType, List<NutrientGoalEditionField>>,
-    isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -33,10 +32,9 @@ fun NutrientFields(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         goalFields.forEach { field ->
-                            key(field.name.nutrientData.nutrient.id) {
+                            key(field.name.nutrientData.base.id) {
                                 GoalsEditionFormField(
                                     field = field,
-                                    isUserPremium = isUserPremium,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }

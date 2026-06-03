@@ -30,9 +30,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.mappers.toM25NutrientDataWithAmount
 import com.example.fitnessway.data.mappers.toSuccessOrNull
-import com.example.fitnessway.data.model.MNutrient
+import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.lists.screen.user_details.edition.composables.FoodEditionFormField
 import com.example.fitnessway.feature.lists.viewmodel.ListsViewModel
@@ -47,7 +46,6 @@ import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.PopupOrigin
 import com.example.fitnessway.util.UNutrient
-import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.UNutrient.toReadable
 import com.example.fitnessway.util.UNutrient.toTypedList
 import com.example.fitnessway.util.Ui
@@ -131,7 +129,7 @@ fun FoodEditionScreen(
 
             val foodWithAddedNutrients = (selectedFoodCopy.information.nutrients
                 .toList()
-                .map { n -> n.toM25NutrientDataWithAmount().nutrientWithPreferences.nutrient } + addedNutrients)
+                .map { n -> n.data.base } + addedNutrients)
                 .distinctBy { it.id }
                 .filter { it.id !in deletedNutrients }
                 .also { nutrientIdsPresent = it.map { n -> n.id } }
@@ -191,13 +189,13 @@ fun FoodEditionScreen(
                     onClick = { isAvailableNutrientsVisible = false }
                 )
 
-                val availableNutrientsClickConfig = Ui.ClickableConfiguration<MNutrient.Model.Nutrient>(
+                val availableNutrientsClickConfig = Ui.ClickableConfiguration<NutrientBase>(
                     onClick = viewModel.editionManager::addNutrientToForm
                 )
 
                 val nutrients = nutrientUiState.data
-                    .combine()
-                    .map { it.nutrient }
+                    .toList()
+                    .map { it.base }
 
                 val availableNutrients = nutrients.filter {
                     it.id !in foodEditionFormStateCopy.data.nutrients.keys.toList()
@@ -257,9 +255,9 @@ private fun <T> FieldSection(
 @Composable
 private fun AvailableNutrientsPopup(
     isVisible: Boolean,
-    availableNutrients: List<MNutrient.Model.Nutrient>,
+    availableNutrients: List<NutrientBase>,
     nutrientType: NutrientType,
-    clickableConfiguration: Ui.ClickableConfiguration<MNutrient.Model.Nutrient>,
+    clickableConfiguration: Ui.ClickableConfiguration<NutrientBase>,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(

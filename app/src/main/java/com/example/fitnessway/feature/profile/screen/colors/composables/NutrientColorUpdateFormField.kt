@@ -19,17 +19,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.util.form.field.FormField
-import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
 import com.example.fitnessway.util.Ui.InputUi
+import com.example.fitnessway.util.form.field.FormField
+import com.example.fitnessway.util.form.field.FormFieldName
 
 @Composable
 fun NutrientColorUpdateFormField(
     field: FormField<FormFieldName.NutrientColorUpdate>,
     modifier: Modifier = Modifier
 ) {
-    val nutrient = field.name.nutrientData.nutrient
+    val nutrientBase = field.name.nutrientData.base
 
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -54,7 +54,7 @@ fun NutrientColorUpdateFormField(
             modifier = modifier
         ) {
             NutrientFieldLabel(
-                nutrient = nutrient,
+                nutrient = nutrientBase,
                 isFocused = isFocused
             )
 

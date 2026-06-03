@@ -1,11 +1,11 @@
 package com.example.fitnessway.feature.profile.manager.colors
 
-import com.example.fitnessway.util.form.field.FormFieldName
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.model.m_26.NutrientData
+import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.util.UNutrient.formatNutrientsDataAsMap
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FormFieldName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -71,9 +71,7 @@ class ColorsManager : IColorsManager {
         )
     }
 
-    override fun initNutrientColorsForm(
-        nutrientsData: NutrientsByType<NutrientWithPreferences>
-    ) {
+    override fun initNutrientColorsForm(nutrientsData: NutrientsByType<NutrientData>) {
         val colors = formatNutrientsDataAsMap(
             nutrientsData = nutrientsData,
             propertySelector = { it.hexColor?.removePrefix("#") ?: "" }
@@ -90,7 +88,7 @@ class ColorsManager : IColorsManager {
         _colorsEditionFormState.value?.let { formState ->
             val updatedValues = run {
                 val colors = formState.data.colors.toMutableMap()
-                colors[fieldName.nutrientData.nutrient.id] = input
+                colors[fieldName.nutrientData.base.id] = input
                 formState.data.copy(colors = colors)
             }
 

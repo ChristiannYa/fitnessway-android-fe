@@ -2,13 +2,14 @@ package com.example.fitnessway.feature.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessway.data.mappers.mapnbt
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientColorsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Api.Req.NutrientGoalsPostRequest
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
+import com.example.fitnessway.data.model.m_26.NutrientData
+import com.example.fitnessway.data.model.m_26.NutrientPreferences
 import com.example.fitnessway.data.model.m_26.UserTimezoneSetRequest
 import com.example.fitnessway.data.repository.RepositoryOperations
 import com.example.fitnessway.data.repository.auth.IAuthRepository
@@ -21,7 +22,6 @@ import com.example.fitnessway.data.state.timezone.ITimezoneStateHolder
 import com.example.fitnessway.feature.profile.manager.IProfileManagers
 import com.example.fitnessway.feature.profile.manager.colors.IColorsManager
 import com.example.fitnessway.feature.profile.manager.goals.IGoalsManager
-import com.example.fitnessway.util.UNutrient.mapNutrients
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,7 +72,7 @@ class ProfileViewModel(
         val modifiedGoals = managers.goals.modifiedGoals.value
 
         // Store updated nutrient goal data to avoid refreshing nutrients
-        val optimisticNutrientData = currentNutrients.mapNutrients { _, nutrients ->
+        val optimisticNutrientData = currentNutrients.mapnbt { _, nutrients ->
             updateNutrientGoals(nutrients, modifiedGoals)
         }
 
@@ -130,10 +130,9 @@ class ProfileViewModel(
         val modifiedColors = managers.colors.modifiedColors.value
 
         // Store updated nutrient colors data
-        val optimisticNutrientsData = currentNutrients
-            .mapNutrients { _, nutrients ->
-                updateNutrientColors(nutrients, modifiedColors)
-            }
+        val optimisticNutrientsData = currentNutrients.mapnbt { _, nutrients ->
+            updateNutrientColors(nutrients, modifiedColors)
+        }
 
         val request = NutrientColorsPostRequest(
             colors = modifiedColors.map {
@@ -232,33 +231,30 @@ class ProfileViewModel(
 }
 
 private fun updateNutrientGoals(
-    nutrients: List<NutrientWithPreferences>,
+    nutrients: List<NutrientData>,
     modifiedGoals: Map<Int, String>
-): List<NutrientWithPreferences> {
-    return updateNutrientPreferences(nutrients, modifiedGoals) { prefs, newGoal ->
+): List<NutrientData> =
+    updateNutrientPreferences(nutrients, modifiedGoals) { prefs, newGoal ->
         prefs.copy(goal = newGoal.toDouble())
     }
-}
 
 private fun updateNutrientColors(
-    nutrients: List<NutrientWithPreferences>,
+    nutrients: List<NutrientData>,
     modifiedColors: Map<Int, String>
-): List<NutrientWithPreferences> {
-    return updateNutrientPreferences(nutrients, modifiedColors) { prefs, newColor ->
+): List<NutrientData> =
+    updateNutrientPreferences(nutrients, modifiedColors) { prefs, newColor ->
         prefs.copy(hexColor = "#$newColor")
     }
-}
 
 private fun updateNutrientPreferences(
-    nutrients: List<NutrientWithPreferences>,
+    nutrients: List<NutrientData>,
     modifiedValues: Map<Int, String>,
     propertyUpdater: (NutrientPreferences, String) -> NutrientPreferences
-): List<NutrientWithPreferences> {
-    return nutrients.map { nutrientData ->
-        modifiedValues[nutrientData.nutrient.id]?.let { newValue ->
+): List<NutrientData> =
+    nutrients.map { nutrientData ->
+        modifiedValues[nutrientData.base.id]?.let { newValue ->
             nutrientData.copy(
                 preferences = propertyUpdater(nutrientData.preferences, newValue)
             )
         } ?: nutrientData
     }
-}

@@ -19,28 +19,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
+import com.example.fitnessway.util.Ui.InputUi
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
-import com.example.fitnessway.util.UNutrient.Ui.NutrientFieldLabel
-import com.example.fitnessway.util.UNutrient.getUserNutrientColor
-import com.example.fitnessway.util.Ui.InputUi
 
 @Composable
 fun GoalsEditionFormField(
     field: FormField<FormFieldName.NutrientGoalData>,
-    isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val nutrient = field.name.nutrientData.nutrient
-    val preferences = field.name.nutrientData.preferences
+    val nutrientBase = field.name.nutrientData.base
 
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
-
-    val goalTextColor = getUserNutrientColor(
-        color = preferences.hexColor,
-        isUserPremium = isUserPremium
-    )
 
     val inputBackgroundColor = InputUi.getBackgroundColorAnimated(
         isFocused = isFocused,
@@ -62,7 +54,7 @@ fun GoalsEditionFormField(
             modifier = modifier
         ) {
             NutrientFieldLabel(
-                nutrient = nutrient,
+                nutrient = nutrientBase,
                 isFocused = isFocused
             )
 

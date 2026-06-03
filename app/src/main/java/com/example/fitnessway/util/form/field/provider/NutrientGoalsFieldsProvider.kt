@@ -7,12 +7,12 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.fitnessway.util.form.field.FormFieldName
-import com.example.fitnessway.util.form.field.NutrientGoalEditionField
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FormFieldName
+import com.example.fitnessway.util.form.field.NutrientGoalEditionField
 
 class NutrientGoalsFieldsProvider(
     private val formState: FormState<FormStates.NutrientGoals>,
@@ -22,21 +22,21 @@ class NutrientGoalsFieldsProvider(
 ) {
     @Composable
     fun nutrientGoal(
-        nutrientData: NutrientWithPreferences,
+        nutrientData: NutrientData,
         isLastField: Boolean
     ): NutrientGoalEditionField {
-        val value = formState.data.goals[nutrientData.nutrient.id] ?: "~"
+        val value = formState.data.goals[nutrientData.base.id] ?: "~"
 
         val textFieldValue = Ui.InputUi.rememberTextFieldValueWithCursor(
             text = value,
-            key = nutrientData.nutrient.id
+            key = nutrientData.base.id
         )
 
-        val nutrient = nutrientData.nutrient
+        val nutrientBase = nutrientData.base
 
         return NutrientGoalEditionField(
             name = FormFieldName.NutrientGoalData(nutrientData),
-            label = "${nutrient.name} ${nutrient.unit}",
+            label = "${nutrientBase.name} ${nutrientBase.unit}",
             value = value,
             textFieldValue = textFieldValue.value,
             enabled = !isFormSubmitting,

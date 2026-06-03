@@ -9,15 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.FoodLog
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.util.extensions.getIntakeCalculation
 import com.example.fitnessway.util.extensions.toPrecisedString
 
 @Composable
 fun NutrientContributionTotal(
     logs: List<FoodLog>,
-    nutrientData: MNutrient.Model.NutrientWithPreferences,
+    nutrientData: NutrientData,
     textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 
     /**
@@ -29,7 +29,7 @@ fun NutrientContributionTotal(
     val intakeCalculations = logs.map {
         it.edibleInformation.nutrients
             .toList()
-            .find { n -> n.data.base.id == nutrientData.nutrient.id }
+            .find { n -> n.data.base.id == nutrientData.base.id }
             ?.getIntakeCalculation()
     }
 
@@ -48,7 +48,7 @@ fun NutrientContributionTotal(
                     Text(
                         text = amountAnnotatedString(
                             amount = intakeTotal,
-                            type = nutrientData.nutrient.unit,
+                            type = nutrientData.base.unit.toString().lowercase(),
                             color = textColor
                         ),
                         style = textStyle,

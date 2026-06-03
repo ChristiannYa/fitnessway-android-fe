@@ -2,7 +2,6 @@ package com.example.fitnessway.data.model
 
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithColor
 import com.example.fitnessway.data.model.MNutrient.Helpers.NutrientIdWithGoal
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.m_26.NutrientType
@@ -88,13 +87,7 @@ object MNutrient {
         object Res {
             @Serializable
             data class NutrientsByTypeGetApiResponse(
-                val nutrients: NutrientsByType<NutrientWithPreferences>
-            )
-
-            @Serializable
-            data class NutrientIntakesByTypeGetApiResponse(
-                @SerialName("nutrient_intakes")
-                val nutrientIntakes: NutrientsByType<NutrientDataWithAmount>
+                val nutrientsByType: NutrientsByType<NutrientWithPreferences>
             )
 
             @Serializable

@@ -1,5 +1,6 @@
 package com.example.fitnessway.data.model.m_26
 
+import com.example.fitnessway.util.UNutrient.NUTRIENT_IDS_WITH_DV
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -26,8 +27,8 @@ typealias NutrientIntakes = NutrientsByType<NutrientDataAmount>
 @Serializable
 data class NutrientsByType<N : NutrientGroupable>(
     val basic: List<N>,
-    val vitamins: List<N>,
-    val minerals: List<N>
+    val vitamin: List<N>,
+    val mineral: List<N>
 )
 
 @Serializable
@@ -46,11 +47,13 @@ data class NutrientBase(
     val type: NutrientType,
     val symbol: kotlin.String? = null,
     val isPremium: Boolean
-)
+) {
+    val hasDailyValue by lazy { this.id in NUTRIENT_IDS_WITH_DV }
+}
 
 @Serializable
 data class NutrientPreferences(
-    val hexColor: kotlin.String? = null,
+    val hexColor: String? = null,
     val goal: Double? = null
 )
 
@@ -82,6 +85,11 @@ data class NutrientIdWithAmount(
 data class NutrientAmountWithColor(
     val amount: Double? = null,
     val color: String? = null
+)
+
+@Serializable
+data class NutrientsByTypeResponse(
+    val nutrientsByType: NutrientsByType<NutrientData>
 )
 
 @Serializable

@@ -13,6 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toList
+import com.example.fitnessway.data.mappers.toListByType
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.profile.screen.colors.composables.NutrientColorFields
 import com.example.fitnessway.feature.profile.screen.colors.composables.color_picker.ColorPickerPopup
@@ -23,8 +25,6 @@ import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.consumeTap
-import com.example.fitnessway.util.UNutrient.combine
-import com.example.fitnessway.util.UNutrient.filterNutrientsByType
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.FormFieldName
@@ -90,8 +90,15 @@ fun ProfileColorsScreen(
 
             val fields = NutrientType.entries.associateWith { type ->
                 nutrientsUiState.data
-                    .filterNutrientsByType(type)
-                    .map { fieldsProvider.nutrientColor(it, nutrients.combine().last() == it) }
+                    .toListByType(type)
+                    .map {
+                        fieldsProvider.nutrientColor(
+                            nutrientData = it,
+                            isLastField = nutrients
+                                .toList()
+                                .last() == it
+                        )
+                    }
             }
 
             var fieldSelected by remember { mutableStateOf<FormFieldName.NutrientColorUpdate?>(null) }
@@ -124,7 +131,7 @@ fun ProfileColorsScreen(
             )
 
             ColorPickerPopup(
-                title = "${fieldSelected?.nutrientData?.nutrient?.name}",
+                title = "${fieldSelected?.nutrientData?.base?.name}",
                 isVisible = isColorPickerVisible,
                 initialHex = hex,
                 onSetHex = { hexInput ->

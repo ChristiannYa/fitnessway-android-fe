@@ -1,6 +1,6 @@
 package com.example.fitnessway.util.nutrient
 
-import com.example.fitnessway.data.model.MNutrient
+import com.example.fitnessway.data.model.m_26.NutrientBase
 import kotlinx.coroutines.flow.StateFlow
 
 interface INutrientDvControls {
@@ -12,7 +12,7 @@ interface INutrientDvControls {
     )
 
     data class NutrientDvState(
-        val nutrient: MNutrient.Model.Nutrient?,
+        val nutrient: NutrientBase?,
         val isInNutrientDvMap: Boolean,
         val nutrientDvControls: NutrientDvControls?
     )

@@ -7,13 +7,13 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.fitnessway.util.form.field.FoodEditionDetailField
-import com.example.fitnessway.util.form.field.FoodEditionNutrientField
-import com.example.fitnessway.util.form.field.FormFieldName
-import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
+import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FoodEditionDetailField
+import com.example.fitnessway.util.form.field.FoodEditionNutrientField
+import com.example.fitnessway.util.form.field.FormFieldName
 
 class FoodEditionFieldsProvider(
     private val formState: FormState<FormStates.FoodEdition>,
@@ -172,7 +172,7 @@ class FoodEditionFieldsProvider(
 
     @Composable
     fun nutrient(
-        nutrient: Nutrient,
+        nutrient: NutrientBase,
         isLastField: Boolean
     ): FoodEditionNutrientField {
         val value = formState.data.nutrients[nutrient.id] ?: ""

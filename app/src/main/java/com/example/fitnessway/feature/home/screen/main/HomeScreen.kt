@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogListFilter
@@ -42,7 +43,6 @@ import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Loading.RefreshByPullIndicator
 import com.example.fitnessway.ui.shared.Messages.NotFoundMessageAnimated
 import com.example.fitnessway.ui.shared.Screen
-import com.example.fitnessway.util.UNutrient.combine
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -238,7 +238,7 @@ fun HomeScreen(
 
                 NutrientContribution(
                     edibleLogs = foodLogsState.toSuccessOrNull(),
-                    nutrientList = nutrientsUiState.toSuccessOrNull()?.combine(),
+                    nutrientList = nutrientsUiState.toSuccessOrNull()?.toList(),
                     nutrientId = nutrientIdTapped,
                     isVisible = isNutrientContributionVisible,
                     isUserPremium = user.isPremium,

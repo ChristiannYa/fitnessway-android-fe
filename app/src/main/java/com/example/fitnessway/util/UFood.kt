@@ -217,8 +217,8 @@ object UFood {
         @Composable
         fun RemainingNutrients() {
             val remainingNutrients = listOf(
-                NutrientType.VITAMIN to edibleInformation.nutrients.vitamins,
-                NutrientType.MINERAL to edibleInformation.nutrients.minerals
+                NutrientType.VITAMIN to edibleInformation.nutrients.vitamin,
+                NutrientType.MINERAL to edibleInformation.nutrients.mineral
             )
 
             if (remainingNutrients.any { it.second.isNotEmpty() }) {

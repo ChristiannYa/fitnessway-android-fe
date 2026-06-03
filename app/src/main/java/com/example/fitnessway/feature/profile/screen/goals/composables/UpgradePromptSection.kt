@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
+import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.theme.AppModifiers
@@ -21,7 +21,7 @@ import com.example.fitnessway.util.Ui.Measurements.TEXT_ICON_HORIZONTAL_SPACE
 
 @Composable
 fun UpgradePromptSection(
-    premiumNutrientsMap: Map<NutrientType, List<Nutrient>>,
+    premiumNutrientsMap: Map<NutrientType, List<NutrientBase>>,
     modifier: Modifier = Modifier
 ) {
     val sectionAccent = MaterialTheme.colorScheme.surfaceVariant

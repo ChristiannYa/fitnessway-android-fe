@@ -1,6 +1,6 @@
 package com.example.fitnessway.feature.lists.manager.edition
 
-import com.example.fitnessway.data.model.MNutrient
+import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
@@ -13,14 +13,14 @@ interface IEditionManager : INutrientDvControls {
     val selectedEdible: StateFlow<UserEdible?>
     val edibleEditionFormState: StateFlow<FormState<FormStates.FoodEdition>?>
     val deletedNutrients: StateFlow<List<Int>>
-    val addedNutrients: StateFlow<List<MNutrient.Model.Nutrient>>
+    val addedNutrients: StateFlow<List<NutrientBase>>
     val isEdibleEditionFormValid: StateFlow<Boolean>
 
     fun setSelectedEdible(food: UserEdible)
     fun initializeEdibleForm(food: UserEdible)
     fun updateEdibleEditionFormField(fieldName: FormFieldName.IFoodEdition, input: String)
-    fun addNutrientToForm(nutrient: MNutrient.Model.Nutrient)
-    fun filterOutNutrientFromForm(nutrient: MNutrient.Model.Nutrient)
+    fun addNutrientToForm(nutrient: NutrientBase)
+    fun filterOutNutrientFromForm(nutrient: NutrientBase)
     fun resetDeletedNutrients()
     fun resetAddedNutrients()
 

@@ -17,9 +17,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.mappers.toM26NutrientData
-import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.FoodLog
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.ui.shared.SuccessIcon
 import com.example.fitnessway.util.extensions.getIntakeCalculation
@@ -27,17 +26,17 @@ import com.example.fitnessway.util.extensions.getIntakeCalculation
 @Composable
 fun NutrientContributionHeader(
     logs: List<FoodLog>,
-    nutrientData: MNutrient.Model.NutrientWithPreferences,
+    nutrientData: NutrientData,
     nutrientColor: Color
 ) {
 
     val intakeCalculation = NutrientDataAmount(
-        data = nutrientData.toM26NutrientData(),
+        data = nutrientData,
         amount = logs
             .map {
                 it.edibleInformation.nutrients
                     .toList()
-                    .find { n -> n.data.base.id == nutrientData.nutrient.id }
+                    .find { n -> n.data.base.id == nutrientData.base.id }
                     ?.amount ?: 0.0
             }
             .sumOf { it }
@@ -59,11 +58,11 @@ fun NutrientContributionHeader(
                             fontWeight = FontWeight.SemiBold
                         )
                     ) {
-                        append("${nutrientData.nutrient.name} ")
+                        append("${nutrientData.base.name} ")
                     }
                 } + amountAnnotatedString(
                     amount = nutrientData.preferences.goal ?: 0.0,
-                    type = nutrientData.nutrient.unit.lowercase(),
+                    type = nutrientData.base.unit.toString().lowercase(),
                     color = nutrientColor
                 ),
                 textAlign = TextAlign.Center,
@@ -98,7 +97,7 @@ fun NutrientContributionHeader(
                                 append("< ")
                             } + amountAnnotatedString(
                                 amount = intakeCalculation.remaining,
-                                type = nutrientData.nutrient.unit.lowercase()
+                                type = nutrientData.base.unit.toString().lowercase()
                             ),
                             style = textStyle,
                             fontWeight = fontWeight
@@ -114,7 +113,7 @@ fun NutrientContributionHeader(
                                 append("> ")
                             } + amountAnnotatedString(
                                 amount = intakeCalculation.over,
-                                type = nutrientData.nutrient.unit.lowercase()
+                                type = nutrientData.base.unit.toString().lowercase()
                             ),
                             style = textStyle,
                             fontWeight = fontWeight

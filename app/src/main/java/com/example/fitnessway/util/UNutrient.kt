@@ -44,10 +44,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientPreferences
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.model.m_26.NutrientBase
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.theme.WhiteFont
@@ -88,8 +89,6 @@ object UNutrient {
         15, // Magnesium
         16  // Potassium
     )
-
-    val Nutrient.hasDailyValue: Boolean get() = this.id in NUTRIENT_IDS_WITH_DV
 
     fun percentDvToNutrientAmount(
         nutrientId: Int,
@@ -154,40 +153,30 @@ object UNutrient {
         }
     }
 
-    fun <T> NutrientsByType<T>.filterNutrientsByType(type: NutrientType): List<T> {
-        return when (type) {
-            NutrientType.BASIC -> this.basic
-            NutrientType.VITAMIN -> this.vitamin
-            NutrientType.MINERAL -> this.mineral
-        }
-    }
-
     fun <T> NutrientsByType<T>.mapNutrients(
         transform: (
             type: NutrientType,
             nutrients: List<T>
         ) -> List<T>
-    ): NutrientsByType<T> {
-        return NutrientsByType(
+    ): NutrientsByType<T> =
+        NutrientsByType(
             basic = transform(NutrientType.BASIC, basic),
             vitamin = transform(NutrientType.VITAMIN, vitamin),
             mineral = transform(NutrientType.MINERAL, mineral)
         )
-    }
 
-    fun <T> NutrientsByType<T>.toTypedList(): List<Pair<NutrientType, List<T>>> {
-        return listOf(
+    fun <T> NutrientsByType<T>.toTypedList(): List<Pair<NutrientType, List<T>>> =
+        listOf(
             NutrientType.BASIC to this.basic,
             NutrientType.VITAMIN to this.vitamin,
             NutrientType.MINERAL to this.mineral
         )
-    }
 
     fun <T> buildNutrientsByType2(
         nutrients: List<T>,
         getType: (T) -> NutrientType
     ): NutrientsByType<T> {
-        val grouped = nutrients.groupBy(getType)  // Single iteration
+        val grouped = nutrients.groupBy(getType)
 
         return NutrientsByType(
             basic = grouped[NutrientType.BASIC] ?: emptyList(),
@@ -199,9 +188,7 @@ object UNutrient {
     fun <T> NutrientsByType<T>.combine(): List<T> {
         return this.basic + this.vitamin + this.mineral
     }
-
-    fun List<Nutrient>.getIds(): List<Int> = this.map { it.id }
-
+    
     fun getColor(color: String?): Color? {
         if (color.isNullOrEmpty()) return null
 
@@ -220,14 +207,12 @@ object UNutrient {
     }
 
     fun formatNutrientsDataAsMap(
-        nutrientsData: NutrientsByType<NutrientWithPreferences>,
-        propertySelector: (NutrientPreferences) -> String
-    ): Map<Int, String> {
-        return nutrientsData.combine().associate {
-            val value = propertySelector(it.preferences)
-            it.nutrient.id to value
-        }
-    }
+        nutrientsData: com.example.fitnessway.data.model.m_26.NutrientsByType<NutrientData>,
+        propertySelector: (NutrientPreferencesM26) -> String
+    ): Map<Int, String> =
+        nutrientsData
+            .toList()
+            .associate { it.base.id to propertySelector(it.preferences) }
 
     /**
      * `toReadable` formats the nutrient's type to be lowercase, and makes the first char uppercase.
@@ -250,7 +235,7 @@ object UNutrient {
     object Ui {
         @Composable
         fun buildAnnotatedString(
-            nutrient: Nutrient,
+            nutrient: NutrientBase,
             isInDvMode: Boolean = false,
             nameColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
             informationColor: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f),
@@ -278,7 +263,7 @@ object UNutrient {
                         color = informationColor
                     ),
                     block = {
-                        append(if (isInDvMode) "(%DV)" else nutrient.unit)
+                        append(if (isInDvMode) "(%DV)" else nutrient.unit.toString().lowercase())
                     }
                 )
             }
@@ -286,12 +271,12 @@ object UNutrient {
 
         @Composable
         fun NutrientLabelsFlowRow(
-            nutrients: List<Nutrient>,
-            getColor: ((Nutrient) -> Color)? = null,
+            nutrients: List<NutrientBase>,
+            getColor: ((NutrientBase) -> Color)? = null,
             size: LabelSize = LabelSize.SMALL,
             textStyle: TextStyle = MaterialTheme.typography.labelMedium,
-            clickableConfiguration: ClickableConfiguration<Nutrient>? = null,
-            labelModifier: (Nutrient) -> Modifier = { Modifier },
+            clickableConfiguration: ClickableConfiguration<NutrientBase>? = null,
+            labelModifier: (NutrientBase) -> Modifier = { Modifier },
         ) {
             FlowRow(
                 horizontalArrangement = Arrangement.Center,
@@ -333,7 +318,7 @@ object UNutrient {
 
         @Composable
         fun NutrientFieldLabel(
-            nutrient: Nutrient,
+            nutrient: NutrientBase,
             isFocused: Boolean,
             isInDvMode: Boolean = false
         ) {

@@ -29,19 +29,19 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toErrorMessageOrNull
+import com.example.fitnessway.data.mappers.toListByType
 import com.example.fitnessway.data.mappers.toTitleCase
-import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientType
+import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.ui.shared.Banners
 import com.example.fitnessway.ui.shared.FormProgress
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Messages
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.UNutrient.filterNutrientsByType
-import com.example.fitnessway.util.UNutrient.getIds
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.edible.creation.IEdibleCreation
@@ -54,8 +54,7 @@ fun <T> FoodCreationFormScreen(
     edibleCreation: IEdibleCreation,
     edibleSource: EdibleSource,
     edibleType: EdibleType,
-    nutrientsUiState: UiState<MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientWithPreferences>>,
-    isUserPremium: Boolean,
+    nutrientsUiState: UiState<NutrientsByType<NutrientData>>,
     onResetSubmissionState: () -> Unit,
     submissionState: UiState<T>,
     submissionErrorMessage: String?,
@@ -181,15 +180,15 @@ fun <T> FoodCreationFormScreen(
                     val nutrients = (nutrientsUiState as UiState.Success).data
 
                     val areNsValid = edibleCreation.validateRequiredNutrients(
-                        nutrientIds = nutrients.basic.map { it.nutrient }.getIds().toSet()
+                        nutrientIds = nutrients.basic.map { it.base.id }.toSet()
                     ) && currentStep >= 2
 
                     val areVsValid = edibleCreation.validateOptionalNutrients(
-                        nutrientIds = nutrients.vitamin.map { it.nutrient }.getIds().toSet()
+                        nutrientIds = nutrients.vitamin.map { it.base.id }.toSet()
                     ) && currentStep >= 3
 
                     val areMsValid = edibleCreation.validateOptionalNutrients(
-                        nutrientIds = nutrients.mineral.map { it.nutrient }.getIds().toSet()
+                        nutrientIds = nutrients.mineral.map { it.base.id }.toSet()
                     ) && currentStep >= 4
 
                     if (submissionState !is UiState.Success) {
@@ -212,9 +211,9 @@ fun <T> FoodCreationFormScreen(
                     )
 
                     val nutrientFieldsData = NutrientType.entries.associateWith { type ->
-                        val nutrientList = nutrients.filterNutrientsByType(type)
+                        val nutrientList = nutrients.toListByType(type)
 
-                        val fields = nutrientList.mapIndexed { index, nutrientWithPrefs ->
+                        val fields = nutrientList.mapIndexed { index, nutrientData ->
                             // Create focus requester only if the index is 0
                             val focusRequester = if (index == 0) {
                                 when (type) {
@@ -225,7 +224,7 @@ fun <T> FoodCreationFormScreen(
                             } else null
 
                             fieldsProvider.nutrient(
-                                nutrientWithPreferences = nutrientWithPrefs,
+                                nutrientData = nutrientData,
                                 focusRequester = focusRequester,
                                 isLastField = index == nutrientList.lastIndex
                             )

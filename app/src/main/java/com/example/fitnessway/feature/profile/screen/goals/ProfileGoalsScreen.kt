@@ -11,6 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.mapnbt
+import com.example.fitnessway.data.mappers.toList
+import com.example.fitnessway.data.mappers.toListByType
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.profile.screen.goals.composables.NutrientFields
@@ -21,13 +24,11 @@ import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.shared.Structure.NotFoundScreen
-import com.example.fitnessway.util.UNutrient.combine
-import com.example.fitnessway.util.UNutrient.filterNutrientsByType
-import com.example.fitnessway.util.UNutrient.mapNutrients
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.form.field.provider.NutrientGoalsFieldsProvider
 import org.koin.androidx.compose.koinViewModel
+
 
 @Composable
 fun ProfileGoalsScreen(
@@ -88,8 +89,8 @@ fun ProfileGoalsScreen(
                         key2 = user.isPremium
                     ) {
                         nutrients
-                            .filterNutrientsByType(type)
-                            .filter { n -> user.isPremium || !n.nutrient.isPremium }
+                            .toListByType(type)
+                            .filter { n -> user.isPremium || !n.base.isPremium }
                     }
 
                     val fieldsProvider = remember(
@@ -110,25 +111,25 @@ fun ProfileGoalsScreen(
                     }
 
                     nutrientsByType.map { nutrientDataByType ->
-                        val isLastField = nutrients.combine().map { nutrientData ->
-                            nutrientData.nutrient
-                        }.last() == nutrientDataByType.nutrient
-
                         fieldsProvider.nutrientGoal(
                             nutrientData = nutrientDataByType,
-                            isLastField = isLastField
+                            isLastField = nutrients
+                                .toList()
+                                .map { nutrientData -> nutrientData.base }
+                                .last() == nutrientDataByType.base
                         )
                     }
                 }
 
                 val premiumNutrientsMap = NutrientType.entries.associateWith { type ->
                     nutrientsUiState.data
-                        .mapNutrients { _, nutrients ->
-                            nutrients
-                                .filter { n -> user.isPremium || n.nutrient.isPremium }
+                        .mapnbt { _, nutrients ->
+                            nutrients.filter { nutrient ->
+                                user.isPremium || nutrient.base.isPremium
+                            }
                         }
-                        .filterNutrientsByType(type)
-                        .map { it.nutrient }
+                        .toListByType(type)
+                        .map { it.base }
                 }
 
                 Column(
@@ -144,16 +145,9 @@ fun ProfileGoalsScreen(
                         verticalArrangement = Arrangement.spacedBy(24.dp),
                         modifier = Modifier.verticalScroll(scrollState)
                     ) {
-                        NutrientFields(
-                            nutrientFields = goalFields,
-                            isUserPremium = user.isPremium
-                        )
+                        NutrientFields(goalFields)
 
-                        if (!user.isPremium) {
-                            UpgradePromptSection(
-                                premiumNutrientsMap = premiumNutrientsMap
-                            )
-                        }
+                        if (!user.isPremium) UpgradePromptSection(premiumNutrientsMap)
                     }
                 }
             }

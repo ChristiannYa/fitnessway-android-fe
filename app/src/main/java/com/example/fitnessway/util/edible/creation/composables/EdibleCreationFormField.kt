@@ -16,7 +16,7 @@ import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.nutrient.INutrientDvControls
-import com.example.fitnessway.util.nutrient.composables.DvTrailingIcon
+import com.example.fitnessway.util.nutrient.composables.dvTrailingIcon
 import com.example.fitnessway.util.nutrient.rememberNutrientDvState
 
 @Composable
@@ -37,7 +37,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
         nutrientDvControls = nutrientDvControls,
         getNutrient = { name ->
             if (name is FormFieldName.FoodCreation.NutrientField) {
-                name.nutrientWithPreferences.nutrient
+                name.nutrientData.base
             } else null
         }
     )
@@ -66,7 +66,7 @@ fun <T : FormFieldName.IFoodCreation> FoodCreationFormField(
                     )
                 }
             } else null,
-            trailingIcon = DvTrailingIcon(nutrientDvState, field.textFieldValue.text),
+            trailingIcon = dvTrailingIcon(nutrientDvState, field.textFieldValue.text),
             keyboardOptions = field.keyboardOptions,
             keyboardActions = field.keyboardActions,
             interactionSource = interactionSource,

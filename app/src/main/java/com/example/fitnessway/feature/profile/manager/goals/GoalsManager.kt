@@ -1,7 +1,7 @@
 package com.example.fitnessway.feature.profile.manager.goals
 
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientWithPreferences
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
+import com.example.fitnessway.data.model.m_26.NutrientData
+import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.UNutrient.formatNutrientsDataAsMap
@@ -81,9 +81,7 @@ class GoalsManager() : IGoalsManager {
         )
     }
 
-    override fun initNutrientGoalsForm(
-        nutrientsData: NutrientsByType<NutrientWithPreferences>
-    ) {
+    override fun initNutrientGoalsForm(nutrientsData: NutrientsByType<NutrientData>) {
         val goals = formatNutrientsDataAsMap(
             nutrientsData = nutrientsData,
             propertySelector = {
@@ -104,7 +102,7 @@ class GoalsManager() : IGoalsManager {
         _goalsEditionFormState.value?.let { state ->
             val updatedValues = run {
                 val goals = state.data.goals.toMutableMap()
-                goals[fieldName.nutrientData.nutrient.id] = input
+                goals[fieldName.nutrientData.base.id] = input
                 state.data.copy(goals = goals)
             }
 

@@ -37,7 +37,6 @@ fun CreateFoodFormScreen(
             edibleSource = EdibleSource.USER,
             edibleType = listOption.toEdibleType(),
             nutrientsUiState = nutrientsUiState,
-            isUserPremium = user.isPremium,
             onResetSubmissionState = viewModel::resetFoodAddState,
             submissionState = edibleAddState,
             submissionErrorMessage = edibleAddErrMsg,

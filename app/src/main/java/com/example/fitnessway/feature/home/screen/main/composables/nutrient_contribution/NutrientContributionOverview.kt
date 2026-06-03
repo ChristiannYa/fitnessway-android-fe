@@ -10,20 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
-import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.FoodLog
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.extensions.getIntakeCalculation
-import com.example.fitnessway.util.toEnum
 import kotlin.time.Instant
 
 @Composable
 fun NutrientContributionOverview(
     logs: List<FoodLog>,
-    nutrientData: MNutrient.Model.NutrientWithPreferences,
+    nutrientData: NutrientData,
     nutrientColor: Color,
     formatTime: (Instant) -> String
 ) {
@@ -41,13 +40,13 @@ fun NutrientContributionOverview(
             logs.forEach { log ->
                 log.edibleInformation.nutrients
                     .toList()
-                    .find { n -> n.data.base.id == nutrientData.nutrient.id }
+                    .find { n -> n.data.base.id == nutrientData.base.id }
                     ?.getIntakeCalculation()
                     ?.let { intakeCalculation ->
                         LogData(
                             log = log,
                             intakeCalculation = intakeCalculation,
-                            nutrientUnit = nutrientData.nutrient.unit.toEnum(),
+                            nutrientUnit = nutrientData.base.unit,
                             formatTime = formatTime,
                         )
                     }
@@ -64,7 +63,7 @@ fun NutrientContributionOverview(
                         Text(
                             text = amountAnnotatedString(
                                 amount = intakeTotal,
-                                type = nutrientData.nutrient.unit.lowercase(),
+                                type = nutrientData.base.unit.toString().lowercase(),
                                 color = nutrientColor
                             ),
                             style = textStyle,

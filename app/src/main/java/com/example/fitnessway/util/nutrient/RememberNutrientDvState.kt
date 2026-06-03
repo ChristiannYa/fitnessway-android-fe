@@ -3,8 +3,7 @@ package com.example.fitnessway.util.nutrient
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import com.example.fitnessway.data.model.MNutrient
-import com.example.fitnessway.util.UNutrient.hasDailyValue
+import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
 
@@ -12,7 +11,7 @@ import com.example.fitnessway.util.form.field.FormFieldName
 fun <T : FormFieldName> rememberNutrientDvState(
     field: FormField<T>,
     nutrientDvControls: INutrientDvControls.NutrientDvControls?,
-    getNutrient: (T) -> MNutrient.Model.Nutrient?
+    getNutrient: (T) -> NutrientBase?
 ): INutrientDvControls.NutrientDvState {
     val nutrient = getNutrient(field.name)
 

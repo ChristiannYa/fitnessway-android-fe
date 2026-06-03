@@ -104,7 +104,7 @@ abstract class EdibleCreation(val edibleSource: EdibleSource) : IEdibleCreation,
 
             is FormFieldName.FoodCreation.NutrientField -> {
                 val updatedNutrients = _foodCreationFormState.value.nutrients.toMutableMap()
-                updatedNutrients[fieldName.nutrientWithPreferences.nutrient.id] = input
+                updatedNutrients[fieldName.nutrientData.base.id] = input
                 _foodCreationFormState.value.copy(nutrients = updatedNutrients)
             }
         }

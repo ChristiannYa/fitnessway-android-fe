@@ -15,7 +15,8 @@ enum class ServingUnit {
     MCG,
     ML,
     OZ,
-    KCAL
+    KCAL,
+    UNIT
 }
 
 enum class FoodLogCategory {
@@ -126,6 +127,12 @@ data class AppEdible(
 )
 
 @Serializable
+data class AppEdibleData(
+    val edible: AppEdible,
+    val barcode: String
+)
+
+@Serializable
 data class PendingEdible(
     val id: Int,
     val information: EdibleInformation,
@@ -193,12 +200,12 @@ data class FoodLogUpdateResponse(
 
 @Serializable
 data class AppFoodFindByIdResponse(
-    val appEdible: AppEdible?
+    val appEdible: AppEdibleData?
 )
 
 @Serializable
 data class AppFoodFindByBarcodeResponse(
-    val appEdible: AppEdible?
+    val appEdible: AppEdibleData?
 )
 
 @Serializable

@@ -188,7 +188,7 @@ object UNutrient {
     fun <T> NutrientsByType<T>.combine(): List<T> {
         return this.basic + this.vitamin + this.mineral
     }
-    
+
     fun getColor(color: String?): Color? {
         if (color.isNullOrEmpty()) return null
 
@@ -436,7 +436,7 @@ object UNutrient {
                                 )
                         ) {
                             val progressModifier =
-                                if (nutrientDataAmount.data.iNutrientType == NutrientType.BASIC) {
+                                if (nutrientDataAmount.data.byType == NutrientType.BASIC) {
                                     Modifier
                                         .align(Alignment.BottomCenter)
                                         .offset(y = -(verticalSpace * 2))
@@ -468,8 +468,8 @@ object UNutrient {
                         }
 
                         // Bottom part: nutrient name
-                        val name = if (nutrientDataAmount.data.iNutrientType == NutrientType.VITAMIN
-                            || nutrientDataAmount.data.iNutrientType == NutrientType.MINERAL
+                        val name = if (nutrientDataAmount.data.byType == NutrientType.VITAMIN
+                            || nutrientDataAmount.data.byType == NutrientType.MINERAL
                         ) {
                             nutrientDataAmount.data.base.symbol ?: nutrientDataAmount.data.base.name
                         } else nutrientDataAmount.data.base.name
@@ -610,7 +610,7 @@ object UNutrient {
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             // Left side: nutrient name and symbol
-                            if (nutrientInFood.data.iNutrientType == NutrientType.MINERAL) {
+                            if (nutrientInFood.data.byType == NutrientType.MINERAL) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                     Text(
                                         text = nutrientInFood.data.base.name,

@@ -2,7 +2,7 @@ package com.example.fitnessway.data.repository.app_food
 
 import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.mappers.toPaginationOrNull
-import com.example.fitnessway.data.model.m_26.AppEdible
+import com.example.fitnessway.data.model.m_26.AppEdibleData
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.network.HttpClient
@@ -15,11 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-private data class AppEdibleWithBarcode(
-    val edible: AppEdible,
-    val barcode: String? = null
-)
 
 class AppEdibleRepositoryImpl(
     private val httpClient: HttpClient,
@@ -45,12 +40,12 @@ class AppEdibleRepositoryImpl(
             pathDescription = "app food by barcode"
         )
 
-    private val fetchedEdibleWithBarcodeList = mutableListOf<AppEdibleWithBarcode>()
+    private val fetchedEdibleWithBarcodeList = mutableListOf<AppEdibleData>()
 
     override fun findById(id: Int) {
         val edibleWithBarcode = fetchedEdibleWithBarcodeList.find { it.edible.id == id }
         edibleWithBarcode?.let { ewb ->
-            _uiState.update { it.copy(appEdible = UiState.Success(ewb.edible)) }
+            _uiState.update { it.copy(appEdible = UiState.Success(ewb)) }
             return
         }
 
@@ -59,7 +54,7 @@ class AppEdibleRepositoryImpl(
                 _uiState.update { it.copy(appEdible = state) }
 
                 if (state is UiState.Success) {
-                    state.data?.let { fetchedEdibleWithBarcodeList.add(AppEdibleWithBarcode(it, null)) }
+                    state.data?.let { fetchedEdibleWithBarcodeList.add(it) }
                 }
             }
         }
@@ -68,7 +63,7 @@ class AppEdibleRepositoryImpl(
     override fun findByBarcode(barcode: String) {
         val edibleWithBarcode = fetchedEdibleWithBarcodeList.find { it.barcode == barcode }
         edibleWithBarcode?.let { ewb ->
-            _uiState.update { it.copy(appEdible = UiState.Success(ewb.edible)) }
+            _uiState.update { it.copy(appEdible = UiState.Success(ewb)) }
             return
         }
 
@@ -77,7 +72,7 @@ class AppEdibleRepositoryImpl(
                 _uiState.update { it.copy(appEdible = state) }
 
                 if (state is UiState.Success) {
-                    state.data?.let { fetchedEdibleWithBarcodeList.add(AppEdibleWithBarcode(it, barcode)) }
+                    state.data?.let { fetchedEdibleWithBarcodeList.add(it) }
                 }
             }
         }

@@ -111,11 +111,6 @@ fun MFood.Model.FoodBaseInfo.toM26FoodBase() = EdibleBase(
     servingUnit = this.servingUnit.toEnum()
 )
 
-fun MFood.Model.FoodInformation.toM26FoodInformation() = EdibleInformation(
-    base = this.information.toM26FoodBase(),
-    nutrients = this.nutrients.toM26NutrientsInFood()
-)
-
 fun MFood.Model.FoodInformation.toMFoodPreview() = FoodPreview(
     id = this.information.id,
     base = this.information.toM26FoodBase(),

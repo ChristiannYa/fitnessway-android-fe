@@ -111,8 +111,8 @@ fun FoodLogScreen(
             appFoodUiState.data?.let {
                 viewModel.setFoodToLog(
                     FoodInformationWithId(
-                        id = it.id,
-                        information = it.information
+                        id = it.edible.id,
+                        information = it.edible.information
                     )
                 )
             }

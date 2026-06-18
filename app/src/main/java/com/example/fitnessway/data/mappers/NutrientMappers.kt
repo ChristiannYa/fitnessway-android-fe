@@ -3,17 +3,13 @@ package com.example.fitnessway.data.mappers
 import com.example.fitnessway.constants.NutrientId
 import com.example.fitnessway.data.model.MNutrient
 import com.example.fitnessway.data.model.m_26.NutrientAmountWithColor
-import com.example.fitnessway.data.model.m_26.NutrientBase
-import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.data.model.m_26.NutrientGroupable
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
-import com.example.fitnessway.data.model.m_26.NutrientPreferences
 import com.example.fitnessway.data.model.m_26.NutrientPreview
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.util.UNutrient
-import com.example.fitnessway.util.toEnum
 
 fun NutrientPreview.toList() =
     listOf(this.calories, this.carbs, this.fats, this.protein)
@@ -41,7 +37,7 @@ fun <N : NutrientGroupable> NutrientsByType<N>.mapnbt(
 
 fun <N : NutrientGroupable> List<N>.toType(): NutrientsByType<N> =
     this
-        .groupBy { it.iNutrientType }
+        .groupBy { it.byType }
         .let {
             NutrientsByType(
                 basic = it[NutrientType.BASIC] ?: emptyList(),
@@ -108,53 +104,6 @@ fun MNutrient.Model.NutrientDataWithAmount.toM26NutrientAmountWithColor() =
 fun MNutrient.Model.NutrientDataWithAmount?.toM26NutrientAmountWithColorOrNull() =
     this?.toM26NutrientAmountWithColor() ?: NutrientAmountWithColor()
 
-fun MNutrient.Model.NutrientDataWithAmount.toM26NutrientInFood() =
-    NutrientDataAmount(
-        data = NutrientData(
-            base = NutrientBase(
-                id = this.nutrientWithPreferences.nutrient.id,
-                name = this.nutrientWithPreferences.nutrient.name,
-                unit = this.nutrientWithPreferences.nutrient.unit.toEnum(),
-                type = this.nutrientWithPreferences.nutrient.type,
-                symbol = this.nutrientWithPreferences.nutrient.symbol,
-                isPremium = this.nutrientWithPreferences.nutrient.isPremium
-            ),
-            preferences = NutrientPreferences(
-                goal = this.nutrientWithPreferences.preferences.goal,
-                hexColor = this.nutrientWithPreferences.preferences.hexColor
-            )
-        ),
-        amount = this.amount
-    )
-
-fun MNutrient.Model.Nutrient.toM26NutrientBase(): NutrientBase =
-    NutrientBase(
-        id = this.id,
-        name = this.name,
-        unit = this.unit.toEnum(),
-        type = this.type,
-        symbol = this.symbol,
-        isPremium = this.isPremium
-    )
-
-fun MNutrient.Model.NutrientPreferences.toM26NutrientPreferences(): NutrientPreferences =
-    NutrientPreferences(
-        hexColor = this.hexColor,
-        goal = this.goal
-    )
-
-fun MNutrient.Model.NutrientWithPreferences.toM26NutrientData(): NutrientData =
-    NutrientData(
-        base = this.nutrient.toM26NutrientBase(),
-        preferences = this.preferences.toM26NutrientPreferences()
-    )
-
-fun MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>.toM26NutrientsInFood() =
-    NutrientsByType<NutrientDataAmount>(
-        basic = this.basic.map { it.toM26NutrientInFood() },
-        vitamin = this.vitamin.map { it.toM26NutrientInFood() },
-        mineral = this.mineral.map { it.toM26NutrientInFood() }
-    )
 
 fun MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>.toNutrientPreview() =
     this.basic.let { nutrients ->

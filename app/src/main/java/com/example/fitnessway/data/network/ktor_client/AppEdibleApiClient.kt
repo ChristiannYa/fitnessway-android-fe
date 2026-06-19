@@ -8,6 +8,7 @@ import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlinx.coroutines.delay
 import io.ktor.client.HttpClient as KtorHttpClient
 
 class AppEdibleApiClient(private val client: KtorHttpClient) {
@@ -17,10 +18,12 @@ class AppEdibleApiClient(private val client: KtorHttpClient) {
             .get("${ApiUrls.BASE_URL_KT}${ApiUrls.AppFood.PATH}/$id")
             .extractData()
 
-    suspend fun findByBarcode(barcode: String): AppFoodFindByBarcodeResponse =
-        client
+    suspend fun findByBarcode(barcode: String): AppFoodFindByBarcodeResponse {
+        delay(800)
+        return client
             .get("${ApiUrls.BASE_URL_KT}${ApiUrls.AppFood.PATH}/barcode/$barcode")
             .extractData()
+    }
 
     suspend fun searchAppFoods(
         query: String,

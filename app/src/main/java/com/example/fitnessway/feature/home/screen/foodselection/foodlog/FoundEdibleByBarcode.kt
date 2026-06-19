@@ -1,6 +1,7 @@
 package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +52,7 @@ fun FoundEdibleByBarcode(
                 .areaContainer(
                     borderColor = MaterialTheme.colorScheme.primary
                 )
+                .animateContentSize()
         ) {
             when (edibleDataState) {
                 is UiState.Success -> {

@@ -329,7 +329,8 @@ fun EdibleSelectionScreen(
                     onLog = { searchCriteria ->
                         viewModel.setSearchCriteria(searchCriteria)
                         onNavigateToSelectedFood()
-                    }
+                    },
+                    modifier = Modifier.align(Alignment.Center)
                 )
 
                 if (isUpgradePromptDialogVisible) {

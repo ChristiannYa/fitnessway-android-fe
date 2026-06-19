@@ -25,7 +25,7 @@ object Animation {
 
         object ScaleWithSpring {
 
-            fun enter(transformOrigin: PopupOrigin) = fadeIn + scaleIn(
+            fun enter(transformOrigin: PopupOrigin = PopupOrigin.CENTER) = fadeIn + scaleIn(
                 initialScale = 0.2f,
                 transformOrigin = transformOrigin.origin,
                 animationSpec = spring(
@@ -34,7 +34,7 @@ object Animation {
                 )
             )
 
-            fun exit(transformOrigin: PopupOrigin) = fadeOut + scaleOut(
+            fun exit(transformOrigin: PopupOrigin = PopupOrigin.CENTER) = fadeOut + scaleOut(
                 targetScale = 0.1f,
                 transformOrigin = transformOrigin.origin,
                 animationSpec = tween(durationMillis = 150)

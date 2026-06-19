@@ -142,13 +142,15 @@ object UFood {
             Box(contentAlignment = Alignment.Center) {
                 Column(
                     horizontalAlignment = bottomHorizontalAlignment,
-                    verticalArrangement = Arrangement.spacedBy(verticalSpace)
+                    verticalArrangement = Arrangement.spacedBy(verticalSpace),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     val brandColor = Ui.getFoodBrandColor()
 
                     Column(
                         horizontalAlignment = topHorizontalAlignment,
-                        verticalArrangement = Arrangement.spacedBy(verticalSpace)
+                        verticalArrangement = Arrangement.spacedBy(verticalSpace),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         val foodBrand = edibleInformation.base.brand?.ifEmpty { "~" } ?: "~"
 

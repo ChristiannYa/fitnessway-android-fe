@@ -212,12 +212,13 @@ class ListsViewModel(
         val optimisticFood = latestFood.copy(
             information = com.example.fitnessway.data.model.m_26.EdibleInformation(
                 base = EdibleBase(
-                    formState.data.name,
+                    name = formState.data.name,
                     brand = formState.data.brand,
                     amountPerServing = formState.data.amountPerServing.toDouble(),
                     servingUnit = formState.data.servingUnit.toEnum()
                 ),
-                nutrients = updatedNutrientsByType
+                nutrients = updatedNutrientsByType,
+                type = latestFood.information.type
             )
         )
 

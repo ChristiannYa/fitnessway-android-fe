@@ -34,11 +34,13 @@ import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodResultsPagination
 import com.example.fitnessway.feature.home.screen.foodselection.composables.AppFoodSearchBar
 import com.example.fitnessway.feature.home.screen.foodselection.composables.RecentlyLoggedFoods
+import com.example.fitnessway.feature.home.screen.foodselection.foodlog.FoundEdibleByBarcode
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
 import com.example.fitnessway.feature.profile.screen.main.composables.UpgradePromptDialog
 import com.example.fitnessway.ui.edible.EdibleListSelectionTextButton
 import com.example.fitnessway.ui.edible.FoodPreviewList
 import com.example.fitnessway.ui.shared.Clickables
+import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.PremiumIcon
 import com.example.fitnessway.ui.shared.Screen
@@ -74,7 +76,9 @@ fun EdibleSelectionScreen(
     val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
     val userSupplementsUiStatePager = userSupplementRepoUiState.uiStatePager
 
-    var isUpgradePromptDialogDisplayed by remember { mutableStateOf(false) }
+    var isUpgradePromptDialogVisible by remember { mutableStateOf(false) }
+    var isByBarcodePopupVisible by remember { mutableStateOf(false) }
+    var scannedBarcode by remember { mutableStateOf("") }
 
     fun onBackClick() {
         viewModel.onResetFoodSelectionScreen()
@@ -101,6 +105,10 @@ fun EdibleSelectionScreen(
         }
     }
 
+    LaunchedEffect(scannedBarcode) {
+        if (scannedBarcode.isNotBlank()) viewModel.getAppEdibleByBarcode(scannedBarcode)
+    }
+
     if (logCategory != null) {
         val context = LocalContext.current
         val barcodeScanner = GmsBarcodeScanning.getClient(context)
@@ -119,23 +127,16 @@ fun EdibleSelectionScreen(
                             contentDescription = "Scan ${logCategory.toEdibleType()}",
                             onClick = {
                                 if (user?.isPremium == false) {
-                                    isUpgradePromptDialogDisplayed = true
+                                    isUpgradePromptDialogVisible = true
                                     return@AppPngIconButton
                                 }
 
                                 barcodeScanner
                                     .startScan()
                                     .addOnSuccessListener {
-                                        val barcode = it.rawValue ?: ""
-                                        if (barcode.isNotBlank()) {
-                                            viewModel.setSearchCriteria(
-                                                FoodToLogSearchCriteria(
-                                                    scope = EdibleScope.Barcode(barcode),
-                                                    source = EdibleSource.APP,
-                                                    edibleType = logCategory.toEdibleType()
-                                                )
-                                            )
-                                            onNavigateToSelectedFood()
+                                        it.rawValue?.let { sb ->
+                                            isByBarcodePopupVisible = true
+                                            scannedBarcode = sb
                                         }
                                     }
                                     .addOnFailureListener { ex ->
@@ -314,9 +315,26 @@ fun EdibleSelectionScreen(
                     )
                 }
 
-                if (isUpgradePromptDialogDisplayed) {
+                DarkOverlay(
+                    isVisible = isByBarcodePopupVisible,
+                    onClick = { isByBarcodePopupVisible = false }
+                )
+
+                FoundEdibleByBarcode(
+                    isVisible = isByBarcodePopupVisible,
+                    isUserPremium = user?.isPremium ?: false,
+                    scannedBarcode = scannedBarcode,
+                    edibleDataState = appFoodRepoUiState.appEdible,
+                    onDismiss = { isByBarcodePopupVisible = false },
+                    onLog = { searchCriteria ->
+                        viewModel.setSearchCriteria(searchCriteria)
+                        onNavigateToSelectedFood()
+                    }
+                )
+
+                if (isUpgradePromptDialogVisible) {
                     UpgradePromptDialog(
-                        onDismiss = { isUpgradePromptDialogDisplayed = false },
+                        onDismiss = { isUpgradePromptDialogVisible = false },
                         onUpgradeClick = {}
                     )
                 }

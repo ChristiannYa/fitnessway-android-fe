@@ -106,7 +106,8 @@ data class EdibleBase(
 @Serializable
 data class EdibleInformation(
     val base: EdibleBase,
-    val nutrients: NutrientsByType<NutrientDataAmount>
+    val nutrients: NutrientsByType<NutrientDataAmount>,
+    val type: EdibleType
 )
 
 @Serializable

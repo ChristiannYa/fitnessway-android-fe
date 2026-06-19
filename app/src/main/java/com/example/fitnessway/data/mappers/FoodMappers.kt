@@ -94,7 +94,8 @@ fun PendingEdible.toPreview() = FoodPreview(
 
 fun PendingEdible.toFoodInformation() = EdibleInformation(
     base = this.information.base,
-    nutrients = this.information.nutrients
+    nutrients = this.information.nutrients,
+    type = this.edibleType
 )
 
 fun UserEdible.toPreview() = FoodPreview(

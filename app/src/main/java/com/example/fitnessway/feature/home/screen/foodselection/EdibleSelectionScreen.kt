@@ -337,7 +337,17 @@ fun EdibleSelectionScreen(
                                 edibleType = foundEdible.information.type,
                             )
                         )
-                        backupLogEntry?.let { viewModel.setFoodLogCategory(it) }
+                        backupLogEntry?.let {
+                            viewModel.setFoodLogCategory(it)
+                            val (logListFilter, hasResult) = when (it) {
+                                FoodLogCategory.SUPPLEMENT -> FoodLogListFilter.RECENTLY_LOGGED_SUPPLEMENTS to
+                                        supplementRecentLogRepoUiState.uiStatePager.uiState.hasResult
+
+                                else -> FoodLogListFilter.RECENTLY_LOGGED_FOODS to
+                                        foodRecentLogRepoUiState.uiStatePager.uiState.hasResult
+                            }
+                            if (!hasResult) viewModel.setFoodList(logListFilter)
+                        }
                         onNavigateToSelectedFood()
                     },
                     modifier = Modifier.align(Alignment.Center)

@@ -1,5 +1,6 @@
 package com.example.fitnessway.feature.home.screen.foodselection
 
+import android.view.SoundEffectConstants
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -21,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toEdibleType
 import com.example.fitnessway.data.mappers.toSuccessOrNull
@@ -110,16 +112,15 @@ fun EdibleSelectionScreen(
     }
 
     if (logCategory != null) {
+        val view = LocalView.current
         val context = LocalContext.current
         val barcodeScanner = GmsBarcodeScanning.getClient(context)
-
-        val categoryString = logCategory.name.toTitleCase()
 
         Screen(
             header = {
                 Header(
                     onBackClick = ::onBackClick,
-                    title = "$categoryString selection"
+                    title = logCategory.name.toTitleCase()
                 ) {
                     Box {
                         Clickables.AppPngIconButton(
@@ -324,10 +325,19 @@ fun EdibleSelectionScreen(
                     isVisible = isByBarcodePopupVisible,
                     isUserPremium = user?.isPremium ?: false,
                     scannedBarcode = scannedBarcode,
+                    currentLogCategory = logCategory,
                     edibleDataState = appFoodRepoUiState.appEdible,
                     onDismiss = { isByBarcodePopupVisible = false },
-                    onLog = { searchCriteria ->
-                        viewModel.setSearchCriteria(searchCriteria)
+                    onLog = { foundEdible, backupLogEntry ->
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        viewModel.setSearchCriteria(
+                            FoodToLogSearchCriteria(
+                                scope = EdibleScope.Barcode(scannedBarcode),
+                                source = EdibleSource.APP,
+                                edibleType = foundEdible.information.type,
+                            )
+                        )
+                        backupLogEntry?.let { viewModel.setFoodLogCategory(it) }
                         onNavigateToSelectedFood()
                     },
                     modifier = Modifier.align(Alignment.Center)

@@ -25,6 +25,7 @@ import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.consumeTap
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.UFood
@@ -49,9 +50,6 @@ fun FoundEdibleByBarcode(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .areaContainer(
-                    borderColor = MaterialTheme.colorScheme.primary
-                )
                 .animateContentSize()
         ) {
             when (edibleDataState) {
@@ -65,17 +63,25 @@ fun FoundEdibleByBarcode(
 
                         val nutrientsScrollState = rememberScrollState()
 
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(24.dp),
+                            modifier = Modifier
+                                .areaContainer(
+                                    borderColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    borderWidth = 2.dp
+                                )
+                                .consumeTap()
+                        ) {
                             edibleComposables.BaseInformation()
 
+                            edibleComposables.NutrientSummary(withWrap = false)
+
                             Column(
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
                                 modifier = Modifier
-                                    .fillMaxWidth()
                                     .verticalScroll(nutrientsScrollState)
+                                    .weight(1f)
                             ) {
-                                edibleComposables.NutrientSummary()
-                                edibleComposables.RemainingNutrients()
+                                edibleComposables.RemainingNutrients(withWrap = false)
                             }
 
                             Column(

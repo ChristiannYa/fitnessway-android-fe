@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
+import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.m_26.FoodPreview
 import com.example.fitnessway.data.model.m_26.NutrientType
@@ -195,9 +196,18 @@ object UFood {
         }
 
         @Composable
-        fun NutrientSummary() {
+        private fun Modifier.conditionalWrap(condition: Boolean) = this
+            .then(
+                if (condition)
+                    Modifier
+                        .areaContainer(size = AreaContainerSize.MEDIUM)
+                else Modifier
+            )
+
+        @Composable
+        fun NutrientSummary(withWrap: Boolean = true) {
             Column(
-                modifier = Modifier.areaContainer(size = AreaContainerSize.MEDIUM),
+                modifier = Modifier.conditionalWrap(withWrap),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
@@ -217,7 +227,7 @@ object UFood {
         }
 
         @Composable
-        fun RemainingNutrients() {
+        fun RemainingNutrients(withWrap: Boolean = true) {
             val remainingNutrients = listOf(
                 NutrientType.VITAMIN to edibleInformation.nutrients.vitamin,
                 NutrientType.MINERAL to edibleInformation.nutrients.mineral
@@ -225,35 +235,31 @@ object UFood {
 
             if (remainingNutrients.any { it.second.isNotEmpty() }) {
                 Column(
-                    modifier = Modifier.areaContainer(size = AreaContainerSize.MEDIUM),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    content = {
-                        remainingNutrients.forEachIndexed { index, (type, ns) ->
-                            val title = type.name.lowercase().replaceFirstChar { it.uppercase() }
+                    modifier = Modifier.conditionalWrap(withWrap),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    remainingNutrients.forEachIndexed { index, (type, ns) ->
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            if (ns.isNotEmpty()) {
+                                Text(
+                                    text = "${type.toString().toTitleCase()}s",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold
+                                )
 
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                content = {
-                                    if (ns.isNotEmpty()) {
-                                        Text(
-                                            text = "${title}s",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-
-                                        NutrientsAsLine(ns)
-                                    }
-                                }
-                            )
-
-                            // Space between each nutrient category mini section
-                            if (index < remainingNutrients.lastIndex && ns.isNotEmpty()) {
-                                Spacer(modifier = Modifier.height(24.dp))
+                                NutrientsAsLine(ns)
                             }
                         }
+
+                        // Space between each nutrient category mini section
+                        if (index < remainingNutrients.lastIndex && ns.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
                     }
-                )
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -350,7 +351,10 @@ fun EdibleSelectionScreen(
                         }
                         onNavigateToSelectedFood()
                     },
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .fillMaxHeight(0.8f)
+                        .align(Alignment.Center)
                 )
 
                 if (isUpgradePromptDialogVisible) {

@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
@@ -140,6 +141,7 @@ private fun ByBarcodeFound(
                         FoodLogCategory.entries.forEach { logEntry ->
                             if (logEntry != FoodLogCategory.SUPPLEMENT) {
                                 Button(
+                                    contentPadding = PaddingValues(horizontal = 0.dp),
                                     onClick = { onLog(logEntry) },
                                     modifier = Modifier.weight(1f)
                                 ) {

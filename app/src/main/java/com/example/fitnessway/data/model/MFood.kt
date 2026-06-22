@@ -1,8 +1,6 @@
 package com.example.fitnessway.data.model
 
 import com.example.fitnessway.data.model.MFood.Model.FoodBaseInfoNullable
-import com.example.fitnessway.data.model.MFood.Model.FoodInformation
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientDataWithAmount
 import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
@@ -90,26 +88,6 @@ object MFood {
 
                 @SerialName("deleted_nutrients")
                 val deletedNutrients: List<Int>
-            )
-        }
-
-        object Res {
-            @Serializable
-            data class FoodUpdateApiResponse(
-                @SerialName("food_updated")
-                val foodUpdated: FoodInformation
-            )
-
-            @Serializable
-            data class FoodDeleteApiResponse(
-                @SerialName("food_deleted")
-                val foodDeleted: FoodInformation
-            )
-
-            @Serializable
-            data class FoodLogDeleteApiResponse(
-                @SerialName("food_log_deleted")
-                val foodLogDeleted: FoodLogData
             )
         }
     }

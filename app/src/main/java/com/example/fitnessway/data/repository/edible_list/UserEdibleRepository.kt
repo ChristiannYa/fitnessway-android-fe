@@ -77,10 +77,10 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
      * food cancels the previous one, leaving updates for different foods run
      * concurrently without interfering
      */
-    private val updateJobs = mutableMapOf<Int, Pair<Job, Channel<UiState<MFood.Model.FoodInformation>>>>()
+    private val updateJobs = mutableMapOf<Int, Pair<Job, Channel<UiState<Unit>>>>()
     override suspend fun update(
         request: MFood.Api.Req.FoodUpdateRequest
-    ): Flow<UiState<MFood.Model.FoodInformation>> {
+    ): Flow<UiState<Unit>> {
         val foodId = request.information.id
 
         updateJobs[foodId]?.let { (job, channel) ->
@@ -88,13 +88,13 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
             channel.close()
         }
 
-        val channel: Channel<UiState<MFood.Model.FoodInformation>> = Channel()
+        val channel: Channel<UiState<Unit>> = Channel()
 
         updateJobs[foodId] = repositoryScope.launch {
             httpClient
                 .makeRequest(
                     apiCall = { apiClient.update(request) },
-                    extractData = { it.foodUpdated },
+                    extractData = { Unit },
                     errMsg = "Failed to update $edibleTypeString",
                     pathDescription = "update $edibleTypeString"
                 )
@@ -108,10 +108,10 @@ abstract class UserEdibleRepository<T : RepositoryPagerState<UserEdible, T>>(
         return channel.receiveAsFlow()
     }
 
-    override suspend fun delete(id: Int): Flow<UiState<MFood.Model.FoodInformation>> =
+    override suspend fun delete(id: Int): Flow<UiState<Unit>> =
         httpClient.makeRequest(
             apiCall = { apiClient.delete(id) },
-            extractData = { it.foodDeleted },
+            extractData = { Unit },
             errMsg = "Failed to delete $edibleTypeString",
             pathDescription = "delete $edibleTypeString"
         )

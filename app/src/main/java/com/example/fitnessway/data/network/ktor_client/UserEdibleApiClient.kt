@@ -12,7 +12,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.HttpClient as KtorHttpClient
-
+import io.ktor.client.statement.HttpResponse as KtorHttpResponse
 
 class UserEdibleApiClient(private val client: KtorHttpClient) {
     suspend fun getList(
@@ -28,23 +28,16 @@ class UserEdibleApiClient(private val client: KtorHttpClient) {
             .extractData()
 
     suspend fun add(req: EdibleAddRequest) = client
-        .post("${ApiUrls.BASE_URL_KT}${ApiUrls.UserEdible.PATH_KT}") {
-            setJson(req)
-        }
+        .post("${ApiUrls.BASE_URL_KT}${ApiUrls.UserEdible.PATH_KT}") { setJson(req) }
 
-    suspend fun update(
-        req: MFood.Api.Req.FoodUpdateRequest
-    ): MFood.Api.Res.FoodUpdateApiResponse =
+    suspend fun update(req: MFood.Api.Req.FoodUpdateRequest): KtorHttpResponse =
         client
-            .put(ApiUrls.UserEdible.UPDATE_URL) {
-                setJson(req)
-            }
+            .put(ApiUrls.UserEdible.UPDATE_URL) { setJson(req) }
             .extractData()
 
-    suspend fun delete(foodId: Int): MFood.Api.Res.FoodDeleteApiResponse =
+    suspend fun delete(foodId: Int): KtorHttpResponse =
         client
             .delete(ApiUrls.UserEdible.DELETE_URL) {
                 parameter("food-id", foodId)
             }
-            .extractData()
 }

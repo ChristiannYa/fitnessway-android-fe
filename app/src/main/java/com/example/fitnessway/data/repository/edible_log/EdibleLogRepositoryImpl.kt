@@ -1,8 +1,6 @@
 package com.example.fitnessway.data.repository.edible_log
 
-import com.example.fitnessway.data.model.MFood.Model.FoodLogData
 import com.example.fitnessway.data.model.m_26.EdibleLogAddRequest
-import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogUpdateRequest
 import com.example.fitnessway.data.model.m_26.FoodLogsCategorized
 import com.example.fitnessway.data.network.HttpClient
@@ -57,10 +55,10 @@ class EdibleLogRepositoryImpl(
     override suspend fun add(
         request: EdibleLogAddRequest,
         date: String
-    ): Flow<UiState<FoodLog>> =
+    ): Flow<UiState<Unit>> =
         httpClient.makeRequest(
             apiCall = { apiClient.add(request) },
-            extractData = { it.foodLogAdded },
+            extractData = { Unit },
             errMsg = "Failed to add log",
             pathDescription = "add food log"
         )
@@ -68,10 +66,10 @@ class EdibleLogRepositoryImpl(
     override suspend fun update(
         request: FoodLogUpdateRequest,
         date: String
-    ): Flow<UiState<FoodLog>> =
+    ): Flow<UiState<Unit>> =
         httpClient.makeRequest(
             apiCall = { apiClient.update(request) },
-            extractData = { it.foodLogUpdated },
+            extractData = { Unit },
             errMsg = "Failed to update log",
             pathDescription = "update food log"
         )
@@ -79,10 +77,10 @@ class EdibleLogRepositoryImpl(
     override suspend fun delete(
         foodLogId: Int,
         date: String
-    ): Flow<UiState<FoodLogData>> =
+    ): Flow<UiState<Unit>> =
         httpClient.makeRequest(
             apiCall = { apiClient.delete(foodLogId) },
-            extractData = { it.foodLogDeleted },
+            extractData = { Unit },
             errMsg = "Failed to delete log",
             pathDescription = "delete food log"
         )

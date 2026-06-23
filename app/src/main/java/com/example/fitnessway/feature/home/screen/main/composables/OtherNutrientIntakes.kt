@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientIntakes
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
@@ -25,6 +26,7 @@ import com.example.fitnessway.util.UiState
 @Composable
 fun OtherNutrientIntakes(
     state: UiState<NutrientIntakes>,
+    apiNutrients: List<NutrientData>,
     nutrientType: NutrientType,
     isUserPremium: Boolean,
     onViewNutrientContribution: (Int) -> Unit,
@@ -73,10 +75,11 @@ fun OtherNutrientIntakes(
 
                         PagedNutrients(
                             nutrients = nutrients,
+                            apiNutrients = apiNutrients,
                             viewFormat = NutrientsViewFormat.BOX,
                             isBasicNutrient = false,
                             isUserPremium = isUserPremium,
-                            onNutrientPress = onViewNutrientContribution
+                            onViewNutrientAnalytics = onViewNutrientContribution
                         )
                     }
                 }

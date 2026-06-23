@@ -8,16 +8,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.model.m_26.EdibleInformation
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.util.UFood
 
 @Composable
 fun FoodInformationView(
     food: EdibleInformation,
+    apiNutrients: List<NutrientData>,
     isUserPremium: Boolean,
     modifier: Modifier = Modifier
 ) {
     val foodComposables = remember(food) {
-        UFood.FoodInformationComposables(food, isUserPremium)
+        UFood.FoodInformationComposables(food, apiNutrients, isUserPremium)
     }
 
     LazyColumn(

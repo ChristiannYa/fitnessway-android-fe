@@ -41,20 +41,14 @@ object AppModifiers {
         isClickEnabled: Boolean = true,
         isContentHugged: Boolean = false,
         isBottomPaddingIncluded: Boolean = true,
+        withPadding: Boolean = true,
         onClick: (() -> Unit)? = null
     ) = this
         .then(
             if (onClick != null) {
                 Modifier
                     .clip(shape)
-                    .clickable(
-                        interactionSource = if (isTapIndicationVisible) null else {
-                            remember { MutableInteractionSource() }
-                        },
-                        indication = if (isTapIndicationVisible) LocalIndication.current else null,
-                        onClick = onClick,
-                        enabled = isClickEnabled
-                    )
+                    .tappable(isTapIndicationVisible, isClickEnabled, onClick)
             } else Modifier
         )
         .then(if (!isContentHugged) Modifier.fillMaxWidth() else Modifier)
@@ -67,11 +61,15 @@ object AppModifiers {
             color = areaColor,
             shape = shape
         )
-        .padding(
-            top = size.padding,
-            bottom = if (isBottomPaddingIncluded) size.padding else 0.dp,
-            start = size.padding,
-            end = size.padding
+        .then(
+            if (withPadding) {
+                Modifier.padding(
+                    top = size.padding,
+                    bottom = if (isBottomPaddingIncluded) size.padding else 0.dp,
+                    start = size.padding,
+                    end = size.padding
+                )
+            } else Modifier
         )
 
     @Composable
@@ -85,6 +83,21 @@ object AppModifiers {
         onClick = { onClick?.let { it() } }
     )
 }
+
+@Composable
+fun Modifier.tappable(
+    enabled: Boolean = true,
+    showsTap: Boolean = false,
+    onClick: () -> Unit
+) = this
+    .clickable(
+        interactionSource = if (showsTap) null else {
+            remember { MutableInteractionSource() }
+        },
+        indication = if (showsTap) LocalIndication.current else null,
+        enabled = enabled,
+        onClick = onClick
+    )
 
 @Composable
 fun Modifier.consumeTap(

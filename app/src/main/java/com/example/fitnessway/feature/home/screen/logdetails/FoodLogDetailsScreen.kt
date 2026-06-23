@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.feature.home.screen.logdetails.composables.FoodLogDetails
@@ -38,10 +39,13 @@ fun FoodLogDetailsScreen(
     val userRepoUiState by viewModel.userRepoUiState.collectAsState()
     val selectedFoodLog by viewModel.selectedFoodLog.collectAsState()
     val foodLogDetailsFormState by viewModel.foodLogEditionFormState.collectAsState()
+    val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
     val foodLog = selectedFoodLog
     val foodLogUpdateState = uiState.foodLogUpdateState
+    val nutrientsUiState = nutrientRepoUiState.nutrients
+
     val focusManager = LocalFocusManager.current
 
     val foodLogUpdateErrMsg = handleTempApiErrMsg(
@@ -132,6 +136,7 @@ fun FoodLogDetailsScreen(
                                         nutrients = nutrients
                                     )
                                 ),
+                                apiNutrients = nutrientsUiState.toSuccessOrNull()?.toList() ?: emptyList(),
                                 isBlurredOverlayVisible = formState.isEditing,
                                 servingField = fieldsProvider.servings(),
                                 amountPerServingField = fieldsProvider.amountPerServing(

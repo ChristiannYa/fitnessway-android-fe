@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.mappers.toTypedList
@@ -55,6 +56,7 @@ fun FoodLogScreen(
     val appFoodRepoUiState by viewModel.appFoodRepoUiState.collectAsState()
     val userFoodRepoUiState by viewModel.userFoodRepoUiState.collectAsState()
     val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
+    val nutrientsRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
     val searchCriteria = viewModel.searchCriteria.collectAsState().value
     val foodToLog = viewModel.foodToLog.collectAsState().value
@@ -65,6 +67,7 @@ fun FoodLogScreen(
     val appFoodUiState = appFoodRepoUiState.appEdible
     val userFoodsUiState = userFoodRepoUiState.uiStatePager
     val userSupplementsUiState = userSupplementRepoUiState.uiStatePager
+    val nutrientsUiState = nutrientsRepoUiState.nutrients
 
     val foodLogAddState = uiState.foodLogAddState
 
@@ -258,6 +261,7 @@ fun FoodLogScreen(
 
                                     PagedNutrients(
                                         nutrients = nutrientsInFood,
+                                        apiNutrients = nutrientsUiState.toSuccessOrNull()?.toList() ?: emptyList(),
                                         viewFormat = NutrientsViewFormat.BOX,
                                         isDataMinimal = true,
                                         isBasicNutrient = type == NutrientType.BASIC,

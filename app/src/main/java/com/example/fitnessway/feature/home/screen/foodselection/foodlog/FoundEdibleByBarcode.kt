@@ -28,6 +28,7 @@ import com.example.fitnessway.data.model.m_26.AppEdible
 import com.example.fitnessway.data.model.m_26.AppEdibleData
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.consumeTap
@@ -43,6 +44,7 @@ fun FoundEdibleByBarcode(
     scannedBarcode: String,
     currentLogCategory: FoodLogCategory,
     edibleDataState: UiState<AppEdibleData?>,
+    apiNutrients: List<NutrientData>,
     onDismiss: () -> Unit,
     onLog: (AppEdible, FoodLogCategory?) -> Unit,
     modifier: Modifier = Modifier
@@ -64,6 +66,7 @@ fun FoundEdibleByBarcode(
                     if (edible != null) {
                         ByBarcodeFound(
                             edible = edible,
+                            apiNutrients = apiNutrients,
                             isUserPremium = isUserPremium,
                             currentLogCategory = currentLogCategory,
                             onLog = { logEntry -> onLog(edible, logEntry) },
@@ -98,12 +101,13 @@ fun FoundEdibleByBarcode(
 private fun ByBarcodeFound(
     edible: AppEdible,
     currentLogCategory: FoodLogCategory,
+    apiNutrients: List<NutrientData>,
     isUserPremium: Boolean,
     onLog: (FoodLogCategory?) -> Unit,
     onDismiss: () -> Unit
 ) {
     val edibleComposables = remember(edible.id) {
-        UFood.FoodInformationComposables(edible.information, isUserPremium)
+        UFood.FoodInformationComposables(edible.information, apiNutrients, isUserPremium)
     }
 
     val nutrientsScrollState = rememberScrollState()

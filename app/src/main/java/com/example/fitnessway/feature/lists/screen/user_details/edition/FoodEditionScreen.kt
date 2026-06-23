@@ -31,6 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toSuccessOrNull
+import com.example.fitnessway.data.mappers.toType
+import com.example.fitnessway.data.mappers.toTypedList
 import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.lists.screen.user_details.edition.composables.FoodEditionFormField
@@ -47,7 +49,6 @@ import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.PopupOrigin
 import com.example.fitnessway.util.UNutrient
 import com.example.fitnessway.util.UNutrient.toReadable
-import com.example.fitnessway.util.UNutrient.toTypedList
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
@@ -134,16 +135,14 @@ fun FoodEditionScreen(
                 .filter { it.id !in deletedNutrients }
                 .also { nutrientIdsPresent = it.map { n -> n.id } }
 
-            val editableNutrients = UNutrient
-                .buildNutrientsByType2(
-                    nutrients = foodWithAddedNutrients,
-                    getType = { it.type }
-                )
+            val nutrientFields = foodWithAddedNutrients
+                .toType()
                 .toTypedList()
-
-            val nutrientFields = editableNutrients.map { (type, nutrients) ->
-                type to nutrients.map { fieldsProvider.nutrient(it, it.id == nutrientIdsPresent.last()) }
-            }
+                .map { (type, nutrients) ->
+                    type to nutrients.map {
+                        fieldsProvider.nutrient(it, it.id == nutrientIdsPresent.last())
+                    }
+                }
 
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(

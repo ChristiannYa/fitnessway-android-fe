@@ -25,6 +25,7 @@ import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.MFood.Model.FoodInformation
 import com.example.fitnessway.data.model.m_26.FoodPreview
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
 import com.example.fitnessway.ui.nutrient.PagedNutrients
@@ -119,6 +120,7 @@ object UFood {
 
     data class FoodInformationComposables(
         val edibleInformation: com.example.fitnessway.data.model.m_26.EdibleInformation,
+        val apiNutrients: List<NutrientData>,
         val isUserPremium: Boolean,
     ) {
         @Composable
@@ -220,7 +222,8 @@ object UFood {
                     PagedNutrients(
                         nutrients = edibleInformation.nutrients.basic.toList(),
                         viewFormat = NutrientsViewFormat.CIRCLE,
-                        isUserPremium = isUserPremium
+                        isUserPremium = isUserPremium,
+                        apiNutrients = apiNutrients
                     )
                 }
             )

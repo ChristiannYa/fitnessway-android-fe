@@ -49,8 +49,17 @@ data class NutrientBase(
     val type: NutrientType,
     val symbol: kotlin.String? = null,
     val isPremium: Boolean
-) {
+) : NutrientGroupable {
     val hasDailyValue by lazy { this.id in NUTRIENT_IDS_WITH_DV }
+
+    override val byId: Int
+        get() = this.id
+
+    override val byType: NutrientType
+        get() = this.type
+
+    override val bySortOrder: Int
+        get() = 0
 }
 
 @Serializable

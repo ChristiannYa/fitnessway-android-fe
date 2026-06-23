@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toEdibleType
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.EdibleScope
@@ -66,6 +67,7 @@ fun EdibleSelectionScreen(
     val userSupplementRepoUiState by viewModel.userSupplementRepoUiState.collectAsState()
     val foodRecentLogRepoUiState by viewModel.foodRecentLogRepoUiState.collectAsState()
     val supplementRecentLogRepoUiState by viewModel.supplementRecentLogRepoUiState.collectAsState()
+    val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
     val foodList by viewModel.foodList.collectAsState()
     val appFoodSearchQuery by viewModel.appFoodSearchQuery.collectAsState()
@@ -78,6 +80,7 @@ fun EdibleSelectionScreen(
     val supplementRecentLogRepoUiStatePager = supplementRecentLogRepoUiState.uiStatePager
     val userFoodsUiStatePager = userFoodRepoUiState.uiStatePager
     val userSupplementsUiStatePager = userSupplementRepoUiState.uiStatePager
+    val nutrientsUiState = nutrientRepoUiState.nutrients
 
     var isUpgradePromptDialogVisible by remember { mutableStateOf(false) }
     var isByBarcodePopupVisible by remember { mutableStateOf(false) }
@@ -328,6 +331,7 @@ fun EdibleSelectionScreen(
                     scannedBarcode = scannedBarcode,
                     currentLogCategory = logCategory,
                     edibleDataState = appFoodRepoUiState.appEdible,
+                    apiNutrients = nutrientsUiState.toSuccessOrNull()?.toList() ?: emptyList(),
                     onDismiss = { isByBarcodePopupVisible = false },
                     onLog = { foundEdible, backupLogEntry ->
                         view.playSoundEffect(SoundEffectConstants.CLICK)

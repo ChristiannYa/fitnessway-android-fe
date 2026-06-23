@@ -172,8 +172,11 @@ fun HomeScreen(
                                     .fillMaxHeight()
                                     .verticalScroll(scrollState)
                             ) {
+                                val apiNutrients = nutrientsUiState.toSuccessOrNull()?.toList() ?: emptyList()
+
                                 BasicNutrientIntakes(
                                     state = nutrientIntakesState,
+                                    apiNutrients = apiNutrients,
                                     isUserPremium = user.isPremium,
                                     onViewNutrientContribution = ::handleNutrientTap,
                                     onNavigateToGoals = onNavigateToGoals
@@ -181,6 +184,7 @@ fun HomeScreen(
 
                                 OtherNutrientIntakes(
                                     state = nutrientIntakesState,
+                                    apiNutrients = apiNutrients,
                                     nutrientType = NutrientType.VITAMIN,
                                     isUserPremium = user.isPremium,
                                     onViewNutrientContribution = ::handleNutrientTap,
@@ -189,6 +193,7 @@ fun HomeScreen(
 
                                 OtherNutrientIntakes(
                                     state = nutrientIntakesState,
+                                    apiNutrients = apiNutrients,
                                     nutrientType = NutrientType.MINERAL,
                                     isUserPremium = user.isPremium,
                                     onViewNutrientContribution = ::handleNutrientTap,

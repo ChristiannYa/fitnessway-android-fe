@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toFoodInformation
+import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.PendingFoodStatus
@@ -41,8 +42,10 @@ fun PendingFoodDetailsScreen(
     onBackClick: () -> Unit
 ) {
     val userRepoUiState by viewModel.userRepoUiState.collectAsState()
+    val nutrientRepoUiState by viewModel.nutrientRepoUiState.collectAsState()
 
     val user = userRepoUiState.userUiState.toSuccessOrNull()
+    val nutrientsUiState = nutrientRepoUiState.nutrients
     val pendingFood = viewModel.requestManager.pendingEdible.collectAsState().value
 
     val isScreenDataReady = user != null && pendingFood != null
@@ -72,7 +75,11 @@ fun PendingFoodDetailsScreen(
             }
         ) {
             Box(Modifier.fillMaxSize()) {
-                FoodInformationView(pendingFood.toFoodInformation(), user.isPremium)
+                FoodInformationView(
+                    food = pendingFood.toFoodInformation(),
+                    apiNutrients = nutrientsUiState.toSuccessOrNull()?.toList() ?: emptyList(),
+                    isUserPremium = user.isPremium
+                )
 
                 DarkOverlay(
                     isVisible = isRejectionReasonVisible,

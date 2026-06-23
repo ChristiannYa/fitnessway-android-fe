@@ -4,7 +4,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +19,9 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -46,12 +48,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.MNutrient.Model.Nutrient
-import com.example.fitnessway.data.model.MNutrient.Model.NutrientsByType
 import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientDataAmount
 import com.example.fitnessway.data.model.m_26.NutrientType
+import com.example.fitnessway.ui.shared.Clickables
+import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.ui.theme.tappable
 import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.ClickableConfiguration
@@ -151,42 +155,6 @@ object UNutrient {
                 )
             }
         }
-    }
-
-    fun <T> NutrientsByType<T>.mapNutrients(
-        transform: (
-            type: NutrientType,
-            nutrients: List<T>
-        ) -> List<T>
-    ): NutrientsByType<T> =
-        NutrientsByType(
-            basic = transform(NutrientType.BASIC, basic),
-            vitamin = transform(NutrientType.VITAMIN, vitamin),
-            mineral = transform(NutrientType.MINERAL, mineral)
-        )
-
-    fun <T> NutrientsByType<T>.toTypedList(): List<Pair<NutrientType, List<T>>> =
-        listOf(
-            NutrientType.BASIC to this.basic,
-            NutrientType.VITAMIN to this.vitamin,
-            NutrientType.MINERAL to this.mineral
-        )
-
-    fun <T> buildNutrientsByType2(
-        nutrients: List<T>,
-        getType: (T) -> NutrientType
-    ): NutrientsByType<T> {
-        val grouped = nutrients.groupBy(getType)
-
-        return NutrientsByType(
-            basic = grouped[NutrientType.BASIC] ?: emptyList(),
-            vitamin = grouped[NutrientType.VITAMIN] ?: emptyList(),
-            mineral = grouped[NutrientType.MINERAL] ?: emptyList()
-        )
-    }
-
-    fun <T> NutrientsByType<T>.combine(): List<T> {
-        return this.basic + this.vitamin + this.mineral
     }
 
     fun getColor(color: String?): Color? {
@@ -342,6 +310,29 @@ object UNutrient {
         }
 
         @Composable
+        fun GetChildrenToggleButton(
+            isParent: Boolean = false,
+            isChild: Boolean = false,
+            onToggle: () -> Unit,
+            modifier: Modifier = Modifier
+        ) {
+            return if (isParent || isChild) {
+                Clickables.AppPngIconButton(
+                    icon = Structure.AppIconSource.Vector(
+                        if (isChild) {
+                            Icons.Default.KeyboardDoubleArrowLeft
+                        } else Icons.Default.KeyboardDoubleArrowRight
+                    ),
+                    contentDescription = "View ${if (isParent) "more" else "less"}",
+                    onClick = onToggle,
+                    iconTint = MaterialTheme.colorScheme.onBackground,
+                    size = Clickables.AppIconButtonSize.XS,
+                    modifier = modifier
+                )
+            } else Unit
+        }
+
+        @Composable
         fun NutrientsAsBox(
             nutrients: List<NutrientDataAmount>,
             isUserPremium: Boolean,
@@ -367,35 +358,42 @@ object UNutrient {
              */
             verticalSpace: Dp = 12.dp,
 
-            onNutrientPress: ((Int) -> Unit)? = null,
+            onHasChildren: ((Int) -> Boolean)? = null,
+            onViewAnalytics: ((Int) -> Unit)? = null,
+            onToggleChildren: (Int) -> Unit,
+
             modifier: Modifier = Modifier
         ) {
             val barShape = 16.dp
 
-            nutrients.forEach { nutrientDataAmount ->
-                val preferences = nutrientDataAmount.data.preferences
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                nutrients.forEach { nutrientDataAmount ->
+                    val preferences = nutrientDataAmount.data.preferences
 
-                val nutrientColor = getUserNutrientColor(
-                    color = preferences.hexColor,
-                    isUserPremium = isUserPremium
-                )
+                    val nutrientColor = getUserNutrientColor(
+                        color = preferences.hexColor,
+                        isUserPremium = isUserPremium
+                    )
 
-                val calculatedNutrientData = nutrientDataAmount.getIntakeCalculation()
+                    val calculatedNutrientData = nutrientDataAmount.getIntakeCalculation()
 
-                val animatedProgress by animateFloatAsState(
-                    targetValue = (calculatedNutrientData.progress / 100f).toFloat(),
-                    animationSpec = tween(
-                        durationMillis = 400,
-                        easing = FastOutSlowInEasing
-                    ),
-                    label = "intake_progress_animation"
-                )
+                    val animatedProgress by animateFloatAsState(
+                        targetValue = (calculatedNutrientData.progress / 100f).toFloat(),
+                        animationSpec = tween(
+                            durationMillis = 400,
+                            easing = FastOutSlowInEasing
+                        ),
+                        label = "intake_progress_animation"
+                    )
 
-                Column(
-                    modifier = modifier.width(contentWidth),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(verticalSpace),
-                    content = {
+                    Column(
+                        modifier = modifier.width(contentWidth),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(verticalSpace)
+                    ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             // Top part: Goal
                             if (!isDataMinimal) {
@@ -429,18 +427,11 @@ object UNutrient {
                                     shape = RoundedCornerShape(barShape)
                                 )
                                 .then(
-                                    onNutrientPress?.let {
-                                        Modifier
-                                            .clickable(onClick = { it(nutrientDataAmount.data.base.id) })
+                                    onViewAnalytics?.let {
+                                        Modifier.tappable { it(nutrientDataAmount.data.base.id) }
                                     } ?: Modifier
                                 )
                         ) {
-                            val progressModifier =
-                                if (nutrientDataAmount.data.byType == NutrientType.BASIC) {
-                                    Modifier
-                                        .align(Alignment.BottomCenter)
-                                        .offset(y = -(verticalSpace * 2))
-                                } else Modifier.align(Alignment.Center)
 
                             Box(
                                 modifier = Modifier
@@ -463,14 +454,22 @@ object UNutrient {
                                 color = WhiteFont,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = progressModifier
+                                modifier = if (nutrientDataAmount.data.base.type == NutrientType.BASIC) {
+                                    Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .offset(y = -(verticalSpace * 2))
+                                } else Modifier.align(Alignment.Center)
+                            )
+
+                            GetChildrenToggleButton(
+                                isParent = onHasChildren?.invoke(nutrientDataAmount.data.base.id) == true,
+                                onToggle = { onToggleChildren(nutrientDataAmount.data.base.id) },
+                                modifier = Modifier.align(Alignment.BottomCenter)
                             )
                         }
 
                         // Bottom part: nutrient name
-                        val name = if (nutrientDataAmount.data.byType == NutrientType.VITAMIN
-                            || nutrientDataAmount.data.byType == NutrientType.MINERAL
-                        ) {
+                        val name = if (nutrientDataAmount.data.base.type != NutrientType.BASIC) {
                             nutrientDataAmount.data.base.symbol ?: nutrientDataAmount.data.base.name
                         } else nutrientDataAmount.data.base.name
 
@@ -495,88 +494,99 @@ object UNutrient {
                             )
                         }
                     }
-                )
+                }
             }
         }
 
         @Composable
         fun NutrientsAsCircle(
             nutrients: List<NutrientDataAmount>,
-            isUserPremium: Boolean
+            isUserPremium: Boolean,
+            onHasChildren: ((Int) -> Boolean)? = null,
+            onToggleChildren: ((Int) -> Unit)? = null
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth(),
-                content = {
-                    nutrients.forEach { nutrientInFood ->
-                        val preferences = nutrientInFood.data.preferences
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                nutrients.forEach { nutrientInFood ->
+                    val preferences = nutrientInFood.data.preferences
 
-                        val nutrientColor = getUserNutrientColor(
-                            color = preferences.hexColor,
-                            isUserPremium = isUserPremium
-                        )
+                    val nutrientColor = getUserNutrientColor(
+                        color = preferences.hexColor,
+                        isUserPremium = isUserPremium
+                    )
 
-                        val targetProgress = if (preferences.goal != null) {
-                            (nutrientInFood.amount / preferences.goal)
-                        } else 0.0
+                    val targetProgress = if (preferences.goal != null) {
+                        (nutrientInFood.amount / preferences.goal)
+                    } else 0.0
 
-                        val animatedProgress by animateFloatAsState(
-                            targetValue = targetProgress.toFloat(),
-                            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-                        )
+                    val animatedProgress by animateFloatAsState(
+                        targetValue = targetProgress.toFloat(),
+                        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+                    )
 
-                        val contentWidth = 70.dp
+                    val contentWidth = 70.dp
 
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.requiredWidth(contentWidth)
+                    ) {
+                        Box(
+                            modifier = Modifier.size(contentWidth)
+                        ) {
+                            CircularProgressIndicator(
+                                progress = { animatedProgress },
+                                color = nutrientColor,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                strokeCap = StrokeCap.Round,
+                                strokeWidth = 5.dp,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.Center)
+                            )
+
+                            Text(
+                                text = doubleFormatter(nutrientInFood.amount),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontFamily = FontFamily.Default,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+
+                            GetChildrenToggleButton(
+                                isParent = onHasChildren?.invoke(nutrientInFood.data.base.id) == true,
+                                onToggle = { onToggleChildren?.invoke(nutrientInFood.data.base.id) },
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .offset(y = 16.dp)
+                            )
+                        }
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.requiredWidth(contentWidth)
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
                         ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.size(contentWidth)
-                            ) {
-                                CircularProgressIndicator(
-                                    progress = { animatedProgress },
-                                    color = nutrientColor,
-                                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                    strokeCap = StrokeCap.Round,
-                                    strokeWidth = 5.dp,
-                                    modifier = Modifier.fillMaxSize()
-                                )
+                            Text(
+                                text = preferences.getGoalRatioText(nutrientInFood.amount),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = nutrientColor.copy(0.8f),
+                                fontFamily = FontFamily.Default,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
 
-                                Text(
-                                    text = doubleFormatter(nutrientInFood.amount),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontFamily = FontFamily.Default,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(2.dp),
-                            ) {
-                                Text(
-                                    text = preferences.getGoalRatioText(nutrientInFood.amount),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = nutrientColor.copy(0.8f),
-                                    fontFamily = FontFamily.Default,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
-                                Text(
-                                    text = nutrientInFood.data.base.name,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
+                            Text(
+                                text = nutrientInFood.data.base.name,
+                                style = MaterialTheme.typography.labelLarge,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 }
-            )
+            }
         }
 
         @Composable

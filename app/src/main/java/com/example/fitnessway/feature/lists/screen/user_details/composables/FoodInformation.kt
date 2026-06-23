@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.fitnessway.data.model.m_26.EdibleInformation
+import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.ui.edible.FoodInformationView
 import com.example.fitnessway.util.Animation
 
 @Composable
 fun FoodInformation(
     food: EdibleInformation,
+    apiNutrients: List<NutrientData>,
     isFoodDeletionSuccess: Boolean,
     isUserPremium: Boolean,
     modifier: Modifier = Modifier
@@ -23,7 +25,7 @@ fun FoodInformation(
         modifier = modifier
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            FoodInformationView(food, isUserPremium)
+            FoodInformationView(food, apiNutrients, isUserPremium)
         }
     }
 }

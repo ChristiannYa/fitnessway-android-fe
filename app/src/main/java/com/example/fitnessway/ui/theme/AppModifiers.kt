@@ -48,7 +48,11 @@ object AppModifiers {
             if (onClick != null) {
                 Modifier
                     .clip(shape)
-                    .tappable(isTapIndicationVisible, isClickEnabled, onClick)
+                    .tappable(
+                        showsTap = isTapIndicationVisible,
+                        enabled = isClickEnabled,
+                        onClick = onClick
+                    )
             } else Modifier
         )
         .then(if (!isContentHugged) Modifier.fillMaxWidth() else Modifier)

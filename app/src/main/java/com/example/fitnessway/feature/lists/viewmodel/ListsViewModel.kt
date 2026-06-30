@@ -197,7 +197,7 @@ class ListsViewModel(
 
         // Create updated nutrient data
         val updatedFoodNutrientData = upsertedNutrients.mapNotNull { upsertedNutrient ->
-            allNutrientsWithPreferences[upsertedNutrient.nutrientId]?.let {
+            allNutrientsWithPreferences[upsertedNutrient.id]?.let {
                 NutrientDataAmount(
                     data = it,
                     amount = upsertedNutrient.amount

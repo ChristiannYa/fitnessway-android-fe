@@ -10,12 +10,14 @@ sealed interface FormStates {
     ) : FormStates
 
     data class FoodEdition(
-        val name: String,
-        val brand: String,
-        val amountPerServing: String,
-        val servingUnit: String,
+        val name: String = "",
+        val brand: String = "",
+        val amountPerServing: String = "",
+        val servingUnit: String = "",
         val nutrients: Map<Int, String> = emptyMap()
-    ) : FormStates
+    ) : FormStates {
+        fun getBaseValues() = listOf(this.name, this.brand, this.amountPerServing, this.servingUnit)
+    }
 
     data class FoodLogEdition(
         val servings: String,

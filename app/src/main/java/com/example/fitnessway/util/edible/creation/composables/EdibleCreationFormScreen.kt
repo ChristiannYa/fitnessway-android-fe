@@ -126,7 +126,7 @@ fun <T> FoodCreationFormScreen(
                         onResetSubmissionState()
 
                         // Reset food nutrient dv map
-                        val nutrientDvControls = edibleCreation.dvControls
+                        val nutrientDvControls = edibleCreation.controls
                         val nutrientDvMap = nutrientDvControls.nutrientDvMap.value
                         if (nutrientDvMap.isNotEmpty()) nutrientDvControls.onClearData()
                     }
@@ -279,17 +279,17 @@ fun <T> FoodCreationFormScreen(
 
                                     2 -> SetNutrients(
                                         fields = nutrientFieldsData.getValue(NutrientType.BASIC),
-                                        nutrientDvControls = edibleCreation.dvControls
+                                        nutrientDvControls = edibleCreation.controls
                                     )
 
                                     3 -> SetNutrients(
                                         fields = nutrientFieldsData.getValue(NutrientType.VITAMIN),
-                                        nutrientDvControls = edibleCreation.dvControls
+                                        nutrientDvControls = edibleCreation.controls
                                     )
 
                                     4 -> SetNutrients(
                                         fields = nutrientFieldsData.getValue(NutrientType.MINERAL),
-                                        nutrientDvControls = edibleCreation.dvControls
+                                        nutrientDvControls = edibleCreation.controls
                                     )
                                 }
                             }

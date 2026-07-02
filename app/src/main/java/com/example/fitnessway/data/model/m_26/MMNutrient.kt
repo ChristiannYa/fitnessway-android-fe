@@ -1,6 +1,6 @@
 package com.example.fitnessway.data.model.m_26
 
-import com.example.fitnessway.util.UNutrient.NUTRIENT_IDS_WITH_DV
+import com.example.fitnessway.constants.NutrientDvs
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -44,13 +44,13 @@ data class NutrientPreview(
 @Serializable
 data class NutrientBase(
     val id: Int,
-    val name: kotlin.String,
+    val name: String,
     val unit: ServingUnit,
     val type: NutrientType,
-    val symbol: kotlin.String? = null,
+    val symbol: String? = null,
     val isPremium: Boolean
 ) : NutrientGroupable {
-    val hasDailyValue by lazy { this.id in NUTRIENT_IDS_WITH_DV }
+    val hasDailyValue by lazy { this.id in NutrientDvs }
 
     override val byId: Int
         get() = this.id

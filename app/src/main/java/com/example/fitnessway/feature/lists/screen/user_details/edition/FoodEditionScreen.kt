@@ -120,6 +120,7 @@ fun FoodEditionScreen(
                 }
             )
 
+            // @TODO: Replace with fields provider's `getBaseFields()`
             val detailFields = listOf(
                 fieldsProvider.name(),
                 fieldsProvider.brand(),
@@ -176,7 +177,7 @@ fun FoodEditionScreen(
                                 FoodEditionFormField(
                                     field = it,
                                     onRemoveNutrient = viewModel.editionManager::filterOutNutrientFromForm,
-                                    nutrientDvControls = viewModel.editionManager.dvControls
+                                    nutrientDvControls = viewModel.editionManager.controls
                                 )
                             }
                         }

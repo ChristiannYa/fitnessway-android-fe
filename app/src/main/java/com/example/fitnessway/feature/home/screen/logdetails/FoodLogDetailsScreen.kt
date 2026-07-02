@@ -75,7 +75,6 @@ fun FoodLogDetailsScreen(
 
                             onBackClick()
                         },
-                        isOnBackEnabled = !formState.isEditing,
                         title = "Log Details"
                     ) {
                         AppLabel<Unit>(
@@ -137,7 +136,7 @@ fun FoodLogDetailsScreen(
                                     )
                                 ),
                                 apiNutrients = nutrientsUiState.toSuccessOrNull()?.toList() ?: emptyList(),
-                                isBlurredOverlayVisible = formState.isEditing,
+                                isBlurredOverlayVisible = false,
                                 servingField = fieldsProvider.servings(),
                                 amountPerServingField = fieldsProvider.amountPerServing(
                                     servingUnit = foodLog.edibleInformation.base.amountPerServing.toString()

@@ -171,6 +171,14 @@ class FoodEditionFieldsProvider(
     }
 
     @Composable
+    fun getBaseFields(): List<FoodEditionDetailField> = listOf(
+        name(),
+        brand(),
+        servingUnit(),
+        amountPerServing()
+    )
+
+    @Composable
     fun nutrient(
         nutrient: NutrientBase,
         isLastField: Boolean

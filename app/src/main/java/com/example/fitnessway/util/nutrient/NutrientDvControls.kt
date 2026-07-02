@@ -2,7 +2,7 @@ package com.example.fitnessway.util.nutrient
 
 import kotlinx.coroutines.flow.MutableStateFlow
 
-abstract class NutrientDvControls : INutrientDvControls {
+open class NutrientDvControls : INutrientDvControls {
     private val _nutrientDvMap = MutableStateFlow<Map<Int, String>>(emptyMap())
 
     private fun addNutrientValueToMap(nutrientId: Int, value: String) {
@@ -17,7 +17,7 @@ abstract class NutrientDvControls : INutrientDvControls {
         _nutrientDvMap.value = emptyMap()
     }
 
-    override val dvControls = INutrientDvControls.NutrientDvControls(
+    override val controls = INutrientDvControls.NutrientDvControls(
         nutrientDvMap = _nutrientDvMap,
         onAdd = ::addNutrientValueToMap,
         onRemove = ::removeNutrientValueFromMap,

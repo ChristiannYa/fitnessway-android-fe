@@ -128,6 +128,31 @@ data class AppEdible(
 )
 
 @Serializable
+data class AppEdibleReport(
+    val id: Int,
+    val edibleId: Int,
+    val reportedBy: UUID?,
+    val reasons: List<Reason>,
+    val notes: String?,
+    val status: Status,
+    val createdAt: Instant,
+    val reviewedAt: Instant?,
+    val reviewedBy: UUID?
+) {
+    enum class Reason {
+        INCORRECT_INFO,
+        INCORRECT_NUTRIENTS,
+        INCORRECT_BARCODE,
+        INCORRECT_TYPE
+    }
+
+    enum class Status {
+        PENDING,
+        REVIEWED
+    }
+}
+
+@Serializable
 data class AppEdibleData(
     val edible: AppEdible,
     val barcode: String

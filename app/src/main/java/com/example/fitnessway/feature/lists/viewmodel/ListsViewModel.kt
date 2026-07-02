@@ -94,7 +94,7 @@ class ListsViewModel(
         val formState = managers.request.formState.value
         val edibleType = edibleListFilter.value.toEdibleType()
 
-        val nutrientDvMap = managers.request.dvControls.nutrientDvMap.value
+        val nutrientDvMap = managers.request.controls.nutrientDvMap.value
         val nutrients = formState.nutrients.toNutrientDvList(nutrientDvMap)
         val request = formState.toPendingRequest(nutrients, edibleType.name)
 
@@ -122,7 +122,7 @@ class ListsViewModel(
         val edibleType = edibleListFilter.value.toEdibleType()
 
         val request = formState.toUserEdibleRequest(
-            nutrients = managers.creation.dvControls.nutrientDvMap.value
+            nutrients = managers.creation.controls.nutrientDvMap.value
                 .let { dvMap -> formState.nutrients.toNutrientDvList(dvMap) },
             edibleType = edibleType.name
         )
@@ -153,7 +153,7 @@ class ListsViewModel(
         val formState = managers.edition.edibleEditionFormState.value ?: return
         val selectedFoodId = managers.edition.selectedEdible.value?.id ?: return
 
-        val nutrientDvMap = managers.edition.dvControls.nutrientDvMap.value
+        val nutrientDvMap = managers.edition.controls.nutrientDvMap.value
         val edibleType = edibleListFilter.value.toEdibleType()
 
         // Get current data to update optimistically
@@ -616,7 +616,7 @@ class ListsViewModel(
         if (_uiState.value.foodUpdateState !is UiState.Idle) resetFoodUpdateState()
         editionManager.resetAddedNutrients()
         editionManager.resetDeletedNutrients()
-        editionManager.dvControls.onClearData()
+        editionManager.controls.onClearData()
     }
 
     /**

@@ -6,7 +6,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -24,6 +28,7 @@ object AppModifiers {
         val cornerRadius: Dp,
         val padding: Dp
     ) {
+        EXTRA_LARGE(18.dp, 20.dp),
         LARGE(16.dp, 18.dp),
         MEDIUM(14.dp, 16.dp),
         SMALL(12.dp, 14.dp),
@@ -109,4 +114,13 @@ fun Modifier.consumeTap(
     onTap: (() -> Unit)? = null
 ) = this.pointerInput(pointerInputKeys) {
     detectTapGestures { onTap?.let { it() } }
+}
+
+@Composable
+fun Modifier.keyboardTapDismissal(vararg pointerInputKeys: Any?): Modifier {
+    val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val focusManager = LocalFocusManager.current
+    return this.pointerInput(isKeyboardVisible, pointerInputKeys) {
+        if (isKeyboardVisible) detectTapGestures { focusManager.clearFocus() }
+    }
 }

@@ -1,8 +1,6 @@
 package com.example.fitnessway.ui.shared
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,7 +14,7 @@ fun PremiumIcon(
     modifier: Modifier = Modifier,
 ) {
     Icon(
-        imageVector = Icons.Default.AutoAwesome,
+        imageVector = AppVectors.premium,
         contentDescription = null,
         modifier = modifier.size(size),
         tint = MaterialTheme.colorScheme.primary

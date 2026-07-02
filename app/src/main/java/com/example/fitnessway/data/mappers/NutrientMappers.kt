@@ -9,7 +9,7 @@ import com.example.fitnessway.data.model.m_26.NutrientIdWithAmount
 import com.example.fitnessway.data.model.m_26.NutrientPreview
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.data.model.m_26.NutrientsByType
-import com.example.fitnessway.util.UNutrient
+import com.example.fitnessway.util.nutrient.getNutrientDv
 
 fun NutrientPreview.toList() =
     listOf(this.calories, this.carbs, this.fats, this.protein)
@@ -62,7 +62,7 @@ fun Map<Int, String>.toNutrientDvList(
             val amountLiteral = it.value.toDoubleOrNull() ?: 0.0
 
             val amount = if (nutrientDvMap.containsKey(nutrientId)) {
-                UNutrient.percentDvToNutrientAmount(nutrientId, amountLiteral)
+                getNutrientDv(nutrientId, amountLiteral)
             } else amountLiteral
 
             NutrientIdWithAmount(nutrientId, amount)
@@ -72,16 +72,16 @@ fun NutrientsByType<NutrientDataAmount>.toNutrientPreview() =
     this.basic.let { nutrients ->
         NutrientPreview(
             calories = nutrients
-                .find { it.data.base.id == NutrientId.CALORIES }
+                .find { it.data.base.id == NutrientId.Base.CALS }
                 .toNutrientAmountWithColorOrNull(),
             carbs = nutrients
-                .find { it.data.base.id == NutrientId.CARBS }
+                .find { it.data.base.id == NutrientId.Base.CARBS }
                 .toNutrientAmountWithColorOrNull(),
             fats = nutrients
-                .find { it.data.base.id == NutrientId.FATS }
+                .find { it.data.base.id == NutrientId.Base.FATS }
                 .toNutrientAmountWithColorOrNull(),
             protein = nutrients
-                .find { it.data.base.id == NutrientId.PROTEIN }
+                .find { it.data.base.id == NutrientId.Base.PROTEIN }
                 .toNutrientAmountWithColorOrNull()
         )
     }
@@ -109,16 +109,16 @@ fun MNutrient.Model.NutrientsByType<MNutrient.Model.NutrientDataWithAmount>.toNu
     this.basic.let { nutrients ->
         NutrientPreview(
             calories = nutrients
-                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.CALORIES }
+                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.Base.CALS }
                 .toM26NutrientAmountWithColorOrNull(),
             carbs = nutrients
-                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.CARBS }
+                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.Base.CARBS }
                 .toM26NutrientAmountWithColorOrNull(),
             fats = nutrients
-                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.FATS }
+                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.Base.FATS }
                 .toM26NutrientAmountWithColorOrNull(),
             protein = nutrients
-                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.PROTEIN }
+                .find { it.nutrientWithPreferences.nutrient.id == NutrientId.Base.PROTEIN }
                 .toM26NutrientAmountWithColorOrNull()
         )
     }

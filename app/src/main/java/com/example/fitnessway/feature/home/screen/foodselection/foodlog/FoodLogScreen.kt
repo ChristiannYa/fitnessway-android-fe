@@ -9,11 +9,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -29,10 +32,12 @@ import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.data.model.m_26.NutrientType
 import com.example.fitnessway.feature.home.screen.foodselection.foodlog.composables.FoodLogInformation
 import com.example.fitnessway.feature.home.viewmodel.HomeViewModel
+import com.example.fitnessway.ui.edible.AppEdibleReportOptionsPopup
 import com.example.fitnessway.ui.nutrient.NutrientsViewFormat
 import com.example.fitnessway.ui.nutrient.PagedNutrients
 import com.example.fitnessway.ui.shared.Banners
 import com.example.fitnessway.ui.shared.Clickables
+import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
@@ -80,6 +85,8 @@ fun FoodLogScreen(
         uiState = foodLogAddState,
         onTimeOut = viewModel::resetFoodLogAddState
     )
+
+    var isReportOptionsVisible by remember { mutableStateOf(false) }
 
     fun onBackClick() {
         viewModel.resetFoodLogAddState()
@@ -189,7 +196,7 @@ fun FoodLogScreen(
 
                     Clickables.DoneButton(
                         onClick = viewModel::addFoodLog,
-                        enabled = viewModel.isFoodLogFormValid,
+                        enabled = viewModel.isFoodLogFormValid && !isReportOptionsVisible,
                         isLoading = foodLogAddState is UiState.Loading
                     )
                 }
@@ -271,8 +278,30 @@ fun FoodLogScreen(
                                 }
                             }
                         }
+
+                        if (searchCriteria.source == EdibleSource.APP) {
+                            TextButton(
+                                onClick = { isReportOptionsVisible = true }
+                            ) {
+                                Text("Something is wrong")
+                            }
+                        }
                     }
                 }
+
+                DarkOverlay(
+                    isVisible = isReportOptionsVisible,
+                    onClick = { isReportOptionsVisible = false }
+                )
+
+                AppEdibleReportOptionsPopup(
+                    edible = foodToLog,
+                    isVisible = isReportOptionsVisible,
+                    onReport = {
+                        isReportOptionsVisible = false
+                    },
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
 
                 Banners.SuccessBannerAnimated(
                     text = "Food logged successfully",

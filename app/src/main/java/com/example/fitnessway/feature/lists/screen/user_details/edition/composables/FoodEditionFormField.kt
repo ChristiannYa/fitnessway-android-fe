@@ -63,19 +63,21 @@ fun <T : FormFieldName.IFoodEdition> FoodEditionFormField(
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
-            leadingIcon = if (isNutrient) {
+            leadingIcon = if (isNutrient && onRemoveNutrient != null) {
                 {
                     val nutrient = field.name.nutrient
 
                     Clickables.AppPngIconButton(
                         icon = AppIconSource.Vector(Icons.Default.Delete),
                         contentDescription = "Delete ${nutrient.name} from food",
-                        onClick = { onRemoveNutrient?.invoke(nutrient) },
+                        onClick = { onRemoveNutrient(nutrient) },
                         enabled = field.enabled
                     )
                 }
             } else null,
-            trailingIcon = dvTrailingIcon(nutrientDvState, field.textFieldValue.text),
+            trailingIcon = if (nutrientDvControls != null) {
+                dvTrailingIcon(nutrientDvState, field.textFieldValue.text)
+            } else null,
             keyboardOptions = field.keyboardOptions,
             keyboardActions = field.keyboardActions,
             interactionSource = interactionSource,

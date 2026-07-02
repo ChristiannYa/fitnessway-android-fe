@@ -87,7 +87,7 @@ class EditionManager : IEditionManager, NutrientDvControls() {
         combine(
             _edibleEditionFormState,
             _originalFormState,
-            dvControls.nutrientDvMap
+            controls.nutrientDvMap
         ) { editionFormState, originalFormState, nutrientDvMap ->
             if (editionFormState == null || originalFormState == null) return@combine false
 

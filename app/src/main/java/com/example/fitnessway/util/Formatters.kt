@@ -14,6 +14,7 @@ import kotlin.math.sign
 object Formatters {
     private val formatCache = mutableMapOf<Int, DecimalFormat>()
 
+    // @TODO: Remove and replace with `Double.toPrecisedString()`
     fun doubleFormatter(value: Double, decimalPlaces: Int = 1): String {
         require(decimalPlaces >= 0) { "Decimal places must be non-negative" }
 

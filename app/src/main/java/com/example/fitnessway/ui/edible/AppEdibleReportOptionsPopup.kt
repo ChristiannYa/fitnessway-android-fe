@@ -161,26 +161,25 @@ fun AppEdibleReportOptionsPopup(
                     AppEdibleReport.Reason.INCORRECT_TYPE
                 ).forEach { reason ->
                     val isTapped = reason == tappedReason
-                    val hasFields = reason == AppEdibleReport.Reason.INCORRECT_INFO ||
-                            reason == AppEdibleReport.Reason.INCORRECT_NUTRIENTS
 
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         val isInList = reason in selectedReasons
+
                         Box(
                             Modifier
                                 .areaContainer(
                                     size = AppModifiers.AreaContainerSize.SMALL,
-                                    areaColor = if (isTapped && hasFields) {
+                                    areaColor = if (isTapped && reason.hasFields) {
                                         MaterialTheme.colorScheme.onSurfaceVariant
                                     } else MaterialTheme.colorScheme.secondaryContainer,
-                                    isTapIndicationVisible = !hasFields
+                                    isTapIndicationVisible = !reason.hasFields
                                 ) {
                                     if (tappedReason == reason) {
                                         tappedReason = null
-                                        if (!hasFields) selectedReasons -= reason
+                                        if (!reason.hasFields) selectedReasons -= reason
                                     } else {
                                         tappedReason = reason
-                                        if (!hasFields && !isInList) selectedReasons += reason
+                                        if (!reason.hasFields && !isInList) selectedReasons += reason
                                     }
                                 }
                         ) {
@@ -189,36 +188,47 @@ fun AppEdibleReportOptionsPopup(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(
-                                    text = buildAnnotatedString {
-                                        append(reason.toString().toTitleCase(false))
-
-                                        if (reason == AppEdibleReport.Reason.INCORRECT_TYPE) {
-                                            withStyle(
-                                                style = SpanStyle(
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f)
-                                                )
-                                            ) {
-                                                append(
-                                                    " (Current: ${
-                                                        edible.information.type.toString().toTitleCase()
-                                                    })"
-                                                )
-                                            }
-                                        }
-                                    },
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = robotoSerifFamily,
-                                    color = if (isTapped && hasFields) {
+                                Column {
+                                    val textColor = if (isTapped && reason.hasFields) {
                                         MaterialTheme.colorScheme.inverseOnSurface
-                                    } else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.weight(1f)
-                                )
+                                    } else MaterialTheme.colorScheme.onSurfaceVariant
+
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            append(reason.toString().toTitleCase(false))
+
+                                            if (reason == AppEdibleReport.Reason.INCORRECT_TYPE) {
+                                                withStyle(
+                                                    style = SpanStyle(
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f)
+                                                    )
+                                                ) {
+                                                    append(
+                                                        " (Current: ${
+                                                            edible.information.type.toString().toTitleCase()
+                                                        })"
+                                                    )
+                                                }
+                                            }
+                                        },
+                                        fontWeight = FontWeight.Medium,
+                                        fontFamily = robotoSerifFamily,
+                                        color = textColor,
+                                    )
+
+                                    if (isTapped && reason.hasFields) {
+                                        Text(
+                                            text = "Please provide the correct fields",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = textColor
+                                        )
+                                    }
+                                }
 
                                 Structure.AppIconDynamic(
                                     source = Structure.AppIconSource.Vector(AppVectors.checkmark),
                                     tint = if (isInList) {
-                                        if (hasFields && isTapped) MaterialTheme.colorScheme.secondaryContainer
+                                        if (reason.hasFields && isTapped) MaterialTheme.colorScheme.secondaryContainer
                                         else MaterialTheme.colorScheme.onSurfaceVariant
                                     } else Color.Transparent,
                                     modifier = Modifier.size(16.dp)
@@ -230,14 +240,22 @@ fun AppEdibleReportOptionsPopup(
                         Column(
                             modifier = Modifier
                                 .verticalScroll(optionFieldScrollStates)
-                                .padding(top = if (isTapped && hasFields) 8.dp else 0.dp)
+                                .padding(top = if (isTapped && reason.hasFields) 8.dp else 0.dp)
                         ) {
                             when (tappedReason) {
                                 AppEdibleReport.Reason.INCORRECT_INFO ->
                                     if (reason == AppEdibleReport.Reason.INCORRECT_INFO) {
-                                        Fields(baseFields) {
-                                            FoodEditionFormField(it)
-                                        }
+                                        Fields(
+                                            fields = baseFields,
+                                            onGetOriginalField = {
+                                                when (it.name) {
+                                                    FormFieldName.FoodEdition.DetailField.NAME -> originalForm.data.name
+                                                    FormFieldName.FoodEdition.DetailField.BRAND -> originalForm.data.brand
+                                                    FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING -> originalForm.data.amountPerServing
+                                                    FormFieldName.FoodEdition.DetailField.SERVING_UNIT -> originalForm.data.servingUnit
+                                                }
+                                            }
+                                        ) { FoodEditionFormField(it) }
                                     }
 
                                 AppEdibleReport.Reason.INCORRECT_NUTRIENTS ->
@@ -251,7 +269,18 @@ fun AppEdibleReportOptionsPopup(
                                             )
                                         }
 
-                                        Fields(nutrientFields) {
+                                        Fields(
+                                            fields = nutrientFields,
+                                            onGetOriginalField = {
+                                                val nutrient = it.name.nutrient
+                                                val unit = nutrient.unit.toString().lowercase()
+                                                val id = nutrient.id
+                                                val original = originalForm.data.nutrients.getValue(id)
+                                                dvMap[id]
+                                                    ?.let { "$original $unit" }
+                                                    ?: original
+                                            }
+                                        ) {
                                             FoodEditionFormField(
                                                 field = it,
                                                 nutrientDvControls = dvControls.controls
@@ -287,9 +316,25 @@ fun AppEdibleReportOptionsPopup(
 @Composable
 private fun <T : FormFieldName.IFoodEdition> Fields(
     fields: List<FormField<T>>,
+    onGetOriginalField: (FormField<T>) -> String,
     content: @Composable (FormField<T>) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        fields.forEach { content(it) }
+        fields.forEach {
+            Column {
+                content(it)
+
+                val originalValue = onGetOriginalField(it)
+
+                if (originalValue != (it.textFieldValue?.text ?: "")) {
+                    Text(
+                        text = "Was: $originalValue",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(0.6f),
+                        modifier = Modifier.padding(top = 4.dp, start = 4.dp)
+                    )
+                }
+            }
+        }
     }
 }

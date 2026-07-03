@@ -139,9 +139,9 @@ data class AppEdibleReport(
     val reviewedAt: Instant?,
     val reviewedBy: UUID?
 ) {
-    enum class Reason {
-        INCORRECT_INFO,
-        INCORRECT_NUTRIENTS,
+    enum class Reason(val hasFields: Boolean = false) {
+        INCORRECT_INFO(true),
+        INCORRECT_NUTRIENTS(true),
         INCORRECT_BARCODE,
         INCORRECT_TYPE
     }

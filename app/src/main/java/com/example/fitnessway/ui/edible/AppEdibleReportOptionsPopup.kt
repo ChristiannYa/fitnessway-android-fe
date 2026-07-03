@@ -115,26 +115,36 @@ fun AppEdibleReportOptionsPopup(
     var tappedReason by remember { mutableStateOf<AppEdibleReport.Reason?>(null) }
     var selectedReasons by remember { mutableStateOf<List<AppEdibleReport.Reason>>(emptyList()) }
 
-    LaunchedEffect(form.data.getBaseValues()) {
-        val isValid = isBaseEditionValid(form.data, originalForm.data, EdibleSource.APP)
-        if (isValid) selectedReasons += AppEdibleReport.Reason.INCORRECT_INFO
-        else {
-            if (AppEdibleReport.Reason.INCORRECT_INFO in selectedReasons)
-                selectedReasons -= AppEdibleReport.Reason.INCORRECT_INFO
+    fun AppEdibleReport.Reason.handleAutoSelection() {
+        if (!this.hasFields) return
+
+        val isValid = when (this) {
+            AppEdibleReport.Reason.INCORRECT_INFO -> isBaseEditionValid(
+                form.data,
+                originalForm.data,
+                EdibleSource.APP
+            )
+
+            AppEdibleReport.Reason.INCORRECT_NUTRIENTS -> isNutrientsEditionValid(
+                form.data.nutrients,
+                originalForm.data.nutrients,
+                dvMap
+            )
+
+            else -> false
         }
+
+        val isInList = this in selectedReasons
+        if (isValid && !isInList) selectedReasons += this
+        else if (!isValid && isInList) selectedReasons -= this
+    }
+
+    LaunchedEffect(form.data.getBaseValues()) {
+        AppEdibleReport.Reason.INCORRECT_INFO.handleAutoSelection()
     }
 
     LaunchedEffect(form.data.nutrients, dvMap) {
-        val isValid = isNutrientsEditionValid(
-            form.data.nutrients,
-            originalForm.data.nutrients,
-            dvMap
-        )
-        if (isValid) selectedReasons += AppEdibleReport.Reason.INCORRECT_NUTRIENTS
-        else {
-            if (AppEdibleReport.Reason.INCORRECT_NUTRIENTS in selectedReasons)
-                selectedReasons -= AppEdibleReport.Reason.INCORRECT_NUTRIENTS
-        }
+        AppEdibleReport.Reason.INCORRECT_NUTRIENTS.handleAutoSelection()
     }
 
     AnimatedVisibility(

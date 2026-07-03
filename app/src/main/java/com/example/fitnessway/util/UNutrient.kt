@@ -56,7 +56,6 @@ import com.example.fitnessway.ui.shared.Clickables
 import com.example.fitnessway.ui.shared.Structure
 import com.example.fitnessway.ui.theme.WhiteFont
 import com.example.fitnessway.ui.theme.tappable
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.ClickableConfiguration
 import com.example.fitnessway.util.Ui.InputUi
@@ -317,11 +316,7 @@ object UNutrient {
                             // Top part: Goal
                             if (!isDataMinimal) {
                                 Text(
-                                    text = if (preferences.goal != null) {
-                                        doubleFormatter(
-                                            preferences.goal
-                                        )
-                                    } else "0",
+                                    text = if (preferences.goal != null) preferences.goal.toPrecisedString() else "0",
                                     style = MaterialTheme.typography.labelLarge,
                                     fontFamily = FontFamily.Default,
                                     color = nutrientColor
@@ -367,7 +362,7 @@ object UNutrient {
                             )
 
                             Text(
-                                text = doubleFormatter(nutrientDataAmount.amount),
+                                text = nutrientDataAmount.amount.toPrecisedString(),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = FontFamily.Default,
                                 color = WhiteFont,
@@ -398,7 +393,7 @@ object UNutrient {
                         ) {
                             if (!isDataMinimal) {
                                 Text(
-                                    text = "${doubleFormatter(calculatedNutrientData.progress)}%",
+                                    text = "${calculatedNutrientData.progress.toPrecisedString()}%",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontFamily = FontFamily.Default,
                                     color = nutrientColor.copy(0.5f)
@@ -467,7 +462,7 @@ object UNutrient {
                             )
 
                             Text(
-                                text = doubleFormatter(nutrientInFood.amount),
+                                text = nutrientInFood.amount.toPrecisedString(),
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontFamily = FontFamily.Default,
                                 maxLines = 1,
@@ -567,7 +562,7 @@ object UNutrient {
 
                             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                 Text(
-                                    text = doubleFormatter(nutrientInFood.amount, 2),
+                                    text = nutrientInFood.amount.toPrecisedString(2),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Default,
                                 )

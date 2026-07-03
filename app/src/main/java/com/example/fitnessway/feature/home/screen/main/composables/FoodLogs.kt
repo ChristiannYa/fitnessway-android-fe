@@ -62,12 +62,12 @@ import com.example.fitnessway.ui.theme.OrangeWarning
 import com.example.fitnessway.ui.theme.WhiteBackground
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UFood.Ui.getFoodBrandColor
 import com.example.fitnessway.util.UFood.Ui.getFoodBrandText
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
+import com.example.fitnessway.util.extensions.toPrecisedString
 import kotlin.time.Instant
 
 @Composable
@@ -352,7 +352,7 @@ private fun FoodLog(
                             ),
                             block = {
                                 append(
-                                    text = doubleFormatter(foodLog.servings, 3)
+                                    text = foodLog.servings.toPrecisedString(3)
                                 )
                             }
                         )

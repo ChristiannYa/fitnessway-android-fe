@@ -24,8 +24,8 @@ import com.example.fitnessway.ui.shared.DarkOverlay
 import com.example.fitnessway.ui.theme.AppModifiers
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.OrangeWarning
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.UFood.FoodInformationComposables
+import com.example.fitnessway.util.extensions.toPrecisedString
 import com.example.fitnessway.util.form.field.FoodLogEditionField
 
 private const val deletedFoodMessage = "You have removed this food from your food list"
@@ -91,7 +91,7 @@ fun FoodLogDetails(
                                 foodLogServings = null
                             )
 
-                            val amountPerServing = doubleFormatter(foodLog.edibleInformation.base.amountPerServing)
+                            val amountPerServing = foodLog.edibleInformation.base.amountPerServing.toPrecisedString()
 
                             Box(
                                 modifier = Modifier.areaContainer(

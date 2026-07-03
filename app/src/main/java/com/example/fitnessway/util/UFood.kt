@@ -32,10 +32,10 @@ import com.example.fitnessway.ui.nutrient.PagedNutrients
 import com.example.fitnessway.ui.theme.AppModifiers.AreaContainerSize
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.AppModifiers.foodContainer
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.UNutrient.getColor
+import com.example.fitnessway.util.extensions.toPrecisedString
 
 object UFood {
     fun List<FoodInformation>.getFoodById(id: Int): FoodInformation? {
@@ -102,7 +102,7 @@ object UFood {
 
                                     if (nutrientColor != null && n.amount != null) {
                                         Text(
-                                            text = doubleFormatter(n.amount),
+                                            text = n.amount.toPrecisedString(),
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = nutrientColor
                                         )
@@ -175,12 +175,8 @@ object UFood {
 
                     if (foodLogServings != null) {
                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                            val amPerSer = doubleFormatter(
-                                value = edibleInformation.base.amountPerServing * foodLogServings
-                            )
-
                             Text(
-                                text = amPerSer,
+                                text = (edibleInformation.base.amountPerServing * foodLogServings).toPrecisedString(),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = FontFamily.Default,
                                 color = brandColor

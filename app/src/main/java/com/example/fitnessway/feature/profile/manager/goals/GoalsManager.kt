@@ -2,9 +2,9 @@ package com.example.fitnessway.feature.profile.manager.goals
 
 import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.data.model.m_26.NutrientsByType
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.UNutrient.formatNutrientsDataAsMap
+import com.example.fitnessway.util.extensions.toPrecisedString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
@@ -85,9 +85,7 @@ class GoalsManager() : IGoalsManager {
         val goals = formatNutrientsDataAsMap(
             nutrientsData = nutrientsData,
             propertySelector = {
-                if (it.goal != null) {
-                    doubleFormatter(it.goal, 2)
-                } else "~"
+                if (it.goal != null) it.goal.toPrecisedString(2) else "~"
             }
         )
 

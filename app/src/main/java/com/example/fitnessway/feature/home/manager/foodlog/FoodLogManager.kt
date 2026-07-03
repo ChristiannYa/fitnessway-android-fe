@@ -6,7 +6,6 @@ import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.FoodLogCategory
 import com.example.fitnessway.data.model.m_26.FoodLogListFilter
 import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
-import com.example.fitnessway.util.Formatters.doubleFormatter
 import com.example.fitnessway.util.Formatters.roundIfClose
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.extensions.calcAmountPerServing
@@ -95,21 +94,11 @@ class FoodLogManager : IFoodLogManager {
             val foodLog = _selectedFoodLog.value
 
             if (formState != null && foodLog != null) {
-                val servingsPrecisedFormatted = doubleFormatter(
-                    value = formState.data.servingsPrecised,
-                    decimalPlaces = 4
-                ) // formatted into the food's servings for propper comparison
-
-                val foodServingsFormatted = doubleFormatter(
-                    value = foodLog.servings,
-                    decimalPlaces = 4
-                )
-
                 formState.data.servings.isNotEmpty() &&
                         foodLogEditionServingsDoubleError == null &&
                         formState.data.amountPerServing.isNotEmpty() &&
                         foodLogEditionFormAmPerSerDoubleError == null &&
-                        servingsPrecisedFormatted != foodServingsFormatted
+                        formState.data.servingsPrecised.toPrecisedString(4) != foodLog.servings.toPrecisedString(4)
             } else false
         }
 

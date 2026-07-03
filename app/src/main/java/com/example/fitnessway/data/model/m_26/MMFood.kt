@@ -215,11 +215,6 @@ data class FoodLogUpdateRequest(
 )
 
 @Serializable
-data class FoodLogUpdateResponse(
-    val foodLogUpdated: FoodLog
-)
-
-@Serializable
 data class AppFoodFindByIdResponse(
     val appEdible: AppEdibleData?
 )
@@ -232,6 +227,13 @@ data class AppFoodFindByBarcodeResponse(
 @Serializable
 data class AppFoodSearchResponse(
     val appFoodsPagination: PaginationResult<FoodPreview>
+)
+
+@Serializable
+data class AppEdibleReportRequest(
+    val edibleId: Int,
+    val reasons: List<String>,
+    val notes: String?
 )
 
 @Serializable

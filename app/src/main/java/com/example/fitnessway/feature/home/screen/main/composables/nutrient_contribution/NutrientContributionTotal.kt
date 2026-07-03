@@ -12,7 +12,7 @@ import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.model.m_26.FoodLog
 import com.example.fitnessway.data.model.m_26.NutrientData
 import com.example.fitnessway.util.extensions.getIntakeCalculation
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 
 @Composable
 fun NutrientContributionTotal(
@@ -36,7 +36,7 @@ fun NutrientContributionTotal(
     val intakeTotal = intakeCalculations.sumOf { it?.intake ?: 0.0 }
     val progressTotal = intakeCalculations.sumOf {
         (it?.progress ?: 0.0)
-            .toPrecisedString(4)
+            .toTruncatedDecimalString(4)
             .toDouble()
     }
 

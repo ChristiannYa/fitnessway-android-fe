@@ -35,7 +35,7 @@ import com.example.fitnessway.ui.theme.AppModifiers.foodContainer
 import com.example.fitnessway.util.Formatters.logcat
 import com.example.fitnessway.util.UNutrient.Ui.NutrientsAsLine
 import com.example.fitnessway.util.UNutrient.getColor
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 
 object UFood {
     fun List<FoodInformation>.getFoodById(id: Int): FoodInformation? {
@@ -102,7 +102,7 @@ object UFood {
 
                                     if (nutrientColor != null && n.amount != null) {
                                         Text(
-                                            text = n.amount.toPrecisedString(),
+                                            text = n.amount.toTruncatedDecimalString(),
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = nutrientColor
                                         )
@@ -176,7 +176,7 @@ object UFood {
                     if (foodLogServings != null) {
                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(
-                                text = (edibleInformation.base.amountPerServing * foodLogServings).toPrecisedString(),
+                                text = (edibleInformation.base.amountPerServing * foodLogServings).toTruncatedDecimalString(),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = FontFamily.Default,
                                 color = brandColor

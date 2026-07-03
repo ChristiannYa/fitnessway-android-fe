@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.AppEdibleReport
+import com.example.fitnessway.data.model.m_26.AppEdibleReportRequest
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
 import com.example.fitnessway.feature.lists.screen.user_details.edition.composables.FoodEditionFormField
@@ -52,30 +53,31 @@ import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.edible.edition.isBaseEditionValid
 import com.example.fitnessway.util.edible.edition.isNutrientsEditionValid
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
 import com.example.fitnessway.util.nutrient.NutrientDvControls
+import com.example.fitnessway.util.nutrient.getNutrientDv
 
 @Composable
 fun AppEdibleReportOptionsPopup(
     edible: FoodInformationWithId,
     isVisible: Boolean,
-    onReport: (AppEdibleReport.Reason) -> Unit,
+    onReport: (AppEdibleReportRequest) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val originalForm = FormState(
         FormStates.FoodEdition(
             name = edible.information.base.name,
             brand = edible.information.base.brand ?: "",
-            amountPerServing = edible.information.base.amountPerServing.toString(),
+            amountPerServing = edible.information.base.amountPerServing.toTruncatedDecimalString(4),
             servingUnit = edible.information.base.servingUnit.toString().lowercase(),
             nutrients = edible.information.nutrients
                 .toList()
-                .associate { it.data.base.id to it.amount.toPrecisedString(4) }
+                .associate { it.data.base.id to it.amount.toTruncatedDecimalString(4) }
         )
     )
 
@@ -110,7 +112,17 @@ fun AppEdibleReportOptionsPopup(
         focusManager = focusManager,
         isFormSubmitting = false
     )
+
     val baseFields = fieldsProvider.getBaseFields()
+
+    val nutrientFields = with(edible.information.nutrients.toList()) {
+        this.map {
+            fieldsProvider.nutrient(
+                nutrient = it.data.base,
+                isLastField = it.data.base.id == this.last().data.base.id
+            )
+        }
+    }
 
     var tappedReason by remember { mutableStateOf<AppEdibleReport.Reason?>(null) }
     var selectedReasons by remember { mutableStateOf<List<AppEdibleReport.Reason>>(emptyList()) }
@@ -270,15 +282,6 @@ fun AppEdibleReportOptionsPopup(
 
                                 AppEdibleReport.Reason.INCORRECT_NUTRIENTS ->
                                     if (reason == AppEdibleReport.Reason.INCORRECT_NUTRIENTS) {
-                                        val nutrientList = edible.information.nutrients.toList()
-
-                                        val nutrientFields = nutrientList.map {
-                                            fieldsProvider.nutrient(
-                                                nutrient = it.data.base,
-                                                isLastField = it.data.base.id == nutrientList.last().data.base.id
-                                            )
-                                        }
-
                                         Fields(
                                             fields = nutrientFields,
                                             onGetOriginalField = {
@@ -305,7 +308,75 @@ fun AppEdibleReportOptionsPopup(
                 }
 
                 TextButton(
-                    onClick = { tappedReason?.let { onReport(it) } },
+                    onClick = {
+                        val informationChangeText = if (AppEdibleReport.Reason.INCORRECT_INFO in selectedReasons) {
+                            val changedLines = baseFields.mapNotNull { field ->
+                                val current = field.textFieldValue?.text ?: field.value
+
+                                val (label, original) = when (field.name) {
+                                    FormFieldName.FoodEdition.DetailField.NAME ->
+                                        "Name" to originalForm.data.name
+
+                                    FormFieldName.FoodEdition.DetailField.BRAND ->
+                                        "Brand" to originalForm.data.brand
+
+                                    FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING ->
+                                        "Amount per serving" to originalForm.data.amountPerServing
+
+                                    FormFieldName.FoodEdition.DetailField.SERVING_UNIT ->
+                                        "Serving unit" to originalForm.data.servingUnit
+                                }
+
+                                if (current != original) "  - $label: $original -> $current" else null
+                            }
+
+                            if (changedLines.isEmpty()) null
+                            else buildString {
+                                appendLine("Information changed:")
+                                changedLines.forEach { appendLine(it) }
+                            }.trimEnd()
+                        } else null
+
+                        val nutrientsChangeText = if (AppEdibleReport.Reason.INCORRECT_NUTRIENTS in selectedReasons) {
+                            val changedLines = nutrientFields.mapNotNull { field ->
+                                val nutrient = field.name.nutrient
+                                val id = nutrient.id
+                                val name = nutrient.name.toTitleCase(false)
+                                val unit = nutrient.unit.toString().lowercase()
+
+                                val current = field.textFieldValue?.text ?: field.value
+                                val original = originalForm.data.nutrients.getValue(id)
+
+                                val isDv = dvMap.containsKey(id)
+
+                                val originalDisplay = if (isDv) "$original$unit" else "$original$unit"
+                                val currentDisplay =
+                                    if (isDv) "$current% (${getNutrientDv(id, current.toDouble())}$unit)"
+                                    else "$current$unit"
+
+                                if (current != original || isDv) "  - $name $originalDisplay -> $currentDisplay"
+                                else null
+                            }
+
+                            if (changedLines.isEmpty()) null
+                            else buildString {
+                                appendLine("Nutrients changed:")
+                                changedLines.forEach { appendLine(it) }
+                            }.trimEnd()
+                        } else null
+
+                        val notes = listOfNotNull(informationChangeText, nutrientsChangeText)
+                            .joinToString("\n\n")
+                            .ifBlank { null }
+
+                        onReport(
+                            AppEdibleReportRequest(
+                                edibleId = edible.id,
+                                reasons = selectedReasons.map { r -> r.toString().lowercase() },
+                                notes = notes
+                            )
+                        )
+                    },
                     enabled = selectedReasons.isNotEmpty(),
                     colors = ButtonDefaults.textButtonColors(
                         containerColor = MaterialTheme.colorScheme.primary,

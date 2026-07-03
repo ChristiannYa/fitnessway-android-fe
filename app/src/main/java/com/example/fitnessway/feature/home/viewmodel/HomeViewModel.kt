@@ -32,7 +32,7 @@ import com.example.fitnessway.util.UiStatePager
 import com.example.fitnessway.util.date_time.IAppDateTimeFormatter
 import com.example.fitnessway.util.extensions.calcDailyIntakes
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -249,7 +249,7 @@ class HomeViewModel(
             category = selectedFoodLog.category,
             time = selectedFoodLog.time,
             loggedAt = selectedFoodLog.loggedAt,
-            servings = formState.data.servingsPrecised.toPrecisedString(4).toDouble(),
+            servings = formState.data.servingsPrecised.toTruncatedDecimalString(4).toDouble(),
             userEdibleSnapshotStatus = selectedFoodLog.userEdibleSnapshotStatus,
             userEdibleSnapshotId = selectedFoodLog.userEdibleSnapshotId,
             source = selectedFoodLog.source,

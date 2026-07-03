@@ -7,7 +7,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 
 @Composable
 fun amountAnnotatedString(
@@ -16,7 +16,7 @@ fun amountAnnotatedString(
     color: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) = buildAnnotatedString {
 
-    append(amount.toPrecisedString(4))
+    append(amount.toTruncatedDecimalString(4))
 
     withStyle(
         style = SpanStyle(

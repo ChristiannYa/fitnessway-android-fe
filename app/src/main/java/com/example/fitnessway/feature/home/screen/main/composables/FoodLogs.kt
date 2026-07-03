@@ -67,7 +67,7 @@ import com.example.fitnessway.util.UFood.Ui.getFoodBrandText
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.UiState
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 import kotlin.time.Instant
 
 @Composable
@@ -352,7 +352,7 @@ private fun FoodLog(
                             ),
                             block = {
                                 append(
-                                    text = foodLog.servings.toPrecisedString(3)
+                                    text = foodLog.servings.toTruncatedDecimalString(3)
                                 )
                             }
                         )

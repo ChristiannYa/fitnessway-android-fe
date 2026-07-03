@@ -61,7 +61,7 @@ import com.example.fitnessway.util.Ui.ClickableConfiguration
 import com.example.fitnessway.util.Ui.InputUi
 import com.example.fitnessway.util.Ui.LabelSize
 import com.example.fitnessway.util.extensions.getIntakeCalculation
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 import com.example.fitnessway.data.model.m_26.NutrientPreferences as NutrientPreferencesM26
 
 
@@ -316,7 +316,7 @@ object UNutrient {
                             // Top part: Goal
                             if (!isDataMinimal) {
                                 Text(
-                                    text = if (preferences.goal != null) preferences.goal.toPrecisedString() else "0",
+                                    text = if (preferences.goal != null) preferences.goal.toTruncatedDecimalString() else "0",
                                     style = MaterialTheme.typography.labelLarge,
                                     fontFamily = FontFamily.Default,
                                     color = nutrientColor
@@ -362,7 +362,7 @@ object UNutrient {
                             )
 
                             Text(
-                                text = nutrientDataAmount.amount.toPrecisedString(),
+                                text = nutrientDataAmount.amount.toTruncatedDecimalString(),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = FontFamily.Default,
                                 color = WhiteFont,
@@ -393,7 +393,7 @@ object UNutrient {
                         ) {
                             if (!isDataMinimal) {
                                 Text(
-                                    text = "${calculatedNutrientData.progress.toPrecisedString()}%",
+                                    text = "${calculatedNutrientData.progress.toTruncatedDecimalString()}%",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontFamily = FontFamily.Default,
                                     color = nutrientColor.copy(0.5f)
@@ -462,7 +462,7 @@ object UNutrient {
                             )
 
                             Text(
-                                text = nutrientInFood.amount.toPrecisedString(),
+                                text = nutrientInFood.amount.toTruncatedDecimalString(),
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontFamily = FontFamily.Default,
                                 maxLines = 1,
@@ -562,7 +562,7 @@ object UNutrient {
 
                             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                 Text(
-                                    text = nutrientInFood.amount.toPrecisedString(2),
+                                    text = nutrientInFood.amount.toTruncatedDecimalString(2),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Default,
                                 )
@@ -701,5 +701,5 @@ object UNutrient {
 fun NutrientPreferencesM26.getGoalRatioText(amount: Double) =
     this.goal
         ?.let { (amount / it) * 100 }
-        ?.let { "${it.toPrecisedString()}%" }
+        ?.let { "${it.toTruncatedDecimalString()}%" }
         ?: "N/A"

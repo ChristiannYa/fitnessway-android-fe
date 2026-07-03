@@ -9,7 +9,7 @@ import com.example.fitnessway.data.model.m_26.FoodToLogSearchCriteria
 import com.example.fitnessway.util.Formatters.roundIfClose
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
 import com.example.fitnessway.util.extensions.calcAmountPerServing
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
@@ -98,7 +98,9 @@ class FoodLogManager : IFoodLogManager {
                         foodLogEditionServingsDoubleError == null &&
                         formState.data.amountPerServing.isNotEmpty() &&
                         foodLogEditionFormAmPerSerDoubleError == null &&
-                        formState.data.servingsPrecised.toPrecisedString(4) != foodLog.servings.toPrecisedString(4)
+                        formState.data.servingsPrecised.toTruncatedDecimalString(4) != foodLog.servings.toTruncatedDecimalString(
+                    4
+                )
             } else false
         }
 
@@ -131,8 +133,8 @@ class FoodLogManager : IFoodLogManager {
 
         _foodLogFormState.value = FormState(
             data = FormStates.FoodLog(
-                servings = (1.0).toPrecisedString(),
-                amountPerServing = amountPerServingDb.toPrecisedString(3),
+                servings = (1.0).toTruncatedDecimalString(),
+                amountPerServing = amountPerServingDb.toTruncatedDecimalString(3),
                 amountPerServingDb = amountPerServingDb,
                 time = time
             )
@@ -146,8 +148,8 @@ class FoodLogManager : IFoodLogManager {
 
         val formState = FormState(
             data = FormStates.FoodLogEdition(
-                servings = foodLog.servings.toPrecisedString(3),
-                amountPerServing = amountPerServing.toPrecisedString(3),
+                servings = foodLog.servings.toTruncatedDecimalString(3),
+                amountPerServing = amountPerServing.toTruncatedDecimalString(3),
                 foodAmountPerServing = foodLog.edibleInformation.base.amountPerServing,
                 servingsPrecised = foodLog.servings
             )
@@ -169,7 +171,7 @@ class FoodLogManager : IFoodLogManager {
                     val newAmount = input.toDoubleOrNull()
 
                     val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
-                        (foodAmountPerServing * newAmount).toPrecisedString(3)
+                        (foodAmountPerServing * newAmount).toTruncatedDecimalString(3)
                     } else formState.data.amountPerServing
 
                     val servingsPrecised = if (newAmount != null && newAmount > 0) {
@@ -189,7 +191,7 @@ class FoodLogManager : IFoodLogManager {
                     val (dynServings, servingsPrecised) = if (newAmount != null && newAmount > 0) {
                         val precised = newAmount / foodAmountPerServing
 
-                        precised.toPrecisedString(3) to precised
+                        precised.toTruncatedDecimalString(3) to precised
                     } else formState.data.servings to formState.data.servingsPrecised
 
 
@@ -216,7 +218,7 @@ class FoodLogManager : IFoodLogManager {
 
                     val dynAmountPerServing = if (newAmount != null && newAmount > 0) {
                         val amount = currentState.data.amountPerServingDb * newAmount
-                        amount.toPrecisedString(3)
+                        amount.toTruncatedDecimalString(3)
                     } else currentState.data.amountPerServing
 
                     currentState.data.copy(
@@ -230,7 +232,7 @@ class FoodLogManager : IFoodLogManager {
 
                     val dynServings = if (newAmount != null && newAmount > 0) {
                         val amount = newAmount / currentState.data.amountPerServingDb
-                        amount.toPrecisedString()
+                        amount.toTruncatedDecimalString()
                     } else currentState.data.servings
 
                     currentState.data.copy(

@@ -5,7 +5,7 @@ import com.example.fitnessway.data.model.m_26.NutrientBase
 import com.example.fitnessway.data.model.m_26.ServingUnit
 import com.example.fitnessway.data.model.m_26.UserEdible
 import com.example.fitnessway.util.Formatters.validateDoubleAsString
-import com.example.fitnessway.util.extensions.toPrecisedString
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
 import com.example.fitnessway.util.form.field.FormFieldName
@@ -192,12 +192,12 @@ class EditionManager : IEditionManager, NutrientDvControls() {
     override fun initializeEdibleForm(food: UserEdible) {
         val foodNutrientsMap = food.information.nutrients
             .toList()
-            .associate { it.data.base.id to it.amount.toPrecisedString(4) }
+            .associate { it.data.base.id to it.amount.toTruncatedDecimalString(4) }
 
         val data = FormStates.FoodEdition(
             name = food.information.base.name,
             brand = food.information.base.brand ?: "",
-            amountPerServing = food.information.base.amountPerServing.toPrecisedString(4),
+            amountPerServing = food.information.base.amountPerServing.toTruncatedDecimalString(4),
             servingUnit = food.information.base.servingUnit.name.lowercase(),
             nutrients = foodNutrientsMap
         )

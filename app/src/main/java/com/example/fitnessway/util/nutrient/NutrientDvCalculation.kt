@@ -1,6 +1,7 @@
 package com.example.fitnessway.util.nutrient
 
 import com.example.fitnessway.constants.NutrientId
+import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 
 enum class NutrientDvOperation {
     DV_TO_AMOUNT,
@@ -16,7 +17,7 @@ fun getNutrientDv(
         return when (operation) {
             NutrientDvOperation.DV_TO_AMOUNT -> (amount / 100.0) * standardDv
             NutrientDvOperation.AMOUNT_TO_DV -> (amount / standardDv) * 100.0
-        }
+        }.toTruncatedDecimalString(4).toDouble()
     }
 
     return when (id) {

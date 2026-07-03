@@ -1,12 +1,15 @@
 package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,6 +28,7 @@ import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.mappers.toTypedList
+import com.example.fitnessway.data.model.m_26.AppEdibleReportRequest
 import com.example.fitnessway.data.model.m_26.EdibleScope
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
@@ -42,6 +46,8 @@ import com.example.fitnessway.ui.shared.Header
 import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
+import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
 import com.example.fitnessway.util.Ui.handleApiSuccessTempState
@@ -87,6 +93,7 @@ fun FoodLogScreen(
     )
 
     var isReportOptionsVisible by remember { mutableStateOf(false) }
+    var finalReport by remember { mutableStateOf<AppEdibleReportRequest?>(null) }
 
     fun onBackClick() {
         viewModel.resetFoodLogAddState()
@@ -290,7 +297,7 @@ fun FoodLogScreen(
                 }
 
                 DarkOverlay(
-                    isVisible = isReportOptionsVisible,
+                    isVisible = isReportOptionsVisible || finalReport != null,
                     onClick = { isReportOptionsVisible = false }
                 )
 
@@ -298,10 +305,55 @@ fun FoodLogScreen(
                     edible = foodToLog,
                     isVisible = isReportOptionsVisible,
                     onReport = {
+                        finalReport = it
                         isReportOptionsVisible = false
                     },
                     modifier = Modifier.align(Alignment.BottomCenter)
                 )
+
+                AnimatedVisibility(
+                    visible = finalReport != null,
+                    enter = Animation.ComposableTransition.ScaleWithSpring.enter(),
+                    exit = Animation.ComposableTransition.ScaleWithSpring.exit(),
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Box(
+                        Modifier
+                            .areaContainer(
+                                borderColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                text = "Please review your report",
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            Text(
+                                text = buildString {
+                                    append("Reasons:\n")
+
+                                    finalReport?.reasons?.forEach {
+                                        appendLine(value = "- ${it.toTitleCase()}")
+                                    }
+
+                                    if (finalReport?.notes != null) appendLine("\n${finalReport!!.notes}")
+                                }.trimEnd()
+                            )
+
+                            TextButton(
+                                onClick = { finalReport = null },
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = WhiteFont
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Report")
+                            }
+                        }
+                    }
+                }
 
                 Banners.SuccessBannerAnimated(
                     text = "Food logged successfully",

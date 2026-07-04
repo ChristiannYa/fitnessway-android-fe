@@ -95,6 +95,8 @@ fun FoodLogScreen(
 
     val foodLogAddState = uiState.foodLogAddState
 
+    val isAppEdibleLoading = searchCriteria?.source == EdibleSource.APP && appFoodUiState is UiState.Loading
+
     val isLogSuccessFull = handleApiSuccessTempState(
         uiState = foodLogAddState,
         onTimeout = viewModel::resetFoodLogAddState
@@ -211,17 +213,17 @@ fun FoodLogScreen(
 
                 Clickables.DoneButton(
                     onClick = viewModel::addFoodLog,
-                    enabled = viewModel.isFoodLogFormValid && !isReportOptionsVisible && !isReportConfirmed && finalReport == null,
+                    enabled = !isAppEdibleLoading &&
+                            viewModel.isFoodLogFormValid &&
+                            !isReportOptionsVisible &&
+                            !isReportConfirmed &&
+                            finalReport == null,
                     isLoading = foodLogAddState is UiState.Loading
                 )
             }
         }
     ) { focusManager ->
-        if (
-        // App edible loading
-            searchCriteria?.source == EdibleSource.APP &&
-            appFoodUiState is UiState.Loading
-        ) Loading.SpinnerInScreen(Modifier.padding(top = 16.dp))
+        if (isAppEdibleLoading) Loading.SpinnerInScreen(Modifier.padding(top = 16.dp))
         else if (!(formState == null || foodToLog == null || searchCriteria == null)) {
             Box(Modifier.fillMaxSize()) {
                 val fieldsProvider = FoodLogFieldsProvider(

@@ -222,9 +222,7 @@ fun FoodLogScreen(
             searchCriteria?.source == EdibleSource.APP &&
             appFoodUiState is UiState.Loading
         ) Loading.SpinnerInScreen(Modifier.padding(top = 16.dp))
-        else {
-            if (formState == null || foodToLog == null || searchCriteria == null) return@Screen
-
+        else if (!(formState == null || foodToLog == null || searchCriteria == null)) {
             Box(Modifier.fillMaxSize()) {
                 val fieldsProvider = FoodLogFieldsProvider(
                     formState = formState,

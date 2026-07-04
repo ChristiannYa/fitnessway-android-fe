@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -196,118 +197,110 @@ fun FoodLogScreen(
         }
     }
 
-    val isScreenDataReady = searchCriteria != null &&
-            foodToLog != null &&
-            formState != null &&
-            category != null
-
-    if (isScreenDataReady) {
-        Screen(
-            header = {
-                Header(
-                    onBackClick = ::onBackClick,
-                    isOnBackEnabled = foodLogAddState !is UiState.Loading,
-                    title = "Log Submission"
-                ) {
-                    AppLabel<Unit>(
-                        text = category.name.toTitleCase(),
-                        size = Ui.LabelSize.MEDIUM,
-                    )
-
-                    Clickables.DoneButton(
-                        onClick = viewModel::addFoodLog,
-                        enabled = viewModel.isFoodLogFormValid && !isReportOptionsVisible && !isReportConfirmed && finalReport == null,
-                        isLoading = foodLogAddState is UiState.Loading
-                    )
-                }
-            }
-        ) { focusManager ->
-            val fieldsProvider = FoodLogFieldsProvider(
-                formState = formState,
-                focusManager = focusManager,
-                isFormSubmitting = foodLogAddState is UiState.Loading,
-                onFieldUpdate = { fieldName, value ->
-                    viewModel.updateFoodLogFormField(fieldName, value)
-                }
-            )
-
-            val foodNutrients = remember(
-                foodToLog.information.nutrients,
-                formState.data.servings
+    Screen(
+        header = {
+            Header(
+                onBackClick = ::onBackClick,
+                isOnBackEnabled = foodLogAddState !is UiState.Loading,
+                title = "Log Submission"
             ) {
-                foodToLog.information.nutrients.calcFoodLogNutrients(
-                    currentServings = 1.0,
-                    newServings = formState.data.servings.toDoubleOrNull() ?: 0.0
+                AppLabel<Unit>(
+                    text = category?.name?.toTitleCase() ?: "",
+                    size = Ui.LabelSize.MEDIUM,
+                )
+
+                Clickables.DoneButton(
+                    onClick = viewModel::addFoodLog,
+                    enabled = viewModel.isFoodLogFormValid && !isReportOptionsVisible && !isReportConfirmed && finalReport == null,
+                    isLoading = foodLogAddState is UiState.Loading
                 )
             }
+        }
+    ) { focusManager ->
+        if (
+        // App edible loading
+            searchCriteria?.source == EdibleSource.APP &&
+            appFoodUiState is UiState.Loading
+        ) Loading.SpinnerInScreen(Modifier.padding(top = 16.dp))
+        else {
+            if (formState == null || foodToLog == null || searchCriteria == null) return@Screen
 
             Box(Modifier.fillMaxSize()) {
-                val isAppFoodLoading = searchCriteria.source == EdibleSource.APP &&
-                        appFoodUiState is UiState.Loading
+                val fieldsProvider = FoodLogFieldsProvider(
+                    formState = formState,
+                    focusManager = focusManager,
+                    isFormSubmitting = foodLogAddState is UiState.Loading,
+                    onFieldUpdate = { fieldName, value ->
+                        viewModel.updateFoodLogFormField(fieldName, value)
+                    }
+                )
 
-                val isUserFoodLoading = searchCriteria.source == EdibleSource.USER &&
-                        userFoodsUiState is UiState.Loading
+                val foodNutrients = remember(
+                    foodToLog.information.nutrients,
+                    formState.data.servings
+                ) {
+                    foodToLog.information.nutrients.calcFoodLogNutrients(
+                        currentServings = 1.0,
+                        newServings = formState.data.servings.toDoubleOrNull() ?: 0.0
+                    )
+                }
 
-                if (isAppFoodLoading || isUserFoodLoading) {
-                    Loading.SpinnerInScreen()
-                } else {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Banners.ErrorBannerAnimated(
-                            isVisible = logErrorMessage != null,
-                            text = logErrorMessage ?: ""
-                        )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Banners.ErrorBannerAnimated(
+                        isVisible = logErrorMessage != null,
+                        text = logErrorMessage ?: ""
+                    )
 
-                        FoodLogInformation(
-                            food = foodToLog.information,
-                            servingsField = fieldsProvider.servings(),
-                            amountPerServingsField = fieldsProvider.amountPerServing(
-                                servingUnit = foodToLog.information.base.servingUnit.name.lowercase()
-                            ),
-                            timeField = fieldsProvider.time()
-                        )
+                    FoodLogInformation(
+                        food = foodToLog.information,
+                        servingsField = fieldsProvider.servings(),
+                        amountPerServingsField = fieldsProvider.amountPerServing(
+                            servingUnit = foodToLog.information.base.servingUnit.name.lowercase()
+                        ),
+                        timeField = fieldsProvider.time()
+                    )
 
-                        foodNutrients.toTypedList().forEach { (type, nutrientsInFood) ->
-                            if (nutrientsInFood.isNotEmpty()) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(18.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .areaContainer(
-                                            borderColor = MaterialTheme.colorScheme.surfaceVariant
-                                        )
-                                ) {
-                                    Text(
-                                        text = type.name.toTitleCase(),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.SemiBold
+                    foodNutrients.toTypedList().forEach { (type, nutrientsInFood) ->
+                        if (nutrientsInFood.isNotEmpty()) {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(18.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .areaContainer(
+                                        borderColor = MaterialTheme.colorScheme.surfaceVariant
                                     )
+                            ) {
+                                Text(
+                                    text = type.name.toTitleCase(),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
 
-                                    PagedNutrients(
-                                        nutrients = nutrientsInFood,
-                                        apiNutrients = nutrientsUiState.toSuccessOrNull()?.toList() ?: emptyList(),
-                                        viewFormat = NutrientsViewFormat.BOX,
-                                        isDataMinimal = true,
-                                        isBasicNutrient = type == NutrientType.BASIC,
-                                        isBaseSizeDisplay = false,
-                                        isUserPremium = user?.isPremium ?: false
-                                    )
-                                }
+                                PagedNutrients(
+                                    nutrients = nutrientsInFood,
+                                    apiNutrients = nutrientsUiState.toSuccessOrNull()?.toList() ?: emptyList(),
+                                    viewFormat = NutrientsViewFormat.BOX,
+                                    isDataMinimal = true,
+                                    isBasicNutrient = type == NutrientType.BASIC,
+                                    isBaseSizeDisplay = false,
+                                    isUserPremium = user?.isPremium ?: false
+                                )
                             }
                         }
+                    }
 
-                        Spacer(Modifier.weight(1f))
-                        if (searchCriteria.source == EdibleSource.APP) {
-                            TextButton(
-                                onClick = { isReportOptionsVisible = true }
-                            ) {
-                                Text("Something is wrong")
-                            }
+                    Spacer(Modifier.weight(1f))
+                    if (searchCriteria.source == EdibleSource.APP) {
+                        TextButton(
+                            onClick = { isReportOptionsVisible = true }
+                        ) {
+                            Text("Something is wrong")
                         }
                     }
                 }

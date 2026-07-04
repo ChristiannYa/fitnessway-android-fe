@@ -117,10 +117,10 @@ object Loading {
     }
 
     @Composable
-    fun SpinnerInScreen() {
+    fun SpinnerInScreen(modifier: Modifier = Modifier) {
         Row(
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         ) {
             CircularProgressIndicator(
                 strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_SCREEN_STROKE_WIDTH,

@@ -6,6 +6,7 @@ import com.example.fitnessway.data.mappers.mapFl
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toNutrientPreview
 import com.example.fitnessway.data.mappers.toSuccessOrNull
+import com.example.fitnessway.data.model.m_26.AppEdibleReportRequest
 import com.example.fitnessway.data.model.m_26.EdibleLogAddRequest
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.FoodLog
@@ -494,6 +495,20 @@ class HomeViewModel(
                     else -> {}
                 }
             }
+        }
+    }
+
+    fun reportAppEdible(req: AppEdibleReportRequest) {
+        _uiState.update { it.copy(edibleReportState = UiState.Success(Unit)) }
+
+        viewModelScope.launch {
+            appFoodRepo
+                .report(req)
+                .collect { state ->
+                    if (state is UiState.Error) {
+                        _uiState.update { it.copy(edibleReportState = state) }
+                    }
+                }
         }
     }
 

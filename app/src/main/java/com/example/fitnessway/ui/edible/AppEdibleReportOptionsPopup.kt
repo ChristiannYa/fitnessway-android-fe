@@ -66,24 +66,29 @@ import com.example.fitnessway.util.nutrient.getNutrientDv
 fun AppEdibleReportOptionsPopup(
     edible: FoodInformationWithId,
     isVisible: Boolean,
+    isReportConfirmed: Boolean,
     onReport: (AppEdibleReportRequest) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val originalForm = FormState(
-        FormStates.FoodEdition(
-            name = edible.information.base.name,
-            brand = edible.information.base.brand ?: "",
-            amountPerServing = edible.information.base.amountPerServing.toTruncatedDecimalString(4),
-            servingUnit = edible.information.base.servingUnit.toString().lowercase(),
-            nutrients = edible.information.nutrients
-                .toList()
-                .associate { it.data.base.id to it.amount.toTruncatedDecimalString(4) }
+    val originalForm by remember(edible.id) {
+        mutableStateOf(
+            FormState(
+                FormStates.FoodEdition(
+                    name = edible.information.base.name,
+                    brand = edible.information.base.brand ?: "",
+                    amountPerServing = edible.information.base.amountPerServing.toTruncatedDecimalString(4),
+                    servingUnit = edible.information.base.servingUnit.toString().lowercase(),
+                    nutrients = edible.information.nutrients
+                        .toList()
+                        .associate { it.data.base.id to it.amount.toTruncatedDecimalString(4) }
+                )
+            )
         )
-    )
+    }
 
-    var form by remember { mutableStateOf(originalForm) }
+    var form by remember(edible.id) { mutableStateOf(originalForm) }
 
-    val dvControls = remember { NutrientDvControls() }
+    val dvControls = remember(edible.id) { NutrientDvControls() }
     val dvMap by dvControls.controls.nutrientDvMap.collectAsState()
 
     val focusManager = LocalFocusManager.current
@@ -149,6 +154,15 @@ fun AppEdibleReportOptionsPopup(
         val isInList = this in selectedReasons
         if (isValid && !isInList) selectedReasons += this
         else if (!isValid && isInList) selectedReasons -= this
+    }
+
+    LaunchedEffect(isReportConfirmed, isVisible) {
+        if (isReportConfirmed && !isVisible) {
+            tappedReason = null
+            selectedReasons = emptyList()
+            form = originalForm
+            dvControls.controls.onClearData()
+        }
     }
 
     LaunchedEffect(form.data.getBaseValues()) {
@@ -332,7 +346,7 @@ fun AppEdibleReportOptionsPopup(
 
                             if (changedLines.isEmpty()) null
                             else buildString {
-                                appendLine("Information changed:")
+                                appendLine("Suggested information")
                                 changedLines.forEach { appendLine(it) }
                             }.trimEnd()
                         } else null
@@ -360,7 +374,7 @@ fun AppEdibleReportOptionsPopup(
 
                             if (changedLines.isEmpty()) null
                             else buildString {
-                                appendLine("Nutrients changed:")
+                                appendLine("Suggested nutrients")
                                 changedLines.forEach { appendLine(it) }
                             }.trimEnd()
                         } else null
@@ -385,6 +399,7 @@ fun AppEdibleReportOptionsPopup(
                 ) {
                     Text(
                         text = "Report",
+                        fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )

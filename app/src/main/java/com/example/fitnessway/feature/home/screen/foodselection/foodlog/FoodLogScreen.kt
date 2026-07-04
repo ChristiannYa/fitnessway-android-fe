@@ -2,11 +2,15 @@ package com.example.fitnessway.feature.home.screen.foodselection.foodlog
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
@@ -22,13 +26,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
 import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.mappers.toTypedList
+import com.example.fitnessway.data.model.m_26.AppEdibleReport
 import com.example.fitnessway.data.model.m_26.AppEdibleReportRequest
+import com.example.fitnessway.data.model.m_26.EdibleInformation
 import com.example.fitnessway.data.model.m_26.EdibleScope
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.EdibleType
@@ -47,6 +57,7 @@ import com.example.fitnessway.ui.shared.Loading
 import com.example.fitnessway.ui.shared.Screen
 import com.example.fitnessway.ui.theme.AppModifiers.areaContainer
 import com.example.fitnessway.ui.theme.WhiteFont
+import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Ui
 import com.example.fitnessway.util.Ui.AppLabel
@@ -55,6 +66,7 @@ import com.example.fitnessway.util.Ui.handleTempApiErrMsg
 import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.extensions.calcFoodLogNutrients
 import com.example.fitnessway.util.form.field.provider.FoodLogFieldsProvider
+import com.example.fitnessway.util.toEnum
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -93,6 +105,7 @@ fun FoodLogScreen(
     )
 
     var isReportOptionsVisible by remember { mutableStateOf(false) }
+    var isReportConfirmed by remember { mutableStateOf(false) }
     var finalReport by remember { mutableStateOf<AppEdibleReportRequest?>(null) }
 
     fun onBackClick() {
@@ -203,7 +216,7 @@ fun FoodLogScreen(
 
                     Clickables.DoneButton(
                         onClick = viewModel::addFoodLog,
-                        enabled = viewModel.isFoodLogFormValid && !isReportOptionsVisible,
+                        enabled = viewModel.isFoodLogFormValid && !isReportOptionsVisible && !isReportConfirmed && finalReport == null,
                         isLoading = foodLogAddState is UiState.Loading
                     )
                 }
@@ -241,7 +254,9 @@ fun FoodLogScreen(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.verticalScroll(rememberScrollState())
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .verticalScroll(rememberScrollState())
                     ) {
                         Banners.ErrorBannerAnimated(
                             isVisible = logErrorMessage != null,
@@ -286,6 +301,7 @@ fun FoodLogScreen(
                             }
                         }
 
+                        Spacer(Modifier.weight(1f))
                         if (searchCriteria.source == EdibleSource.APP) {
                             TextButton(
                                 onClick = { isReportOptionsVisible = true }
@@ -297,13 +313,23 @@ fun FoodLogScreen(
                 }
 
                 DarkOverlay(
-                    isVisible = isReportOptionsVisible || finalReport != null,
-                    onClick = { isReportOptionsVisible = false }
+                    isVisible = isReportOptionsVisible || isReportConfirmed || finalReport != null,
+                    onClick = {
+                        when {
+                            isReportOptionsVisible -> isReportOptionsVisible = false
+                            isReportConfirmed -> isReportConfirmed = false
+                            finalReport != null -> {
+                                finalReport = null
+                                isReportOptionsVisible = true
+                            }
+                        }
+                    }
                 )
 
                 AppEdibleReportOptionsPopup(
                     edible = foodToLog,
                     isVisible = isReportOptionsVisible,
+                    isReportConfirmed = isReportConfirmed,
                     onReport = {
                         finalReport = it
                         isReportOptionsVisible = false
@@ -311,47 +337,51 @@ fun FoodLogScreen(
                     modifier = Modifier.align(Alignment.BottomCenter)
                 )
 
+                AppEdibleReportConfirmationPopup(
+                    finalReport = finalReport,
+                    edibleInfo = foodToLog.information,
+                    onConfirmReport = {
+                        finalReport?.let { viewModel.reportAppEdible(it) }
+                        if (finalReport != null) {
+                            finalReport = null
+                            isReportConfirmed = true
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.Center)
+                )
+
                 AnimatedVisibility(
-                    visible = finalReport != null,
+                    visible = isReportConfirmed,
                     enter = Animation.ComposableTransition.ScaleWithSpring.enter(),
                     exit = Animation.ComposableTransition.ScaleWithSpring.exit(),
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier
+                        .width(Ui.Measurements.POP_UP_CONTAINER_WIDTH)
+                        .align(Alignment.Center)
                 ) {
                     Box(
-                        Modifier
-                            .areaContainer(
-                                borderColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
+                        Modifier.areaContainer(
+                            borderColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                text = "Please review your report",
-                                fontWeight = FontWeight.SemiBold
-                            )
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                ) {
+                                    append("Report submitted\n")
+                                }
 
-                            Text(
-                                text = buildString {
-                                    append("Reasons:\n")
-
-                                    finalReport?.reasons?.forEach {
-                                        appendLine(value = "- ${it.toTitleCase()}")
-                                    }
-
-                                    if (finalReport?.notes != null) appendLine("\n${finalReport!!.notes}")
-                                }.trimEnd()
-                            )
-
-                            TextButton(
-                                onClick = { finalReport = null },
-                                colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = WhiteFont
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text("Report")
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = MaterialTheme.colorScheme.onBackground.copy(0.8f)
+                                    )
+                                ) {
+                                    append("Thank you! We appreciate you taking the time to help us improve the app")
+                                }
                             }
-                        }
+                        )
                     }
                 }
 
@@ -360,6 +390,88 @@ fun FoodLogScreen(
                     isVisible = isLogSuccessFull,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppEdibleReportConfirmationPopup(
+    finalReport: AppEdibleReportRequest?,
+    edibleInfo: EdibleInformation,
+    onConfirmReport: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = finalReport != null,
+        enter = Animation.ComposableTransition.ScaleWithSpring.enter(),
+        exit = Animation.ComposableTransition.ScaleWithSpring.exit(),
+        modifier = modifier
+    ) {
+        Box(
+            Modifier
+                .areaContainer(
+                    borderColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        ) {
+                            append("Please review your report\n")
+                        }
+
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                            )
+                        ) {
+                            append(edibleInfo.base.name)
+                        }
+                    }
+                )
+
+                val reasonsHorizontalScrollState = rememberScrollState()
+                Text(
+                    text = buildString {
+                        append("Reasons\n")
+
+                        finalReport?.reasons?.forEach { reason ->
+                            val reasonDisplay = with(reason.toTitleCase()) {
+                                if (reason.toEnum<AppEdibleReport.Reason>() == AppEdibleReport.Reason.INCORRECT_TYPE) {
+                                    "$this (Current: ${edibleInfo.type.toString().toTitleCase()})"
+                                } else this
+                            }
+
+                            appendLine("  - $reasonDisplay")
+                        }
+
+                        if (finalReport?.notes != null) appendLine("\n${finalReport.notes}")
+                    }.trimEnd(),
+                    overflow = TextOverflow.Clip,
+                    modifier = Modifier.horizontalScroll(reasonsHorizontalScrollState)
+                )
+
+                TextButton(
+                    onClick = onConfirmReport,
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = WhiteFont
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Report",
+                        fontFamily = robotoSerifFamily,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
     }

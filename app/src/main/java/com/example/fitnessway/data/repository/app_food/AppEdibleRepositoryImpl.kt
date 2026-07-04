@@ -3,6 +3,7 @@ package com.example.fitnessway.data.repository.app_food
 import com.example.fitnessway.constants.Pagination
 import com.example.fitnessway.data.mappers.toPaginationOrNull
 import com.example.fitnessway.data.model.m_26.AppEdibleData
+import com.example.fitnessway.data.model.m_26.AppEdibleReportRequest
 import com.example.fitnessway.data.model.m_26.EdibleType
 import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.network.HttpClient
@@ -161,6 +162,13 @@ class AppEdibleRepositoryImpl(
             }
         }
     }
+
+    override fun report(req: AppEdibleReportRequest) =
+        httpClient.makeRequest(
+            apiCall = { apiClient.report(req) },
+            extractData = { Unit },
+            errMsg = "Failed to report edible"
+        )
 
     override fun clear() {
         searchJob?.cancel()

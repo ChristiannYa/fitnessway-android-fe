@@ -1,22 +1,27 @@
 package com.example.fitnessway.data.network.ktor_client
 
+import com.example.fitnessway.data.model.m_26.AppEdibleReportRequest
 import com.example.fitnessway.data.model.m_26.AppFoodFindByBarcodeResponse
 import com.example.fitnessway.data.model.m_26.AppFoodFindByIdResponse
 import com.example.fitnessway.data.model.m_26.AppFoodSearchResponse
 import com.example.fitnessway.data.model.m_26.PaginationParams
 import com.example.fitnessway.data.network.ApiUrls
 import com.example.fitnessway.util.extractData
+import com.example.fitnessway.util.setJson
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
 import kotlinx.coroutines.delay
 import io.ktor.client.HttpClient as KtorHttpClient
 
 class AppEdibleApiClient(private val client: KtorHttpClient) {
 
-    suspend fun findAppFoodById(id: Int): AppFoodFindByIdResponse =
-        client
+    suspend fun findAppFoodById(id: Int): AppFoodFindByIdResponse {
+        delay(800)
+        return client
             .get("${ApiUrls.BASE_URL_KT}${ApiUrls.AppFood.PATH}/$id")
             .extractData()
+    }
 
     suspend fun findByBarcode(barcode: String): AppFoodFindByBarcodeResponse {
         delay(800)
@@ -38,4 +43,7 @@ class AppEdibleApiClient(private val client: KtorHttpClient) {
                 parameter("edibleType", edibleType)
             }
             .extractData()
+
+    suspend fun report(req: AppEdibleReportRequest) =
+        client.post(ApiUrls.AppFood.REPORT_URL) { setJson(req) }
 }

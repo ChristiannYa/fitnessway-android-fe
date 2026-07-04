@@ -46,6 +46,9 @@ object ApiUrls {
 
         const val LIST_PATH = "$PATH/search"
         const val LIST_URL = "$BASE_URL_KT$LIST_PATH"
+
+        const val REPORT_PATH = "$PATH/report"
+        const val REPORT_URL = "$BASE_URL_KT$REPORT_PATH"
     }
 
     object PendingEdible {

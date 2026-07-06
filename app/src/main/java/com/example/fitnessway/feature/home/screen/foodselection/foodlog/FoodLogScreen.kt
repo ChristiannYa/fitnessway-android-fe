@@ -321,6 +321,7 @@ fun FoodLogScreen(
 
                 AppEdibleReportOptionsPopup(
                     edible = foodToLog,
+                    nutrientsUiState = nutrientsUiState,
                     isVisible = isReportOptionsVisible,
                     isReportConfirmed = isReportConfirmed,
                     onReport = {

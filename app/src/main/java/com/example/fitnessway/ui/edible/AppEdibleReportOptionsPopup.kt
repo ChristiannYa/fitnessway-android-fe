@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,11 +37,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.fitnessway.data.mappers.toList
+import com.example.fitnessway.data.mappers.toSuccessOrNull
 import com.example.fitnessway.data.mappers.toTitleCase
 import com.example.fitnessway.data.model.m_26.AppEdibleReport
 import com.example.fitnessway.data.model.m_26.AppEdibleReportRequest
 import com.example.fitnessway.data.model.m_26.EdibleSource
 import com.example.fitnessway.data.model.m_26.FoodInformationWithId
+import com.example.fitnessway.data.model.m_26.NutrientData
+import com.example.fitnessway.data.model.m_26.NutrientsByType
 import com.example.fitnessway.feature.lists.screen.user_details.edition.composables.FoodEditionFormField
 import com.example.fitnessway.ui.shared.AppVectors
 import com.example.fitnessway.ui.shared.Structure
@@ -51,11 +55,14 @@ import com.example.fitnessway.ui.theme.keyboardTapDismissal
 import com.example.fitnessway.ui.theme.robotoSerifFamily
 import com.example.fitnessway.util.Animation
 import com.example.fitnessway.util.Ui
+import com.example.fitnessway.util.UiState
 import com.example.fitnessway.util.edible.edition.isBaseEditionValid
 import com.example.fitnessway.util.edible.edition.isNutrientsEditionValid
 import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
+import com.example.fitnessway.util.form.field.FoodEditionDetailField
+import com.example.fitnessway.util.form.field.FoodEditionNutrientField
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
@@ -65,11 +72,15 @@ import com.example.fitnessway.util.nutrient.getNutrientDv
 @Composable
 fun AppEdibleReportOptionsPopup(
     edible: FoodInformationWithId,
+    nutrientsUiState: UiState<NutrientsByType<NutrientData>>,
     isVisible: Boolean,
     isReportConfirmed: Boolean,
     onReport: (AppEdibleReportRequest) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val edibleNutrientList = edible.information.nutrients.toList()
+    val edibleNutrientIdsSet = edibleNutrientList.map { it.data.base.id }.toSet()
+
     val originalForm by remember(edible.id) {
         mutableStateOf(
             FormState(
@@ -118,24 +129,15 @@ fun AppEdibleReportOptionsPopup(
         isFormSubmitting = false
     )
 
-    val baseFields = fieldsProvider.getBaseFields()
-
-    val nutrientFields = with(edible.information.nutrients.toList()) {
-        this.map {
-            fieldsProvider.nutrient(
-                nutrient = it.data.base,
-                isLastField = it.data.base.id == this.last().data.base.id
-            )
-        }
-    }
+    var isSuggestingMissingNutrients by remember { mutableStateOf(false) }
 
     var tappedReason by remember { mutableStateOf<AppEdibleReport.Reason?>(null) }
     var selectedReasons by remember { mutableStateOf<List<AppEdibleReport.Reason>>(emptyList()) }
 
-    fun AppEdibleReport.Reason.handleAutoSelection() {
-        if (!this.hasFields) return
+    fun autoHandleReasonSelection(reason: AppEdibleReport.Reason) {
+        if (!reason.hasFields) return
 
-        val isValid = when (this) {
+        val isValid = when (reason) {
             AppEdibleReport.Reason.INCORRECT_INFO -> isBaseEditionValid(
                 form.data,
                 originalForm.data,
@@ -151,9 +153,142 @@ fun AppEdibleReportOptionsPopup(
             else -> false
         }
 
-        val isInList = this in selectedReasons
-        if (isValid && !isInList) selectedReasons += this
-        else if (!isValid && isInList) selectedReasons -= this
+        val isInList = reason in selectedReasons
+        if (isValid && !isInList) selectedReasons += reason
+        else if (!isValid && isInList) selectedReasons -= reason
+    }
+
+    fun onSuggestMissingNutrientsToggle() {
+        isSuggestingMissingNutrients = !isSuggestingMissingNutrients
+    }
+
+    fun onTapReason(reason: AppEdibleReport.Reason) {
+        if (tappedReason == reason) {
+            tappedReason = null
+            if (!reason.hasFields) selectedReasons -= reason
+        } else {
+            tappedReason = reason
+            if (!reason.hasFields && (reason !in selectedReasons)) selectedReasons += reason
+        }
+
+        if (isSuggestingMissingNutrients) isSuggestingMissingNutrients = false
+    }
+
+    fun onReport(
+        baseFields: List<FoodEditionDetailField>,
+        currentNutrientFields: List<FoodEditionNutrientField>,
+        missingNutrientFields: List<FoodEditionNutrientField>
+    ) {
+        val informationChangeText = if (AppEdibleReport.Reason.INCORRECT_INFO in selectedReasons) {
+            val changedLines = baseFields.mapNotNull { field ->
+                val current = field.textFieldValue?.text ?: field.value
+
+                val (label, original) = when (field.name) {
+                    FormFieldName.FoodEdition.DetailField.NAME ->
+                        "Name" to originalForm.data.name
+
+                    FormFieldName.FoodEdition.DetailField.BRAND ->
+                        "Brand" to originalForm.data.brand
+
+                    FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING ->
+                        "Amount per serving" to originalForm.data.amountPerServing
+
+                    FormFieldName.FoodEdition.DetailField.SERVING_UNIT ->
+                        "Serving unit" to originalForm.data.servingUnit
+                }
+
+                if (current != original) "  - $label: $original -> $current" else null
+            }
+
+            if (changedLines.isEmpty()) null
+            else buildString {
+                appendLine("Suggested information")
+                changedLines.forEach { appendLine(it) }
+            }.trimEnd()
+        } else null
+
+        val nutrientsChangeText = if (AppEdibleReport.Reason.INCORRECT_NUTRIENTS in selectedReasons) {
+            val changedLines = currentNutrientFields.mapNotNull { field ->
+                val nutrient = field.name.nutrient
+                val id = nutrient.id
+                val name = nutrient.name.toTitleCase(false)
+                val unit = nutrient.unit.toString().lowercase()
+
+                val current = field.textFieldValue?.text ?: field.value
+                val original = originalForm.data.nutrients.getValue(id)
+
+                val isDv = dvMap.containsKey(id)
+
+                val originalDisplay = if (isDv) "$original$unit" else "$original$unit"
+                val currentDisplay =
+                    if (isDv) "$current% (${getNutrientDv(id, current.toDouble())}$unit)"
+                    else "$current$unit"
+
+                if (current != original || isDv) "  - $name $originalDisplay -> $currentDisplay"
+                else null
+            }
+
+            val suggestedLines = nutrientsUiState
+                .toSuccessOrNull()
+                ?.toList()
+                ?.map { it.base }
+                ?.filter { it.id !in edibleNutrientIdsSet }
+                ?.mapNotNull { suggested ->
+                    missingNutrientFields
+                        .find {
+                            val fieldNotBlank = it.textFieldValue?.text?.isNotBlank() == true
+                            val isField = it.name.nutrient.id == suggested.id
+                            fieldNotBlank && isField
+                        }
+                        ?.let { field ->
+                            val amount = field.textFieldValue?.text ?: field.value
+                            val isDv = dvMap.containsKey(suggested.id)
+                            val display =
+                                if (isDv) "${amount}% (${getNutrientDv(suggested.id, amount.toDouble())})"
+                                else amount
+                            "  - ${suggested.name}: $display"
+                        }
+                }
+                ?: emptyList()
+
+            if (changedLines.isEmpty() && suggestedLines.isEmpty()) null
+            else buildString {
+
+                if (changedLines.isNotEmpty()) {
+                    appendLine("Changed nutrients")
+                    changedLines.forEach { appendLine(it) }
+                }
+
+                appendLine("")
+
+                if (suggestedLines.isNotEmpty()) {
+                    appendLine("Suggested nutrients")
+                    suggestedLines.forEach { appendLine(it) }
+                }
+
+            }.trimEnd()
+        } else null
+
+        val notes = listOfNotNull(informationChangeText, nutrientsChangeText)
+            .joinToString("\n\n")
+            .ifBlank { null }
+
+        onReport(
+            AppEdibleReportRequest(
+                edibleId = edible.id,
+                reasons = selectedReasons.map { r -> r.toString().lowercase() },
+                notes = notes
+            )
+        )
+    }
+
+    LaunchedEffect(isVisible) {
+        if (!isVisible) {
+            if (isSuggestingMissingNutrients) {
+                tappedReason = null
+                isSuggestingMissingNutrients = false
+            }
+        }
     }
 
     LaunchedEffect(isReportConfirmed, isVisible) {
@@ -166,11 +301,11 @@ fun AppEdibleReportOptionsPopup(
     }
 
     LaunchedEffect(form.data.getBaseValues()) {
-        AppEdibleReport.Reason.INCORRECT_INFO.handleAutoSelection()
+        autoHandleReasonSelection(AppEdibleReport.Reason.INCORRECT_INFO)
     }
 
     LaunchedEffect(form.data.nutrients, dvMap) {
-        AppEdibleReport.Reason.INCORRECT_NUTRIENTS.handleAutoSelection()
+        autoHandleReasonSelection(AppEdibleReport.Reason.INCORRECT_NUTRIENTS)
     }
 
     AnimatedVisibility(
@@ -190,220 +325,227 @@ fun AppEdibleReportOptionsPopup(
                 )
                 .animateContentSize(animationSpec = tween(durationMillis = 500))
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                listOf(
-                    AppEdibleReport.Reason.INCORRECT_INFO,
-                    AppEdibleReport.Reason.INCORRECT_NUTRIENTS,
-                    AppEdibleReport.Reason.INCORRECT_TYPE
-                ).forEach { reason ->
-                    val isTapped = reason == tappedReason
+            when (nutrientsUiState) {
+                is UiState.Loading -> Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    CircularProgressIndicator(
+                        strokeWidth = Ui.Measurements.LOADING_CIRCLE_IN_HEADER_STROKE_WIDTH,
+                        modifier = Modifier.size(Ui.Measurements.LOADING_CIRCLE_IN_HEADER_SIZE)
+                    )
+                }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        val isInList = reason in selectedReasons
+                is UiState.Success -> {
+                    val apiNutrientBaseList = nutrientsUiState.data
+                        .toList()
+                        .map { it.base }
 
-                        Box(
-                            Modifier
-                                .areaContainer(
-                                    size = AppModifiers.AreaContainerSize.SMALL,
-                                    areaColor = if (isTapped && reason.hasFields) {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    } else MaterialTheme.colorScheme.secondaryContainer,
-                                    isTapIndicationVisible = !reason.hasFields
+                    val baseFields = fieldsProvider.getBaseFields()
+
+                    val (currentNutrientFields, missingNutrientFields) = run {
+                        val current = edibleNutrientList.map {
+                            fieldsProvider.nutrient(
+                                nutrient = it.data.base,
+                                isLastField = it.data.base.id == edibleNutrientIdsSet.last()
+                            )
+                        }
+
+                        val missing = apiNutrientBaseList
+                            .filter { it.id !in edibleNutrientIdsSet }
+                            .map {
+                                fieldsProvider.nutrient(
+                                    nutrient = it,
+                                    isLastField = it.id == edibleNutrientIdsSet.last()
+                                )
+                            }
+
+                        current to missing
+                    }
+
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        listOf(
+                            AppEdibleReport.Reason.INCORRECT_INFO,
+                            AppEdibleReport.Reason.INCORRECT_NUTRIENTS,
+                            AppEdibleReport.Reason.INCORRECT_TYPE
+                        ).forEach { reason ->
+                            val isTapped = reason == tappedReason
+
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                val isInList = reason in selectedReasons
+
+                                Box(
+                                    Modifier
+                                        .areaContainer(
+                                            size = AppModifiers.AreaContainerSize.SMALL,
+                                            areaColor = if (isTapped && reason.hasFields) {
+                                                MaterialTheme.colorScheme.onSurfaceVariant
+                                            } else MaterialTheme.colorScheme.secondaryContainer,
+                                            isTapIndicationVisible = !reason.hasFields,
+                                            onClick = { onTapReason(reason) }
+                                        )
                                 ) {
-                                    if (tappedReason == reason) {
-                                        tappedReason = null
-                                        if (!reason.hasFields) selectedReasons -= reason
-                                    } else {
-                                        tappedReason = reason
-                                        if (!reason.hasFields && !isInList) selectedReasons += reason
-                                    }
-                                }
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column {
-                                    val textColor = if (isTapped && reason.hasFields) {
-                                        MaterialTheme.colorScheme.inverseOnSurface
-                                    } else MaterialTheme.colorScheme.onSurfaceVariant
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Column {
+                                            val textColor = if (isTapped && reason.hasFields) {
+                                                MaterialTheme.colorScheme.inverseOnSurface
+                                            } else MaterialTheme.colorScheme.onSurfaceVariant
 
-                                    Text(
-                                        text = buildAnnotatedString {
-                                            append(reason.toString().toTitleCase(false))
+                                            Text(
+                                                text = buildAnnotatedString {
+                                                    append(reason.toString().toTitleCase(false))
 
-                                            if (reason == AppEdibleReport.Reason.INCORRECT_TYPE) {
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.6f)
-                                                    )
-                                                ) {
-                                                    append(
-                                                        " (Current: ${
-                                                            edible.information.type.toString().toTitleCase()
-                                                        })"
-                                                    )
-                                                }
+                                                    if (reason == AppEdibleReport.Reason.INCORRECT_TYPE) {
+                                                        withStyle(
+                                                            style = SpanStyle(
+                                                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                                    0.6f
+                                                                )
+                                                            )
+                                                        ) {
+                                                            append(
+                                                                " (Current: ${
+                                                                    edible.information.type.toString().toTitleCase()
+                                                                })"
+                                                            )
+                                                        }
+                                                    }
+                                                },
+                                                fontWeight = FontWeight.Medium,
+                                                fontFamily = robotoSerifFamily,
+                                                color = textColor,
+                                            )
+
+                                            if (isTapped && reason.hasFields) {
+                                                Text(
+                                                    text = "Please provide the correct fields",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    color = textColor
+                                                )
                                             }
-                                        },
-                                        fontWeight = FontWeight.Medium,
-                                        fontFamily = robotoSerifFamily,
-                                        color = textColor,
-                                    )
+                                        }
 
-                                    if (isTapped && reason.hasFields) {
-                                        Text(
-                                            text = "Please provide the correct fields",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = textColor
+                                        Structure.AppIconDynamic(
+                                            source = Structure.AppIconSource.Vector(AppVectors.checkmark),
+                                            tint = if (isInList) {
+                                                if (reason.hasFields && isTapped) MaterialTheme.colorScheme.secondaryContainer
+                                                else MaterialTheme.colorScheme.onSurfaceVariant
+                                            } else Color.Transparent,
+                                            modifier = Modifier.size(16.dp)
                                         )
                                     }
                                 }
 
-                                Structure.AppIconDynamic(
-                                    source = Structure.AppIconSource.Vector(AppVectors.checkmark),
-                                    tint = if (isInList) {
-                                        if (reason.hasFields && isTapped) MaterialTheme.colorScheme.secondaryContainer
-                                        else MaterialTheme.colorScheme.onSurfaceVariant
-                                    } else Color.Transparent,
-                                    modifier = Modifier.size(16.dp)
-                                )
+                                val optionFieldScrollStates = rememberScrollState()
+                                Column(
+                                    modifier = Modifier
+                                        .verticalScroll(optionFieldScrollStates)
+                                        .padding(top = if (isTapped && reason.hasFields) 8.dp else 0.dp)
+                                ) {
+                                    when (tappedReason) {
+                                        AppEdibleReport.Reason.INCORRECT_INFO ->
+                                            if (reason == AppEdibleReport.Reason.INCORRECT_INFO) {
+                                                Fields(
+                                                    fields = baseFields,
+                                                    onGetOriginalField = {
+                                                        when (it.name) {
+                                                            FormFieldName.FoodEdition.DetailField.NAME -> originalForm.data.name
+                                                            FormFieldName.FoodEdition.DetailField.BRAND -> originalForm.data.brand
+                                                            FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING -> originalForm.data.amountPerServing
+                                                            FormFieldName.FoodEdition.DetailField.SERVING_UNIT -> originalForm.data.servingUnit
+                                                        }
+                                                    }
+                                                ) { FoodEditionFormField(it) }
+                                            }
+
+                                        AppEdibleReport.Reason.INCORRECT_NUTRIENTS ->
+                                            if (reason == AppEdibleReport.Reason.INCORRECT_NUTRIENTS) {
+                                                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                                    AnimatedVisibility(
+                                                        visible = !isSuggestingMissingNutrients,
+                                                        enter = Animation.ComposableTransition.fadeIn,
+                                                        exit = Animation.ComposableTransition.fadeOut
+                                                    ) {
+                                                        Fields(
+                                                            fields = currentNutrientFields,
+                                                            onGetOriginalField = {
+                                                                val nutrient = it.name.nutrient
+                                                                val unit = nutrient.unit.toString().lowercase()
+                                                                val id = nutrient.id
+                                                                val original = originalForm.data.nutrients.getValue(id)
+                                                                dvMap[id]
+                                                                    ?.let { "$original $unit" }
+                                                                    ?: original
+                                                            }
+                                                        ) {
+                                                            FoodEditionFormField(
+                                                                field = it,
+                                                                nutrientDvControls = dvControls.controls
+                                                            )
+                                                        }
+                                                    }
+
+                                                    AnimatedVisibility(
+                                                        visible = isSuggestingMissingNutrients,
+                                                        enter = Animation.ComposableTransition.fadeIn,
+                                                        exit = Animation.ComposableTransition.fadeOut
+                                                    ) {
+                                                        Fields(
+                                                            fields = missingNutrientFields,
+                                                            onGetOriginalField = { "" }
+                                                        ) {
+                                                            FoodEditionFormField(
+                                                                field = it,
+                                                                nutrientDvControls = dvControls.controls
+                                                            )
+                                                        }
+                                                    }
+
+                                                    TextButton(
+                                                        onClick = ::onSuggestMissingNutrientsToggle,
+                                                        colors = ButtonDefaults.textButtonColors(
+                                                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                                        ),
+                                                        modifier = Modifier.fillMaxWidth()
+                                                    ) {
+                                                        Text(
+                                                            text = if (isSuggestingMissingNutrients) "Done"
+                                                            else "Suggest missing nutrients"
+                                                        )
+                                                    }
+                                                }
+                                            }
+
+                                        else -> {}
+                                    }
+                                }
                             }
                         }
 
-                        val optionFieldScrollStates = rememberScrollState()
-                        Column(
-                            modifier = Modifier
-                                .verticalScroll(optionFieldScrollStates)
-                                .padding(top = if (isTapped && reason.hasFields) 8.dp else 0.dp)
+                        TextButton(
+                            onClick = { onReport(baseFields, currentNutrientFields, missingNutrientFields) },
+                            enabled = selectedReasons.isNotEmpty(),
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = WhiteFont
+                            )
                         ) {
-                            when (tappedReason) {
-                                AppEdibleReport.Reason.INCORRECT_INFO ->
-                                    if (reason == AppEdibleReport.Reason.INCORRECT_INFO) {
-                                        Fields(
-                                            fields = baseFields,
-                                            onGetOriginalField = {
-                                                when (it.name) {
-                                                    FormFieldName.FoodEdition.DetailField.NAME -> originalForm.data.name
-                                                    FormFieldName.FoodEdition.DetailField.BRAND -> originalForm.data.brand
-                                                    FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING -> originalForm.data.amountPerServing
-                                                    FormFieldName.FoodEdition.DetailField.SERVING_UNIT -> originalForm.data.servingUnit
-                                                }
-                                            }
-                                        ) { FoodEditionFormField(it) }
-                                    }
-
-                                AppEdibleReport.Reason.INCORRECT_NUTRIENTS ->
-                                    if (reason == AppEdibleReport.Reason.INCORRECT_NUTRIENTS) {
-                                        Fields(
-                                            fields = nutrientFields,
-                                            onGetOriginalField = {
-                                                val nutrient = it.name.nutrient
-                                                val unit = nutrient.unit.toString().lowercase()
-                                                val id = nutrient.id
-                                                val original = originalForm.data.nutrients.getValue(id)
-                                                dvMap[id]
-                                                    ?.let { "$original $unit" }
-                                                    ?: original
-                                            }
-                                        ) {
-                                            FoodEditionFormField(
-                                                field = it,
-                                                nutrientDvControls = dvControls.controls
-                                            )
-                                        }
-                                    }
-
-                                else -> {}
-                            }
+                            Text(
+                                text = "Report",
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
                 }
 
-                TextButton(
-                    onClick = {
-                        val informationChangeText = if (AppEdibleReport.Reason.INCORRECT_INFO in selectedReasons) {
-                            val changedLines = baseFields.mapNotNull { field ->
-                                val current = field.textFieldValue?.text ?: field.value
-
-                                val (label, original) = when (field.name) {
-                                    FormFieldName.FoodEdition.DetailField.NAME ->
-                                        "Name" to originalForm.data.name
-
-                                    FormFieldName.FoodEdition.DetailField.BRAND ->
-                                        "Brand" to originalForm.data.brand
-
-                                    FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING ->
-                                        "Amount per serving" to originalForm.data.amountPerServing
-
-                                    FormFieldName.FoodEdition.DetailField.SERVING_UNIT ->
-                                        "Serving unit" to originalForm.data.servingUnit
-                                }
-
-                                if (current != original) "  - $label: $original -> $current" else null
-                            }
-
-                            if (changedLines.isEmpty()) null
-                            else buildString {
-                                appendLine("Suggested information")
-                                changedLines.forEach { appendLine(it) }
-                            }.trimEnd()
-                        } else null
-
-                        val nutrientsChangeText = if (AppEdibleReport.Reason.INCORRECT_NUTRIENTS in selectedReasons) {
-                            val changedLines = nutrientFields.mapNotNull { field ->
-                                val nutrient = field.name.nutrient
-                                val id = nutrient.id
-                                val name = nutrient.name.toTitleCase(false)
-                                val unit = nutrient.unit.toString().lowercase()
-
-                                val current = field.textFieldValue?.text ?: field.value
-                                val original = originalForm.data.nutrients.getValue(id)
-
-                                val isDv = dvMap.containsKey(id)
-
-                                val originalDisplay = if (isDv) "$original$unit" else "$original$unit"
-                                val currentDisplay =
-                                    if (isDv) "$current% (${getNutrientDv(id, current.toDouble())}$unit)"
-                                    else "$current$unit"
-
-                                if (current != original || isDv) "  - $name $originalDisplay -> $currentDisplay"
-                                else null
-                            }
-
-                            if (changedLines.isEmpty()) null
-                            else buildString {
-                                appendLine("Suggested nutrients")
-                                changedLines.forEach { appendLine(it) }
-                            }.trimEnd()
-                        } else null
-
-                        val notes = listOfNotNull(informationChangeText, nutrientsChangeText)
-                            .joinToString("\n\n")
-                            .ifBlank { null }
-
-                        onReport(
-                            AppEdibleReportRequest(
-                                edibleId = edible.id,
-                                reasons = selectedReasons.map { r -> r.toString().lowercase() },
-                                notes = notes
-                            )
-                        )
-                    },
-                    enabled = selectedReasons.isNotEmpty(),
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = WhiteFont
-                    )
-                ) {
-                    Text(
-                        text = "Report",
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                else -> {}
             }
         }
     }
@@ -422,7 +564,7 @@ private fun <T : FormFieldName.IFoodEdition> Fields(
 
                 val originalValue = onGetOriginalField(it)
 
-                if (originalValue != (it.textFieldValue?.text ?: "")) {
+                if (originalValue != "" && originalValue != (it.textFieldValue?.text ?: "")) {
                     Text(
                         text = "Was: $originalValue",
                         style = MaterialTheme.typography.labelMedium,

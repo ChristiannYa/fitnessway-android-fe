@@ -80,6 +80,12 @@ fun AppEdibleReportOptionsPopup(
 ) {
     val edibleNutrientList = edible.information.nutrients.toList()
     val edibleNutrientIdsSet = edibleNutrientList.map { it.data.base.id }.toSet()
+    val remainingNutrients = nutrientsUiState
+        .toSuccessOrNull()
+        ?.toList()
+        ?.map { it.base }
+        ?.filter { it.id !in edibleNutrientIdsSet }
+        ?: emptyList()
 
     val originalForm by remember(edible.id) {
         mutableStateOf(
@@ -177,7 +183,7 @@ fun AppEdibleReportOptionsPopup(
     fun onReport(
         baseFields: List<FoodEditionDetailField>,
         currentNutrientFields: List<FoodEditionNutrientField>,
-        missingNutrientFields: List<FoodEditionNutrientField>
+        remainingNutrientFields: List<FoodEditionNutrientField>
     ) {
         val informationChangeText = if (AppEdibleReport.Reason.INCORRECT_INFO in selectedReasons) {
             val changedLines = baseFields.mapNotNull { field ->
@@ -228,28 +234,22 @@ fun AppEdibleReportOptionsPopup(
                 else null
             }
 
-            val suggestedLines = nutrientsUiState
-                .toSuccessOrNull()
-                ?.toList()
-                ?.map { it.base }
-                ?.filter { it.id !in edibleNutrientIdsSet }
-                ?.mapNotNull { suggested ->
-                    missingNutrientFields
-                        .find {
-                            val fieldNotBlank = it.textFieldValue?.text?.isNotBlank() == true
-                            val isField = it.name.nutrient.id == suggested.id
-                            fieldNotBlank && isField
-                        }
-                        ?.let { field ->
-                            val amount = field.textFieldValue?.text ?: field.value
-                            val isDv = dvMap.containsKey(suggested.id)
-                            val display =
-                                if (isDv) "${amount}% (${getNutrientDv(suggested.id, amount.toDouble())})"
-                                else amount
-                            "  - ${suggested.name}: $display"
-                        }
-                }
-                ?: emptyList()
+            val suggestedLines: List<String> = remainingNutrients.mapNotNull { remainingNutrient ->
+                remainingNutrientFields
+                    .find { remainingField ->
+                        val fieldNotBlank = remainingField.textFieldValue?.text?.isNotBlank() == true
+                        val isField = remainingField.name.nutrient.id == remainingNutrient.id
+                        fieldNotBlank && isField
+                    }
+                    ?.let { remainingField ->
+                        val amount = remainingField.textFieldValue?.text ?: remainingField.value
+                        val isDv = dvMap.containsKey(remainingNutrient.id)
+                        val display =
+                            if (isDv) "${amount}% (${getNutrientDv(remainingNutrient.id, amount.toDouble())})"
+                            else amount
+                        "  - ${remainingNutrient.name}: $display"
+                    }
+            }
 
             if (changedLines.isEmpty() && suggestedLines.isEmpty()) null
             else buildString {
@@ -305,6 +305,17 @@ fun AppEdibleReportOptionsPopup(
     }
 
     LaunchedEffect(form.data.nutrients, dvMap) {
+        val current = form.data.nutrients
+
+        val remainingBlanks = current.filter { (id, amount) ->
+            id in remainingNutrients.map { it.id }.toSet() && amount.isBlank()
+        }
+
+        if (remainingBlanks.keys.isNotEmpty()) {
+            val newCurrent = current.minus(remainingBlanks.keys)
+            form = FormState(form.data.copy(nutrients = newCurrent))
+        }
+
         autoHandleReasonSelection(AppEdibleReport.Reason.INCORRECT_NUTRIENTS)
     }
 
@@ -337,30 +348,17 @@ fun AppEdibleReportOptionsPopup(
                 }
 
                 is UiState.Success -> {
-                    val apiNutrientBaseList = nutrientsUiState.data
-                        .toList()
-                        .map { it.base }
-
                     val baseFields = fieldsProvider.getBaseFields()
 
-                    val (currentNutrientFields, missingNutrientFields) = run {
-                        val current = edibleNutrientList.map {
-                            fieldsProvider.nutrient(
-                                nutrient = it.data.base,
-                                isLastField = it.data.base.id == edibleNutrientIdsSet.last()
-                            )
-                        }
+                    val currentNutrientFields = edibleNutrientList.map {
+                        fieldsProvider.nutrient(
+                            nutrient = it.data.base,
+                            isLastField = it.data.base.id == edibleNutrientIdsSet.last()
+                        )
+                    }
 
-                        val missing = apiNutrientBaseList
-                            .filter { it.id !in edibleNutrientIdsSet }
-                            .map {
-                                fieldsProvider.nutrient(
-                                    nutrient = it,
-                                    isLastField = it.id == edibleNutrientIdsSet.last()
-                                )
-                            }
-
-                        current to missing
+                    val remainingNutrientFields = with(remainingNutrients) {
+                        this.map { fieldsProvider.nutrient(it, it.id == this.last().id) }
                     }
 
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -495,7 +493,7 @@ fun AppEdibleReportOptionsPopup(
                                                         exit = Animation.ComposableTransition.fadeOut
                                                     ) {
                                                         Fields(
-                                                            fields = missingNutrientFields,
+                                                            fields = remainingNutrientFields,
                                                             onGetOriginalField = { "" }
                                                         ) {
                                                             FoodEditionFormField(
@@ -528,7 +526,7 @@ fun AppEdibleReportOptionsPopup(
                         }
 
                         TextButton(
-                            onClick = { onReport(baseFields, currentNutrientFields, missingNutrientFields) },
+                            onClick = { onReport(baseFields, currentNutrientFields, remainingNutrientFields) },
                             enabled = selectedReasons.isNotEmpty(),
                             colors = ButtonDefaults.textButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,

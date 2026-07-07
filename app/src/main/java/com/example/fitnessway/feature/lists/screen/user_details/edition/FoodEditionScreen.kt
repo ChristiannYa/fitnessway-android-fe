@@ -120,13 +120,7 @@ fun FoodEditionScreen(
                 }
             )
 
-            // @TODO: Replace with fields provider's `getBaseFields()`
-            val detailFields = listOf(
-                fieldsProvider.name(),
-                fieldsProvider.brand(),
-                fieldsProvider.amountPerServing(),
-                fieldsProvider.servingUnit()
-            )
+            val detailFields = fieldsProvider.getBaseFields()
             var nutrientIdsPresent: List<Int>
 
             val foodWithAddedNutrients = (selectedFoodCopy.information.nutrients

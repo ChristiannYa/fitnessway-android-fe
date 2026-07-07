@@ -86,6 +86,7 @@ fun AppEdibleReportOptionsPopup(
         ?.map { it.base }
         ?.filter { it.id !in edibleNutrientIdsSet }
         ?: emptyList()
+    val remainingNutrientIdsSet = remainingNutrients.map { it.id }.toSet()
 
     val originalForm by remember(edible.id) {
         mutableStateOf(
@@ -305,13 +306,12 @@ fun AppEdibleReportOptionsPopup(
     }
 
     LaunchedEffect(form.data.nutrients, dvMap) {
-        val current = form.data.nutrients
+        // Handle removal of added remaining nutrient to the form if its value is blank
+        form.data.nutrients.also { current ->
+            if (!current.keys.any { it in remainingNutrientIdsSet }) return@also
+            val remainingBlanks = current.filter { (id, amount) -> id in remainingNutrientIdsSet && amount.isBlank() }
 
-        val remainingBlanks = current.filter { (id, amount) ->
-            id in remainingNutrients.map { it.id }.toSet() && amount.isBlank()
-        }
-
-        if (remainingBlanks.keys.isNotEmpty()) {
+            if (remainingBlanks.keys.isEmpty()) return@also
             val newCurrent = current.minus(remainingBlanks.keys)
             form = FormState(form.data.copy(nutrients = newCurrent))
         }

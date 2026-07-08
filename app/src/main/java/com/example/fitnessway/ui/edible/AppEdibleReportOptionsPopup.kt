@@ -261,9 +261,10 @@ fun AppEdibleReportOptionsPopup(
                     ?.let { remainingField ->
                         val amount = remainingField.textFieldValue?.text ?: remainingField.value
                         val isDv = dvMap.containsKey(remainingNutrient.id)
+                        val unit = remainingNutrient.unit.toString().lowercase()
                         val display =
                             if (isDv) "${amount}% (${getNutrientDv(remainingNutrient.id, amount.toDouble())})"
-                            else amount
+                            else "$amount$unit"
                         "  - ${remainingNutrient.name}: $display"
                     }
             }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -78,16 +79,6 @@ fun AppEdibleReportOptionsPopup(
     onReport: (AppEdibleReportRequest) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val edibleNutrientList = edible.information.nutrients.toList()
-    val edibleNutrientIdsSet = edibleNutrientList.map { it.data.base.id }.toSet()
-    val remainingNutrients = nutrientsUiState
-        .toSuccessOrNull()
-        ?.toList()
-        ?.map { it.base }
-        ?.filter { it.id !in edibleNutrientIdsSet }
-        ?: emptyList()
-    val remainingNutrientIdsSet = remainingNutrients.map { it.id }.toSet()
-
     val originalForm by remember(edible.id) {
         mutableStateOf(
             FormState(
@@ -136,6 +127,17 @@ fun AppEdibleReportOptionsPopup(
         isFormSubmitting = false
     )
 
+    val edibleNutrientList = edible.information.nutrients.toList()
+    val edibleNutrientIdsSet = edibleNutrientList.map { it.data.base.id }.toSet()
+    var removedNutrientIdsSet by remember(edible.id) { mutableStateOf(emptySet<Int>()) }
+    val remainingNutrients = nutrientsUiState
+        .toSuccessOrNull()
+        ?.toList()
+        ?.map { it.base }
+        ?.filter { it.id !in edibleNutrientIdsSet || it.id in removedNutrientIdsSet }
+        ?: emptyList()
+    val remainingNutrientIdsSet = remainingNutrients.map { it.id }.toSet()
+
     var isSuggestingMissingNutrients by remember { mutableStateOf(false) }
 
     var tappedReason by remember { mutableStateOf<AppEdibleReport.Reason?>(null) }
@@ -179,6 +181,20 @@ fun AppEdibleReportOptionsPopup(
         }
 
         if (isSuggestingMissingNutrients) isSuggestingMissingNutrients = false
+    }
+
+    fun onRemoveNutrient(nutrientId: Int) {
+        removedNutrientIdsSet = removedNutrientIdsSet.plus(nutrientId)
+        val newNutrients = form.data.nutrients.toMutableMap()
+        newNutrients.remove(nutrientId)
+        form = FormState(form.data.copy(nutrients = newNutrients))
+    }
+
+    fun onAddNutrientBack(nutrientId: Int) {
+        removedNutrientIdsSet = removedNutrientIdsSet.minus(nutrientId)
+        val newNutrients = form.data.nutrients.toMutableMap()
+        newNutrients[nutrientId] = originalForm.data.nutrients.getValue(nutrientId)
+        form = FormState(form.data.copy(nutrients = newNutrients))
     }
 
     fun onReport(
@@ -252,19 +268,38 @@ fun AppEdibleReportOptionsPopup(
                     }
             }
 
-            if (changedLines.isEmpty() && suggestedLines.isEmpty()) null
-            else buildString {
-
-                if (changedLines.isNotEmpty()) {
-                    appendLine("Changed nutrients")
-                    changedLines.forEach { appendLine(it) }
+            val removedLines: List<String> = remainingNutrientFields
+                .filter { it.name.nutrient.id in originalForm.data.nutrients.keys }
+                .map {
+                    val nutrient = it.name.nutrient
+                    val amount = originalForm.data.nutrients.getValue(nutrient.id)
+                    val unit = nutrient.unit.toString().lowercase()
+                    "  - ${nutrient.name}: $amount$unit"
                 }
 
-                appendLine("")
+            val isChangedLinesEmpty = changedLines.isEmpty()
+            val isSuggestedLinesEmpty = suggestedLines.isEmpty()
+            val isRemovedLinesEmpty = removedLines.isEmpty()
 
-                if (suggestedLines.isNotEmpty()) {
+            if (isChangedLinesEmpty && isSuggestedLinesEmpty && isRemovedLinesEmpty) null
+            else buildString {
+
+                if (!isChangedLinesEmpty) {
+                    appendLine("Changed nutrients")
+                    changedLines.forEach { appendLine(it) }
+                    appendLine("")
+                }
+
+                if (!isSuggestedLinesEmpty) {
                     appendLine("Suggested nutrients")
                     suggestedLines.forEach { appendLine(it) }
+                    appendLine("")
+                }
+
+                if (!isRemovedLinesEmpty) {
+                    appendLine("Removed nutrients")
+                    removedLines.forEach { appendLine(it) }
+                    appendLine("")
                 }
 
             }.trimEnd()
@@ -350,15 +385,17 @@ fun AppEdibleReportOptionsPopup(
                 is UiState.Success -> {
                     val baseFields = fieldsProvider.getBaseFields()
 
-                    val currentNutrientFields = edibleNutrientList.map {
-                        fieldsProvider.nutrient(
-                            nutrient = it.data.base,
-                            isLastField = it.data.base.id == edibleNutrientIdsSet.last()
-                        )
-                    }
+                    val currentNutrientFields = edibleNutrientList
+                        .filter { it.data.base.id !in removedNutrientIdsSet }
+                        .map {
+                            fieldsProvider.nutrient(
+                                nutrient = it.data.base,
+                                isLastField = it.data.base.id == edibleNutrientIdsSet.last()
+                            )
+                        }
 
-                    val remainingNutrientFields = with(remainingNutrients) {
-                        this.map { fieldsProvider.nutrient(it, it.id == this.last().id) }
+                    val remainingNutrientFields = remainingNutrients.map {
+                        fieldsProvider.nutrient(it, it.id == remainingNutrientIdsSet.last())
                     }
 
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -468,6 +505,7 @@ fun AppEdibleReportOptionsPopup(
                                                         enter = Animation.ComposableTransition.fadeIn,
                                                         exit = Animation.ComposableTransition.fadeOut
                                                     ) {
+
                                                         Fields(
                                                             fields = currentNutrientFields,
                                                             onGetOriginalField = {
@@ -479,10 +517,11 @@ fun AppEdibleReportOptionsPopup(
                                                                     ?.let { "$original $unit" }
                                                                     ?: original
                                                             }
-                                                        ) {
+                                                        ) { field ->
                                                             FoodEditionFormField(
-                                                                field = it,
-                                                                nutrientDvControls = dvControls.controls
+                                                                field = field,
+                                                                nutrientDvControls = dvControls.controls,
+                                                                onRemoveNutrient = { onRemoveNutrient(it.id) }
                                                             )
                                                         }
                                                     }
@@ -496,10 +535,47 @@ fun AppEdibleReportOptionsPopup(
                                                             fields = remainingNutrientFields,
                                                             onGetOriginalField = { "" }
                                                         ) {
-                                                            FoodEditionFormField(
-                                                                field = it,
-                                                                nutrientDvControls = dvControls.controls
-                                                            )
+                                                            val nutrient = it.name.nutrient
+
+                                                            if (nutrient.id !in originalForm.data.nutrients.keys) {
+                                                                FoodEditionFormField(
+                                                                    field = it,
+                                                                    nutrientDvControls = dvControls.controls
+                                                                )
+                                                            } else {
+                                                                Box(
+                                                                    modifier = Modifier
+                                                                        .padding(top = (LocalTextStyle.current.lineHeight / 2).value.dp - 1.dp)
+                                                                        .areaContainer(
+                                                                            size = AppModifiers.AreaContainerSize.MEDIUM,
+                                                                            areaColor = Ui.InputUi.getOutlinedColors().unfocusedContainerColor,
+                                                                            shape = Ui.InputUi.shape,
+                                                                            onClick = { onAddNutrientBack(nutrient.id) }
+                                                                        )
+                                                                ) {
+                                                                    Text(
+                                                                        // text = "Add ${nutrient.name} back",
+                                                                        text = buildAnnotatedString {
+                                                                            append("Add ")
+
+                                                                            withStyle(
+                                                                                style = SpanStyle(
+                                                                                    fontWeight = FontWeight.SemiBold
+                                                                                )
+                                                                            ) { append("${nutrient.name} ") }
+
+                                                                            nutrient.symbol?.let { s ->
+                                                                                append("($s) ")
+                                                                            }
+
+                                                                            append("back")
+                                                                        },
+                                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                                        fontFamily = robotoSerifFamily
+                                                                    )
+                                                                }
+                                                            }
+
                                                         }
                                                     }
 

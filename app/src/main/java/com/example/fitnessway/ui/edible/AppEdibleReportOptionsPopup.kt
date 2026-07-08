@@ -67,8 +67,6 @@ import com.example.fitnessway.util.edible.edition.isNutrientsEditionValid
 import com.example.fitnessway.util.extensions.toTruncatedDecimalString
 import com.example.fitnessway.util.form.FormState
 import com.example.fitnessway.util.form.FormStates
-import com.example.fitnessway.util.form.field.FoodEditionDetailField
-import com.example.fitnessway.util.form.field.FoodEditionNutrientField
 import com.example.fitnessway.util.form.field.FormField
 import com.example.fitnessway.util.form.field.FormFieldName
 import com.example.fitnessway.util.form.field.provider.FoodEditionFieldsProvider
@@ -143,6 +141,19 @@ fun AppEdibleReportOptionsPopup(
         ?: emptyList()
     val remainingNutrientIdsSet = remainingNutrients.map { it.id }.toSet()
 
+    val baseFields = fieldsProvider.getBaseFields()
+    val currentNutrientFields = edibleNutrientList
+        .filter { it.data.base.id !in removedNutrientIdsSet }
+        .map {
+            fieldsProvider.nutrient(
+                nutrient = it.data.base,
+                isLastField = it.data.base.id == edibleNutrientIdsSet.last()
+            )
+        }
+    val remainingNutrientFields = remainingNutrients.map {
+        fieldsProvider.nutrient(it, it.id == remainingNutrientIdsSet.last())
+    }
+
     var isSuggestingMissingNutrients by remember { mutableStateOf(false) }
 
     var tappedReason by remember { mutableStateOf<AppEdibleReport.Reason?>(null) }
@@ -201,11 +212,7 @@ fun AppEdibleReportOptionsPopup(
         form = FormState(form.data.copy(nutrients = newNutrients))
     }
 
-    fun onReport(
-        baseFields: List<FoodEditionDetailField>,
-        currentNutrientFields: List<FoodEditionNutrientField>,
-        remainingNutrientFields: List<FoodEditionNutrientField>
-    ) {
+    fun onReport() {
         val informationChangeText = if (AppEdibleReport.Reason.INCORRECT_INFO in selectedReasons) {
             val changedLines = baseFields.mapNotNull { field ->
                 val current = field.textFieldValue?.text ?: field.value
@@ -386,21 +393,6 @@ fun AppEdibleReportOptionsPopup(
                 }
 
                 is UiState.Success -> {
-                    val baseFields = fieldsProvider.getBaseFields()
-
-                    val currentNutrientFields = edibleNutrientList
-                        .filter { it.data.base.id !in removedNutrientIdsSet }
-                        .map {
-                            fieldsProvider.nutrient(
-                                nutrient = it.data.base,
-                                isLastField = it.data.base.id == edibleNutrientIdsSet.last()
-                            )
-                        }
-
-                    val remainingNutrientFields = remainingNutrients.map {
-                        fieldsProvider.nutrient(it, it.id == remainingNutrientIdsSet.last())
-                    }
-
                     Column {
                         val reportableReasons = AppEdibleReport.Reason.entries
                             .filter { it != AppEdibleReport.Reason.INCORRECT_BARCODE }
@@ -636,7 +628,7 @@ fun AppEdibleReportOptionsPopup(
 
                         Spacer(Modifier.height(12.dp))
                         TextButton(
-                            onClick = { onReport(baseFields, currentNutrientFields, remainingNutrientFields) },
+                            onClick = ::onReport,
                             enabled = selectedReasons.isNotEmpty(),
                             colors = ButtonDefaults.textButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,

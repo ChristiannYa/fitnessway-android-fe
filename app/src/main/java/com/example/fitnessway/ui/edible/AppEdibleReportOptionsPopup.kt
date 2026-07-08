@@ -333,6 +333,7 @@ fun AppEdibleReportOptionsPopup(
             tappedReason = null
             selectedReasons = emptyList()
             form = originalForm
+            removedNutrientIdsSet = emptySet()
             dvControls.controls.onClearData()
         }
     }

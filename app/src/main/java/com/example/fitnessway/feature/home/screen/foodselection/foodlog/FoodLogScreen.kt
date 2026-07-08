@@ -413,7 +413,7 @@ private fun AppEdibleReportConfirmationPopup(
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
                                 fontWeight = FontWeight.SemiBold
                             )
                         ) {
@@ -443,7 +443,7 @@ private fun AppEdibleReportConfirmationPopup(
                                 } else this
                             }
 
-                            appendLine("  - $reasonDisplay")
+                            appendLine("  * $reasonDisplay")
                         }
 
                         if (finalReport?.notes != null) appendLine("\n${finalReport.notes}")

@@ -3,7 +3,6 @@ package com.example.fitnessway.ui.edible
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -225,7 +224,7 @@ fun AppEdibleReportOptionsPopup(
                         "Serving unit" to originalForm.data.servingUnit
                 }
 
-                if (current != original) "  - $label: $original -> $current" else null
+                if (current != original) "  ~ $label: $original -> $current" else null
             }
 
             if (changedLines.isEmpty()) null
@@ -252,7 +251,7 @@ fun AppEdibleReportOptionsPopup(
                     if (isDv) "$current% (${getNutrientDv(id, current.toDouble())}$unit)"
                     else "$current$unit"
 
-                if (current != original || isDv) "  - $name $originalDisplay -> $currentDisplay"
+                if (current != original || isDv) "  ~ $name $originalDisplay -> $currentDisplay"
                 else null
             }
 
@@ -270,7 +269,7 @@ fun AppEdibleReportOptionsPopup(
                         val display =
                             if (isDv) "${amount}% (${getNutrientDv(remainingNutrient.id, amount.toDouble())})"
                             else "$amount$unit"
-                        "  - ${remainingNutrient.name}: $display"
+                        "  + ${remainingNutrient.name}: $display"
                     }
             }
 
@@ -414,11 +413,7 @@ fun AppEdibleReportOptionsPopup(
                                     isTappedReasonWithFields
 
                             if (index != 0 && (tappedReason == null || tappedReason?.hasFields == false)) {
-                                Box(
-                                    Modifier
-                                        .height(16.dp)
-                                        .background(MaterialTheme.colorScheme.primary)
-                                )
+                                Spacer(Modifier.height(16.dp))
                             }
 
                             Column {

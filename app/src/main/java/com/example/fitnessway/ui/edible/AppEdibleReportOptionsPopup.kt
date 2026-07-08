@@ -172,12 +172,11 @@ fun AppEdibleReportOptionsPopup(
     }
 
     fun onTapReason(reason: AppEdibleReport.Reason) {
-        if (tappedReason == reason) {
-            tappedReason = null
-            if (!reason.hasFields) selectedReasons -= reason
-        } else {
-            tappedReason = reason
-            if (!reason.hasFields && (reason !in selectedReasons)) selectedReasons += reason
+        tappedReason = if (reason == tappedReason) null else reason
+
+        if (!reason.hasFields) {
+            if (reason in selectedReasons) selectedReasons -= reason
+            else selectedReasons += reason
         }
 
         if (isSuggestingMissingNutrients) isSuggestingMissingNutrients = false
@@ -401,207 +400,207 @@ fun AppEdibleReportOptionsPopup(
                     }
 
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        listOf(
-                            AppEdibleReport.Reason.INCORRECT_INFO,
-                            AppEdibleReport.Reason.INCORRECT_NUTRIENTS,
-                            AppEdibleReport.Reason.INCORRECT_TYPE
-                        ).forEach { reason ->
-                            val isTapped = reason == tappedReason
 
-                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                val isInList = reason in selectedReasons
+                        AppEdibleReport.Reason.entries
+                            .filter { it != AppEdibleReport.Reason.INCORRECT_BARCODE }
+                            .forEach { reason ->
+                                val isTapped = reason == tappedReason
 
-                                Box(
-                                    Modifier
-                                        .areaContainer(
-                                            size = AppModifiers.AreaContainerSize.SMALL,
-                                            areaColor = if (isTapped && reason.hasFields) {
-                                                MaterialTheme.colorScheme.onSurfaceVariant
-                                            } else MaterialTheme.colorScheme.secondaryContainer,
-                                            isTapIndicationVisible = !reason.hasFields,
-                                            onClick = { onTapReason(reason) }
-                                        )
-                                ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Column {
-                                            val textColor = if (isTapped && reason.hasFields) {
-                                                MaterialTheme.colorScheme.inverseOnSurface
-                                            } else MaterialTheme.colorScheme.onSurfaceVariant
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    val isInList = reason in selectedReasons
 
-                                            Text(
-                                                text = buildAnnotatedString {
-                                                    append(reason.toString().toTitleCase(false))
-
-                                                    if (reason == AppEdibleReport.Reason.INCORRECT_TYPE) {
-                                                        withStyle(
-                                                            style = SpanStyle(
-                                                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                                                    0.6f
-                                                                )
-                                                            )
-                                                        ) {
-                                                            append(
-                                                                " (Current: ${
-                                                                    edible.information.type.toString().toTitleCase()
-                                                                })"
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                fontWeight = FontWeight.Medium,
-                                                fontFamily = robotoSerifFamily,
-                                                color = textColor,
+                                    Box(
+                                        Modifier
+                                            .areaContainer(
+                                                size = AppModifiers.AreaContainerSize.SMALL,
+                                                areaColor = if (isTapped && reason.hasFields) {
+                                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                                } else MaterialTheme.colorScheme.secondaryContainer,
+                                                isTapIndicationVisible = !reason.hasFields,
+                                                onClick = { onTapReason(reason) }
                                             )
+                                    ) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Column {
+                                                val textColor = if (isTapped && reason.hasFields) {
+                                                    MaterialTheme.colorScheme.inverseOnSurface
+                                                } else MaterialTheme.colorScheme.onSurfaceVariant
 
-                                            if (isTapped && reason.hasFields) {
                                                 Text(
-                                                    text = "Please provide the correct fields",
-                                                    style = MaterialTheme.typography.labelMedium,
-                                                    color = textColor
-                                                )
-                                            }
-                                        }
+                                                    text = buildAnnotatedString {
+                                                        append(reason.toString().toTitleCase(false))
 
-                                        Structure.AppIconDynamic(
-                                            source = Structure.AppIconSource.Vector(AppVectors.checkmark),
-                                            tint = if (isInList) {
-                                                if (reason.hasFields && isTapped) MaterialTheme.colorScheme.secondaryContainer
-                                                else MaterialTheme.colorScheme.onSurfaceVariant
-                                            } else Color.Transparent,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
-                                }
-
-                                val optionFieldScrollStates = rememberScrollState()
-                                Column(
-                                    modifier = Modifier
-                                        .verticalScroll(optionFieldScrollStates)
-                                        .padding(top = if (isTapped && reason.hasFields) 8.dp else 0.dp)
-                                ) {
-                                    when (tappedReason) {
-                                        AppEdibleReport.Reason.INCORRECT_INFO ->
-                                            if (reason == AppEdibleReport.Reason.INCORRECT_INFO) {
-                                                Fields(
-                                                    fields = baseFields,
-                                                    onGetOriginalField = {
-                                                        when (it.name) {
-                                                            FormFieldName.FoodEdition.DetailField.NAME -> originalForm.data.name
-                                                            FormFieldName.FoodEdition.DetailField.BRAND -> originalForm.data.brand
-                                                            FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING -> originalForm.data.amountPerServing
-                                                            FormFieldName.FoodEdition.DetailField.SERVING_UNIT -> originalForm.data.servingUnit
-                                                        }
-                                                    }
-                                                ) { FoodEditionFormField(it) }
-                                            }
-
-                                        AppEdibleReport.Reason.INCORRECT_NUTRIENTS ->
-                                            if (reason == AppEdibleReport.Reason.INCORRECT_NUTRIENTS) {
-                                                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                                    AnimatedVisibility(
-                                                        visible = !isSuggestingMissingNutrients,
-                                                        enter = Animation.ComposableTransition.fadeIn,
-                                                        exit = Animation.ComposableTransition.fadeOut
-                                                    ) {
-
-                                                        Fields(
-                                                            fields = currentNutrientFields,
-                                                            onGetOriginalField = {
-                                                                val nutrient = it.name.nutrient
-                                                                val unit = nutrient.unit.toString().lowercase()
-                                                                val id = nutrient.id
-                                                                val original = originalForm.data.nutrients.getValue(id)
-                                                                dvMap[id]
-                                                                    ?.let { "$original $unit" }
-                                                                    ?: original
-                                                            }
-                                                        ) { field ->
-                                                            FoodEditionFormField(
-                                                                field = field,
-                                                                nutrientDvControls = dvControls.controls,
-                                                                onRemoveNutrient = { onRemoveNutrient(it.id) }
-                                                            )
-                                                        }
-                                                    }
-
-                                                    AnimatedVisibility(
-                                                        visible = isSuggestingMissingNutrients,
-                                                        enter = Animation.ComposableTransition.fadeIn,
-                                                        exit = Animation.ComposableTransition.fadeOut
-                                                    ) {
-                                                        Fields(
-                                                            fields = remainingNutrientFields,
-                                                            onGetOriginalField = { "" }
-                                                        ) {
-                                                            val nutrient = it.name.nutrient
-
-                                                            if (nutrient.id !in originalForm.data.nutrients.keys) {
-                                                                FoodEditionFormField(
-                                                                    field = it,
-                                                                    nutrientDvControls = dvControls.controls
-                                                                )
-                                                            } else {
-                                                                Box(
-                                                                    modifier = Modifier
-                                                                        .padding(top = (LocalTextStyle.current.lineHeight / 2).value.dp - 1.dp)
-                                                                        .areaContainer(
-                                                                            size = AppModifiers.AreaContainerSize.MEDIUM,
-                                                                            areaColor = Ui.InputUi.getOutlinedColors().unfocusedContainerColor,
-                                                                            shape = Ui.InputUi.shape,
-                                                                            onClick = { onAddNutrientBack(nutrient.id) }
-                                                                        )
-                                                                ) {
-                                                                    Text(
-                                                                        // text = "Add ${nutrient.name} back",
-                                                                        text = buildAnnotatedString {
-                                                                            append("Add ")
-
-                                                                            withStyle(
-                                                                                style = SpanStyle(
-                                                                                    fontWeight = FontWeight.SemiBold
-                                                                                )
-                                                                            ) { append("${nutrient.name} ") }
-
-                                                                            nutrient.symbol?.let { s ->
-                                                                                append("($s) ")
-                                                                            }
-
-                                                                            append("back")
-                                                                        },
-                                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                                        fontFamily = robotoSerifFamily
+                                                        if (reason == AppEdibleReport.Reason.INCORRECT_TYPE) {
+                                                            withStyle(
+                                                                style = SpanStyle(
+                                                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                                        0.6f
                                                                     )
-                                                                }
+                                                                )
+                                                            ) {
+                                                                append(
+                                                                    " (Current: ${
+                                                                        edible.information.type.toString().toTitleCase()
+                                                                    })"
+                                                                )
                                                             }
-
                                                         }
-                                                    }
+                                                    },
+                                                    fontWeight = FontWeight.Medium,
+                                                    fontFamily = robotoSerifFamily,
+                                                    color = textColor,
+                                                )
 
-                                                    TextButton(
-                                                        onClick = ::onSuggestMissingNutrientsToggle,
-                                                        colors = ButtonDefaults.textButtonColors(
-                                                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                                        ),
-                                                        modifier = Modifier.fillMaxWidth()
-                                                    ) {
-                                                        Text(
-                                                            text = if (isSuggestingMissingNutrients) "Done"
-                                                            else "Suggest missing nutrients"
-                                                        )
-                                                    }
+                                                if (isTapped && reason.hasFields) {
+                                                    Text(
+                                                        text = "Please provide the correct fields",
+                                                        style = MaterialTheme.typography.labelMedium,
+                                                        color = textColor
+                                                    )
                                                 }
                                             }
 
-                                        else -> {}
+                                            Structure.AppIconDynamic(
+                                                source = Structure.AppIconSource.Vector(AppVectors.checkmark),
+                                                tint = if (isInList) {
+                                                    if (reason.hasFields && isTapped) MaterialTheme.colorScheme.secondaryContainer
+                                                    else MaterialTheme.colorScheme.onSurfaceVariant
+                                                } else Color.Transparent,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
+
+                                    val optionFieldScrollStates = rememberScrollState()
+                                    Column(
+                                        modifier = Modifier
+                                            .verticalScroll(optionFieldScrollStates)
+                                            .padding(top = if (isTapped && reason.hasFields) 8.dp else 0.dp)
+                                    ) {
+                                        when (tappedReason) {
+                                            AppEdibleReport.Reason.INCORRECT_INFO ->
+                                                if (reason == AppEdibleReport.Reason.INCORRECT_INFO) {
+                                                    Fields(
+                                                        fields = baseFields,
+                                                        onGetOriginalField = {
+                                                            when (it.name) {
+                                                                FormFieldName.FoodEdition.DetailField.NAME -> originalForm.data.name
+                                                                FormFieldName.FoodEdition.DetailField.BRAND -> originalForm.data.brand
+                                                                FormFieldName.FoodEdition.DetailField.AMOUNT_PER_SERVING -> originalForm.data.amountPerServing
+                                                                FormFieldName.FoodEdition.DetailField.SERVING_UNIT -> originalForm.data.servingUnit
+                                                            }
+                                                        }
+                                                    ) { FoodEditionFormField(it) }
+                                                }
+
+                                            AppEdibleReport.Reason.INCORRECT_NUTRIENTS ->
+                                                if (reason == AppEdibleReport.Reason.INCORRECT_NUTRIENTS) {
+                                                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                                        AnimatedVisibility(
+                                                            visible = !isSuggestingMissingNutrients,
+                                                            enter = Animation.ComposableTransition.fadeIn,
+                                                            exit = Animation.ComposableTransition.fadeOut
+                                                        ) {
+
+                                                            Fields(
+                                                                fields = currentNutrientFields,
+                                                                onGetOriginalField = {
+                                                                    val nutrient = it.name.nutrient
+                                                                    val unit = nutrient.unit.toString().lowercase()
+                                                                    val id = nutrient.id
+                                                                    val original =
+                                                                        originalForm.data.nutrients.getValue(id)
+                                                                    dvMap[id]
+                                                                        ?.let { "$original $unit" }
+                                                                        ?: original
+                                                                }
+                                                            ) { field ->
+                                                                FoodEditionFormField(
+                                                                    field = field,
+                                                                    nutrientDvControls = dvControls.controls,
+                                                                    onRemoveNutrient = { onRemoveNutrient(it.id) }
+                                                                )
+                                                            }
+                                                        }
+
+                                                        AnimatedVisibility(
+                                                            visible = isSuggestingMissingNutrients,
+                                                            enter = Animation.ComposableTransition.fadeIn,
+                                                            exit = Animation.ComposableTransition.fadeOut
+                                                        ) {
+                                                            Fields(
+                                                                fields = remainingNutrientFields,
+                                                                onGetOriginalField = { "" }
+                                                            ) {
+                                                                val nutrient = it.name.nutrient
+
+                                                                if (nutrient.id !in originalForm.data.nutrients.keys) {
+                                                                    FoodEditionFormField(
+                                                                        field = it,
+                                                                        nutrientDvControls = dvControls.controls
+                                                                    )
+                                                                } else {
+                                                                    Box(
+                                                                        modifier = Modifier
+                                                                            .padding(top = (LocalTextStyle.current.lineHeight / 2).value.dp - 1.dp)
+                                                                            .areaContainer(
+                                                                                size = AppModifiers.AreaContainerSize.MEDIUM,
+                                                                                areaColor = Ui.InputUi.getOutlinedColors().unfocusedContainerColor,
+                                                                                shape = Ui.InputUi.shape,
+                                                                                onClick = { onAddNutrientBack(nutrient.id) }
+                                                                            )
+                                                                    ) {
+                                                                        Text(
+                                                                            // text = "Add ${nutrient.name} back",
+                                                                            text = buildAnnotatedString {
+                                                                                append("Add ")
+
+                                                                                withStyle(
+                                                                                    style = SpanStyle(
+                                                                                        fontWeight = FontWeight.SemiBold
+                                                                                    )
+                                                                                ) { append("${nutrient.name} ") }
+
+                                                                                nutrient.symbol?.let { s ->
+                                                                                    append("($s) ")
+                                                                                }
+
+                                                                                append("back")
+                                                                            },
+                                                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                                            fontFamily = robotoSerifFamily
+                                                                        )
+                                                                    }
+                                                                }
+
+                                                            }
+                                                        }
+
+                                                        TextButton(
+                                                            onClick = ::onSuggestMissingNutrientsToggle,
+                                                            colors = ButtonDefaults.textButtonColors(
+                                                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                                            ),
+                                                            modifier = Modifier.fillMaxWidth()
+                                                        ) {
+                                                            Text(
+                                                                text = if (isSuggestingMissingNutrients) "Done"
+                                                                else "Suggest missing nutrients"
+                                                            )
+                                                        }
+                                                    }
+                                                }
+
+                                            else -> {}
+                                        }
                                     }
                                 }
                             }
-                        }
 
                         TextButton(
                             onClick = { onReport(baseFields, currentNutrientFields, remainingNutrientFields) },

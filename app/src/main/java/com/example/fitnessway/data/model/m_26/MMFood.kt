@@ -141,6 +141,8 @@ data class AppEdibleReport(
 ) {
     enum class Reason(val hasFields: Boolean = false) {
         INCORRECT_INFO(true),
+        INVALID_INFO,
+        INAPPROPRIATE_INFO,
         INCORRECT_NUTRIENTS(true),
         INCORRECT_BARCODE,
         INCORRECT_TYPE
